@@ -20,9 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\DX11GraphicsDevice.cpp" />
+    <ClCompile Include="Sources\GraphicsDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\DX11GraphicsDevice.h" />
+    <ClInclude Include="Sources\GraphicsDevice.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
