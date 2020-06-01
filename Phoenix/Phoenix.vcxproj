@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>DXUT\Core;DXUT\Optional;.\Library\DirectXTex-master\DirectXTex;.\Library\DirectXTex-master\WICTextureLoader;.\Library\FBX SDK\2016.1.2\include;.\Library\cereal-1.2.2\include;.\Library\imgui-master;.\Library\PhenixLibrary\DirectX11\DX11GraphicsDevice\DX11GraphicsDevice\Sources;.\Library\PhenixLibrary\DirectX11\DX11Math\DX11Math\Sources;.\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>DXUT\Core;DXUT\Optional;.\Library\DirectXTex-master\DirectXTex;.\Library\DirectXTex-master\WICTextureLoader;.\Library\FBX SDK\2016.1.2\include;.\Library\cereal-1.2.2\include;.\Library\imgui-master;.\Library\PhoenixLibrary\DirectX11\DX11GraphicsDevice\DX11GraphicsDevice\Sources;.\Library\PhoenixLibrary\DirectX11\DX11Math\DX11Math\Sources;.\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild />
@@ -216,10 +216,10 @@
     <ClInclude Include="Sources\Game\Scene\SceneTitle.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Library\PhenixLibrary\DirectX11\DX11GraphicsDevice\DX11GraphicsDevice\DX11GraphicsDevice.vcxproj">
+    <ProjectReference Include="Library\PhoenixLibrary\DirectX11\DX11GraphicsDevice\DX11GraphicsDevice\DX11GraphicsDevice.vcxproj">
       <Project>{28cdc752-7f60-4089-9a22-dc08f17df3b3}</Project>
     </ProjectReference>
-    <ProjectReference Include="Library\PhenixLibrary\DirectX11\DX11Math\DX11Math\DX11Math.vcxproj">
+    <ProjectReference Include="Library\PhoenixLibrary\DirectX11\DX11Math\DX11Math\DX11Math.vcxproj">
       <Project>{81db6c87-69a5-479c-8096-4ccc625ddfe5}</Project>
     </ProjectReference>
   </ItemGroup>
