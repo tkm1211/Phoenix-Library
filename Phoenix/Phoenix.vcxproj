@@ -171,27 +171,10 @@
     <ClCompile Include="Library\imgui-master\imgui_ja_gryph_ranges.cpp" />
     <ClCompile Include="Library\imgui-master\imgui_widgets.cpp" />
     <ClCompile Include="Library\imgui-master\ImSequencer.cpp" />
-    <ClCompile Include="Sources\GameLib\FrameWork.cpp" />
-    <ClCompile Include="Sources\GameLib\Main.cpp" />
-    <ClCompile Include="Sources\Game\Scene\SceneManager.cpp" />
-    <ClCompile Include="Sources\Game\Scene\SceneTitle.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sources\Shader\Header.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Sources\Shader\PixelShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="Sources\Shader\VertexShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
+    <ClCompile Include="Sources\FrameWork\FrameWork.cpp" />
+    <ClCompile Include="Sources\Main\Main.cpp" />
+    <ClCompile Include="Sources\Scene\SceneManager.cpp" />
+    <ClCompile Include="Sources\Scene\SceneTitle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Library\imgui-master\imconfig.h" />
@@ -208,12 +191,12 @@
     <ClInclude Include="Library\imgui-master\imstb_textedit.h" />
     <ClInclude Include="Library\imgui-master\imstb_truetype.h" />
     <ClInclude Include="Library\imgui-master\stb_image.h" />
-    <ClInclude Include="Sources\GameLib\FrameWork.h" />
-    <ClInclude Include="Sources\GameLib\HighResolutionTimer.h" />
-    <ClInclude Include="Sources\GameLib\ScreenInformation.h" />
-    <ClInclude Include="Sources\GameLib\Utilities.h" />
-    <ClInclude Include="Sources\Game\Scene\SceneManager.h" />
-    <ClInclude Include="Sources\Game\Scene\SceneTitle.h" />
+    <ClInclude Include="Sources\FrameWork\FrameWork.h" />
+    <ClInclude Include="Sources\FrameWork\HighResolutionTimer.h" />
+    <ClInclude Include="Sources\FrameWork\Utilities.h" />
+    <ClInclude Include="Sources\Main\ScreenInformation.h" />
+    <ClInclude Include="Sources\Scene\SceneManager.h" />
+    <ClInclude Include="Sources\Scene\SceneTitle.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Library\PhoenixLibrary\DirectX11\DX11GraphicsDevice\DX11GraphicsDevice\DX11GraphicsDevice.vcxproj">

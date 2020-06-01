@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX11GraphicsDevice", "Phoen
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX11Math", "Phoenix\Library\PhoenixLibrary\DirectX11\DX11Math\DX11Math\DX11Math.vcxproj", "{81DB6C87-69A5-479C-8096-4CCC625DDFE5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX11Shader", "Phoenix\Library\PhoenixLibrary\DirectX11\DX11Shader\DX11Shader\DX11Shader.vcxproj", "{B9D1481D-FB98-4F60-9441-9B0D680FB8F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{81DB6C87-69A5-479C-8096-4CCC625DDFE5}.Release|x64.Build.0 = Release|x64
 		{81DB6C87-69A5-479C-8096-4CCC625DDFE5}.Release|x86.ActiveCfg = Release|Win32
 		{81DB6C87-69A5-479C-8096-4CCC625DDFE5}.Release|x86.Build.0 = Release|Win32
+		{B9D1481D-FB98-4F60-9441-9B0D680FB8F9}.Debug|x64.ActiveCfg = Debug|x64
+		{B9D1481D-FB98-4F60-9441-9B0D680FB8F9}.Debug|x64.Build.0 = Debug|x64
+		{B9D1481D-FB98-4F60-9441-9B0D680FB8F9}.Debug|x86.ActiveCfg = Debug|Win32
+		{B9D1481D-FB98-4F60-9441-9B0D680FB8F9}.Debug|x86.Build.0 = Debug|Win32
+		{B9D1481D-FB98-4F60-9441-9B0D680FB8F9}.Release|x64.ActiveCfg = Release|x64
+		{B9D1481D-FB98-4F60-9441-9B0D680FB8F9}.Release|x64.Build.0 = Release|x64
+		{B9D1481D-FB98-4F60-9441-9B0D680FB8F9}.Release|x86.ActiveCfg = Release|Win32
+		{B9D1481D-FB98-4F60-9441-9B0D680FB8F9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
