@@ -1,2 +1,7 @@
-﻿  DX11Math.vcxproj -> C:\Users\2180082.MAETEL\Desktop\Phoenix\Debug\DX11Math.dll
+﻿  Vector.cpp
+  Quaternion.cpp
+  DX11Math.cpp
+  コードを生成中...
+     ライブラリ C:\Users\2180082.MAETEL\Desktop\Phoenix\Debug\DX11Math.lib とオブジェクト C:\Users\2180082.MAETEL\Desktop\Phoenix\Debug\DX11Math.exp を作成中
+  DX11Math.vcxproj -> C:\Users\2180082.MAETEL\Desktop\Phoenix\Debug\DX11Math.dll
   DX11Math.vcxproj -> C:\Users\2180082.MAETEL\Desktop\Phoenix\Debug\DX11Math.pdb (Full PDB)
