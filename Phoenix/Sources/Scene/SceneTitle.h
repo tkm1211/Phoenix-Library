@@ -2,7 +2,7 @@
 
 #include <DX11Math.h>
 
-#include "SceneManager.h"
+#include "Scene.h"
 
 
 class SceneTitle : public Scene

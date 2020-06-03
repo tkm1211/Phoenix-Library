@@ -51,13 +51,13 @@
     <ClCompile Include="Sources\Main\Main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Scene\SceneManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Scene\SceneTitle.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\FrameWork\FrameWork.cpp">
+    <ClCompile Include="Library\PhoenixLibrary\FrameWork\FrameWork.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Library\PhoenixLibrary\FrameWork\Scene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -107,19 +107,19 @@
     <ClInclude Include="Sources\Main\ScreenInformation.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Scene\SceneManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Scene\SceneTitle.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\FrameWork\FrameWork.h">
+    <ClInclude Include="Library\PhoenixLibrary\FrameWork\FrameWork.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\FrameWork\HighResolutionTimer.h">
+    <ClInclude Include="Library\PhoenixLibrary\FrameWork\HighResolutionTimer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\FrameWork\Utilities.h">
+    <ClInclude Include="Library\PhoenixLibrary\FrameWork\Scene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\PhoenixLibrary\FrameWork\Utilities.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

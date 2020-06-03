@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>DXUT\Core;DXUT\Optional;.\Library\DirectXTex-master\DirectXTex;.\Library\DirectXTex-master\WICTextureLoader;.\Library\FBX SDK\2016.1.2\include;.\Library\cereal-1.2.2\include;.\Library\imgui-master;.\Library\PhoenixLibrary\DirectX11\DX11GraphicsDevice\DX11GraphicsDevice\Sources;.\Library\PhoenixLibrary\DirectX11\DX11Math\DX11Math\Sources;.\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>DXUT\Core;DXUT\Optional;.\Library\DirectXTex-master\DirectXTex;.\Library\DirectXTex-master\WICTextureLoader;.\Library\FBX SDK\2016.1.2\include;.\Library\cereal-1.2.2\include;.\Library\imgui-master;.\Library\PhoenixLibrary\DirectX11\DX11GraphicsDevice\DX11GraphicsDevice\Sources;.\Library\PhoenixLibrary\DirectX11\DX11Math\DX11Math\Sources;.\Library\PhoenixLibrary\FrameWork;.\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild />
@@ -171,9 +171,9 @@
     <ClCompile Include="Library\imgui-master\imgui_ja_gryph_ranges.cpp" />
     <ClCompile Include="Library\imgui-master\imgui_widgets.cpp" />
     <ClCompile Include="Library\imgui-master\ImSequencer.cpp" />
-    <ClCompile Include="Sources\FrameWork\FrameWork.cpp" />
+    <ClCompile Include="Library\PhoenixLibrary\FrameWork\FrameWork.cpp" />
+    <ClCompile Include="Library\PhoenixLibrary\FrameWork\Scene.cpp" />
     <ClCompile Include="Sources\Main\Main.cpp" />
-    <ClCompile Include="Sources\Scene\SceneManager.cpp" />
     <ClCompile Include="Sources\Scene\SceneTitle.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -191,11 +191,11 @@
     <ClInclude Include="Library\imgui-master\imstb_textedit.h" />
     <ClInclude Include="Library\imgui-master\imstb_truetype.h" />
     <ClInclude Include="Library\imgui-master\stb_image.h" />
-    <ClInclude Include="Sources\FrameWork\FrameWork.h" />
-    <ClInclude Include="Sources\FrameWork\HighResolutionTimer.h" />
-    <ClInclude Include="Sources\FrameWork\Utilities.h" />
+    <ClInclude Include="Library\PhoenixLibrary\FrameWork\FrameWork.h" />
+    <ClInclude Include="Library\PhoenixLibrary\FrameWork\HighResolutionTimer.h" />
+    <ClInclude Include="Library\PhoenixLibrary\FrameWork\Scene.h" />
+    <ClInclude Include="Library\PhoenixLibrary\FrameWork\Utilities.h" />
     <ClInclude Include="Sources\Main\ScreenInformation.h" />
-    <ClInclude Include="Sources\Scene\SceneManager.h" />
     <ClInclude Include="Sources\Scene\SceneTitle.h" />
   </ItemGroup>
   <ItemGroup>

@@ -4,10 +4,10 @@
 #include <tchar.h>
 #include <time.h>
 
-#include "FrameWork/FrameWork.h"
+#include "FrameWork.h"
 #include "Scene/SceneTitle.h"
 #include "ScreenInformation.h"
-#include "FrameWork/Utilities.h"
+#include "Utilities.h"
 
 
 #pragma comment( lib, "winmm.lib" )
