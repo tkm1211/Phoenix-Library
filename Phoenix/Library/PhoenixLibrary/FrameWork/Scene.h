@@ -19,6 +19,7 @@ public:
 	virtual void UnInit() = 0;
 	virtual void Update() = 0;
 	virtual void Render() = 0;
+	// UpdateとRenderの間でコールされます
 	virtual void ImGui() = 0;
 
 	virtual void SetSceneManger(SceneManager* pSceneManager) = 0;
@@ -44,6 +45,9 @@ public:
 	void Update();
 	void Render();
 	void ImGui();
+
+	void ImGuiNewFrame();
+	void ImGuiRender();
 
 public:
 	// Scene* scene : 次のシーン, bool nowSceneStack : 現在のシーンを残したいかどうか？

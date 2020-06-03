@@ -11,10 +11,10 @@
 #include <imgui_impl_dx11.h>
 #include <imgui_internal.h>
 
-#include <DX11GraphicsDevice.h>
+#include <GraphicsDevice.h>
 
 #include "HighResolutionTimer.h"
-#include "Scene/SceneManager.h"
+#include "Scene.h"
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
