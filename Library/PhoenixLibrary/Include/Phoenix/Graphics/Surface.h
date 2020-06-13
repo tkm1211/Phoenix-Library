@@ -1,0 +1,63 @@
+#pragma once
+
+#include <memory>
+#include "Phoenix/Types.h"
+#include "Phoenix/FND/Base.h"
+#include "Phoenix/Graphics/Device.h"
+
+
+namespace Phoenix
+{
+	namespace Graphics
+	{
+		//****************************************************************************
+		// レンダーターゲットサーフェイス設定記述
+		//****************************************************************************
+		struct RenderTargetSurfaceDesc
+		{
+			u32 width;
+			u32 height;
+		};
+
+		//****************************************************************************
+		// 深度ステンシルサーフェイス設定記述
+		//****************************************************************************
+		struct DepthStencilSurfaceDesc
+		{
+			u32 width;
+			u32 height;
+		};
+
+		//****************************************************************************
+		// レンダーターゲットサーフェイス操作インターフェース
+		//****************************************************************************
+		class IRenderTargetSurface : public FND::Base
+		{
+		public:
+			// 生成
+			static std::unique_ptr<IRenderTargetSurface> Create();
+
+			// 初期化
+			virtual bool Initialize(IDevice* device, const RenderTargetSurfaceDesc& desc) = 0;
+			
+			// 終了化
+			virtual void Finalize() = 0;
+		};
+
+		//****************************************************************************
+		// 深度ステンシルサーフェイス操作インターフェース
+		//****************************************************************************
+		class IDepthStencilSurface : public FND::Base
+		{
+		public:
+			// 生成
+			static std::unique_ptr<IDepthStencilSurface> Create();
+
+			// 初期化
+			virtual bool Initialize(IDevice* device, const DepthStencilSurfaceDesc& desc) = 0;
+			
+			// 終了化
+			virtual void Finalize() = 0;
+		};
+	} // namespace Graphics
+} // namespace Phoenix

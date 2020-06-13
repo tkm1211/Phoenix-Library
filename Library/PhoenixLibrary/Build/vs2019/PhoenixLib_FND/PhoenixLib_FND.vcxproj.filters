@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{7486d20b-024c-4e00-b1a8-b77cf35b8c9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{5e6216d6-4be0-49b4-9cc8-542d19f55111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Assert">
+      <UniqueIdentifier>{6e9bacb3-1e61-4a0f-88d5-1d9e572e99a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Logger">
+      <UniqueIdentifier>{a01fd8ef-d467-4c32-b4a4-cc97392592d3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\FND\Assert.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FND\Base.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FND\NonCopyable.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\FND\pch.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FND\Logger.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FND\Util.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\FND\Assert\Assert.cpp">
+      <Filter>Source\Assert</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FND\pch.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FND\Logger\Logger.cpp">
+      <Filter>Source\Logger</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -23,13 +23,13 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{df8d9a76-d86a-45b9-a53c-ef07c4bd26f2}</ProjectGuid>
     <RootNamespace>Phoenix</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -59,19 +59,33 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib.props" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib_x86.props" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib_Debug.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib.props" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib_x86.props" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib_Release.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib.props" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib_x64.props" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib_Debug.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib.props" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib_x64.props" />
+    <Import Project="..\Library\PhoenixLibrary\Build\vs2019\props\PhoenixLib_Release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir).\bin\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir).\obj\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -86,20 +100,20 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>DXUT\Core;DXUT\Optional;.\Library\DirectXTex-master\DirectXTex;.\Library\DirectXTex-master\WICTextureLoader;.\Library\FBX SDK\2016.1.2\include;.\Library\cereal-1.2.2\include;.\Library\imgui-master;.\Library\PhoenixLibrary\DirectX11\DX11GraphicsDevice\DX11GraphicsDevice\Sources;.\Library\PhoenixLibrary\DirectX11\DX11Math\DX11Math\Sources;.\Library\PhoenixLibrary\FrameWork;.\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild />
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <PrecompiledHeader />
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>../Library/PhoenixLibrary/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\Library\DirectXTex-master\DirectXTex\Bin\Desktop_2015\Win32\Debug;.\Library\FBX SDK\2016.1.2\lib\vs2015\x86\debug;.\LIbrary\DLL\DX11Math\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
@@ -115,7 +129,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>DXUT\Core;DXUT\Optional;.\Library\DirectXTex-master\DirectXTex;.\Library\DirectXTex-master\WICTextureLoader;.\Library\cereal-1.2.2\include;.\Library\FBX SDK\2016.1.2\include;.\Library\imgui-master;.\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Library\PhoenixLibrary\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,8 +153,9 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,51 +175,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Library\imgui-master\ImCurveEdit.cpp" />
-    <ClCompile Include="Library\imgui-master\ImGradient.cpp" />
-    <ClCompile Include="Library\imgui-master\imgui.cpp" />
-    <ClCompile Include="Library\imgui-master\ImGuizmo.cpp" />
-    <ClCompile Include="Library\imgui-master\imgui_demo.cpp" />
-    <ClCompile Include="Library\imgui-master\imgui_draw.cpp" />
-    <ClCompile Include="Library\imgui-master\imgui_impl_dx11.cpp" />
-    <ClCompile Include="Library\imgui-master\imgui_impl_win32.cpp" />
-    <ClCompile Include="Library\imgui-master\imgui_ja_gryph_ranges.cpp" />
-    <ClCompile Include="Library\imgui-master\imgui_widgets.cpp" />
-    <ClCompile Include="Library\imgui-master\ImSequencer.cpp" />
-    <ClCompile Include="Library\PhoenixLibrary\FrameWork\FrameWork.cpp" />
-    <ClCompile Include="Library\PhoenixLibrary\FrameWork\Scene.cpp" />
-    <ClCompile Include="Sources\Main\Main.cpp" />
-    <ClCompile Include="Sources\Scene\SceneTitle.cpp" />
+    <ProjectReference Include="..\Library\PhoenixLibrary\Build\vs2019\PhoenixLib_FND\PhoenixLib_FND.vcxproj">
+      <Project>{0830575f-a7df-4195-ad76-4691e7b2efbe}</Project>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\Library\PhoenixLibrary\Build\vs2019\PhoenixLib_FrameWork\PhoenixLib_FrameWork.vcxproj">
+      <Project>{2f2f99c3-a769-4cae-a022-c9dd64293c6d}</Project>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\Library\PhoenixLibrary\Build\vs2019\PhoenixLib_Graphics\PhoenixLib_Graphics.vcxproj">
+      <Project>{4f23f6d0-bb09-4ae7-a1f1-72075c1480a5}</Project>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\Library\PhoenixLibrary\Build\vs2019\PhoenixLib_OS\PhoenixLib_OS.vcxproj">
+      <Project>{a545f191-0ac4-463f-b0d2-0086077afe03}</Project>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Library\imgui-master\imconfig.h" />
-    <ClInclude Include="Library\imgui-master\ImCurveEdit.h" />
-    <ClInclude Include="Library\imgui-master\imfilebrowser.h" />
-    <ClInclude Include="Library\imgui-master\ImGradient.h" />
-    <ClInclude Include="Library\imgui-master\imgui.h" />
-    <ClInclude Include="Library\imgui-master\ImGuizmo.h" />
-    <ClInclude Include="Library\imgui-master\imgui_impl_dx11.h" />
-    <ClInclude Include="Library\imgui-master\imgui_impl_win32.h" />
-    <ClInclude Include="Library\imgui-master\imgui_internal.h" />
-    <ClInclude Include="Library\imgui-master\ImSequencer.h" />
-    <ClInclude Include="Library\imgui-master\imstb_rectpack.h" />
-    <ClInclude Include="Library\imgui-master\imstb_textedit.h" />
-    <ClInclude Include="Library\imgui-master\imstb_truetype.h" />
-    <ClInclude Include="Library\imgui-master\stb_image.h" />
-    <ClInclude Include="Library\PhoenixLibrary\FrameWork\FrameWork.h" />
-    <ClInclude Include="Library\PhoenixLibrary\FrameWork\HighResolutionTimer.h" />
-    <ClInclude Include="Library\PhoenixLibrary\FrameWork\Scene.h" />
-    <ClInclude Include="Library\PhoenixLibrary\FrameWork\Utilities.h" />
-    <ClInclude Include="Sources\Main\ScreenInformation.h" />
-    <ClInclude Include="Sources\Scene\SceneTitle.h" />
+    <ClCompile Include="Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Library\PhoenixLibrary\DirectX11\DX11GraphicsDevice\DX11GraphicsDevice\DX11GraphicsDevice.vcxproj">
-      <Project>{28cdc752-7f60-4089-9a22-dc08f17df3b3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Library\PhoenixLibrary\DirectX11\DX11Math\DX11Math\DX11Math.vcxproj">
-      <Project>{81db6c87-69a5-479c-8096-4ccc625ddfe5}</Project>
-    </ProjectReference>
+    <ClInclude Include="Source\Main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

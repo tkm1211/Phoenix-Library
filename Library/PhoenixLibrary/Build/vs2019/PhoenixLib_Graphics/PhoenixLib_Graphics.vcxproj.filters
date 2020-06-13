@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{a2b4246a-401a-4812-973f-a749eced297b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{7b164db8-362c-4300-a20e-95443034cca8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Device">
+      <UniqueIdentifier>{894048cf-b9fb-4780-99c6-16d649fc01c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Device\Win">
+      <UniqueIdentifier>{ce36d1fb-2a6c-4c9e-8830-ca0cc126aa5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Device\Win\DirectX11">
+      <UniqueIdentifier>{9eec5601-bd15-4e17-b2b7-a8216511f807}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SnapChain">
+      <UniqueIdentifier>{7a9b59cd-6910-4efb-8181-7b7911323f4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Context">
+      <UniqueIdentifier>{52b72382-c391-48ef-8901-56db7a131570}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Context\Win">
+      <UniqueIdentifier>{3720c4e4-c5b8-4bd4-a4c8-66526530b501}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Context\Win\DirectX11">
+      <UniqueIdentifier>{54475a6c-37c8-4e43-a1c5-6f962cb9cc61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SnapChain\Win">
+      <UniqueIdentifier>{f1fc9ce7-80e5-4ab7-b2c7-44e175d8bffa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SnapChain\Win\DirectX11">
+      <UniqueIdentifier>{716d6ef9-122b-417a-a741-c745510c0265}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Surface">
+      <UniqueIdentifier>{934d7f07-a835-46b2-afc3-db8d63bcc6ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Surface\Win">
+      <UniqueIdentifier>{b724f098-6224-40f3-96d4-590f2fbfdb11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Surface\Win\DirectX11">
+      <UniqueIdentifier>{1fa6a82f-24a0-4f7c-840f-3ffb92982116}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Context.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Device.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Surface.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\SwapChain.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Texture.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Viewport.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Graphics\Context\Win\DirectX11\ContextDX11.h">
+      <Filter>Source\Context\Win\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Graphics\Device\Win\DirectX11\DeviceDX11.h">
+      <Filter>Source\Device\Win\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Graphics\SnapChain\Win\DirectX11\SwapChainDX11.h">
+      <Filter>Source\SnapChain\Win\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\DepthStencilSurfaceDX11.h">
+      <Filter>Source\Surface\Win\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\RenderTargetSurfaceDX11.h">
+      <Filter>Source\Surface\Win\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Graphics\pch.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Graphics\Context\Win\DirectX11\ContextDX11.cpp">
+      <Filter>Source\Context\Win\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Graphics\Device\Win\DirectX11\DeviceDX11.cpp">
+      <Filter>Source\Device\Win\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Graphics\SnapChain\Win\DirectX11\SwapChainDX11.cpp">
+      <Filter>Source\SnapChain\Win\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\DepthStencilSurfaceDX11.cpp">
+      <Filter>Source\Surface\Win\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\RenderTargetSurfaceDX11.cpp">
+      <Filter>Source\Surface\Win\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Graphics\pch.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

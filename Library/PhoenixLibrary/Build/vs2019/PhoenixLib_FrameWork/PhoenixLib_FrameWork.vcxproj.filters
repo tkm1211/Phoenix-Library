@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{2e81eb31-a809-426d-a937-eec5c8a70342}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{51f7fb2c-6123-4c97-94c7-bbb9876b1f69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\FrameWork">
+      <UniqueIdentifier>{d6a454b1-c827-46a3-ba87-3a9fba069196}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Main">
+      <UniqueIdentifier>{7d84b1d9-4624-44c7-873f-d0e61aa94cdd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\FrameWork.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Main.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\FrameWork\FrameWork\FrameWork.cpp">
+      <Filter>Source\FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Main\Main.cpp">
+      <Filter>Source\Main</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

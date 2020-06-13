@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{03e8ffe2-e857-4e57-b662-cbd6407c3ec8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{7ecd9883-9880-479b-9744-a16408f8f622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Main">
+      <UniqueIdentifier>{8eb55722-8443-4dcb-b4be-a36b5b6fa711}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Main\Win">
+      <UniqueIdentifier>{1b7ddcca-0098-4f2f-9cfc-1630828ef8e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Display">
+      <UniqueIdentifier>{e18a26ed-8dfd-4b3b-86ab-49b358bd4717}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Display\Win">
+      <UniqueIdentifier>{b73c1528-d443-4131-966e-6fd91c69fb03}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Main.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\OS\Display\Win\DisplayWin.h">
+      <Filter>Source\Display\Win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Display.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\OS\pch.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\OS\Main\Win\MainWin.cpp">
+      <Filter>Source\Main\Win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\Display\Win\DisplayWin.cpp">
+      <Filter>Source\Display\Win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\pch.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
