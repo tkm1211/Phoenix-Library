@@ -21,6 +21,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhoenixLib_FrameWork", "Lib
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhoenixLib_OS", "Library\PhoenixLibrary\Build\vs2019\PhoenixLib_OS\PhoenixLib_OS.vcxproj", "{A545F191-0AC4-463F-B0D2-0086077AFE03}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhoenixLib_Math", "Library\PhoenixLibrary\Build\vs2019\PhoenixLib_Math\PhoenixLib_Math.vcxproj", "{2875A93A-F3D8-47D7-97B0-2EFF41624DD8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhoenixLib_Loader", "Library\PhoenixLibrary\Build\vs2019\PhoenixLib_Loader\PhoenixLib_Loader.vcxproj", "{87937636-4141-4D44-97EB-9905AA671A71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -85,6 +89,22 @@ Global
 		{A545F191-0AC4-463F-B0D2-0086077AFE03}.Release|x64.Build.0 = Release|x64
 		{A545F191-0AC4-463F-B0D2-0086077AFE03}.Release|x86.ActiveCfg = Release|Win32
 		{A545F191-0AC4-463F-B0D2-0086077AFE03}.Release|x86.Build.0 = Release|Win32
+		{2875A93A-F3D8-47D7-97B0-2EFF41624DD8}.Debug|x64.ActiveCfg = Debug|x64
+		{2875A93A-F3D8-47D7-97B0-2EFF41624DD8}.Debug|x64.Build.0 = Debug|x64
+		{2875A93A-F3D8-47D7-97B0-2EFF41624DD8}.Debug|x86.ActiveCfg = Debug|Win32
+		{2875A93A-F3D8-47D7-97B0-2EFF41624DD8}.Debug|x86.Build.0 = Debug|Win32
+		{2875A93A-F3D8-47D7-97B0-2EFF41624DD8}.Release|x64.ActiveCfg = Release|x64
+		{2875A93A-F3D8-47D7-97B0-2EFF41624DD8}.Release|x64.Build.0 = Release|x64
+		{2875A93A-F3D8-47D7-97B0-2EFF41624DD8}.Release|x86.ActiveCfg = Release|Win32
+		{2875A93A-F3D8-47D7-97B0-2EFF41624DD8}.Release|x86.Build.0 = Release|Win32
+		{87937636-4141-4D44-97EB-9905AA671A71}.Debug|x64.ActiveCfg = Debug|x64
+		{87937636-4141-4D44-97EB-9905AA671A71}.Debug|x64.Build.0 = Debug|x64
+		{87937636-4141-4D44-97EB-9905AA671A71}.Debug|x86.ActiveCfg = Debug|Win32
+		{87937636-4141-4D44-97EB-9905AA671A71}.Debug|x86.Build.0 = Debug|Win32
+		{87937636-4141-4D44-97EB-9905AA671A71}.Release|x64.ActiveCfg = Release|x64
+		{87937636-4141-4D44-97EB-9905AA671A71}.Release|x64.Build.0 = Release|x64
+		{87937636-4141-4D44-97EB-9905AA671A71}.Release|x86.ActiveCfg = Release|Win32
+		{87937636-4141-4D44-97EB-9905AA671A71}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,6 +116,8 @@ Global
 		{4F23F6D0-BB09-4AE7-A1F1-72075C1480A5} = {680D5647-A56E-47C9-B3D0-2D98ED1B571D}
 		{2F2F99C3-A769-4CAE-A022-C9DD64293C6D} = {680D5647-A56E-47C9-B3D0-2D98ED1B571D}
 		{A545F191-0AC4-463F-B0D2-0086077AFE03} = {680D5647-A56E-47C9-B3D0-2D98ED1B571D}
+		{2875A93A-F3D8-47D7-97B0-2EFF41624DD8} = {680D5647-A56E-47C9-B3D0-2D98ED1B571D}
+		{87937636-4141-4D44-97EB-9905AA671A71} = {680D5647-A56E-47C9-B3D0-2D98ED1B571D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {69B4BD7B-0982-4A3B-8971-7A8827C4B94C}

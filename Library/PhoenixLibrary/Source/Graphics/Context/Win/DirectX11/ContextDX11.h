@@ -4,10 +4,12 @@
 #include <wrl.h>
 #include <d3d11.h>
 #include <assert.h>
-
 #include "Phoenix/Graphics/Context.h"
 #include "Phoenix/Graphics/Surface.h"
 #include "Phoenix/Graphics/Viewport.h"
+#include "Phoenix/Graphics/Buffer.h"
+#include "Phoenix/Math/PhoenixMath.h"
+#include "../../../RenderStateUtillity/Win/DirectX11/RenderStateUtillityDX11.h"
 
 
 namespace Phoenix
@@ -19,8 +21,45 @@ namespace Phoenix
 		//****************************************************************************
 		class ContextDX11 final : public IContext
 		{
+		public:
+			struct CbScene
+			{
+				Math::Matrix viewProjection;
+				Math::Vector4 viewport;
+			};
+
+			struct CbMesh
+			{
+				Math::Matrix world;
+				Math::Matrix worldInverse;
+				Math::Matrix texture;
+			};
+
+			struct CbBone
+			{
+				Math::Matrix bones[512];
+			};
+
+			struct CbShadow
+			{
+				Math::Matrix transform;
+				f32 texelSize;
+				f32 padding[3];
+			};
+
 		private:
 			ID3D11DeviceContext* deviceContext = nullptr;
+
+			std::unique_ptr<IBuffer> cbScene = nullptr;
+			std::unique_ptr<IBuffer> cbMesh = nullptr;
+			std::unique_ptr<IBuffer> cbBone = nullptr;
+
+			std::unique_ptr<IBlend> blendState[static_cast<int>(BlendState::TypeNum)] = { nullptr };
+			std::unique_ptr<IDepthStencil> depthStencilState[static_cast<int>(DepthState::TypeNum)] = { nullptr };
+			std::unique_ptr<IRasterizer> rasterizerState[static_cast<int>(RasterizerState::TypeNum)] = { nullptr };
+			std::unique_ptr<ISampler> samplerState[static_cast<int>(SamplerState::TypeNum)] = { nullptr };
+
+			ID3D11Query* query[2] = { nullptr };
 
 		public:
 			ContextDX11() {}
@@ -32,6 +71,15 @@ namespace Phoenix
 
 			// 終了化
 			void Finalize() override;
+
+			// 描画開始
+			void Begin() override;
+
+			// 描画終了
+			void End() override;
+
+			// 描画同期待ち
+			void WaitSync() override;
 
 			// レンダーターゲットビュークリア
 			void ClearRenderTargetView(IRenderTargetSurface* renderTargetSurface, const f32* color) override;
@@ -50,6 +98,63 @@ namespace Phoenix
 			
 			// ビューポート取得
 			void GetViewports(u32 count, Viewport* viewports[]) override;
+
+			// シェーダーリソースビュー設定
+			void SetShaderResources(ShaderType shadowType, u32 startSlot, u32 numViews, ITexture* texture[]) override;
+
+			// ブレンドステート設定
+			void SetBlend(IBlend* blend, const f32* blendFactor, u32 samplerMask) override;
+
+			// 深度ステンシルステート設定
+			void SetDepthStencil(IDepthStencil* depthStencil, u32 stencilRef) override;
+
+			// ラスタライザーステート設定
+			void SetRasterizer(IRasterizer* rasterizer) override;
+
+			// サンプラーステート設定
+			void SetSamplers(ShaderType shadowType, u32 startSlot, u32 numViews, ISampler* sampler[]) override;
+
+			// バッファ更新
+			void UpdateSubresource(IBuffer* buffer, u32 dstSubresource, const PhoenixBox* dstBox, const void* drcData, u32 srcRowPitch, u32 srcDepthPitch) override;
+
+			// バッファ更新開始
+			void Map(IBuffer* buffer, u32 subresource, PhoenixMap mapType, u32 mapFlags, PhoenixMappedSubresource* mappedSubresource) override;
+
+			// バッファ更新終了
+			void Unmap(IBuffer* buffer, u32 subresource) override;
+
+			// バッファ設定
+			void SetConstantBuffers(ShaderType shadowType, u32 startSlot, u32 numViews, IBuffer* buffer[]) override;
+
+			// シーン定数バッファ更新
+			void UpdateConstantBufferScene(const Math::Matrix& viewTransform, const Math::Matrix& projectionTransform) override;
+
+			// メッシュ定数バッファ更新
+			void UpdateConstantBufferMesh(const Math::Matrix& worldTransform) override;
+
+			// ボーン定数バッファ更新
+			void UpdateConstantBufferBone(const Math::Matrix boneTransforms[], s32 boneTransformCount) override;
+
+			// 定数バッファ(シーン毎)取得
+			IBuffer* GetConstantBufferScene() override { return cbScene.get(); }
+
+			// 定数バッファ(メッシュ毎)取得
+			IBuffer* GetConstantBufferMesh() override { return cbMesh.get(); }
+
+			// 定数バッファ(ボーン変換行列)取得
+			IBuffer* GetConstantBufferBone() override { return cbBone.get(); }
+
+			// ブレンドステート取得
+			IBlend* GetBlendState(BlendState type) override { return blendState[static_cast<int>(type)].get(); }
+
+			// 深度ステンシルステート取得
+			IDepthStencil* GetDepthStencilState(DepthState type) override { return depthStencilState[static_cast<int>(type)].get(); }
+			
+			// ラスタライザステート取得
+			IRasterizer* GetRasterizerState(RasterizerState type) override { return rasterizerState[static_cast<int>(type)].get(); }
+
+			// サンプラステート取得
+			ISampler* GetSamplerState(SamplerState type) override { return samplerState[static_cast<int>(type)].get(); }
 		};
 	} // namespace Graphics
 } // namespace Phoenix

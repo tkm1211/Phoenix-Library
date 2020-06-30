@@ -8,7 +8,8 @@
 #include "Phoenix/OS/Display.h"
 
 
-//extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
 
 namespace Phoenix
 {
@@ -33,6 +34,7 @@ namespace Phoenix
 		public:
 			bool Initialize(const wchar_t* name, s32 width, s32 height, uintPtr instance) override;
 			void Finalize() override;
+			Handle GetHWND() override;
 			int GetWidth() override;
 			int GetHeight() override;
 			WindowHandle GetHandle() override;

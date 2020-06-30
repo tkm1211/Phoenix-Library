@@ -15,7 +15,7 @@ namespace Phoenix
 		{
 		private:
 			ID3D11DepthStencilView* depthStencilView = nullptr;
-			ID3D11Texture2D* texture2D = nullptr;
+			std::unique_ptr<ITexture> texture = nullptr;
 
 		public:
 			DepthStencilSurfaceDX11() {}
@@ -28,14 +28,14 @@ namespace Phoenix
 			// 終了化
 			void Finalize() override;
 
+			// テクスチャ取得
+			ITexture* GetTexture() override { return texture.get(); }
+
 			// D3D深度ステンシルビュー設定
 			void SetDepthStencilView(ID3D11DepthStencilView* d3dDepthStencilView) { depthStencilView = d3dDepthStencilView; }
 			
 			// D3D深度ステンシルビュー取得
 			ID3D11DepthStencilView* GetD3DDepthStencilView() const { return depthStencilView; }
-			
-			// D3Dテクスチャ2D取得
-			ID3D11Texture2D* GetD3DTexture2D() const { return texture2D; }
 		};
 	} // namespace Graphics
 } // namespace Phoenix

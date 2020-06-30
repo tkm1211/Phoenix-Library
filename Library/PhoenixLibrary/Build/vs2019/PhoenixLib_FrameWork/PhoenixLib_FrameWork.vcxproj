@@ -19,13 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\FrameWork.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\ModelRenderer.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Renderer.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Main.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\GameObject.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\Object.h" />
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Source\FrameWork\FrameWork\FrameWork.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Component\ModelRenderer.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Component\Renderer.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Main\Main.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Object\GameObject.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -120,7 +126,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../../Source/FrameWork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

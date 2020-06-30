@@ -12,6 +12,10 @@ namespace Phoenix
 		// ウインドウハンドル
 		typedef uintPtr WindowHandle;
 
+#ifdef WIN32
+		typedef HWND Handle;
+#endif
+
 		//****************************************************************************
 		// ディスプレイ操作インターフェース
 		//****************************************************************************
@@ -26,6 +30,9 @@ namespace Phoenix
 			
 			// 終了化
 			virtual void Finalize() = 0;
+
+			// ハンドル取得
+			virtual Handle GetHWND() = 0;
 
 			// 幅取得
 			virtual s32 GetWidth() = 0;

@@ -19,17 +19,36 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\CriticalSection.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Display.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Event.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Main.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Path.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Resource.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\ResourceManager.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Stream.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Thread.h" />
+    <ClInclude Include="..\..\..\Source\OS\CriticalSection\Win\CriticalSectionWin.h" />
     <ClInclude Include="..\..\..\Source\OS\Display\Win\DisplayWin.h" />
+    <ClInclude Include="..\..\..\Source\OS\Event\Win\EventWin.h" />
     <ClInclude Include="..\..\..\Source\OS\pch.h" />
+    <ClInclude Include="..\..\..\Source\OS\Stream\MemoryStream.h" />
+    <ClInclude Include="..\..\..\Source\OS\Stream\Win\FileStreamWin.h" />
+    <ClInclude Include="..\..\..\Source\OS\Thread\Win\ThreadWin.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Source\OS\CriticalSection\Win\CriticalSectionWin.cpp" />
     <ClCompile Include="..\..\..\Source\OS\Display\Win\DisplayWin.cpp" />
+    <ClCompile Include="..\..\..\Source\OS\Event\Win\EventWin.cpp" />
     <ClCompile Include="..\..\..\Source\OS\Main\Win\MainWin.cpp" />
+    <ClCompile Include="..\..\..\Source\OS\Path\Path.cpp" />
     <ClCompile Include="..\..\..\Source\OS\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\ResourceManager\ResourceManager.cpp" />
+    <ClCompile Include="..\..\..\Source\OS\Stream\MemoryStream.cpp" />
+    <ClCompile Include="..\..\..\Source\OS\Stream\Win\FileStreamWin.cpp" />
+    <ClCompile Include="..\..\..\Source\OS\Thread\Win\ThreadWin.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

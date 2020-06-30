@@ -4,6 +4,7 @@
 #include "Phoenix/Types.h"
 #include "Phoenix/FND/Base.h"
 #include "Phoenix/Graphics/Device.h"
+#include "Phoenix/Graphics/Texture.h"
 
 
 namespace Phoenix
@@ -42,6 +43,9 @@ namespace Phoenix
 			
 			// 終了化
 			virtual void Finalize() = 0;
+
+			// テクスチャ操作オブジェクト取得
+			virtual ITexture* GetTexture() = 0;
 		};
 
 		//****************************************************************************
@@ -58,6 +62,9 @@ namespace Phoenix
 			
 			// 終了化
 			virtual void Finalize() = 0;
+
+			// テクスチャ操作オブジェクト取得
+			virtual ITexture* GetTexture() = 0;
 		};
 	} // namespace Graphics
 } // namespace Phoenix

@@ -13,6 +13,9 @@
     <Filter Include="Source\Logger">
       <UniqueIdentifier>{a01fd8ef-d467-4c32-b4a4-cc97392592d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\STD">
+      <UniqueIdentifier>{05fc6031-0375-4e82-b9b6-1c7935ab447c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Phoenix\FND\Assert.h">
@@ -33,6 +36,12 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FND\Util.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FND\STD.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FND\Flag.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FND\Assert\Assert.cpp">
@@ -43,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FND\Logger\Logger.cpp">
       <Filter>Source\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FND\STD\STD.cpp">
+      <Filter>Source\STD</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,72 +1,134 @@
 #include "pch.h"
 #include "Phoenix/FrameWork/Main.h"
+#include "../../ExternalLibrary/ImGui/Include/imgui.h"
+#include "../../ExternalLibrary/ImGui/Include/imgui_impl_win32.h"
+#include "../../ExternalLibrary/ImGui/Include/imgui_impl_dx11.h"
+#include "../../ExternalLibrary/ImGui/Include/imgui_internal.h"
+#include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
+#include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
 
 
 namespace Phoenix
 {
 	namespace FrameWork
 	{
-		bool Main::Initialize(const wchar_t* name, s32 width, s32 height, uintPtr instance)
+		//****************************************************************************
+		// メインループ
+		//****************************************************************************
+		bool Main::Initialize(uintPtr instance)
 		{
 			display = Phoenix::OS::IDisplay::Create();
-			if (!display->Initialize(name, width, height, instance))
+			if (!display->Initialize(L"Phoenix", 1280, 720, instance))
 			{
 				return false;
 			}
 
-			graphicsDevice = Phoenix::Graphics::IDevice::Create();
-			if (!graphicsDevice->Initialize())
+			graphicsDevice = Phoenix::Graphics::IGraphicsDevice::Create();
+			if (!graphicsDevice->Initialize(display.get()))
 			{
 				return false;
 			}
 
-			graphicsContext = Phoenix::Graphics::IContext::Create();
-			if (!graphicsContext->Initialize(graphicsDevice.get()))
-			{
-				return false;
-			}
+			Phoenix::Graphics::Viewport v;
+			v.x = 0.0f;
+			v.y = 0.0f;
+			v.width = 1280.0f;
+			v.height = 720.0f;
+			v.minDepth = 0.0f;
+			v.maxDepth = 1.0f;
+			graphicsDevice->GetContext()->SetViewports(1, &v);
 
-			swapChain = Phoenix::Graphics::ISwapChain::Create();
-			Phoenix::Graphics::SwapChainDesc desc = {};
-			desc.width = display->GetWidth();
-			desc.heigth = display->GetHeight();
-			desc.windowHandle = reinterpret_cast<void*>(display->GetHandle());
+			ID3D11Device* d3dDevice = static_cast<Graphics::DeviceDX11*>(graphicsDevice->GetDevice())->GetD3DDevice();
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<Graphics::DeviceDX11*>(graphicsDevice->GetDevice())->GetD3DContext();
 
-			if (!swapChain->Initialize(graphicsDevice.get(), desc))
-			{
-				return false;
-			}
+			ImGui::SetCurrentContext(ImGui::CreateContext());
+			ImGui_ImplWin32_Init(display->GetHWND());
+			ImGui_ImplDX11_Init(d3dDevice, d3dDeviceContext);
 
+			ImGui::StyleColorsLight();
+
+			ImGui::GetStyle().WindowRounding = 1.0f;
+			ImGui::GetStyle().FrameRounding = 1.0f;
+			ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(0.95f, 0.95f, 0.95f, 1.00f);
+			ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+			ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+			ImGui::GetStyle().Colors[ImGuiCol_PopupBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+			ImGui::GetStyle().Colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+
+			ImGui::GetStyle().Colors[ImGuiCol_TitleBg] = ImVec4(0.47f, 0.47f, 0.47f, 1.00f);
+			ImGui::GetStyle().Colors[ImGuiCol_TitleBgActive] = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+
+			ImGui::GetStyle().Colors[ImGuiCol_Tab] = ImVec4(0.47f, 0.47f, 0.47f, 1.00f);
+			ImGui::GetStyle().Colors[ImGuiCol_TabActive] = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+
+
+			ImGuiIO& io = ImGui::GetIO();
+			io.IniFilename = NULL;
+			io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\meiryo.ttc", 20.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+			//io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\meiryo.ttc", 18.0f, NULL, glyphRangesJapanese);
+			//io.Fonts->AddFontFromFileTTF(".\\consolab.ttf", 10.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+			//io.Fonts->AddFontFromFileTTF(".\\Inconsolata-Bold.ttf", 12.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+
+			//handle = instance;
+
+			//// コンテナ生成
+			//container = std::make_unique<Container>();
+
+			//// コンテナセットアップ
+			//OnSetupContainer(container.get());
+
+			//// コンポジションコンストラクション
+			//container->Construct(handle);
+
+			//// ゲームセットアップ
+			//OnSetupGame(container->GetComposition<IGame>());
+
+			//// コンポジション初期化
+			//if (!container->Initialize())
+			//{
+			//	return false;
+			//}
+
+			//gameEngine = container->GetComposition<IGameEngine>();
+			
 			return true;
 		}
 
 		void Main::Finalize()
 		{
-			swapChain->Finalize();
-			graphicsContext->Finalize();
+			ImGui_ImplDX11_Shutdown();
+			ImGui_ImplWin32_Shutdown();
+			ImGui::DestroyContext();
+
+			//container.reset();
+
 			graphicsDevice->Finalize();
 			display->Finalize();
 		}
 
 		void Main::Run()
 		{
-			Update();
+			// 更新
+			{
+				ImGui_ImplDX11_NewFrame();
+				ImGui_ImplWin32_NewFrame();
+				ImGui::NewFrame();
+				//ImGuizmo::BeginFrame();
 
-			Phoenix::Graphics::IRenderTargetSurface* nullRTS[8] = {};
-			Phoenix::Graphics::IDepthStencilSurface* nullDSS[8] = {};
-			graphicsContext->SetRenderTargets(8, nullRTS, 0);
+				Update();
+			}
 
-			float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-			Phoenix::Graphics::IRenderTargetSurface* rts = swapChain->GetRenderTargerSurface();
-			Phoenix::Graphics::IDepthStencilSurface* dss = swapChain->GetDepthStencilSurface();
+			// 描画
+			{
+				graphicsDevice->RenderBegin();
+				Render();
+				graphicsDevice->RenderEnd();
 
-			graphicsContext->ClearRenderTargetView(rts, color);
-			graphicsContext->ClearDepthStencilView(dss, 1.0f, 0);
-			graphicsContext->SetRenderTargets(1, &rts, dss);
-
-			Render();
-
-			swapChain->Present(1);
+				ImGui::Render();
+				ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+				
+				graphicsDevice->Present(1);
+			}
 		}
 	}
 }

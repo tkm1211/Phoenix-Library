@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "Phoenix/Types.h"
 #include "Phoenix/OS/Main.h"
+#include "Phoenix/OS/Path.h"
 
 
 // メインループ
@@ -25,10 +26,10 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	char name[128];
 	GetModuleFileNameA(hInstance, name, sizeof(name));
 
-	//main->SetName(ys::os::Path::GetFileNameWithoutExtension(ys::os::Path::GetFileName(name)));
+	//main->SetName(Phoenix::OS::Path::GetFileNameWithoutExtension(Phoenix::OS::Path::GetFileName(name)));
 
 	// 初期化
-	if (main->Initialize(L"Phoenix", 1920, 1080, reinterpret_cast<Phoenix::uintPtr>(hInstance)))
+	if (main->Initialize(reinterpret_cast<Phoenix::uintPtr>(hInstance)))
 	{
 		// メインループ
 		for (;;)

@@ -106,7 +106,7 @@
       <MinimalRebuild />
       <PrecompiledHeader />
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/PhoenixLibrary/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,7 +129,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\Library\PhoenixLibrary\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,6 +151,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,6 +167,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -175,6 +177,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Library\ExternalLibrary\ImGuizmo\Build\vs2015\ImGuizmo.vcxproj">
+      <Project>{b82174a5-023a-4f2e-93ea-835f06209aa4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Library\ExternalLibrary\ImGui\Build\vs2015\ImGui.vcxproj">
+      <Project>{c9e300fd-5b6a-4ad1-9c55-76086593172f}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Library\PhoenixLibrary\Build\vs2019\PhoenixLib_FND\PhoenixLib_FND.vcxproj">
       <Project>{0830575f-a7df-4195-ad76-4691e7b2efbe}</Project>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -186,6 +194,12 @@
     <ProjectReference Include="..\Library\PhoenixLibrary\Build\vs2019\PhoenixLib_Graphics\PhoenixLib_Graphics.vcxproj">
       <Project>{4f23f6d0-bb09-4ae7-a1f1-72075c1480a5}</Project>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\Library\PhoenixLibrary\Build\vs2019\PhoenixLib_Loader\PhoenixLib_Loader.vcxproj">
+      <Project>{87937636-4141-4d44-97eb-9905aa671a71}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Library\PhoenixLibrary\Build\vs2019\PhoenixLib_Math\PhoenixLib_Math.vcxproj">
+      <Project>{2875a93a-f3d8-47d7-97b0-2eff41624dd8}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Library\PhoenixLibrary\Build\vs2019\PhoenixLib_OS\PhoenixLib_OS.vcxproj">
       <Project>{a545f191-0ac4-463f-b0d2-0086077afe03}</Project>

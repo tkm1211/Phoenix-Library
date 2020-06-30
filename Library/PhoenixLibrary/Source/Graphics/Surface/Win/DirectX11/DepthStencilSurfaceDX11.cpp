@@ -4,6 +4,7 @@
 #include "Phoenix/FND/Logger.h"
 #include "Phoenix/FND/Util.h"
 #include "Device/Win/DirectX11/DeviceDX11.h"
+#include "Texture/Win/DirectX11/TextureDX11.h"
 
 
 namespace Phoenix
@@ -46,14 +47,19 @@ namespace Phoenix
 				return false;
 			}
 
-			texture2D = d3dTexture;
+			texture = ITexture::Create();
+			TextureDX11* textureDX11 = static_cast<TextureDX11*>(texture.get());
+			if (!textureDX11->Initialize(d3dTexture, nullptr))
+			{
+				return false;
+			}
 
 			D3D11_DEPTH_STENCIL_VIEW_DESC  d3dDSVDesc;
 			ZeroMemory(&d3dDSVDesc, sizeof(d3dDSVDesc));
 			d3dDSVDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 			d3dDSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-			hr = d3dDevice->CreateDepthStencilView(texture2D, &d3dDSVDesc, &depthStencilView);
+			hr = d3dDevice->CreateDepthStencilView(textureDX11->GetD3DTexture(), &d3dDSVDesc, &depthStencilView);
 			if (FAILED(hr))
 			{
 				PHOENIX_LOG_GRP_ERROR("ID3D11Device::CreateDepthStencilView() : Failed!!\n");
@@ -66,7 +72,7 @@ namespace Phoenix
 		// èIóπâª
 		void DepthStencilSurfaceDX11::Finalize()
 		{
-			FND::SafeRelease(texture2D);
+			texture.reset();
 			FND::SafeRelease(depthStencilView);
 		}
 	} // namespace Graphics

@@ -12,8 +12,7 @@ namespace Phoenix
 		{
 		private:
 			ID3D11RenderTargetView* renderTargetView = nullptr;
-			ID3D11ShaderResourceView* shaderResourceView = nullptr;
-			ID3D11Texture2D* texture2D = nullptr;
+			std::unique_ptr<ITexture> texture = nullptr;
 
 		public:
 			RenderTargetSurfaceDX11() {}
@@ -29,17 +28,14 @@ namespace Phoenix
 			// 終了化
 			void Finalize() override;
 
+			// テクスチャ取得
+			ITexture* GetTexture() override { return texture.get(); }
+
 			// D3Dレンダーターゲットビュー設定
 			void SetD3DRenderTargetView(ID3D11RenderTargetView* d3dRenderTargetView) { renderTargetView = d3dRenderTargetView; }
 
 			// D3Dレンダーターゲットビュー取得
 			ID3D11RenderTargetView* GetD3DRenderTargetView() const { return renderTargetView; }
-
-			// D3Dシェーダーリソースビュー取得
-			ID3D11ShaderResourceView* GetD3DShaderResourceView() const { return shaderResourceView; }
-
-			// D3Dテクスチャ2D取得
-			ID3D11Texture2D* GetD3DTexture2D() const { return texture2D; }
 		};
 	} // namespace Graphics
 } // namespace Phoenix

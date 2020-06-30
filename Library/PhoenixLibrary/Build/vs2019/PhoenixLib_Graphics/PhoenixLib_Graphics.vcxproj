@@ -19,28 +19,68 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Animation.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Buffer.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Camera.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Context.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Device.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\GraphicsDevice.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Material.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Mesh.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Model.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Renderable.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Renderer.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Shader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\RenderState.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Surface.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\Graphics\SwapChain.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Texture.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Viewport.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Animation\AnimationPlayer.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Animation\AnimationResource.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Buffer\Win\DirectX11\BufferDX11.h" />
     <ClInclude Include="..\..\..\Source\Graphics\Context\Win\DirectX11\ContextDX11.h" />
     <ClInclude Include="..\..\..\Source\Graphics\Device\Win\DirectX11\DeviceDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\GraphicsDevice\Win\DirectX11\GraphicsDeviceDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Mesh\Win\DirectX11\MeshDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Mesh\Win\Mesh.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Model\ModelResource.h" />
     <ClInclude Include="..\..\..\Source\Graphics\pch.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\RenderStateUtillity\Win\DirectX11\RenderStateUtillityDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\RenderState\Win\DirectX11\BlendDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\RenderState\Win\DirectX11\DepthStencilDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\RenderState\Win\DirectX11\RasterizerDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\RenderState\Win\DirectX11\SamplerDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Shader\Win\DirectX11\ShaderDX11.h" />
     <ClInclude Include="..\..\..\Source\Graphics\SnapChain\Win\DirectX11\SwapChainDX11.h" />
     <ClInclude Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\DepthStencilSurfaceDX11.h" />
     <ClInclude Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\RenderTargetSurfaceDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Texture\Win\DirectX11\TextureDX11.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Graphics\Animation\AnimationPlayer.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Animation\AnimationResource.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Buffer\Win\DirectX11\BufferDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Camera\Camera.cpp" />
     <ClCompile Include="..\..\..\Source\Graphics\Context\Win\DirectX11\ContextDX11.cpp" />
     <ClCompile Include="..\..\..\Source\Graphics\Device\Win\DirectX11\DeviceDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\GraphicsDevice\Win\DirectX11\GraphicsDeviceDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Mesh\Win\DirectX11\MeshDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Mesh\Win\Mesh.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Model\ModelResource.cpp" />
     <ClCompile Include="..\..\..\Source\Graphics\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Graphics\RenderStateUtillity\Win\DirectX11\RenderStateUtillityDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\RenderState\Win\DirectX11\BlendDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\RenderState\Win\DirectX11\DepthStencilDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\RenderState\Win\DirectX11\RasterizerDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\RenderState\Win\DirectX11\SamplerDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Shader\Win\DirectX11\ShaderDX11.cpp" />
     <ClCompile Include="..\..\..\Source\Graphics\SnapChain\Win\DirectX11\SwapChainDX11.cpp" />
     <ClCompile Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\DepthStencilSurfaceDX11.cpp" />
     <ClCompile Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\RenderTargetSurfaceDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Texture\Win\DirectX11\TextureDX11.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -132,8 +172,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>../../../Source/Graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>../../../Source/Graphics;../../../../ExternalLibrary/FBX SDK/2019.0/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>

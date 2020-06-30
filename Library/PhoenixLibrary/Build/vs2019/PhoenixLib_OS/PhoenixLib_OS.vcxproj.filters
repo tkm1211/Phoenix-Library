@@ -19,6 +19,36 @@
     <Filter Include="Source\Display\Win">
       <UniqueIdentifier>{b73c1528-d443-4131-966e-6fd91c69fb03}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Path">
+      <UniqueIdentifier>{ba147afa-23dd-48ac-9973-77a745084066}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ResourceManager">
+      <UniqueIdentifier>{18a18b71-8189-4310-84de-469f8550b174}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Thread">
+      <UniqueIdentifier>{1457650c-eb1f-4fdc-ac9f-ea245f166b83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Thread\Win">
+      <UniqueIdentifier>{08c53843-3aa2-41de-a1f3-7bda6ed2fd3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\CriticalSection">
+      <UniqueIdentifier>{3d9750db-4b75-4fe4-be01-fa693cc31f5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\CriticalSection\Win">
+      <UniqueIdentifier>{57cbd62a-8033-46a3-8bf8-65b555cd668f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Event">
+      <UniqueIdentifier>{c1439d19-e019-4499-9a1c-85114ceb1ebd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Event\Win">
+      <UniqueIdentifier>{41e7ebdb-adbd-49c2-a5ac-3336ed093277}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Stream">
+      <UniqueIdentifier>{7885438b-598e-4d49-809f-7b39c23b9a2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Stream\Win">
+      <UniqueIdentifier>{90848747-bb44-4917-be01-f763b4e5a97e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Main.h">
@@ -33,6 +63,42 @@
     <ClInclude Include="..\..\..\Source\OS\pch.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Resource.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Path.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\ResourceManager.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Stream.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Thread.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\OS\Thread\Win\ThreadWin.h">
+      <Filter>Source\Thread\Win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\CriticalSection.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\OS\CriticalSection\Win\CriticalSectionWin.h">
+      <Filter>Source\CriticalSection\Win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\Event.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\OS\Event\Win\EventWin.h">
+      <Filter>Source\Event\Win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\OS\Stream\MemoryStream.h">
+      <Filter>Source\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\OS\Stream\Win\FileStreamWin.h">
+      <Filter>Source\Stream\Win</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\OS\Main\Win\MainWin.cpp">
@@ -43,6 +109,27 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\OS\pch.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\Path\Path.cpp">
+      <Filter>Source\Path</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\ResourceManager\ResourceManager.cpp">
+      <Filter>Source\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\Thread\Win\ThreadWin.cpp">
+      <Filter>Source\Thread\Win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\CriticalSection\Win\CriticalSectionWin.cpp">
+      <Filter>Source\CriticalSection\Win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\Event\Win\EventWin.cpp">
+      <Filter>Source\Event\Win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\Stream\MemoryStream.cpp">
+      <Filter>Source\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\OS\Stream\Win\FileStreamWin.cpp">
+      <Filter>Source\Stream\Win</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

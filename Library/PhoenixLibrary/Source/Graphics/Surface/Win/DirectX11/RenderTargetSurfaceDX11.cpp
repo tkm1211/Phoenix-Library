@@ -4,6 +4,7 @@
 #include "Phoenix/FND/Logger.h"
 #include "Phoenix/FND/Util.h"
 #include "Device/Win/DirectX11/DeviceDX11.h"
+#include "Texture/Win/DirectX11/TextureDX11.h"
 
 
 namespace Phoenix
@@ -22,10 +23,14 @@ namespace Phoenix
 		// èâä˙âª
 		bool RenderTargetSurfaceDX11::Initialize(ID3D11Device* d3dDevice, ID3D11Texture2D* d3dTexture2D, ID3D11ShaderResourceView* d3dShaderResourceView)
 		{
-			texture2D = d3dTexture2D;
-			shaderResourceView = d3dShaderResourceView;
+			texture = ITexture::Create();
+			auto textureDX11 = static_cast<TextureDX11*>(texture.get());
+			if (!textureDX11->Initialize(d3dTexture2D, d3dShaderResourceView))
+			{
+				return false;
+			}
 
-			HRESULT hr = d3dDevice->CreateRenderTargetView(texture2D, nullptr, &renderTargetView);
+			HRESULT hr = d3dDevice->CreateRenderTargetView(textureDX11->GetD3DTexture(), nullptr, &renderTargetView);
 			if (FAILED(hr))
 			{
 				PHOENIX_LOG_GRP_ERROR("ID3D11Device::CreateRenderTargetView() : Failed!!\n");
@@ -71,10 +76,14 @@ namespace Phoenix
 				return false;
 			}
 
-			texture2D = d3dTexture;
-			shaderResourceView = d3dShaderResourceView;
+			texture = ITexture::Create();
+			auto textureDX11 = static_cast<TextureDX11*>(texture.get());
+			if (!textureDX11->Initialize(d3dTexture, d3dShaderResourceView))
+			{
+				return false;
+			}
 
-			hr = d3dDevice->CreateRenderTargetView(texture2D, nullptr, &renderTargetView);
+			hr = d3dDevice->CreateRenderTargetView(textureDX11->GetD3DTexture(), nullptr, &renderTargetView);
 			if (FAILED(hr))
 			{
 				PHOENIX_LOG_GRP_ERROR("ID3D11Device::CreateRenderTargetView() : Failed!!\n");
@@ -87,8 +96,7 @@ namespace Phoenix
 		// èIóπâª
 		void RenderTargetSurfaceDX11::Finalize()
 		{
-			FND::SafeRelease(texture2D);
-			FND::SafeRelease(shaderResourceView);
+			texture.reset();
 			FND::SafeRelease(renderTargetView);
 		}
 	} // namespace Graphics
