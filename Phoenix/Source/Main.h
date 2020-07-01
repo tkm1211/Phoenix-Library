@@ -11,6 +11,7 @@
 #include "Phoenix/Graphics/Shader.h"
 #include "Phoenix/Graphics/Model.h"
 #include "Phoenix/Graphics/Camera.h"
+#include "Phoenix/Graphics/Shader.h"
 #include "Phoenix/FrameWork/Component/Renderer.h"
 #include "Phoenix/FrameWork/Object/Object.h"
 #include "../Source/Loader/Loader.h"
@@ -28,6 +29,16 @@ private:
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
 	std::vector<std::unique_ptr<Phoenix::FrameWork::Renderer>> renderer;
 	Phoenix::Graphics::Camera camera;
+	std::unique_ptr<Phoenix::Graphics::IBuffer> cbMatrial;
+
+	Phoenix::Math::Vector3 pos;
+	Phoenix::Math::Vector3 rotate;
+	Phoenix::Math::Vector3 scale;
+
+	struct CbMaterial
+	{
+		Phoenix::Math::Color color;
+	};
 
 public:
 	Main() {}

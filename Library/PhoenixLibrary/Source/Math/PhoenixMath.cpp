@@ -411,6 +411,23 @@ namespace Phoenix
 			return rM;
 		}
 
+		// ロール、ピッチ、およびヨーを指定して行列を作成する。
+		Matrix MatrixRotationRollPitchYaw(f32 roll, f32 pitch, f32 yaw)
+		{
+			Matrix rM;
+			Matrix m, out1, out2, out3;
+
+			out3 = MatrixIdentity();
+			m = MatrixRotationZ(yaw);
+			out2 = MatrixMultiply(out3, m);
+			m = MatrixRotationX(roll);
+			out1 = MatrixMultiply(out2, m);
+			m = MatrixRotationY(pitch);
+			rM = MatrixMultiply(out1, m);
+
+			return rM;
+		}
+
 		// ヨー、ピッチ、およびロールを指定して行列を作成する
 		Matrix MatrixRotationYawPitchRoll(f32 yaw, f32 pitch, f32 roll)
 		{

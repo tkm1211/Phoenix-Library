@@ -398,18 +398,22 @@ namespace Phoenix
 		{
 			ID3D11Buffer* d3dBuffer = static_cast<BufferDX11*>(buffer)->GetD3DBuffer();
 
-			D3D11_BOX box = {};
-			if (dstBox != nullptr)
+			if (dstBox != nullptr) // Boxにデータある場合
 			{
+				D3D11_BOX box = {};
 				box.left = dstBox->left;
 				box.top = dstBox->top;
 				box.front = dstBox->front;
 				box.right = dstBox->right;
 				box.bottom = dstBox->bottom;
 				box.back = dstBox->back;
+				deviceContext->UpdateSubresource(d3dBuffer, dstSubresource, &box, drcData, srcRowPitch, srcDepthPitch);
 			}
-
-			deviceContext->UpdateSubresource(d3dBuffer, dstSubresource, &box, drcData, srcRowPitch, srcDepthPitch);
+			else // Boxにデータがない場合
+			{
+				// Memo : D3D11_BOXを使わない場合、nullptrを指定しないと更新操作が実行されない。
+				deviceContext->UpdateSubresource(d3dBuffer, dstSubresource, nullptr, drcData, srcRowPitch, srcDepthPitch);
+			}
 		}
 
 		// バッファ更新開始
@@ -462,7 +466,7 @@ namespace Phoenix
 				break;
 
 			case ShaderType::Pixel:
-				deviceContext->VSSetConstantBuffers(startSlot, numViews, d3dBuffer);
+				deviceContext->PSSetConstantBuffers(startSlot, numViews, d3dBuffer);
 				break;
 
 			default: break;

@@ -21,7 +21,7 @@ namespace Phoenix
 		// ‰Šú‰»
 		bool AnimationPlayer::Initialize(std::shared_ptr<IAnimationResource>& resource)
 		{
-			resource = resource;
+			this->resource = resource;
 			accessKeys.resize(resource->GetAnimationData().nodeNames.size());
 
 			return true;

@@ -22,7 +22,7 @@ namespace Phoenix
 			virtual ~Renderer() {}
 
 		public:
-			virtual void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera) = 0;
+			virtual void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera, Graphics::IBuffer* buffers[], u32 size) = 0;
 			virtual void Draw(Graphics::IGraphicsDevice* graphicsDevice, ModelObject* model, bool skining = false) = 0;
 			virtual void End(Graphics::IGraphicsDevice* graphicsDevice) = 0;
 		};

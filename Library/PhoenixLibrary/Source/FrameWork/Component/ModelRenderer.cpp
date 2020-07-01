@@ -8,7 +8,7 @@ namespace Phoenix
 {
 	namespace FrameWork
 	{
-		void ModelRenderer::Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera)
+		void ModelRenderer::Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera, Graphics::IBuffer* buffers[], u32 size)
 		{
 			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
@@ -18,15 +18,15 @@ namespace Phoenix
 				context->GetConstantBufferMesh(),
 				context->GetConstantBufferBone()
 			};
-			Phoenix::Graphics::IBuffer* psCBuffer[] =
-			{
-				context->GetConstantBufferScene(),// temp
-				context->GetConstantBufferMesh(),// temp
-				context->GetConstantBufferBone()// temp
-			};
+			//Phoenix::Graphics::IBuffer* psCBuffer[] =
+			//{
+			//	context->GetConstantBufferScene(),// temp
+			//	context->GetConstantBufferMesh(),// temp
+			//	context->GetConstantBufferBone()// temp
+			//};
 
 			context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Vertex, 0, Phoenix::FND::ArraySize(vsCBuffer), vsCBuffer);
-			context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+			context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, size, buffers);
 
 			Phoenix::Graphics::ISampler* sampler[] =
 			{
@@ -46,6 +46,8 @@ namespace Phoenix
 			Graphics::IModelResource* modelResource = model->GetModelResource();
 			Graphics::ModelData modelData = modelResource->GetModelData();
 			const std::vector<FrameWork::ModelObject::Node>& nodes = model->GetNodes();
+
+			graphicsDevice->GetContext()->UpdateConstantBufferBone(model->GetBoneTransforms(), model->GetBoneTransformCount());
 
 			for (s32 i = 0; i < modelResource->GetMeshSize(); i++)
 			{

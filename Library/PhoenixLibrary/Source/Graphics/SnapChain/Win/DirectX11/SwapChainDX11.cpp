@@ -56,7 +56,7 @@ namespace Phoenix
 		// 画面表示
 		void SwapChainDX11::Present(int syncInterval)
 		{
-			swapChain->Present(syncInterval, 0);
+			swapChain->Present(syncInterval, 0); // TODO : ここでGrahicsDebugが起動しない
 		}
 
 		// スワップチェーン作成

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{833be475-b1f3-458e-9d8a-b6dc605a0340}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\..\Source\HLSL\BasicVS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\BasicPS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\BasicVSSkin.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Source\HLSL\CommonVS.hlsli">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\CommonCB.hlsli">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\CommonLayout.hlsli">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\Skinning.hlsli">
+      <Filter>Source</Filter>
+    </None>
+  </ItemGroup>
+</Project>

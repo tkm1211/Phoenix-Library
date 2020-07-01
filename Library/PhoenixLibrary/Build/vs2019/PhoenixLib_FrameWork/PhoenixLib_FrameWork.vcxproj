@@ -32,6 +32,7 @@
     <ClCompile Include="..\..\..\Source\FrameWork\Component\Renderer.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Main\Main.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Object\GameObject.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Object\Object.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

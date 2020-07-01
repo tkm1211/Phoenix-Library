@@ -62,5 +62,8 @@
     <ClCompile Include="..\..\..\Source\FrameWork\Component\ModelRenderer.cpp">
       <Filter>Source\Component</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Object\Object.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

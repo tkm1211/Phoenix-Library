@@ -77,6 +77,9 @@ namespace Phoenix
 		// z 軸を回転軸にして回転する行列を作成する。
 		Matrix MatrixRotationZ(f32 angle);
 
+		// ロール、ピッチ、およびヨーを指定して行列を作成する。
+		Matrix MatrixRotationRollPitchYaw(f32 roll, f32 pitch, f32 yaw);
+
 		// ヨー、ピッチ、およびロールを指定して行列を作成する。
 		Matrix MatrixRotationYawPitchRoll(f32 yaw, f32 pitch, f32 roll);
 

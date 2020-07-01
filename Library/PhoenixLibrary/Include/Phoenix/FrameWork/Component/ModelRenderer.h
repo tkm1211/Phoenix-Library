@@ -22,7 +22,7 @@ namespace Phoenix
 			~ModelRenderer() {}
 
 		public:
-			void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera) override;
+			void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera, Graphics::IBuffer* buffers[], u32 size) override;
 			void Draw(Graphics::IGraphicsDevice* graphicsDevice, ModelObject* model, bool skining = false) override;
 			void End(Graphics::IGraphicsDevice* graphicsDevice) override;
 		};
