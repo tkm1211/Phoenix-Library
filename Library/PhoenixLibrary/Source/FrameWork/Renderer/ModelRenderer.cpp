@@ -8,100 +8,45 @@ namespace Phoenix
 {
 	namespace FrameWork
 	{
-		void ModelRenderer::Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera, Graphics::IBuffer* buffers[], u32 size)
+		void ModelRenderer::Begin(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& worldTransform, const Graphics::Camera& camera)
 		{
 			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
-			Phoenix::Graphics::IBuffer* vsCBuffer[] =
-			{
-				context->GetConstantBufferScene(),
-				context->GetConstantBufferMesh(),
-				context->GetConstantBufferBone()
-			};
-			//Phoenix::Graphics::IBuffer* psCBuffer[] =
-			//{
-			//	context->GetConstantBufferScene(),// temp
-			//	context->GetConstantBufferMesh(),// temp
-			//	context->GetConstantBufferBone()// temp
-			//};
-
-			context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Vertex, 0, Phoenix::FND::ArraySize(vsCBuffer), vsCBuffer);
-			context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, size, buffers);
-
-			Phoenix::Graphics::ISampler* sampler[] =
-			{
-				context->GetSamplerState(Phoenix::Graphics::SamplerState::LinearWrap)
-			};
-
-			context->SetSamplers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(sampler), sampler);
+			// メッシュ定数バッファ更新
+			context->UpdateConstantBufferMesh(worldTransform);
 
 			// シーン定数バッファ更新
-			{
-				context->UpdateConstantBufferScene(camera.GetView(), camera.GetProjection());
-			}
+			context->UpdateConstantBufferScene(camera.GetView(), camera.GetProjection());
 		}
 
-		void ModelRenderer::Draw(Graphics::IGraphicsDevice* graphicsDevice, ModelObject* model, bool skining)
+		void ModelRenderer::Draw(Graphics::IGraphicsDevice* graphicsDevice, ModelObject* model, IShader* shader)
 		{
 			Graphics::IModelResource* modelResource = model->GetModelResource();
 			Graphics::ModelData modelData = modelResource->GetModelData();
 
-			Graphics::ITexture* texture[] =
+			for (u32 i = 0; i < model->GetMaterialSize(); ++i)
 			{
-				model->GetTexture(0)
-			};
-			graphicsDevice->GetContext()->SetShaderResources(Graphics::ShaderType::Pixel, 0, FND::ArraySize(texture), texture);
+				Graphics::ITexture* texture[] = { model->GetTexture(i) };
+				graphicsDevice->GetContext()->SetShaderResources(Graphics::ShaderType::Pixel, i, 1, texture);
+			}
 
 			for (s32 i = 0; i < modelResource->GetMeshSize(); i++)
 			{
 				graphicsDevice->GetContext()->UpdateConstantBufferBone(model->GetBoneTransforms(i), model->GetBoneTransformCount(i));
 
-				if (skining)
+				Graphics::IMesh* mesh = modelResource->GetMesh(i);
+				Graphics::ModelData::Mesh meshData = modelData.meshes[i];
+
+				for (Graphics::ModelData::Subset& subset : meshData.subsets)
 				{
-					static Graphics::VertexBufferKind vbKinds[] =
-					{
-						Graphics::VertexBufferKind::Position,
-						//Graphics::VertexBufferKind::Normal,
-						//Graphics::VertexBufferKind::Tangent,
-						Graphics::VertexBufferKind::TexCoord0,
-						Graphics::VertexBufferKind::BlendWeight0,
-						Graphics::VertexBufferKind::BlendWeight1,
-						Graphics::VertexBufferKind::BlendIndex0,
-						Graphics::VertexBufferKind::BlendIndex1
-					};
-
-					Graphics::IMesh* mesh = modelResource->GetMesh(i);
-					Graphics::ModelData::Mesh meshData = modelData.meshes[i];
-
-					for (Graphics::ModelData::Subset& subset : meshData.subsets)
-					{
-						mesh->Draw(graphicsDevice->GetDevice(), vbKinds, FND::ArraySize(vbKinds), subset.startIndex, subset.indexCount, Graphics::PrimitiveTopology::TriangleList);
-					}
-				}
-				else
-				{
-					static Graphics::VertexBufferKind vbKinds[] =
-					{
-						Graphics::VertexBufferKind::Position,
-						//Graphics::VertexBufferKind::Normal,
-						//Graphics::VertexBufferKind::Tangent,
-						Graphics::VertexBufferKind::TexCoord0
-					};
-
-					Graphics::IMesh* mesh = modelResource->GetMesh(i);
-					Graphics::ModelData::Mesh meshData = modelData.meshes[i];
-
-					for (Graphics::ModelData::Subset& subset : meshData.subsets)
-					{
-						mesh->Draw(graphicsDevice->GetDevice(), vbKinds, FND::ArraySize(vbKinds), subset.startIndex, subset.indexCount, Graphics::PrimitiveTopology::TriangleList);
-					}
+					mesh->Draw(graphicsDevice->GetDevice(), shader->GetVectexBuferKinds(), shader->GetVectexBuferKindsSize(), subset.startIndex, subset.indexCount, Graphics::PrimitiveTopology::TriangleList);
 				}
 			}
 		}
 
 		void ModelRenderer::End(Graphics::IGraphicsDevice* graphicsDevice)
 		{
-
+			// No data.
 		}
 	}
 }

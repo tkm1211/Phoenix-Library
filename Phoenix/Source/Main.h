@@ -14,8 +14,10 @@
 #include "Phoenix/Graphics/Shader.h"
 #include "Phoenix/FrameWork/Renderer/Renderer.h"
 #include "Phoenix/FrameWork/Object/Object.h"
+#include "Phoenix/FrameWork/Shader/Shader.h"
 #include "../Source/Loader/Loader.h"
 #include "imgui.h"
+
 
 //****************************************************************************
 // メイン
@@ -24,12 +26,11 @@ class Main : public Phoenix::FrameWork::Main
 {
 private:
 	using Super = Phoenix::FrameWork::Main;
-	Phoenix::Graphics::ModelData data;
-	std::unique_ptr<Phoenix::Graphics::IShader> shader;
+	std::unique_ptr<Phoenix::FrameWork::IShader> basicShader;
+	std::unique_ptr<Phoenix::FrameWork::IShader> basicSkinShader;
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
 	std::vector<std::unique_ptr<Phoenix::FrameWork::Renderer>> renderer;
 	Phoenix::Graphics::Camera camera;
-	std::unique_ptr<Phoenix::Graphics::IBuffer> cbMatrial;
 
 	Phoenix::Math::Vector3 pos;
 	Phoenix::Math::Vector3 rotate;
@@ -55,9 +56,7 @@ public:
 	void Update() override;
 
 	// 描画
-	void Begin();
 	void Render() override;
-	void End();
 
 protected:
 	//// コンテナセットアップ

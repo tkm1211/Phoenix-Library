@@ -1,11 +1,12 @@
 #include "Main.h"
 #include "Phoenix/FND/Util.h"
+#include "Phoenix/FND/STD.h"
 #include "Phoenix/OS/ResourceManager.h"
 #include "Phoenix/Graphics/Model.h"
 #include "Phoenix/FrameWork/Renderer/ModelRenderer.h"
-#include "Phoenix/FND/STD.h"
+#include "Phoenix/FrameWork/Shader/BasicShader.h"
+#include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
 
-#define USE_ANIM
 
 namespace Phoenix
 {
@@ -27,72 +28,7 @@ bool Main::Initialize(Phoenix::uintPtr instance)
 
 	int i = 0;
 	i++;
-
-	//std::string filename = "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Data\\Assets\\Model\\danbo_fbx\\danbo_atk.fbx";
-	//if (Phoenix::OS::Path::CheckFileExtension(filename.c_str(), "fbx"))
-	//{
-	//	std::unique_ptr<Phoenix::Loader::ILoader> loader = Phoenix::Loader::ILoader::Create();
-	//	if (!loader->Initialize(filename.c_str()))
-	//	{
-	//		return false;
-	//	}
-	//	if (!loader->Load(data))
-	//	{
-	//		return false;
-	//	}
-	//	//Phoenix::Graphics::ModelData::Serialize(data, m_model_filename.c_str());
-	//}
-
-	// 定数バッファ
-	{
-		cbMatrial = Phoenix::Graphics::IBuffer::Create();
-
-		Phoenix::Graphics::PhoenixBufferDesc desc = {};
-		Phoenix::FND::MemSet(&desc, 0, sizeof(desc));
-		desc.usage = Phoenix::Graphics::PhoenixUsage::Default;
-		desc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
-		desc.cpuAccessFlags = 0;
-		desc.miscFlags = 0;
-		desc.byteWidth = sizeof(CbMaterial);
-		desc.structureByteStride = 0;
-		if (!cbMatrial->Initialize(graphicsDevice->GetDevice(), desc))
-		{
-			return false;
-		}
-	}
-
-#ifdef USE_ANIM
-	Phoenix::Graphics::PhoenixInputElementDesc inputElementDesc[] =
-	{
-		// SemanticName	 SemanticIndex	Format													InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
-		{"POSITION",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,		0,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"TEXCOORD",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32_FLOAT,			1,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"BLENDWEIGHT",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	2,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"BLENDWEIGHT",	 1,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	3,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"BLENDINDICES", 0,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		4,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"BLENDINDICES", 1,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		5,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-	};
-#else
-	Phoenix::Graphics::PhoenixInputElementDesc inputElementDesc[] =
-	{
-		// SemanticName	 SemanticIndex	Format													InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
-		{"POSITION",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,		0,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"TEXCOORD",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32_FLOAT,			1,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		//{"BLENDWEIGHT",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	2,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		//{"BLENDWEIGHT",	 1,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	3,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		//{"BLENDINDICES", 0,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		4,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		//{"BLENDINDICES", 1,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		5,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-	};
-#endif
-
-	shader = Phoenix::Graphics::IShader::Create();
-#ifdef USE_ANIM
-	shader->LoadVS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVSSkin.cso", inputElementDesc, Phoenix::FND::ArraySize(inputElementDesc));
-#else
-	shader->LoadVS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVS.cso", inputElementDesc, Phoenix::FND::ArraySize(inputElementDesc));
-#endif
-	shader->LoadPS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicPS.cso");
-
+	
 	renderer.emplace_back(std::make_unique<Phoenix::FrameWork::ModelRenderer>());
 
 	model = std::make_unique<Phoenix::FrameWork::ModelObject>();
@@ -102,6 +38,12 @@ bool Main::Initialize(Phoenix::uintPtr instance)
 	model->Load(graphicsDevice.get(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Data\\Assets\\Model\\Hip_Hop_Dancing\\Hip_Hop_Dancing.fbx");
 	//model->Load(graphicsDevice.get(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Data\\Assets\\Model\\Catwalk_Walk_Turn_180_Tight_60\\Catwalk_Walk_Turn_180_Tight.fbx");
 	model->PlayAnimation(0, 0);
+
+	basicShader = Phoenix::FrameWork::BasicShader::Create();
+	basicShader->Initialize(graphicsDevice.get());
+
+	basicSkinShader = Phoenix::FrameWork::BasicSkinShader::Create();
+	basicSkinShader->Initialize(graphicsDevice.get());
 
 	pos = { 0,0,0 };
 	rotate = { 0,0,0 };
@@ -120,7 +62,8 @@ void Main::Update()
 	static Phoenix::Math::Vector3 c = { 0, 0, 0 };
 	static Phoenix::f32 r = 365.0f;
 	static Phoenix::s32 animClip = 0;
-	camera.ZoomOnSphere(c, r);
+	//camera.ZoomOnSphere(c, r);
+	camera.FreeCamera();
 	camera.Update();
 
 	ImGui::Begin("test");
@@ -128,35 +71,27 @@ void Main::Update()
 	ImGui::DragFloat3("pos", &pos.x);
 	ImGui::DragFloat3("rotate", &rotate.x);
 	ImGui::DragFloat3("scale", &scale.x);
-	ImGui::DragFloat3("center", &c.x);
-	ImGui::DragFloat("zoom", &r);
+	//ImGui::DragFloat3("center", &c.x);
+	//ImGui::DragFloat("zoom", &r);
 	ImGui::InputInt("AnimClip", &animClip);
-	if (ImGui::Button("play"))
+	if (ImGui::Button("Play"))
 	{
 		model->PlayAnimation(0, animClip);
+	}
+	if (ImGui::Button("LoopPlay"))
+	{
+		model->SetLoopAnimation(true);
 	}
 	ImGui::End();
 }
 
-void Main::Begin()
-{
-	
-}
-
 void Main::Render()
 {
-	Begin();
-
 	Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
 	// ワールド行列を作成
 	Phoenix::Math::Matrix W;
 	{
-		static float rx = 0;
-		static float ry = 0;
-		//rx += DirectX::XMConvertToRadians(0.25f);	// 角度をラジアン(θ)に変換
-		//ry += DirectX::XMConvertToRadians(0.5f);	// 角度をラジアン(θ)に変換
-
 		Phoenix::Math::Vector3 scale = this->scale;
 		Phoenix::Math::Vector3 rotate = this->rotate;
 		Phoenix::Math::Vector3 translate = pos;
@@ -171,33 +106,14 @@ void Main::Render()
 
 	model->UpdateTransform(1 / 60.0f);
 
+#if 1
 	// メッシュ描画
-	Phoenix::Graphics::IBuffer* buffers[] =
-	{
-		cbMatrial.get()
-	};
-	renderer[0]->Begin(graphicsDevice.get(), camera, buffers, Phoenix::FND::ArraySize(buffers));
-
-	// メッシュ定数バッファ更新
-	CbMaterial cb = {};
-	cb.color = { 1,1,1,1 };
-	context->UpdateSubresource(cbMatrial.get(), 0, 0, &cb, 0, 0);
-	context->UpdateConstantBufferMesh(W);
-
-	shader->Activate(graphicsDevice->GetDevice());
-#ifdef USE_ANIM
-	renderer[0]->Draw(graphicsDevice.get(), model.get(), true);
-#else
-	renderer[0]->Draw(graphicsDevice.get(), model.get(), false);
-#endif
-	shader->Deactivate(graphicsDevice->GetDevice());
-
+	//basicShader->Begin(graphicsDevice.get());
+	basicSkinShader->Begin(graphicsDevice.get());
+	renderer[0]->Begin(graphicsDevice.get(), W, camera);
+	renderer[0]->Draw(graphicsDevice.get(), model.get(), basicSkinShader.get());
 	renderer[0]->End(graphicsDevice.get());
-
-	End();
-}
-
-void Main::End()
-{
-
+	basicSkinShader->End(graphicsDevice.get());
+	//basicShader->End(graphicsDevice.get());
+#endif
 }

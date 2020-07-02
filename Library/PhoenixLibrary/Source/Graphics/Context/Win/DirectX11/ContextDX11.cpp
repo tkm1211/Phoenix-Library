@@ -485,6 +485,11 @@ namespace Phoenix
 			constantBufferScene.viewport = Math::Vector4(viewports[0]->x, viewports[0]->y, viewports[0]->width, viewports[0]->height);
 
 			UpdateSubresource(cbScene.get(), 0, 0, &constantBufferScene, 0, 0);
+
+			for (u32 i = 0; i < viewportCount; ++i)
+			{
+				FND::SafeDelete(viewports[i]);
+			}
 		}
 
 		// メッシュ定数バッファ更新

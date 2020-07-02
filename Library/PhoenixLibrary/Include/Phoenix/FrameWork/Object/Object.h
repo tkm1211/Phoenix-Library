@@ -138,6 +138,18 @@ namespace Phoenix
 			// アニメーションの再生
 			void PlayAnimation(u32 bank, u32 clip, f32 fadeTime = 0.0f);
 
+			// 一時停止/再開
+			void PauseAnimation(bool pause);
+
+			// 停止
+			void StopAnimation();
+
+			// ループ再生設定
+			void SetLoopAnimation(bool loop);
+
+			// ループ再生か
+			bool IsLoopAnimation();
+
 			// アニメーションの更新
 			void UpdateAnimation(f32 elapsedTime);
 
@@ -155,6 +167,9 @@ namespace Phoenix
 
 			// マテリアルのテクスチャ取得
 			Graphics::ITexture* GetTexture(u32 index) { return materials.at(index).texture.get(); }
+
+			// マテリアルのサイズ取得
+			u32 GetMaterialSize() { return materials.size(); }
 		};
 
 		class Animator
@@ -244,6 +259,30 @@ namespace Phoenix
 				currentAnimation = &animation;
 				animation.player->Play(clip);
 				animation.player->SetBlendTime(fadeTime);
+			}
+
+			// 一時停止/再開
+			void Pause(bool pause)
+			{
+				currentAnimation->player->Pause(pause);
+			}
+
+			// 停止
+			void Stop()
+			{
+				currentAnimation->player->Stop();
+			}
+
+			// ループ再生設定
+			void SetLoop(bool loop)
+			{
+				currentAnimation->player->SetLoop(loop);
+			}
+
+			// ループ再生か
+			bool IsLoop()
+			{
+				return currentAnimation->player->IsLoop();
 			}
 
 			// アニメーションバンクインデックス取得

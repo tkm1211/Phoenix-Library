@@ -77,7 +77,7 @@ namespace Phoenix
 			context->SetRasterizer(contextDX11->GetRasterizerState(RasterizerState::SolidCullBack));
 			context->SetBlend(contextDX11->GetBlendState(BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 			
-			float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+			float color[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 			Phoenix::Graphics::IRenderTargetSurface* rts = swapChain->GetRenderTargerSurface();
 			Phoenix::Graphics::IDepthStencilSurface* dss = swapChain->GetDepthStencilSurface();
 

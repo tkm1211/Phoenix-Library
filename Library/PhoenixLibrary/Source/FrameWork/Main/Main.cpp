@@ -68,28 +68,6 @@ namespace Phoenix
 			//io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\meiryo.ttc", 18.0f, NULL, glyphRangesJapanese);
 			//io.Fonts->AddFontFromFileTTF(".\\consolab.ttf", 10.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 			//io.Fonts->AddFontFromFileTTF(".\\Inconsolata-Bold.ttf", 12.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-
-			//handle = instance;
-
-			//// コンテナ生成
-			//container = std::make_unique<Container>();
-
-			//// コンテナセットアップ
-			//OnSetupContainer(container.get());
-
-			//// コンポジションコンストラクション
-			//container->Construct(handle);
-
-			//// ゲームセットアップ
-			//OnSetupGame(container->GetComposition<IGame>());
-
-			//// コンポジション初期化
-			//if (!container->Initialize())
-			//{
-			//	return false;
-			//}
-
-			//gameEngine = container->GetComposition<IGameEngine>();
 			
 			return true;
 		}
@@ -99,8 +77,6 @@ namespace Phoenix
 			ImGui_ImplDX11_Shutdown();
 			ImGui_ImplWin32_Shutdown();
 			ImGui::DestroyContext();
-
-			//container.reset();
 
 			graphicsDevice->Finalize();
 			display->Finalize();

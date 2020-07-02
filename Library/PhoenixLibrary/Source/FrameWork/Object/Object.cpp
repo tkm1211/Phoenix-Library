@@ -154,6 +154,30 @@ namespace Phoenix
 			animator->Play(bank, clip, fadeTime);
 		}
 
+		// 一時停止/再開
+		void ModelObject::PauseAnimation(bool pause)
+		{
+			animator->Pause(pause);
+		}
+
+		// 停止
+		void ModelObject::StopAnimation()
+		{
+			animator->Stop();
+		}
+
+		// ループ再生設定
+		void ModelObject::SetLoopAnimation(bool loop)
+		{
+			animator->SetLoop(loop);
+		}
+
+		// ループ再生か
+		bool ModelObject::IsLoopAnimation()
+		{
+			return animator->IsLoop();
+		}
+
 		// アニメーションの更新
 		void ModelObject::UpdateAnimation(f32 elapsedTime)
 		{

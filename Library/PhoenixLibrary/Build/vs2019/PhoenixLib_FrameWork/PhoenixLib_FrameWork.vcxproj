@@ -23,6 +23,9 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\Object.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Renderer\ModelRenderer.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Renderer\Renderer.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicShader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicSkinShader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\Shader.h" />
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +36,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Renderer\ModelRenderer.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicShader.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicSkinShader.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

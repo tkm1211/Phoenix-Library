@@ -232,7 +232,7 @@ namespace Phoenix
 		// ƒ‹[ƒvÄ¶İ’è
 		void AnimationPlayer::SetLoop(bool loop)
 		{
-			loop = loop;
+			this->loop = loop;
 		}
 
 		// ƒ‹[ƒvÄ¶‚©
@@ -244,7 +244,7 @@ namespace Phoenix
 		// ‹tÄ¶İ’è
 		void AnimationPlayer::SetReverse(bool reverse)
 		{
-			reverse = reverse;
+			this->reverse = reverse;
 		}
 
 		// ‹tÄ¶‚©

@@ -4,6 +4,7 @@
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/FrameWork/Object/Object.h"
 #include "Phoenix/Graphics/Camera.h"
+#include "Phoenix/FrameWork/Shader/Shader.h"
 
 
 namespace Phoenix
@@ -20,8 +21,8 @@ namespace Phoenix
 			virtual ~Renderer() {}
 
 		public:
-			virtual void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera, Graphics::IBuffer* buffers[], u32 size) = 0;
-			virtual void Draw(Graphics::IGraphicsDevice* graphicsDevice, ModelObject* model, bool skining = false) = 0;
+			virtual void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& worldTransform, const Graphics::Camera& camera) = 0;
+			virtual void Draw(Graphics::IGraphicsDevice* graphicsDevice, ModelObject* model, IShader* shader) = 0;
 			virtual void End(Graphics::IGraphicsDevice* graphicsDevice) = 0;
 		};
 	} // namespace FrameWork

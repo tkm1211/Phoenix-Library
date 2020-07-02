@@ -18,6 +18,10 @@ namespace Phoenix
 			SetPerspective(Math::PI_Q, 16.0f / 9.0f, 0.1f, 1000.0f);
 			SetLookAt(Math::Vector3::OneAll, Math::Vector3::Zero, Math::Vector3::OneY);
 			Update();
+
+			rotateX = 0.5f;
+			rotateY = 0.0f;
+			distance = 500.0f;
 		}
 
 		// ビュータイプ設定
@@ -377,6 +381,84 @@ namespace Phoenix
 				m_near_z = near_z;
 			}
 #endif
+		}
+
+		// フリーカメラ
+		void Camera::FreeCamera()
+		{
+			// TODO : Win関数を別の関数に差し替え
+			POINT cursor;
+			GetCursorPos(&cursor);
+
+			oldCursor = newCursor;
+			newCursor = Math::Vector2(static_cast<float>(cursor.x), static_cast<float>(cursor.y));
+
+			f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
+			f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
+
+			if (GetKeyState(VK_MENU) < 0)
+			{
+				if (GetKeyState(VK_LBUTTON) < 0)
+				{
+					rotateY -= moveX * 0.5f;
+					rotateX += moveY * 0.5f;
+				}
+				else if (GetKeyState(VK_MBUTTON) < 0)
+				{
+					float s = distance * 0.035f;
+					float x = moveX * s;
+					float y = moveY * s;
+
+					target.x -= right.x * x;
+					target.y -= right.y * x;
+					target.z -= right.z * x;
+
+					target.x += up.x * y;
+					target.y += up.y * y;
+					target.z += up.z * y;
+				}
+				else if (GetKeyState(VK_RBUTTON) < 0)
+				{
+					distance += (-moveY - moveX) * distance * 0.1f;
+				}
+				else
+				{
+					//distance -= (float)MOUSE.diMouseState.lZ / 1.0f;
+				}
+			}
+
+			f32 xSin = sinf(rotateX);
+			f32 xCos = cosf(rotateX);
+			f32 ySin = sinf(rotateY);
+			f32 yCos = cosf(rotateY);
+
+			Math::Vector3 front = { -xCos * ySin, -xSin, -xCos * yCos };
+			Math::Vector3 _right = { yCos, 0.0f, -ySin };
+			Math::Vector3 _up = Math::Vector3Cross(_right, front);
+
+			Math::Vector3 _target = target;
+			Math::Vector3 _distance = { distance, distance, distance };
+			Math::Vector3 _pos = _target - (front * _distance);
+
+			SetLookAt(_pos, _target, _up);
+		}
+
+		void Camera::ControllerCamera()
+		{
+			f32 xSin = sinf(rotateX);
+			f32 xCos = cosf(rotateX);
+			f32 ySin = sinf(rotateY);
+			f32 yCos = cosf(rotateY);
+
+			Math::Vector3 front = { -xCos * ySin, -xSin, -xCos * yCos };
+			Math::Vector3 _right = { yCos, 0.0f, -ySin };
+			Math::Vector3 _up = Math::Vector3Cross(_right, front);
+
+			Math::Vector3 _target = target;
+			Math::Vector3 _distance = { distance, distance, distance };
+			Math::Vector3 _pos = _target - (front * _distance);
+
+			SetLookAt(_pos, _target, _up);
 		}
 	} // namespace Graphics
 } // namespace Phoenix

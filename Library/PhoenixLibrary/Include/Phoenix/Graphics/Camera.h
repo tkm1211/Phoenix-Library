@@ -51,6 +51,13 @@ namespace Phoenix
 			f32 nearZ;
 			f32 farZ;
 
+			Math::Vector3 target;
+			Math::Vector2 oldCursor;
+			Math::Vector2 newCursor;
+			f32 rotateX;
+			f32 rotateY;
+			float distance;
+
 		public:
 			Camera();
 
@@ -156,6 +163,11 @@ namespace Phoenix
 
 			// 球の範囲が視界に入るようにズーム
 			void ZoomOnSphere(const Math::Vector3& center, f32 radius);
+
+			// フリーカメラ
+			void FreeCamera();
+
+			void ControllerCamera();
 
 		private:
 			// ビューベクトルを取得

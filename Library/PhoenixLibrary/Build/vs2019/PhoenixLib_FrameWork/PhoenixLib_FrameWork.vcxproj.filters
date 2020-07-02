@@ -22,6 +22,12 @@
     <Filter Include="Source\Renderer">
       <UniqueIdentifier>{3a82e955-0b7f-4429-b2d9-88283ed8c27f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\Shader">
+      <UniqueIdentifier>{05234696-b175-4234-8212-a0149bc28e82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Shader">
+      <UniqueIdentifier>{98c63c8a-ee40-4eca-89cf-2ac811038b72}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -39,6 +45,15 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Renderer\Renderer.h">
       <Filter>Include\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicShader.h">
+      <Filter>Include\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicSkinShader.h">
+      <Filter>Include\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\Shader.h">
+      <Filter>Include\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -52,6 +67,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Renderer\ModelRenderer.cpp">
       <Filter>Source\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicShader.cpp">
+      <Filter>Source\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicSkinShader.cpp">
+      <Filter>Source\Shader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
