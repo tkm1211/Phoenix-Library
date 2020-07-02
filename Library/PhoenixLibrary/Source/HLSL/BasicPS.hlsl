@@ -25,6 +25,6 @@ SamplerState sampler0 : register(s0);
 //--------------------------------------------------------------------------------------
 float4 main(PS_INPUT input) : SV_Target
 {
-    //return texture0.Sample(sampler0, input.texcoord0) * cbColor;
-    return cbColor;
+    //return cbColor;
+    return texture0.Sample(sampler0, input.texcoord0) * cbColor;
 }

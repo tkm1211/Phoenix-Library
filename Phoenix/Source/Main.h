@@ -12,7 +12,7 @@
 #include "Phoenix/Graphics/Model.h"
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/Graphics/Shader.h"
-#include "Phoenix/FrameWork/Component/Renderer.h"
+#include "Phoenix/FrameWork/Renderer/Renderer.h"
 #include "Phoenix/FrameWork/Object/Object.h"
 #include "../Source/Loader/Loader.h"
 #include "imgui.h"

@@ -2,9 +2,10 @@
 #include "Phoenix/FND/Util.h"
 #include "Phoenix/OS/ResourceManager.h"
 #include "Phoenix/Graphics/Model.h"
-#include "Phoenix/FrameWork/Component/ModelRenderer.h"
+#include "Phoenix/FrameWork/Renderer/ModelRenderer.h"
 #include "Phoenix/FND/STD.h"
 
+#define USE_ANIM
 
 namespace Phoenix
 {
@@ -60,6 +61,7 @@ bool Main::Initialize(Phoenix::uintPtr instance)
 		}
 	}
 
+#ifdef USE_ANIM
 	Phoenix::Graphics::PhoenixInputElementDesc inputElementDesc[] =
 	{
 		// SemanticName	 SemanticIndex	Format													InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
@@ -70,17 +72,35 @@ bool Main::Initialize(Phoenix::uintPtr instance)
 		{"BLENDINDICES", 0,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		4,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
 		{"BLENDINDICES", 1,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		5,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
 	};
+#else
+	Phoenix::Graphics::PhoenixInputElementDesc inputElementDesc[] =
+	{
+		// SemanticName	 SemanticIndex	Format													InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
+		{"POSITION",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,		0,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		{"TEXCOORD",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32_FLOAT,			1,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		//{"BLENDWEIGHT",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	2,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		//{"BLENDWEIGHT",	 1,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	3,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		//{"BLENDINDICES", 0,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		4,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		//{"BLENDINDICES", 1,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		5,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+	};
+#endif
 
 	shader = Phoenix::Graphics::IShader::Create();
-	//shader->LoadVS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVS.cso", inputElementDesc, Phoenix::FND::ArraySize(inputElementDesc));
+#ifdef USE_ANIM
 	shader->LoadVS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVSSkin.cso", inputElementDesc, Phoenix::FND::ArraySize(inputElementDesc));
+#else
+	shader->LoadVS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVS.cso", inputElementDesc, Phoenix::FND::ArraySize(inputElementDesc));
+#endif
 	shader->LoadPS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicPS.cso");
 
 	renderer.emplace_back(std::make_unique<Phoenix::FrameWork::ModelRenderer>());
 
 	model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	model->Initialize(graphicsDevice.get());
-	model->Load("C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Data\\Assets\\Model\\danbo_fbx\\danbo_atk.fbx");
+	//model->Load(graphicsDevice.get(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Data\\Assets\\Model\\Player\\MDL_Player_Attack.fbx");
+	//model->Load(graphicsDevice.get(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Data\\Assets\\Model\\danbo_fbx\\danbo_atk.fbx");
+	model->Load(graphicsDevice.get(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Data\\Assets\\Model\\Hip_Hop_Dancing\\Hip_Hop_Dancing.fbx");
+	//model->Load(graphicsDevice.get(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Data\\Assets\\Model\\Catwalk_Walk_Turn_180_Tight_60\\Catwalk_Walk_Turn_180_Tight.fbx");
 	model->PlayAnimation(0, 0);
 
 	pos = { 0,0,0 };
@@ -98,7 +118,8 @@ void Main::Finalize()
 void Main::Update()
 {
 	static Phoenix::Math::Vector3 c = { 0, 0, 0 };
-	static Phoenix::f32 r = 300.0f;
+	static Phoenix::f32 r = 365.0f;
+	static Phoenix::s32 animClip = 0;
 	camera.ZoomOnSphere(c, r);
 	camera.Update();
 
@@ -109,9 +130,10 @@ void Main::Update()
 	ImGui::DragFloat3("scale", &scale.x);
 	ImGui::DragFloat3("center", &c.x);
 	ImGui::DragFloat("zoom", &r);
+	ImGui::InputInt("AnimClip", &animClip);
 	if (ImGui::Button("play"))
 	{
-		model->PlayAnimation(0, 0);
+		model->PlayAnimation(0, animClip);
 	}
 	ImGui::End();
 }
@@ -147,7 +169,7 @@ void Main::Render()
 		W = S * R * T;
 	}
 
-	model->UpdateTransform();
+	model->UpdateTransform(1 / 60.0f);
 
 	// ƒƒbƒVƒ…•`‰æ
 	Phoenix::Graphics::IBuffer* buffers[] =
@@ -163,7 +185,11 @@ void Main::Render()
 	context->UpdateConstantBufferMesh(W);
 
 	shader->Activate(graphicsDevice->GetDevice());
+#ifdef USE_ANIM
 	renderer[0]->Draw(graphicsDevice.get(), model.get(), true);
+#else
+	renderer[0]->Draw(graphicsDevice.get(), model.get(), false);
+#endif
 	shader->Deactivate(graphicsDevice->GetDevice());
 
 	renderer[0]->End(graphicsDevice.get());

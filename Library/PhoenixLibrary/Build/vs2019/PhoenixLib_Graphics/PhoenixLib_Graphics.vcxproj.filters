@@ -228,6 +228,12 @@
     <ClInclude Include="..\..\..\Source\Graphics\Model\ModelResource.h">
       <Filter>Source\Model</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Source\Graphics\Texture\TextureResource.h">
+      <Filter>Source\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Graphics\Texture\TextureResourceSTB.h">
+      <Filter>Source\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Graphics\Context\Win\DirectX11\ContextDX11.cpp">
@@ -292,6 +298,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Graphics\Model\ModelResource.cpp">
       <Filter>Source\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Graphics\Texture\TextureResource.cpp">
+      <Filter>Source\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Graphics\Texture\TextureResourceSTB.cpp">
+      <Filter>Source\Texture</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

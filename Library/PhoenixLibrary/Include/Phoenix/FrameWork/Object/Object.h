@@ -5,6 +5,7 @@
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Model.h"
 #include "Phoenix/Graphics/Animation.h"
+#include "Phoenix/Graphics/Texture.h"
 #include "Phoenix/OS/Path.h"
 #include "Phoenix/FND/STD.h"
 #include "../Source/Loader/Loader.h"
@@ -94,11 +95,17 @@ namespace Phoenix
 				u32 boneTransformCount = 0;
 			};
 
+			struct Material
+			{
+				std::unique_ptr<Graphics::ITexture> texture;
+			};
+
 		private:
 			std::shared_ptr<Graphics::IModelResource> modelResource;
 			std::unique_ptr<Animator> animator;
 			std::vector<Node> nodes;
 			std::vector<MeshNode> meshNodes;
+			std::vector<Material> materials;
 			std::unique_ptr<OS::IResourceManager> resourceManamger;
 			std::unique_ptr<OS::IFileStream> file;
 
@@ -111,13 +118,13 @@ namespace Phoenix
 			void Initialize(Graphics::IGraphicsDevice* graphicsDevice);
 
 			// モデルの読み込み
-			void Load(const char* filename);
+			void Load(Graphics::IGraphicsDevice* graphicsDevice, const char* filename);
 
 			// アニメーションの読み込み
 			void LoadAnimation(const char* filename, s32 index);
 
 			// 行列を更新
-			void UpdateTransform();
+			void UpdateTransform(f32 elapsedTime);
 
 			// ローカル変換行列を更新
 			void UpdateLocalTransform();
@@ -138,13 +145,16 @@ namespace Phoenix
 			Graphics::IModelResource* GetModelResource() { return modelResource.get(); }
 
 			// ノードの取得
-			std::vector<Node>& GetNodes() { return nodes; }
+			std::vector<Node>* GetNodes() { return &nodes; }
 
 			// ボーントランスフォームの取得
 			Math::Matrix* GetBoneTransforms(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransform.data(); }
 
 			// ボーントランスフォームのサイズ取得
 			u32 GetBoneTransformCount(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransformCount; }
+
+			// マテリアルのテクスチャ取得
+			Graphics::ITexture* GetTexture(u32 index) { return materials.at(index).texture.get(); }
 		};
 
 		class Animator
@@ -174,7 +184,7 @@ namespace Phoenix
 				file = OS::IFileStream::Create();
 				file->Initialize(nullptr);
 
-				this->nodes = &model->GetNodes();
+				nodes = model->GetNodes();
 			}
 
 			// アニメーションリソース読み込み
@@ -204,7 +214,6 @@ namespace Phoenix
 					}
 					Graphics::AnimationData::Serialize(data, animation.filename.c_str());
 				}
-				// TODO : animationがうまくロード出来てない
 				LoadResource(resourceManamger, animation);
 			}
 

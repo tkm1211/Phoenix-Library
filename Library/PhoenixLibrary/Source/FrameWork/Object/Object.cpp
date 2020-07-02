@@ -19,7 +19,7 @@ namespace Phoenix
 		}
 
 		// モデルの読み込み
-		void ModelObject::Load(const char* filename)
+		void ModelObject::Load(Graphics::IGraphicsDevice* graphicsDevice, const char* filename)
 		{
 			std::string modelFilename;
 			modelFilename = OS::Path::ChangeFileExtension(filename, "mdl");
@@ -60,6 +60,15 @@ namespace Phoenix
 				dst.translate = src.translate;
 			}
 
+			const std::vector<Graphics::ModelData::Material>& resourceMaterials = modelResource->GetModelData().materials;
+			materials.resize(resourceMaterials.size());
+
+			for (int i = 0; i < materials.size(); ++i)
+			{
+				materials.at(i).texture = Graphics::ITexture::Create();
+				materials.at(i).texture->Initialize(graphicsDevice->GetDevice(), resourceMaterials.at(i).textureFilename.c_str());
+			}
+
 			animator = std::make_unique<Animator>();
 			animator->Initialize(this);
 			LoadAnimation(filename, -1);
@@ -72,9 +81,9 @@ namespace Phoenix
 		}
 
 		// 行列を更新
-		void ModelObject::UpdateTransform()
+		void ModelObject::UpdateTransform(f32 elapsedTime)
 		{
-			UpdateAnimation(1 / 60.0f);
+			UpdateAnimation(elapsedTime);
 			UpdateLocalTransform();
 			UpdateWorldTransform();
 			UpdateBoneTransform();

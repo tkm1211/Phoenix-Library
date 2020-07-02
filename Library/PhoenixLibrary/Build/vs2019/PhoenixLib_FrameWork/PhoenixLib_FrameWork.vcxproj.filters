@@ -16,11 +16,11 @@
     <Filter Include="Source\Object">
       <UniqueIdentifier>{b628d7df-22d5-4882-bea4-0b216645c1a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Include\Component">
-      <UniqueIdentifier>{1c2406c7-d750-4a25-b7fe-a30bb544fbb7}</UniqueIdentifier>
+    <Filter Include="Include\Renderer">
+      <UniqueIdentifier>{218c95a0-d77c-4368-b5e7-55e9114fba46}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Component">
-      <UniqueIdentifier>{02921677-c2fc-447e-b7af-1c67118bb020}</UniqueIdentifier>
+    <Filter Include="Source\Renderer">
+      <UniqueIdentifier>{3a82e955-0b7f-4429-b2d9-88283ed8c27f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,20 +30,14 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Main.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\GameObject.h">
-      <Filter>Include\Object</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\Object.h">
       <Filter>Include\Object</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component.h">
-      <Filter>Include\Component</Filter>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Renderer\ModelRenderer.h">
+      <Filter>Include\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Renderer.h">
-      <Filter>Include\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\ModelRenderer.h">
-      <Filter>Include\Component</Filter>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Renderer\Renderer.h">
+      <Filter>Include\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,17 +47,11 @@
     <ClCompile Include="..\..\..\Source\FrameWork\Main\Main.cpp">
       <Filter>Source\Main</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\FrameWork\Object\GameObject.cpp">
-      <Filter>Source\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\FrameWork\Component\Renderer.cpp">
-      <Filter>Source\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\FrameWork\Component\ModelRenderer.cpp">
-      <Filter>Source\Component</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Object\Object.cpp">
       <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Renderer\ModelRenderer.cpp">
+      <Filter>Source\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

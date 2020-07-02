@@ -139,7 +139,7 @@
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>%(Filename)</VariableName>
-      <HeaderFileOutput>$(ProjectDir)..\..\..\include\ys\hlsl\%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput>$(ProjectDir)..\..\..\Include\Phoenix\HLSL\%(Filename).h</HeaderFileOutput>
       <ObjectFileOutput>$(IntDir)%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>

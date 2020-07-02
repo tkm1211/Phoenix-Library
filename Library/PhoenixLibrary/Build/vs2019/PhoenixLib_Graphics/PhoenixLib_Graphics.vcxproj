@@ -55,6 +55,8 @@
     <ClInclude Include="..\..\..\Source\Graphics\SnapChain\Win\DirectX11\SwapChainDX11.h" />
     <ClInclude Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\DepthStencilSurfaceDX11.h" />
     <ClInclude Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\RenderTargetSurfaceDX11.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Texture\TextureResource.h" />
+    <ClInclude Include="..\..\..\Source\Graphics\Texture\TextureResourceSTB.h" />
     <ClInclude Include="..\..\..\Source\Graphics\Texture\Win\DirectX11\TextureDX11.h" />
   </ItemGroup>
   <ItemGroup>
@@ -80,7 +82,14 @@
     <ClCompile Include="..\..\..\Source\Graphics\SnapChain\Win\DirectX11\SwapChainDX11.cpp" />
     <ClCompile Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\DepthStencilSurfaceDX11.cpp" />
     <ClCompile Include="..\..\..\Source\Graphics\Surface\Win\DirectX11\RenderTargetSurfaceDX11.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Texture\TextureResource.cpp" />
+    <ClCompile Include="..\..\..\Source\Graphics\Texture\TextureResourceSTB.cpp" />
     <ClCompile Include="..\..\..\Source\Graphics\Texture\Win\DirectX11\TextureDX11.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\ExternalLibrary\DirectXTex-master\DirectXTex\DirectXTex_Desktop_2019.vcxproj">
+      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

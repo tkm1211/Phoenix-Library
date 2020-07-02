@@ -5,6 +5,10 @@
 #include "Phoenix/FND/Assert.h"
 #include "Phoenix/FND/Logger.h"
 #include "Phoenix/FND/Util.h"
+#include <map>
+#include <string>
+#include "../../DirectXTex-master/WICTextureLoader/WICTextureLoader.h"
+#include "../../DirectXTex-master/DirectXTex/DirectXTex.h"
 
 
 namespace
@@ -25,9 +29,9 @@ namespace Phoenix
 {
 	namespace Graphics
 	{
-		//============================================================================
+		//****************************************************************************
 		// DirectX11版テクスチャ操作オブジェクト
-		//----------------------------------------------------------------------------
+		//****************************************************************************
 		// 生成
 		std::unique_ptr<ITexture> ITexture::Create()
 		{
@@ -231,6 +235,70 @@ namespace Phoenix
 		// 初期化
 		bool TextureDX11::Initialize(IDevice* device, const char* filename)
 		{
+			HRESULT hr = S_OK;
+
+			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
+
+			ID3D11Resource* resource;
+
+			static std::map<std::string, ID3D11ShaderResourceView*> cache;
+
+			auto it = cache.find(filename);
+			if (it != cache.end())
+			{
+				shaderResourceView = it->second;
+				shaderResourceView->AddRef();
+				shaderResourceView->GetResource(&resource);
+			}
+			else
+			{
+				/*hr = DirectX::CreateWICTextureFromFile(device, fileName, resource.GetAddressOf(), shaderResourceView);
+				assert( !hr && "DirectX::CreateWICTextureFromFile	Error" );*/
+
+				char ext[32];
+				_splitpath_s(filename, NULL, NULL, NULL, NULL, NULL, NULL, ext, sizeof(ext));
+
+				wchar_t _fileName[256];
+
+				MultiByteToWideChar(CP_ACP, 0, filename, static_cast<int>(strlen(filename) + 1), _fileName, 256);
+
+				DirectX::TexMetadata metaData;
+				DirectX::ScratchImage image;
+				if (strcmp(ext, ".tga") == 0)
+				{
+					hr = DirectX::LoadFromTGAFile(_fileName, &metaData, image);
+					if (FAILED(hr))
+					{
+						PHOENIX_LOG_GRP_ERROR("DirectX::LoadFromTGAFile() : Failed!!\n");
+						return false;
+					}
+				}
+				else if (strcmp(ext, ".png") == 0)
+				{
+					hr = DirectX::LoadFromWICFile(_fileName, 0, &metaData, image);
+					if (FAILED(hr))
+					{
+						PHOENIX_LOG_GRP_ERROR("DirectX::LoadFromWICFile() : Failed!!\n");
+						return false;
+					}
+				}
+
+				hr = DirectX::CreateShaderResourceViewEx(
+					d3dDevice,
+					image.GetImages(),
+					image.GetImageCount(),
+					metaData,
+					D3D11_USAGE_DEFAULT,
+					D3D11_BIND_SHADER_RESOURCE,
+					0,
+					D3D11_RESOURCE_MISC_TEXTURECUBE,
+					true,
+					&shaderResourceView);
+				assert(!hr && "DirectX::CreateShaderResourceViewEx");
+
+				cache.insert(std::make_pair(filename, shaderResourceView));
+			}
+
 			return false;
 		}
 
