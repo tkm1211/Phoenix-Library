@@ -88,15 +88,19 @@ namespace Phoenix
 				Math::Matrix worldTransform;
 			};
 
+			struct MeshNode
+			{
+				std::vector<Math::Matrix> boneTransform;
+				u32 boneTransformCount = 0;
+			};
+
 		private:
 			std::shared_ptr<Graphics::IModelResource> modelResource;
 			std::unique_ptr<Animator> animator;
 			std::vector<Node> nodes;
+			std::vector<MeshNode> meshNodes;
 			std::unique_ptr<OS::IResourceManager> resourceManamger;
 			std::unique_ptr<OS::IFileStream> file;
-
-			std::vector<Math::Matrix> boneTransform;
-			u32 boneTransformCount = 0;
 
 		public:
 			ModelObject() {}
@@ -112,11 +116,17 @@ namespace Phoenix
 			// アニメーションの読み込み
 			void LoadAnimation(const char* filename, s32 index);
 
-			// ローカル変換行列計算
-			void CalculateLocalTransform();
+			// 行列を更新
+			void UpdateTransform();
 
-			// ワールド変換行列計算
-			void CalculateWorldTransform(const Math::Matrix& worldTransform);
+			// ローカル変換行列を更新
+			void UpdateLocalTransform();
+
+			// ワールド変換行列を更新
+			void UpdateWorldTransform();
+
+			// ボーン変換行列を更新
+			void UpdateBoneTransform();
 
 			// アニメーションの再生
 			void PlayAnimation(u32 bank, u32 clip, f32 fadeTime = 0.0f);
@@ -131,10 +141,10 @@ namespace Phoenix
 			std::vector<Node>& GetNodes() { return nodes; }
 
 			// ボーントランスフォームの取得
-			Math::Matrix* GetBoneTransforms() { return boneTransform.data(); }
+			Math::Matrix* GetBoneTransforms(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransform.data(); }
 
 			// ボーントランスフォームのサイズ取得
-			u32 GetBoneTransformCount() { return boneTransformCount; }
+			u32 GetBoneTransformCount(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransformCount; }
 		};
 
 		class Animator

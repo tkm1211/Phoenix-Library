@@ -71,42 +71,72 @@ namespace Phoenix
 			animator->LoadResource(resourceManamger.get(), filename, index);
 		}
 
-		// ローカル変換行列計算
-		void ModelObject::CalculateLocalTransform()
+		// 行列を更新
+		void ModelObject::UpdateTransform()
 		{
-			for (Node& node : nodes)
+			UpdateAnimation(1 / 60.0f);
+			UpdateLocalTransform();
+			UpdateWorldTransform();
+			UpdateBoneTransform();
+		}
+
+		// ローカル変換行列を更新
+		void ModelObject::UpdateLocalTransform()
+		{
+			for (u32 i = 0; i < nodes.size(); ++i)
 			{
 				Math::Matrix scale, rotate, translate;
-				scale = Math::MatrixScaling(node.scale.x, node.scale.y, node.scale.z);
-				rotate = Math::MatrixRotationQuaternion(&Math::Quaternion(node.rotate.x, node.rotate.y, node.rotate.z, node.rotate.w));
-				translate = Math::MatrixTranslation(node.translate.x, node.translate.y, node.translate.z);
+				scale = Math::MatrixScaling(nodes[i].scale.x, nodes[i].scale.y, nodes[i].scale.z);
+				rotate = Math::MatrixRotationQuaternion(&nodes[i].rotate);
+				translate = Math::MatrixTranslation(nodes[i].translate.x, nodes[i].translate.y, nodes[i].translate.z);
 
-				node.localTransform = scale * rotate * translate;
+				nodes[i].localTransform = scale * rotate * translate;
 			}
 		}
 
-		// ワールド変換行列計算
-		void ModelObject::CalculateWorldTransform(const Math::Matrix& worldTransform)
+		// ワールド変換行列を更新
+		void ModelObject::UpdateWorldTransform()
 		{
-			if (boneTransform.size() < nodes.size()) boneTransform.resize(nodes.size());
-
-			int i = 0;
-			for (Node& node : nodes)
+			for (u32 i = 0; i < nodes.size(); ++i)
 			{
-				if (node.parent != nullptr)
+				if (nodes[i].parent != nullptr)
 				{
-					node.worldTransform = node.localTransform * node.parent->worldTransform;
+					nodes[i].worldTransform = nodes[i].localTransform * nodes[i].parent->worldTransform;
 				}
 				else
 				{
-					node.worldTransform = node.localTransform * worldTransform;
+					nodes[i].worldTransform = nodes[i].localTransform;
 				}
+			}
+		}
 
-				boneTransform[i] = node.worldTransform;
-				i++;
+		// ボーン変換行列を更新
+		void ModelObject::UpdateBoneTransform()
+		{
+			Graphics::IModelResource* modelResource = GetModelResource();
+			const Graphics::ModelData& modelData = modelResource->GetModelData();
+
+			if (meshNodes.size() < modelData.meshes.size())
+			{
+				meshNodes.resize(modelData.meshes.size());
 			}
 
-			boneTransformCount = boneTransform.size();
+			for (u32 i = 0; i < meshNodes.size(); ++i)
+			{
+				MeshNode& meshNode = meshNodes.at(i);
+
+				if (meshNode.boneTransform.size() < modelData.meshes.at(i).nodeIndices.size())
+				{
+					meshNode.boneTransform.resize(modelData.meshes.at(i).nodeIndices.size());
+				}
+
+				for (u32 j = 0; j < meshNode.boneTransform.size(); ++j)
+				{
+					const Node& node = nodes.at(modelData.meshes.at(i).nodeIndices.at(j));
+					meshNode.boneTransform.at(j) = Math::MatrixMultiply(modelData.meshes.at(i).offsetTransforms.at(j), node.worldTransform);
+				}
+				meshNode.boneTransformCount = meshNode.boneTransform.size();
+			}
 		}
 
 		// アニメーションの再生

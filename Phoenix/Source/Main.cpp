@@ -62,18 +62,18 @@ bool Main::Initialize(Phoenix::uintPtr instance)
 
 	Phoenix::Graphics::PhoenixInputElementDesc inputElementDesc[] =
 	{
-		// SemanticName	SemanticIndex	Format													InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
-		{"POSITION",	0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,		0,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"TEXCOORD",	0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32_FLOAT,			1,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"BLENDWEIGHT",	0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	2,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"BLENDWEIGHT",	1,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	3,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"BLENDINDICES",0,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		4,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-		{"BLENDINDICES",1,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		5,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		// SemanticName	 SemanticIndex	Format													InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
+		{"POSITION",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,		0,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		{"TEXCOORD",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32_FLOAT,			1,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		{"BLENDWEIGHT",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	2,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		{"BLENDWEIGHT",	 1,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	3,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		{"BLENDINDICES", 0,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		4,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+		{"BLENDINDICES", 1,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		5,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
 	};
 
 	shader = Phoenix::Graphics::IShader::Create();
-	shader->LoadVS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVSSkin.cso", inputElementDesc, Phoenix::FND::ArraySize(inputElementDesc));
 	//shader->LoadVS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVS.cso", inputElementDesc, Phoenix::FND::ArraySize(inputElementDesc));
+	shader->LoadVS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVSSkin.cso", inputElementDesc, Phoenix::FND::ArraySize(inputElementDesc));
 	shader->LoadPS(graphicsDevice->GetDevice(), "C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicPS.cso");
 
 	renderer.emplace_back(std::make_unique<Phoenix::FrameWork::ModelRenderer>());
@@ -85,7 +85,7 @@ bool Main::Initialize(Phoenix::uintPtr instance)
 
 	pos = { 0,0,0 };
 	rotate = { 0,0,0 };
-	scale = { 0,0,0 };
+	scale = { 1,1,1 };
 
 	return true;
 }
@@ -98,7 +98,7 @@ void Main::Finalize()
 void Main::Update()
 {
 	static Phoenix::Math::Vector3 c = { 0, 0, 0 };
-	static Phoenix::f32 r = 1.0f;
+	static Phoenix::f32 r = 300.0f;
 	camera.ZoomOnSphere(c, r);
 	camera.Update();
 
@@ -109,6 +109,10 @@ void Main::Update()
 	ImGui::DragFloat3("scale", &scale.x);
 	ImGui::DragFloat3("center", &c.x);
 	ImGui::DragFloat("zoom", &r);
+	if (ImGui::Button("play"))
+	{
+		model->PlayAnimation(0, 0);
+	}
 	ImGui::End();
 }
 
@@ -142,9 +146,8 @@ void Main::Render()
 
 		W = S * R * T;
 	}
-	model->UpdateAnimation(1 / 60.0f);
-	model->CalculateLocalTransform();
-	model->CalculateWorldTransform(W);
+
+	model->UpdateTransform();
 
 	// ƒƒbƒVƒ…•`‰æ
 	Phoenix::Graphics::IBuffer* buffers[] =

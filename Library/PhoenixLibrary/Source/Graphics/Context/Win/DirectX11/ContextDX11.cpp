@@ -491,7 +491,7 @@ namespace Phoenix
 		void ContextDX11::UpdateConstantBufferMesh(const Math::Matrix& worldTransform)
 		{
 			CbMesh constantBufferMesh;
-			constantBufferMesh.world = worldTransform;
+			//constantBufferMesh.world = worldTransform;
 			constantBufferMesh.world = Math::MatrixTranspose(worldTransform);
 			constantBufferMesh.worldInverse = Math::MatrixInverse(worldTransform);
 			constantBufferMesh.texture = Math::MatrixIdentity();
@@ -502,6 +502,7 @@ namespace Phoenix
 		// ボーン定数バッファ更新
 		void ContextDX11::UpdateConstantBufferBone(const Math::Matrix boneTransforms[], s32 boneTransformCount)
 		{
+			/*
 			PhoenixMappedSubresource mappedResource;
 			Map(cbBone.get(), 0, PhoenixMap::WriteDiscard, 0, &mappedResource);
 
@@ -512,6 +513,35 @@ namespace Phoenix
 			}
 
 			Unmap(cbBone.get(), 0);
+			*/
+
+			ID3D11Buffer* d3dBuffer = static_cast<BufferDX11*>(cbBone.get())->GetD3DBuffer();
+
+			D3D11_MAPPED_SUBRESOURCE d3dMappedResource;
+			HRESULT hr = deviceContext->Map(d3dBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &d3dMappedResource);
+			if (FAILED(hr))
+			{
+				PHOENIX_LOG_GRP_ERROR("ID3D11DeviceContext::Map() : Failed!!\n");
+				return;
+			}
+
+			CbBone* cbBone = reinterpret_cast<CbBone*>(d3dMappedResource.pData);
+			for (s32 i = 0; i < boneTransformCount; ++i)
+			{
+				//cbBone->bones[i] = boneTransforms[i];
+				cbBone->bones[i] = Math::MatrixTranspose(boneTransforms[i]);
+			}
+
+			deviceContext->Unmap(d3dBuffer, 0);
+
+			//CbBone cb;
+			//for (s32 i = 0; i < boneTransformCount; ++i)
+			//{
+			//	//cbBone->bones[i] = boneTransforms[i];
+			//	cb.bones[i] = Math::MatrixTranspose(boneTransforms[i]);
+			//}
+
+			//UpdateSubresource(cbBone.get(), 0, 0, &cb, 0, 0);
 		}
 	} // namespace Graphics
 } // namespace Phoenix

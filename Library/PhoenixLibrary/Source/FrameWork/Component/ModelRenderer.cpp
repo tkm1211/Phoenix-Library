@@ -47,17 +47,17 @@ namespace Phoenix
 			Graphics::ModelData modelData = modelResource->GetModelData();
 			const std::vector<FrameWork::ModelObject::Node>& nodes = model->GetNodes();
 
-			graphicsDevice->GetContext()->UpdateConstantBufferBone(model->GetBoneTransforms(), model->GetBoneTransformCount());
-
 			for (s32 i = 0; i < modelResource->GetMeshSize(); i++)
 			{
+				graphicsDevice->GetContext()->UpdateConstantBufferBone(model->GetBoneTransforms(i), model->GetBoneTransformCount(i));
+
 				if (skining)
 				{
 					static Graphics::VertexBufferKind vbKinds[] =
 					{
 						Graphics::VertexBufferKind::Position,
-						Graphics::VertexBufferKind::Normal,
-						Graphics::VertexBufferKind::Tangent,
+						//Graphics::VertexBufferKind::Normal,
+						//Graphics::VertexBufferKind::Tangent,
 						Graphics::VertexBufferKind::TexCoord0,
 						Graphics::VertexBufferKind::BlendWeight0,
 						Graphics::VertexBufferKind::BlendWeight1,
@@ -78,8 +78,8 @@ namespace Phoenix
 					static Graphics::VertexBufferKind vbKinds[] =
 					{
 						Graphics::VertexBufferKind::Position,
-						Graphics::VertexBufferKind::Normal,
-						Graphics::VertexBufferKind::Tangent,
+						//Graphics::VertexBufferKind::Normal,
+						//Graphics::VertexBufferKind::Tangent,
 						Graphics::VertexBufferKind::TexCoord0
 					};
 
