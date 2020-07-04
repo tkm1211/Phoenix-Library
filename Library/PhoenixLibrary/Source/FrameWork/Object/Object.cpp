@@ -21,13 +21,15 @@ namespace Phoenix
 		// モデルの読み込み
 		void ModelObject::Load(Graphics::IGraphicsDevice* graphicsDevice, const char* filename)
 		{
-			std::string modelFilename;
-			modelFilename = OS::Path::ChangeFileExtension(filename, "mdl");
+			const char* fullPass = OS::Path::GetFullPath(filename);
 
-			if (OS::Path::CheckFileExtension(filename, "fbx") && !file->Exists(modelFilename.c_str()))
+			std::string modelFilename;
+			modelFilename = OS::Path::ChangeFileExtension(fullPass, "mdl");
+
+			if (OS::Path::CheckFileExtension(fullPass, "fbx") && !file->Exists(modelFilename.c_str()))
 			{
 				std::unique_ptr<Loader::ILoader> loader = Loader::ILoader::Create();
-				if (!loader->Initialize(filename))
+				if (!loader->Initialize(fullPass))
 				{
 					return;
 				}
@@ -81,7 +83,7 @@ namespace Phoenix
 
 			animator = std::make_unique<Animator>();
 			animator->Initialize(this);
-			LoadAnimation(filename, -1);
+			LoadAnimation(fullPass, -1);
 		}
 
 		// アニメーションの読み込み
@@ -182,7 +184,13 @@ namespace Phoenix
 			animator->SetLoop(loop);
 		}
 
-		// ループ再生か
+		// 再生中
+		bool ModelObject::IsPlaying()
+		{
+			return animator->IsPlaying();
+		}
+
+		// ループ再生中か
 		bool ModelObject::IsLoopAnimation()
 		{
 			return animator->IsLoop();

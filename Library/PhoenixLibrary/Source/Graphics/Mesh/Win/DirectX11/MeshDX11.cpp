@@ -2,6 +2,7 @@
 #include "MeshDX11.h"
 #include "Device/Win/DirectX11/DeviceDX11.h"
 #include "../Source/Graphics/Buffer/Win/DirectX11/BufferDX11.h"
+#include "Phoenix/FND/Logger.h"
 
 
 namespace Phoenix
@@ -122,6 +123,11 @@ namespace Phoenix
 			for (UINT i = 0; i < kindNum; ++i)
 			{
 				const VertexBuffer& vb = vertexBuffers[(int)vbKind[i]];
+				if (!vb.buffer)
+				{
+					PHOENIX_LOG_FWK_WARNING("WARNING : シェーダーとの互換性がありません。それにより描画をスキップしました。\n");
+					return;
+				}
 				d3dVbs[i] = static_cast<BufferDX11*>(vb.buffer.get())->GetD3DBuffer();
 				strides[i] = vb.stride;
 

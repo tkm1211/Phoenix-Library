@@ -52,18 +52,28 @@ void Main::Finalize()
 
 void Main::Update()
 {
-	GUI();
+	// パラメーター調整用GUI
+	{
+		GUI();
+	}
 
-	player->Update(camera);
-	if (cameraFlg)
+	// プレイヤー更新
 	{
-		camera.FreeCamera();
+		player->Update(camera);
 	}
-	else
+
+	// カメラ更新
 	{
-		camera.ControllerCamera(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 100.0f, 0.0f));
+		if (cameraFlg)
+		{
+			camera.FreeCamera();
+		}
+		else
+		{
+			camera.ControllerCamera(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 100.0f, 0.0f));
+		}
+		camera.Update();
 	}
-	camera.Update();
 }
 
 // GUI
@@ -85,13 +95,6 @@ void Main::Render()
 {
 	Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
-	// メッシュ描画
-	basicSkinShader->Begin(graphicsDevice.get());
-	renderer[0]->Begin(graphicsDevice.get(), camera);
-	renderer[0]->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel(), basicSkinShader.get());
-	renderer[0]->End(graphicsDevice.get());
-	basicSkinShader->End(graphicsDevice.get());
-
 	// ワールド行列を作成
 	Phoenix::Math::Matrix W;
 	{
@@ -107,9 +110,19 @@ void Main::Render()
 		W = S * R * T;
 	}
 
+	// メッシュ描画
+#if 1
+	basicSkinShader->Begin(graphicsDevice.get());
+	renderer[0]->Begin(graphicsDevice.get(), camera);
+	renderer[0]->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel(), basicSkinShader.get());
+	renderer[0]->End(graphicsDevice.get());
+	basicSkinShader->End(graphicsDevice.get());
+#endif
+
 	basicShader->Begin(graphicsDevice.get());
 	renderer[0]->Begin(graphicsDevice.get(), camera);
 	renderer[0]->Draw(graphicsDevice.get(), W, stageModel.get(), basicShader.get());
+	//renderer[0]->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel(), basicShader.get());
 	renderer[0]->End(graphicsDevice.get());
 	basicShader->End(graphicsDevice.get());
 }

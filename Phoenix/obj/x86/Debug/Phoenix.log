@@ -1,3 +1,4 @@
-﻿  Player.cpp
-C:\Users\2180082.MAETEL\Desktop\Phoenix\Phoenix\Source\Player\Player.cpp(52,26): warning C4101: 'vec': ローカル変数は 1 度も使われていません。
+﻿  Main.cpp
+  Player.cpp
+  コードを生成中...
   Phoenix.vcxproj -> C:\Users\2180082.MAETEL\Desktop\Phoenix\Phoenix\.\bin\x86\Debug\Phoenix.exe

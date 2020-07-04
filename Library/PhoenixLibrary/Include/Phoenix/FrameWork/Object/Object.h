@@ -149,6 +149,9 @@ namespace Phoenix
 			// ループ再生設定
 			void SetLoopAnimation(bool loop);
 
+			// 再生中
+			bool IsPlaying();
+
 			// ループ再生か
 			bool IsLoopAnimation();
 
@@ -260,8 +263,11 @@ namespace Phoenix
 					return;
 				}
 
-				// TODO : animation emp
 				Animation& animation = animations.at(bank);
+				if (!animation.resource)
+				{
+					return;
+				}
 				const Graphics::AnimationData& data = animation.resource->GetAnimationData();
 
 				if (clip < 0 || clip >= data.clips.size())
@@ -290,6 +296,12 @@ namespace Phoenix
 			void SetLoop(bool loop)
 			{
 				currentAnimation->player->SetLoop(loop);
+			}
+
+			// 再生中
+			bool IsPlaying()
+			{
+				return currentAnimation->player->IsPlaying();
 			}
 
 			// ループ再生か

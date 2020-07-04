@@ -447,7 +447,7 @@ namespace Phoenix
 		void Camera::ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust)
 		{
 			// TODO : WinŠÖ”‚ğ•Ê‚ÌŠÖ”‚É·‚µ‘Ö‚¦
-			if (GetKeyState(VK_LBUTTON) < 0)
+			/*if (GetKeyState(VK_LBUTTON) < 0)
 			{
 				POINT cursor;
 				GetCursorPos(&cursor);
@@ -461,13 +461,13 @@ namespace Phoenix
 				rotateY -= moveX * 0.5f;
 				rotateX += moveY * 0.5f;
 			}
-			else
+			else*/
 			{
-				rotateY += (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2 * 0.01745f;
+				rotateY -= (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2 * 0.01745f;
 				rotateX += (static_cast<float>(xInput[0].sRY) / 1000.0f) * 2 * 0.01745f;
-				if (0.3f < rotateX)
+				if (0.6f < rotateX)
 				{
-					rotateX = 0.3f;
+					rotateX = 0.6f;
 				}
 				if (rotateX < 0.05f)
 				{
