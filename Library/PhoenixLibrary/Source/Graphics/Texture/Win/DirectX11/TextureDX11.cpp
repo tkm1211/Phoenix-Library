@@ -1,12 +1,13 @@
 #include "pch.h"
+#include <map>
+#include <string>
+#include <sstream>
 #include <algorithm>
 #include "TextureDX11.h"
 #include "Device/Win/DirectX11/DeviceDX11.h"
 #include "Phoenix/FND/Assert.h"
 #include "Phoenix/FND/Logger.h"
 #include "Phoenix/FND/Util.h"
-#include <map>
-#include <string>
 #include "../../DirectXTex-master/WICTextureLoader/WICTextureLoader.h"
 #include "../../DirectXTex-master/DirectXTex/DirectXTex.h"
 
@@ -233,12 +234,70 @@ namespace Phoenix
 		}
 
 		// 初期化
-		bool TextureDX11::Initialize(IDevice* device, const char* filename)
+		bool TextureDX11::Initialize(IDevice* device, const char* filename, MaterialType materialType, const Math::Color& color)
 		{
-			HRESULT hr = S_OK;
+			std::function<void(const Math::Color&, DWORD&)> convert = [&](const Math::Color& colour, DWORD& RGBA)
+			{
+				DWORD R = static_cast<BYTE>(colour.r * 255);
+				DWORD G = static_cast<BYTE>(colour.g * 255);
+				DWORD B = static_cast<BYTE>(colour.b * 255);
+				DWORD A = static_cast<BYTE>(colour.a * 255);
+				RGBA = R | (G << 8) | (B << 16) | (A << 24);
+			};
 
 			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
 
+			switch (materialType)
+			{
+			case Phoenix::Graphics::MaterialType::Diffuse:
+			case Phoenix::Graphics::MaterialType::Ambient:
+			case Phoenix::Graphics::MaterialType::Specular:
+				if (filename[0] == NULL)
+				{
+					DWORD RGBA = 0;
+					convert(color, RGBA);
+					CreateDummyTexture(d3dDevice, &shaderResourceView, RGBA, 1, true, true);
+				}
+				else
+				{
+					LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
+				}
+				break;
+			case Phoenix::Graphics::MaterialType::NormalMap:
+			case Phoenix::Graphics::MaterialType::Bump:
+				if (filename[0] == NULL)
+				{
+					DWORD RGBA = 0;
+					convert(color, RGBA);
+					CreateDummyTexture(d3dDevice, &shaderResourceView, 0xFFFF7F7F, 1, false, true);
+				}
+				else
+				{
+					LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
+				}
+				break;
+			default: break;
+			}
+
+			return false;
+		}
+
+		// 終了化
+		void TextureDX11::Finalize()
+		{
+			FND::SafeRelease(resource);
+			FND::SafeRelease(shaderResourceView);
+		}
+
+		// テクスチャの読み込み
+		bool TextureDX11::LoadTextureFromFile
+		(
+			ID3D11Device* device,
+			const char* filename,
+			ID3D11ShaderResourceView** shaderResourceView
+		)
+		{
+			HRESULT hr = S_OK;
 			ID3D11Resource* resource;
 
 			static std::map<std::string, ID3D11ShaderResourceView*> cache;
@@ -246,9 +305,9 @@ namespace Phoenix
 			auto it = cache.find(filename);
 			if (it != cache.end())
 			{
-				shaderResourceView = it->second;
-				shaderResourceView->AddRef();
-				shaderResourceView->GetResource(&resource);
+				*shaderResourceView = it->second;
+				(*shaderResourceView)->AddRef();
+				(*shaderResourceView)->GetResource(&resource);
 			}
 			else
 			{
@@ -273,7 +332,7 @@ namespace Phoenix
 						return false;
 					}
 				}
-				else if (strcmp(ext, ".png") == 0)
+				else if (strcmp(ext, ".png") == 0 || strcmp(ext, ".bmp") == 0)
 				{
 					hr = DirectX::LoadFromWICFile(_fileName, 0, &metaData, image);
 					if (FAILED(hr))
@@ -283,8 +342,9 @@ namespace Phoenix
 					}
 				}
 
-				hr = DirectX::CreateShaderResourceViewEx(
-					d3dDevice,
+				hr = DirectX::CreateShaderResourceViewEx
+				(
+					device,
 					image.GetImages(),
 					image.GetImageCount(),
 					metaData,
@@ -293,20 +353,103 @@ namespace Phoenix
 					0,
 					D3D11_RESOURCE_MISC_TEXTURECUBE,
 					true,
-					&shaderResourceView);
-				assert(!hr && "DirectX::CreateShaderResourceViewEx");
+					shaderResourceView
+				);
+				if (FAILED(hr))
+				{
+					PHOENIX_LOG_GRP_ERROR("DirectX::CreateShaderResourceViewEx() : Failed!!\n");
+					return false;
+				}
 
-				cache.insert(std::make_pair(filename, shaderResourceView));
+				cache.insert(std::make_pair(filename, *shaderResourceView));
 			}
 
-			return false;
+			return true;
 		}
 
-		// 終了化
-		void TextureDX11::Finalize()
+		// ダミーテクスチャの生成
+		bool TextureDX11::CreateDummyTexture
+		(
+			ID3D11Device* device,
+			ID3D11ShaderResourceView** shaderResourceView,
+			unsigned int value/*0xAABBGGRR*/,
+			unsigned int dimensions,
+			bool forceSrgb,
+			bool enableCaching
+		)
 		{
-			FND::SafeRelease(resource);
-			FND::SafeRelease(shaderResourceView);
+			std::stringstream filename;
+			filename << "dummyTexture" << "." << std::hex << std::uppercase << value << "." << dimensions << "." << forceSrgb;
+
+			wchar_t filenameW[256];
+			MultiByteToWideChar(CP_ACP, 0, filename.str().c_str(), static_cast<int>(filename.str().length() + 1), filenameW, 256);
+
+			static std::map<std::wstring, ID3D11ShaderResourceView*> cachedTextures;
+
+			std::map<std::wstring, ID3D11ShaderResourceView*>::iterator it = cachedTextures.find(filenameW);
+			if (it != cachedTextures.end())
+			{
+				*shaderResourceView = it->second;
+				(*shaderResourceView)->AddRef();
+			}
+			else
+			{
+				HRESULT hr = S_OK;
+
+				D3D11_TEXTURE2D_DESC texture2d_desc = {};
+				texture2d_desc.Width = dimensions;
+				texture2d_desc.Height = dimensions;
+				texture2d_desc.MipLevels = 1;
+				texture2d_desc.ArraySize = 1;
+				texture2d_desc.Format = forceSrgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
+				texture2d_desc.SampleDesc.Count = 1;
+				texture2d_desc.SampleDesc.Quality = 0;
+				texture2d_desc.Usage = D3D11_USAGE_DEFAULT;
+				texture2d_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+				texture2d_desc.CPUAccessFlags = 0;
+				texture2d_desc.MiscFlags = 0;
+
+				unsigned int* sys_mem = new unsigned int[dimensions * dimensions];
+				for (unsigned int i = 0; i < dimensions * dimensions; i++)
+				{
+					sys_mem[i] = value;
+				}
+				D3D11_SUBRESOURCE_DATA subresource_data = {};
+				subresource_data.pSysMem = sys_mem;
+				subresource_data.SysMemPitch = sizeof(unsigned int) * dimensions;
+				subresource_data.SysMemSlicePitch = 0;
+
+				ID3D11Texture2D* texture2d;
+				hr = device->CreateTexture2D(&texture2d_desc, &subresource_data, &texture2d);
+				if (FAILED(hr))
+				{
+					PHOENIX_LOG_GRP_ERROR("DirectX::CreateShaderResourceView() : Failed!!\n");
+					return false;
+				}
+
+				D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc = {};
+				shader_resource_view_desc.Format = texture2d_desc.Format;
+				shader_resource_view_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+				shader_resource_view_desc.Texture2D.MipLevels = 1;
+
+				hr = device->CreateShaderResourceView(texture2d, &shader_resource_view_desc, shaderResourceView);
+				//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+				if (FAILED(hr))
+				{
+					PHOENIX_LOG_GRP_ERROR("DirectX::CreateShaderResourceView() : Failed!!\n");
+					return false;
+				}
+
+				if (enableCaching)
+				{
+					cachedTextures.insert(std::make_pair(filenameW, *shaderResourceView));
+				}
+
+				texture2d->Release();
+				delete[] sys_mem;
+			}
+
+			return true;
 		}
 
 		// DXGIフォーマット取得

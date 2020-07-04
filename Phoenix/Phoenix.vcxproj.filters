@@ -10,15 +10,24 @@
     <Filter Include="Source\Scene">
       <UniqueIdentifier>{9fde1157-53a5-4b4e-88f3-94fdae9e163c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Player">
+      <UniqueIdentifier>{2e16a2d2-e326-4e82-8479-b048778fdf2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Player\Player.cpp">
+      <Filter>Source\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player\Player.h">
+      <Filter>Source\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

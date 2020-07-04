@@ -61,6 +61,10 @@ namespace Phoenix
 			// 実行可能ファイルが実行されている場所までディレクション （例："C:\\Desktop\\Project\\）
 			// DebugとReleaseのファイルパスは含まない。もし、含むのであればkeepをtrueにするとそのままの状態で返す。
 			static const char* GetModuleFilePass(bool keep = false);
+
+			// 実行可能ファイルが実行されている場所までディレクション （例："C:\\Desktop\\Project\\）
+			// backCountの数分ファイル階層を遡る。
+			static const char* GetModuleFilePass(int backCount);
 		};
 
 	} // namespace OS

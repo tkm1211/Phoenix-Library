@@ -6,6 +6,7 @@
 #include "Phoenix/FND/Base.h"
 #include "Phoenix/Graphics/Device.h"
 #include "Phoenix/OS/Resource.h"
+#include "Phoenix/Math/Color.h"
 
 
 namespace Phoenix
@@ -59,6 +60,18 @@ namespace Phoenix
 		};
 
 		//****************************************************************************
+		// マテリアル種類
+		//****************************************************************************
+		enum class MaterialType
+		{
+			Diffuse,
+			Ambient,
+			Specular,
+			NormalMap,
+			Bump,
+		};
+
+		//****************************************************************************
 		// テクスチャ操作インターフェース
 		//****************************************************************************
 		class ITexture : public FND::Base
@@ -71,7 +84,7 @@ namespace Phoenix
 			virtual bool Initialize(IDevice* device, const TextureDesc& desc) = 0;
 
 			// 初期化
-			virtual bool Initialize(IDevice* device, const char* filename) = 0;
+			virtual bool Initialize(IDevice* device, const char* filename, MaterialType materialType, const Math::Color& color) = 0;
 
 			// 終了化
 			virtual void Finalize() = 0;

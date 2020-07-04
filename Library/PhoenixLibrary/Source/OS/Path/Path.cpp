@@ -549,6 +549,8 @@ namespace Phoenix
 			return FND::StrCmp(a, b) == 0;
 		}
 
+		// 実行可能ファイルが実行されている場所までディレクション （例："C:\\Desktop\\Project\\）
+		// DebugとReleaseのファイルパスは含まない。もし、含むのであればkeepをtrueにするとそのままの状態で返す。
 		const char* Path::GetModuleFilePass(bool keep)
 		{
 			char buffer[MAX_PATH];
@@ -565,7 +567,24 @@ namespace Phoenix
 					result = std::string(buffer).substr(0, pos2);
 				}
 			}
+			result += std::string("\\");
 
+			return result.c_str();
+		}
+
+		// 実行可能ファイルが実行されている場所までディレクション （例："C:\\Desktop\\Project\\）
+		// backCountの数分ファイル階層を遡る。
+		const char* Path::GetModuleFilePass(int backCount)
+		{
+			char buffer[MAX_PATH];
+			GetModuleFileNameA(NULL, buffer, MAX_PATH);
+
+			std::string result = std::string(buffer);
+			for (int i = 0; i < backCount; ++i)
+			{
+				std::string::size_type pos = std::string(result).find_last_of("\\/");
+				result = std::string(result).substr(0, pos);
+			}
 			result += std::string("\\");
 
 			return result.c_str();

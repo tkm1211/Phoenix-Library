@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Input\InputDevice.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Main.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\Object.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Renderer\ModelRenderer.h" />
@@ -29,6 +30,7 @@
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Source\FrameWork\Input\InputDevice.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Main\Main.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Object\Object.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">

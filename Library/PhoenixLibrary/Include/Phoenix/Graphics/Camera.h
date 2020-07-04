@@ -117,6 +117,8 @@ namespace Phoenix
 			// ファークリップ値取得
 			f32 GetFarZ() const { return farZ; }
 
+			f32 GetRotateY() const { return rotateY; }
+
 			// 平行投影か判定
 			bool IsOrtho() const { return projection.m[2][3] == 0.0f; }
 
@@ -167,7 +169,7 @@ namespace Phoenix
 			// フリーカメラ
 			void FreeCamera();
 
-			void ControllerCamera();
+			void ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust);
 
 		private:
 			// ビューベクトルを取得

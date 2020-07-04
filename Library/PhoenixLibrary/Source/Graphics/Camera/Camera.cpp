@@ -4,6 +4,7 @@
 #include "Phoenix/Math/Arithmetic.h"
 #include "Phoenix/Math/PhoenixMath.h"
 #include "Phoenix/Graphics/Camera.h"
+#include "Phoenix/FrameWork/Input/InputDevice.h"
 
 
 namespace Phoenix
@@ -15,7 +16,7 @@ namespace Phoenix
 		//****************************************************************************
 		Camera::Camera()
 		{
-			SetPerspective(Math::PI_Q, 16.0f / 9.0f, 0.1f, 1000.0f);
+			SetPerspective(Math::PI_Q, 16.0f / 9.0f, 0.1f, 1000000.0f);
 			SetLookAt(Math::Vector3::OneAll, Math::Vector3::Zero, Math::Vector3::OneY);
 			Update();
 
@@ -443,8 +444,37 @@ namespace Phoenix
 			SetLookAt(_pos, _target, _up);
 		}
 
-		void Camera::ControllerCamera()
+		void Camera::ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust)
 		{
+			// TODO : Winä÷êîÇï ÇÃä÷êîÇ…ç∑Çµë÷Ç¶
+			if (GetKeyState(VK_LBUTTON) < 0)
+			{
+				POINT cursor;
+				GetCursorPos(&cursor);
+
+				oldCursor = newCursor;
+				newCursor = Math::Vector2(static_cast<float>(cursor.x), static_cast<float>(cursor.y));
+
+				f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
+
+				f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
+				rotateY -= moveX * 0.5f;
+				rotateX += moveY * 0.5f;
+			}
+			else
+			{
+				rotateY += (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2 * 0.01745f;
+				rotateX += (static_cast<float>(xInput[0].sRY) / 1000.0f) * 2 * 0.01745f;
+				if (0.3f < rotateX)
+				{
+					rotateX = 0.3f;
+				}
+				if (rotateX < 0.05f)
+				{
+					rotateX = 0.05f;
+				}
+			}
+
 			f32 xSin = sinf(rotateX);
 			f32 xCos = cosf(rotateX);
 			f32 ySin = sinf(rotateY);
@@ -454,7 +484,7 @@ namespace Phoenix
 			Math::Vector3 _right = { yCos, 0.0f, -ySin };
 			Math::Vector3 _up = Math::Vector3Cross(_right, front);
 
-			Math::Vector3 _target = target;
+			Math::Vector3 _target = center + adjust;
 			Math::Vector3 _distance = { distance, distance, distance };
 			Math::Vector3 _pos = _target - (front * _distance);
 

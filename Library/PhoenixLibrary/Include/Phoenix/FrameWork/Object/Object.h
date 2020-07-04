@@ -97,7 +97,9 @@ namespace Phoenix
 
 			struct Material
 			{
-				std::unique_ptr<Graphics::ITexture> texture;
+				std::string name;
+				std::vector<std::unique_ptr<Graphics::ITexture>> textures;
+				std::vector<Math::Color> colors;
 			};
 
 		private:
@@ -162,14 +164,20 @@ namespace Phoenix
 			// ボーントランスフォームの取得
 			Math::Matrix* GetBoneTransforms(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransform.data(); }
 
+			// メッシュノードのサイズ取得
+			u32 GetMeshNodes() { return meshNodes.size(); }
+
 			// ボーントランスフォームのサイズ取得
 			u32 GetBoneTransformCount(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransformCount; }
 
 			// マテリアルのテクスチャ取得
-			Graphics::ITexture* GetTexture(u32 index) { return materials.at(index).texture.get(); }
+			Graphics::ITexture* GetTexture(u32 index, u32 texIndex) { return materials.at(index).textures.at(texIndex).get(); }
 
 			// マテリアルのサイズ取得
 			u32 GetMaterialSize() { return materials.size(); }
+
+			// マテリアルのテクスチャサイズ取得
+			u32 GetTextureSize(u32 index) { return materials.at(index).textures.size(); }
 		};
 
 		class Animator
@@ -235,9 +243,13 @@ namespace Phoenix
 			void LoadResource(OS::IResourceManager* resourceManamger, Animation& animation)
 			{
 				animation.resource = resourceManamger->LoadImmediate<Graphics::IAnimationResource>(animation.filename.c_str());
-				animation.player = Graphics::IAnimationPlayer::Create();
-				animation.player->Initialize(animation.resource);
-				BindAnimationNodes(animation);
+
+				if (animation.resource)
+				{
+					animation.player = Graphics::IAnimationPlayer::Create();
+					animation.player->Initialize(animation.resource);
+					BindAnimationNodes(animation);
+				}
 			}
 
 			// 再生
@@ -248,6 +260,7 @@ namespace Phoenix
 					return;
 				}
 
+				// TODO : animation emp
 				Animation& animation = animations.at(bank);
 				const Graphics::AnimationData& data = animation.resource->GetAnimationData();
 

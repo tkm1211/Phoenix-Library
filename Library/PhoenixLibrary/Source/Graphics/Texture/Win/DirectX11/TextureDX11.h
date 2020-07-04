@@ -8,9 +8,9 @@ namespace Phoenix
 {
 	namespace Graphics
 	{
-		//============================================================================
+		//****************************************************************************
 		// DirectX11版テクスチャ操作オブジェクト
-		//----------------------------------------------------------------------------
+		//****************************************************************************
 		class TextureDX11 final : public ITexture
 		{
 		private:
@@ -34,7 +34,7 @@ namespace Phoenix
 			bool Initialize(IDevice* device, const TextureDesc& desc) override;
 
 			// 初期化
-			bool Initialize(IDevice* device, const char* filename) override;
+			bool Initialize(IDevice* device, const char* filename, MaterialType materialType, const Math::Color& color) override;
 
 			// 終了化
 			void Finalize() override;
@@ -52,6 +52,25 @@ namespace Phoenix
 			void SetD3DShaderResourceView(ID3D11ShaderResourceView* d3dShaderResourceView) { shaderResourceView = d3dShaderResourceView; }
 
 		private:
+			// テクスチャの読み込み
+			static bool LoadTextureFromFile
+			(
+				ID3D11Device* device,
+				const char* filename,
+				ID3D11ShaderResourceView** shaderResourceView
+			);
+
+			// ダミーテクスチャの生成
+			static bool CreateDummyTexture
+			(
+				ID3D11Device* device,
+				ID3D11ShaderResourceView** shaderResourceView,
+				unsigned int value/*0xAABBGGRR*/,
+				unsigned int dimensions,
+				bool forceSrgb,
+				bool enableCaching
+			);
+
 			// DXGIフォーマット取得
 			static DXGI_FORMAT GetDXGIFormat(TextureFormat format);
 

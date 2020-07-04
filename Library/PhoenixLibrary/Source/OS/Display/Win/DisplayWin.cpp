@@ -5,6 +5,7 @@
 #include <locale.h>
 
 #include "DisplayWin.h"
+#include "Phoenix/FrameWork/Input/InputDevice.h"
 
 
 namespace Phoenix
@@ -76,6 +77,11 @@ namespace Phoenix
 
 			// 自分を関連付け
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
+			// TODO : 作り直し パッド初期化
+			PAD.hwnd = hwnd;
+			PAD.instance = hInstaice;
+			PAD.InitInputDevice();
 
 			return true;
 		}

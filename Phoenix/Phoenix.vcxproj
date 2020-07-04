@@ -208,9 +208,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Player\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h" />
+    <ClInclude Include="Source\Player\Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -21,8 +21,8 @@ namespace Phoenix
 			~ModelRenderer() {}
 
 		public:
-			void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& worldTransform, const Graphics::Camera& camera) override;
-			void Draw(Graphics::IGraphicsDevice* graphicsDevice, ModelObject* model, IShader* shader) override;
+			void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera) override;
+			void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& worldTransform, ModelObject* model, IShader* shader) override;
 			void End(Graphics::IGraphicsDevice* graphicsDevice) override;
 		};
 	} // namespace FrameWork

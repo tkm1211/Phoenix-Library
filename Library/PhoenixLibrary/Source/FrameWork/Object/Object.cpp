@@ -63,10 +63,20 @@ namespace Phoenix
 			const std::vector<Graphics::ModelData::Material>& resourceMaterials = modelResource->GetModelData().materials;
 			materials.resize(resourceMaterials.size());
 
-			for (int i = 0; i < materials.size(); ++i)
+			for (u32 i = 0; i < materials.size(); ++i)
 			{
-				materials.at(i).texture = Graphics::ITexture::Create();
-				materials.at(i).texture->Initialize(graphicsDevice->GetDevice(), resourceMaterials.at(i).textureFilename.c_str());
+				ModelObject::Material& material = materials.at(i);
+				material.name = resourceMaterials.at(i).name;
+
+				material.textures.resize(resourceMaterials.at(i).textureFilename.size());
+				material.colors.resize(resourceMaterials.at(i).color.size());
+
+				for (u32 j = 0; j < material.textures.size(); ++j)
+				{
+					material.colors.at(j) = resourceMaterials.at(i).color.at(j);
+					material.textures.at(j) = Graphics::ITexture::Create();
+					material.textures.at(j)->Initialize(graphicsDevice->GetDevice(), resourceMaterials.at(i).textureFilename.at(j).c_str(), static_cast<Graphics::MaterialType>(j), material.colors.at(j));
+				}
 			}
 
 			animator = std::make_unique<Animator>();

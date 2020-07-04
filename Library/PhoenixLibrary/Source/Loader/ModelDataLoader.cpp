@@ -644,27 +644,43 @@ namespace Phoenix
 			FbxFileTexture* fbxTexture = nullptr;
 
 			material.name = fbxSurfaceMaterial->GetName();
-			material.color = Math::Color::White;
+			material.textureFilename.resize(5);
+			material.color.resize(5);
 
-			// Diffuse
-			if (GetMaterialProperty(fbxSurfaceMaterial, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor, fbxColor, fbxTexture))
+			std::function<void(Graphics::ModelData::Material&, int, const char*, const char*)> FetchMaterial = [&](Graphics::ModelData::Material& material, int index, const char* propertyName, const char* factorName)
 			{
-				if (fbxTexture != nullptr)
+				material.color.at(index) = Math::Color::White;
+
+				const FbxProperty property = fbxSurfaceMaterial->FindProperty(propertyName);
+
+				if (property.IsValid())
 				{
-					material.textureFilename = OS::Path::Combine(dirname, fbxTexture->GetRelativeFileName());
+					// Texture
+					if (GetMaterialProperty(fbxSurfaceMaterial, propertyName, factorName, fbxColor, fbxTexture))
+					{
+						if (fbxTexture != nullptr)
+						{
+							material.textureFilename.at(index) = OS::Path::Combine(dirname, fbxTexture->GetRelativeFileName());
+						}
+						material.color.at(index).r = static_cast<f32>(fbxColor[0]);
+						material.color.at(index).g = static_cast<f32>(fbxColor[1]);
+						material.color.at(index).b = static_cast<f32>(fbxColor[2]);
+					}
+					// Transparency
+					if (GetMaterialFactorProperty(fbxSurfaceMaterial, FbxSurfaceMaterial::sTransparencyFactor, fbxFactor))
+					{
+						if (fbxFactor > 0)
+						{
+							material.color.at(index).a = static_cast<f32>(fbxFactor);
+						}
+					}
 				}
-				material.color.r = static_cast<f32>(fbxColor[0]);
-				material.color.g = static_cast<f32>(fbxColor[1]);
-				material.color.b = static_cast<f32>(fbxColor[2]);
-			}
-			// Transparency
-			if (GetMaterialFactorProperty(fbxSurfaceMaterial, FbxSurfaceMaterial::sTransparencyFactor, fbxFactor))
-			{
-				if (fbxFactor > 0)
-				{
-					material.color.a = static_cast<f32>(fbxFactor);
-				}
-			}
+			};
+			FetchMaterial(material, 0, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor);
+			FetchMaterial(material, 1, FbxSurfaceMaterial::sAmbient, FbxSurfaceMaterial::sAmbientFactor);
+			FetchMaterial(material, 2, FbxSurfaceMaterial::sSpecular, FbxSurfaceMaterial::sSpecularFactor);
+			FetchMaterial(material, 3, FbxSurfaceMaterial::sNormalMap, FbxSurfaceMaterial::sBumpFactor);
+			FetchMaterial(material, 4, FbxSurfaceMaterial::sBump, FbxSurfaceMaterial::sBumpFactor);
 		}
 
 		// マテリアルプロパティ取得

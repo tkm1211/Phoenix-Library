@@ -41,8 +41,8 @@ namespace Phoenix
 			struct Material
 			{
 				std::string name;
-				std::string textureFilename;
-				Math::Color color;
+				std::vector<std::string> textureFilename;
+				std::vector<Math::Color> color;
 
 				template<class Archive>
 				void serialize(Archive& archive, u32 version);

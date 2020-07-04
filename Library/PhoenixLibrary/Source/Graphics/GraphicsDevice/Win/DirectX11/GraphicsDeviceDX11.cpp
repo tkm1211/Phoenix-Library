@@ -70,11 +70,11 @@ namespace Phoenix
 
 			ISampler* samplers[] =
 			{
-				contextDX11->GetSamplerState(SamplerState::AnisotropicWrap)
+				contextDX11->GetSamplerState(SamplerState::LinearWrap)
 			};
 			context->SetSamplers(ShaderType::Vertex, 0, 1, samplers);
 			context->SetSamplers(ShaderType::Pixel, 0, 1, samplers);
-			context->SetRasterizer(contextDX11->GetRasterizerState(RasterizerState::SolidCullBack));
+			context->SetRasterizer(contextDX11->GetRasterizerState(RasterizerState::SolidCullNone));
 			context->SetBlend(contextDX11->GetBlendState(BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 			
 			float color[] = { 0.5f, 0.5f, 0.5f, 1.0f };

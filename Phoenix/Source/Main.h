@@ -17,6 +17,7 @@
 #include "Phoenix/FrameWork/Shader/Shader.h"
 #include "../Source/Loader/Loader.h"
 #include "imgui.h"
+#include "Player/Player.h"
 
 
 //****************************************************************************
@@ -26,20 +27,13 @@ class Main : public Phoenix::FrameWork::Main
 {
 private:
 	using Super = Phoenix::FrameWork::Main;
+	std::unique_ptr<Player> player;
+	std::unique_ptr<Phoenix::FrameWork::ModelObject> stageModel;
+	std::vector<std::unique_ptr<Phoenix::FrameWork::Renderer>> renderer;
 	std::unique_ptr<Phoenix::FrameWork::IShader> basicShader;
 	std::unique_ptr<Phoenix::FrameWork::IShader> basicSkinShader;
-	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
-	std::vector<std::unique_ptr<Phoenix::FrameWork::Renderer>> renderer;
 	Phoenix::Graphics::Camera camera;
-
-	Phoenix::Math::Vector3 pos;
-	Phoenix::Math::Vector3 rotate;
-	Phoenix::Math::Vector3 scale;
-
-	struct CbMaterial
-	{
-		Phoenix::Math::Color color;
-	};
+	bool cameraFlg = false;
 
 public:
 	Main() {}
@@ -57,6 +51,9 @@ public:
 
 	// 描画
 	void Render() override;
+
+	// GUI
+	void GUI();
 
 protected:
 	//// コンテナセットアップ

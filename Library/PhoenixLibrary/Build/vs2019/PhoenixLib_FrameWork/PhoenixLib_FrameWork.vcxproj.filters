@@ -28,6 +28,12 @@
     <Filter Include="Source\Shader">
       <UniqueIdentifier>{98c63c8a-ee40-4eca-89cf-2ac811038b72}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\Input">
+      <UniqueIdentifier>{9ad02abb-79c4-48fb-b895-d190127f789f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Input">
+      <UniqueIdentifier>{e72b62fb-6177-4803-a2a4-2ae1452c062f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -54,6 +60,9 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\Shader.h">
       <Filter>Include\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Input\InputDevice.h">
+      <Filter>Include\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -73,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicSkinShader.cpp">
       <Filter>Source\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Input\InputDevice.cpp">
+      <Filter>Source\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

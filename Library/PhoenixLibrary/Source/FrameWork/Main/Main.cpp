@@ -6,6 +6,7 @@
 #include "../../ExternalLibrary/ImGui/Include/imgui_internal.h"
 #include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
 #include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
+#include "Phoenix/FrameWork/Input/InputDevice.h"
 
 
 namespace Phoenix
@@ -86,6 +87,9 @@ namespace Phoenix
 		{
 			// çXêV
 			{
+				GetXInputState(&xInput[0], 0);
+				GetDInputState(&dInput[0], 0);
+
 				ImGui_ImplDX11_NewFrame();
 				ImGui_ImplWin32_NewFrame();
 				ImGui::NewFrame();
