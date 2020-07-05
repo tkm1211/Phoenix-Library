@@ -3,6 +3,8 @@
 #include "Phoenix/Graphics/Shader.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Mesh.h"
+#include "Phoenix/FrameWork/Object/Object.h"
+#include "Phoenix/Graphics/Camera.h"
 
 
 namespace Phoenix
@@ -29,10 +31,13 @@ namespace Phoenix
 			virtual void Finalize() = 0;
 
 			// シェーダー開始
-			virtual void Begin(Graphics::IGraphicsDevice* graphicsDevice) = 0;
+			virtual void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera) = 0;
 
 			// シェーダー終了
 			virtual void End(Graphics::IGraphicsDevice* graphicsDevice) = 0;
+
+			// 描画
+			virtual void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& worldTransform, ModelObject* model) = 0;
 
 			// 頂点バッファ種類の取得
 			virtual Graphics::VertexBufferKind* GetVectexBuferKinds() = 0;

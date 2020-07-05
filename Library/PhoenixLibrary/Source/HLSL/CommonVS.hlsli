@@ -4,7 +4,7 @@
 #define CB_SCENE	b0
 #define CB_MESH		b1
 #define CB_BONE		b2
-#define CB_SHADOW	b3
+//#define CB_SHADOW	b3
 
 #include "CommonCB.hlsli"
 #include "CommonLayout.hlsli"
@@ -58,7 +58,7 @@ VS_OUTPUT VSCommon(VS_INPUT input)
 #endif
 
 #if defined(USE_SHADOW)
-	output.shadow = mul(input.position, mul(cb_world, cb_shadow));
+	//output.shadow = mul(input.position, mul(cb_world, cb_shadow));
 #endif
     return output;
 }

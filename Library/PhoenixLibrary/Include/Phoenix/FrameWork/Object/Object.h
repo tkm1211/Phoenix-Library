@@ -174,7 +174,10 @@ namespace Phoenix
 			u32 GetBoneTransformCount(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransformCount; }
 
 			// マテリアルのテクスチャ取得
-			Graphics::ITexture* GetTexture(u32 index, u32 texIndex) { return materials.at(index).textures.at(texIndex).get(); }
+			Graphics::ITexture* GetTexture(u32 index, u32 texIndex)
+			{
+				return materials.at(index).textures.at(texIndex).get();
+			}
 
 			// マテリアルのサイズ取得
 			u32 GetMaterialSize() { return materials.size(); }

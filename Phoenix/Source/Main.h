@@ -32,6 +32,7 @@ private:
 	std::vector<std::unique_ptr<Phoenix::FrameWork::Renderer>> renderer;
 	std::unique_ptr<Phoenix::FrameWork::IShader> basicShader;
 	std::unique_ptr<Phoenix::FrameWork::IShader> basicSkinShader;
+	std::unique_ptr<Phoenix::FrameWork::IShader> standardShader;
 	Phoenix::Graphics::Camera camera;
 	bool cameraFlg = false;
 

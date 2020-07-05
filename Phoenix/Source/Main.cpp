@@ -7,6 +7,7 @@
 #include "Phoenix/FrameWork/Renderer/ModelRenderer.h"
 #include "Phoenix/FrameWork/Shader/BasicShader.h"
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
+#include "Phoenix/FrameWork/Shader/StandardShader.h"
 
 
 namespace Phoenix
@@ -39,6 +40,9 @@ bool Main::Initialize(Phoenix::uintPtr instance)
 
 	basicSkinShader = Phoenix::FrameWork::BasicSkinShader::Create();
 	basicSkinShader->Initialize(graphicsDevice.get());
+
+	standardShader = Phoenix::FrameWork::StandardShader::Create();
+	standardShader->Initialize(graphicsDevice.get());
 
 	cameraFlg = false;
 
@@ -87,6 +91,12 @@ void Main::GUI()
 			ImGui::Checkbox("FreeCamera", &cameraFlg);
 			ImGui::TreePop();
 		}
+		Phoenix::Graphics::DirLight* dir = static_cast<Phoenix::FrameWork::StandardShader*>(standardShader.get())->GetLight()->GetDefaultDirLight();
+		if (ImGui::TreeNode("Light"))
+		{
+			ImGui::DragFloat3("dir", &dir->direction.x, 0.01f, -1.0f, 1.0f);
+			ImGui::TreePop();
+		}
 	}
 	ImGui::End();
 }
@@ -98,7 +108,7 @@ void Main::Render()
 	// ワールド行列を作成
 	Phoenix::Math::Matrix W;
 	{
-		Phoenix::Math::Vector3 scale = { 20.0f, 20.0f, 20.0f };
+		Phoenix::Math::Vector3 scale = { 40.0f, 40.0f, 40.0f };
 		Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
 		Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
 
@@ -112,17 +122,22 @@ void Main::Render()
 
 	// メッシュ描画
 #if 1
-	basicSkinShader->Begin(graphicsDevice.get());
-	renderer[0]->Begin(graphicsDevice.get(), camera);
-	renderer[0]->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel(), basicSkinShader.get());
-	renderer[0]->End(graphicsDevice.get());
+	basicSkinShader->Begin(graphicsDevice.get(), camera);
+	basicSkinShader->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel());
 	basicSkinShader->End(graphicsDevice.get());
+#else
+	standardShader->Begin(graphicsDevice.get(), camera);
+	standardShader->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel());
+	standardShader->End(graphicsDevice.get());
 #endif
 
-	basicShader->Begin(graphicsDevice.get());
-	renderer[0]->Begin(graphicsDevice.get(), camera);
-	renderer[0]->Draw(graphicsDevice.get(), W, stageModel.get(), basicShader.get());
-	//renderer[0]->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel(), basicShader.get());
-	renderer[0]->End(graphicsDevice.get());
+#if 1
+	basicShader->Begin(graphicsDevice.get(), camera);
+	basicShader->Draw(graphicsDevice.get(), W, stageModel.get());
 	basicShader->End(graphicsDevice.get());
+#else
+	standardShader->Begin(graphicsDevice.get(), camera);
+	standardShader->Draw(graphicsDevice.get(), W, stageModel.get());
+	standardShader->End(graphicsDevice.get());
+#endif
 }

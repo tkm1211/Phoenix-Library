@@ -115,6 +115,9 @@
     <Filter Include="Source\Model">
       <UniqueIdentifier>{cb26ce2d-ede9-48c6-b467-99b09adb190b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Light">
+      <UniqueIdentifier>{33560b6b-37c2-4582-bbcd-91a5ae64fcae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Context.h">
@@ -234,6 +237,12 @@
     <ClInclude Include="..\..\..\Source\Graphics\Texture\TextureResourceSTB.h">
       <Filter>Source\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\Graphics\Light.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Graphics\Light\LightingState.h">
+      <Filter>Source\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Graphics\Context\Win\DirectX11\ContextDX11.cpp">
@@ -304,6 +313,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Graphics\Texture\TextureResourceSTB.cpp">
       <Filter>Source\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Graphics\Light\LightingState.cpp">
+      <Filter>Source\Light</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

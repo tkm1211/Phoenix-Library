@@ -25,6 +25,7 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	model->Initialize(graphicsDevice);
 	model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Vampire_A_Lusth\\Wait\\Zombie_Idle.fbx");
+	//model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Mixamo\\Sword_And_Shield_Attack\\Sword_And_Shield_Attack.fbx");
 
 	model->LoadAnimation("..\\Data\\Assets\\Model\\Vampire_A_Lusth\\FowardWalk\\Walking_With_Shopping_Bag.fbx", -1);
 	model->LoadAnimation("..\\Data\\Assets\\Model\\Vampire_A_Lusth\\FowardRun\\Running.fbx", -1);

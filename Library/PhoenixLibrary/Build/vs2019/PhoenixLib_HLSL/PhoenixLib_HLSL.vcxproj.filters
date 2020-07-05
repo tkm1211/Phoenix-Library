@@ -15,6 +15,15 @@
     <FxCompile Include="..\..\..\Source\HLSL\BasicVSSkin.hlsl">
       <Filter>Source</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\StandardVS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\StandardVSSkin.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\StandardPS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\CommonVS.hlsli">
@@ -27,6 +36,9 @@
       <Filter>Source</Filter>
     </None>
     <None Include="..\..\..\Source\HLSL\Skinning.hlsli">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\CommonPS.hlsli">
       <Filter>Source</Filter>
     </None>
   </ItemGroup>

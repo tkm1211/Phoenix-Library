@@ -35,10 +35,13 @@ namespace Phoenix
 			void Finalize() override;
 
 			// シェーダー開始
-			void Begin(Graphics::IGraphicsDevice* graphicsDevice) override;
+			void Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera) override;
 
 			// シェーダー終了
 			void End(Graphics::IGraphicsDevice* graphicsDevice) override;
+
+			// 描画
+			void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& worldTransform, ModelObject* model) override;
 
 			// 頂点バッファ種類の取得
 			Graphics::VertexBufferKind* GetVectexBuferKinds() override { return vbKinds.data(); }

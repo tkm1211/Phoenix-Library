@@ -69,7 +69,7 @@ namespace Phoenix
 		}
 
 		// シェーダー開始
-		void BasicShader::Begin(Graphics::IGraphicsDevice* graphicsDevice)
+		void BasicShader::Begin(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera)
 		{
 			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
@@ -92,12 +92,49 @@ namespace Phoenix
 			};
 			context->SetSamplers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(sampler), sampler);
 
+			// シーン定数バッファ更新
+			context->UpdateConstantBufferScene(camera.GetView(), camera.GetProjection());
+
 			// メッシュ定数バッファ更新
 			CbMaterial cb = {};
-			cb.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			cb.color = { 2.0f, 2.0f, 2.0f, 1.0f };
 			context->UpdateSubresource(cbMatrial.get(), 0, 0, &cb, 0, 0);
 
 			shader->Activate(graphicsDevice->GetDevice());
+		}
+
+		// 描画
+		void BasicShader::Draw(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& worldTransform, ModelObject* model)
+		{
+			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
+
+			Graphics::IModelResource* modelResource = model->GetModelResource();
+			Graphics::ModelData modelData = modelResource->GetModelData();
+
+			// メッシュ定数バッファ更新
+			context->UpdateConstantBufferMesh(worldTransform);
+
+			for (s32 i = 0; i < modelResource->GetMeshSize(); ++i)
+			{
+				if (0 < model->GetMeshNodes())
+				{
+					graphicsDevice->GetContext()->UpdateConstantBufferBone(model->GetBoneTransforms(i), model->GetBoneTransformCount(i));
+				}
+
+				Graphics::IMesh* mesh = modelResource->GetMesh(i);
+				Graphics::ModelData::Mesh meshData = modelData.meshes[i];
+
+				for (Graphics::ModelData::Subset& subset : meshData.subsets)
+				{
+					u32 size = model->GetTextureSize(subset.materialIndex);
+					for (u32 j = 0; j < size; ++j)
+					{
+						Graphics::ITexture* texture[] = { model->GetTexture(subset.materialIndex, j) };
+						graphicsDevice->GetContext()->SetShaderResources(Graphics::ShaderType::Pixel, j, 1, texture);
+					}
+					mesh->Draw(graphicsDevice->GetDevice(), GetVectexBuferKinds(), GetVectexBuferKindsSize(), subset.startIndex, subset.indexCount, Graphics::PrimitiveTopology::TriangleList);
+				}
+			}
 		}
 
 		// シェーダー終了
