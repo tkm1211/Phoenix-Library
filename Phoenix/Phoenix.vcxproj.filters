@@ -13,6 +13,9 @@
     <Filter Include="Source\Player">
       <UniqueIdentifier>{2e16a2d2-e326-4e82-8479-b048778fdf2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Boss">
+      <UniqueIdentifier>{0efa3f80-4869-4d74-83be-82aa5cd974e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -21,6 +24,9 @@
     <ClCompile Include="Source\Player\Player.cpp">
       <Filter>Source\Player</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Boss\Boss.cpp">
+      <Filter>Source\Boss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -28,6 +34,9 @@
     </ClInclude>
     <ClInclude Include="Source\Player\Player.h">
       <Filter>Source\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\Boss.h">
+      <Filter>Source\Boss</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

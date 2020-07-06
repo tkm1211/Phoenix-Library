@@ -20,25 +20,29 @@ namespace Phoenix
 		{
 			Phoenix::Graphics::PhoenixInputElementDesc inputElementDesc[] =
 			{
-				// SemanticName	 SemanticIndex	Format													InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
-				{"POSITION",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,		0,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-				{"NORMAL",		 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,		1,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-				{"TANGENT",		 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,		2,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-				{"TEXCOORD",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32_FLOAT,			3,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				// SemanticName	 SemanticIndex	Format														InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
+				{"POSITION",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,			0,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"NORMAL",		 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,			1,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"TANGENT",		 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,			2,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"TEXCOORD",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32_FLOAT,				3,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"BLENDWEIGHT",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,		4,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"BLENDWEIGHT",	 1,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,		5,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"BLENDINDICES", 0,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,			6,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"BLENDINDICES", 1,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,			7,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
 			};
 
 			shader = Graphics::IShader::Create();
 			shader->LoadVS
 			(
 				graphicsDevice->GetDevice(),
-				"C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\StandardVS.cso",
+				"..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\StandardVSSkin.cso",
 				inputElementDesc,
 				Phoenix::FND::ArraySize(inputElementDesc)
 			);
 			shader->LoadPS
 			(
 				graphicsDevice->GetDevice(),
-				"C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\StandardPS.cso"
+				"..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\StandardPS.cso"
 			);
 
 			cbScene = Phoenix::Graphics::IBuffer::Create();
@@ -68,6 +72,10 @@ namespace Phoenix
 			vbKinds.emplace_back(Graphics::VertexBufferKind::Normal);
 			vbKinds.emplace_back(Graphics::VertexBufferKind::Tangent);
 			vbKinds.emplace_back(Graphics::VertexBufferKind::TexCoord0);
+			vbKinds.emplace_back(Graphics::VertexBufferKind::BlendWeight0);
+			vbKinds.emplace_back(Graphics::VertexBufferKind::BlendWeight1);
+			vbKinds.emplace_back(Graphics::VertexBufferKind::BlendIndex0);
+			vbKinds.emplace_back(Graphics::VertexBufferKind::BlendIndex1);
 
 			light = std::make_unique<Graphics::LightingState>();
 
@@ -130,13 +138,12 @@ namespace Phoenix
 			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
 			Graphics::IModelResource* modelResource = model->GetModelResource();
-			Graphics::ModelData modelData = modelResource->GetModelData();
 
 			CbMaterial cb = {};
 			light->UpdateLightEnvironment(cb.lightEnv, Math::AABB());
 			cb.emissive = Math::Color(0.0f, 0.0f, 0.0f, 1.0f);
-			cb.diffuse = Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
-			cb.specular = Math::Color(0.1f, 0.1f, 0.1f, 1.0f);
+			cb.diffuse = Math::Color(10.0f, 10.0f, 10.0f, 1.0f);
+			cb.specular = Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
 			context->UpdateSubresource(cbMaterial.get(), 0, 0, &cb, 0, 0);
 
 			// メッシュ定数バッファ更新
@@ -150,9 +157,8 @@ namespace Phoenix
 				}
 
 				Graphics::IMesh* mesh = modelResource->GetMesh(i);
-				Graphics::ModelData::Mesh meshData = modelData.meshes[i];
 
-				for (Graphics::ModelData::Subset& subset : meshData.subsets)
+				for (const Graphics::ModelData::Subset& subset : modelResource->GetModelData().meshes[i].subsets)
 				{
 					u32 size = model->GetTextureSize(subset.materialIndex);
 					for (u32 j = 0; j < size; ++j)

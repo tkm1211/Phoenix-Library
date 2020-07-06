@@ -19,6 +19,7 @@ namespace Phoenix
 		protected:
 			std::unique_ptr<OS::IDisplay> display;
 			std::unique_ptr<Graphics::IGraphicsDevice> graphicsDevice;
+			float elapsedTime = 0.0f;
 
 		public:
 			Main() {}

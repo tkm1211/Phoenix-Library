@@ -131,14 +131,14 @@ namespace Phoenix
 		// バウンディングボックス計算
 		void Mesh::ComputeBounds(Math::AABB& bounds, const Math::Matrix boneTransforms[])
 		{
-			bounds.Reset();
+			/*bounds.Reset();
 
 			if (boneTransforms != nullptr)
 			{
 
 				for (u32 i = 0; i < desc.vertexCount; ++i)
 				{
-					const Math::Vector3& position = desc.positions[i];
+					const Math::Vector4& position = desc.positions[i];
 					const Math::Vector4& weight0 = desc.blendWeights0[i];
 					const Math::Vector4& weight1 = desc.blendWeights1[i];
 					const Math::Vector4_U8& indices0 = desc.blendIndices0[i];
@@ -148,8 +148,8 @@ namespace Phoenix
 					for (u32 j = 0; j < 4; ++j)
 					{
 						Math::Vector3 out0, out1;
-						out0 = Math::Vector3TransformCoord(position, boneTransforms[indices0.v[j]]);
-						out1 = Math::Vector3TransformCoord(position, boneTransforms[indices1.v[j]]);
+						out0 = Math::Vector4TransformCoord(position, boneTransforms[indices0.v[j]]);
+						out1 = Math::Vector4TransformCoord(position, boneTransforms[indices1.v[j]]);
 
 						vertex += out0 * weight0.v[j];
 						vertex += out1 * weight1.v[j];
@@ -167,13 +167,13 @@ namespace Phoenix
 			{
 				ComputeBounds();
 				bounds = this->bounds;
-			}
+			}*/
 		}
 
 		// スキニング頂点計算
 		void Mesh::ComputeSkinnedVertices(Math::Vector3 vertices[], const Math::Matrix bone_transforms[])
 		{
-			for (u32 i = 0; i < desc.vertexCount; ++i)
+			/*for (u32 i = 0; i < desc.vertexCount; ++i)
 			{
 				const Math::Vector3& position = desc.positions[i];
 				const Math::Vector4& weight0 = desc.blendWeights0[i];
@@ -192,7 +192,7 @@ namespace Phoenix
 					vertex += out0 * weight0.v[j];
 					vertex += out1 * weight1.v[j];
 				}
-			}
+			}*/
 		}
 	} // namespace Graphics
 } // namespace Phoenix

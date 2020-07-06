@@ -28,6 +28,9 @@ bool Main::Initialize(Phoenix::uintPtr instance)
 	player = Player::Create();
 	player->Init(graphicsDevice.get());
 
+	boss = Boss::Create();
+	boss->Init(graphicsDevice.get());
+
 	const char* filename = "..\\Data\\Assets\\Model\\stage\\stage01.fbx";
 	stageModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	stageModel->Initialize(graphicsDevice.get());
@@ -64,6 +67,11 @@ void Main::Update()
 	// プレイヤー更新
 	{
 		player->Update(camera);
+	}
+
+	// ボス更新
+	{
+		boss->Update(camera);
 	}
 
 	// カメラ更新
@@ -124,10 +132,21 @@ void Main::Render()
 #if 1
 	basicSkinShader->Begin(graphicsDevice.get(), camera);
 	basicSkinShader->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel());
+	basicSkinShader->Draw(graphicsDevice.get(), boss->GetWorldMatrix(), boss->GetModel());
 	basicSkinShader->End(graphicsDevice.get());
 #else
 	standardShader->Begin(graphicsDevice.get(), camera);
 	standardShader->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel());
+	standardShader->End(graphicsDevice.get());
+#endif
+
+#if 1
+	//basicSkinShader->Begin(graphicsDevice.get(), camera);
+	//basicSkinShader->Draw(graphicsDevice.get(), boss->GetWorldMatrix(), boss->GetModel());
+	//basicSkinShader->End(graphicsDevice.get());
+#else
+	standardShader->Begin(graphicsDevice.get(), camera);
+	standardShader->Draw(graphicsDevice.get(), boss->GetWorldMatrix(), boss->GetModel());
 	standardShader->End(graphicsDevice.get());
 #endif
 

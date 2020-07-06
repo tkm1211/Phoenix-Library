@@ -95,6 +95,9 @@ namespace Phoenix
 				ImGui::NewFrame();
 				//ImGuizmo::BeginFrame();
 
+				display->TimerTick();
+				display->CalculateFrameStats();
+				elapsedTime = display->TimerInterval();
 				Update();
 			}
 

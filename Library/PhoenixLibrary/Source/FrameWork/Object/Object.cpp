@@ -201,5 +201,29 @@ namespace Phoenix
 		{
 			animator->Update(elapsedTime);
 		}
+
+		// Ä¶ŽžŠÔ’·(•b)Žæ“¾
+		f32 ModelObject::GetLength()
+		{
+			return animator->GetLength();
+		}
+
+		// Ä¶‘¬“x”{—¦Ý’è
+		void ModelObject::SetSpeed(f32 speed)
+		{
+			animator->SetSpeed(speed);
+		}
+
+		// Ä¶‘¬“x”{—¦Žæ“¾
+		f32 ModelObject::GetSpeed()
+		{
+			return animator->GetSpeed();
+		}
+
+		// ƒuƒŒƒ“ƒh’†‚©
+		bool ModelObject::IsBlend()
+		{
+			return animator->IsBlend();
+		}
 	}
 }

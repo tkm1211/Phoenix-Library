@@ -463,8 +463,8 @@ namespace Phoenix
 			}
 			else*/
 			{
-				rotateY -= (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2 * 0.01745f;
-				rotateX += (static_cast<float>(xInput[0].sRY) / 1000.0f) * 2 * 0.01745f;
+				rotateY -= (static_cast<float>(xInput[0].sRX) / 1000.0f) * 3 * 0.01745f;
+				rotateX += (static_cast<float>(xInput[0].sRY) / 1000.0f) * 3 * 0.01745f;
 				if (0.6f < rotateX)
 				{
 					rotateX = 0.6f;
@@ -489,6 +489,11 @@ namespace Phoenix
 			Math::Vector3 _pos = _target - (front * _distance);
 
 			SetLookAt(_pos, _target, _up);
+		}
+
+		void Camera::LockOnCamera(const Math::Vector3& center, const Math::Vector3& pos)
+		{
+			SetLookAt(pos, center, up);
 		}
 	} // namespace Graphics
 } // namespace Phoenix

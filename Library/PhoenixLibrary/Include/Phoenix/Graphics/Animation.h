@@ -173,6 +173,9 @@ namespace Phoenix
 			// ブレンド時間取得
 			virtual f32 GetBlendTime() = 0;
 
+			// ブレンド中か
+			virtual bool IsBlend() = 0;
+
 			// 再生位置(秒)設定
 			virtual void SetCurrentTime(f32 seconds) = 0;
 

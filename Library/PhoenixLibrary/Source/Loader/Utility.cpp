@@ -38,6 +38,17 @@ namespace Phoenix
 			);
 		}
 
+		// FbxDouble4 Å® Vector4
+		Math::Vector4 Utility::FbxDoble4ToVector4(const FbxDouble4& fbxValue)
+		{
+			return Math::Vector4(
+				static_cast<f32>(fbxValue[0]),
+				static_cast<f32>(fbxValue[1]),
+				static_cast<f32>(fbxValue[2]),
+				static_cast<f32>(fbxValue[3])
+			);
+		}
+
 		// FbxDouble4 Å® Quaternion
 		Math::Quaternion Utility::FbxDoble4ToQuaternion(const FbxDouble4& fbxValue)
 		{

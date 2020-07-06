@@ -171,6 +171,8 @@ namespace Phoenix
 
 			void ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust);
 
+			void LockOnCamera(const Math::Vector3& center, const Math::Vector3& pos);
+
 		private:
 			// ビューベクトルを取得
 			void GetViewVectors(Math::Vector3& front, Math::Vector3& up);

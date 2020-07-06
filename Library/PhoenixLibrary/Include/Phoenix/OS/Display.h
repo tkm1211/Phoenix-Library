@@ -42,6 +42,15 @@ namespace Phoenix
 
 			// ウインドウハンドル取得
 			virtual WindowHandle GetHandle() = 0;
+
+			// タイマーチック
+			virtual void TimerTick() = 0;
+
+			// タイマーインターバル
+			virtual f32 TimerInterval() = 0;
+
+			// フレームレートの表示
+			virtual void CalculateFrameStats() = 0;
 		};
 	} // namespace OS
 } // namespace Phoenix

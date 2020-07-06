@@ -22,29 +22,50 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	//const char* filename = "..\\Data\\Assets\\Model\\sandance_fbx\\sandance.fbx";
 	//const char* filename = "..\\Data\\Assets\\Model\\Vampire_A_Lusth\\Wait\\Zombie_Idle.fbx";
 
-	model = std::make_unique<Phoenix::FrameWork::ModelObject>();
-	model->Initialize(graphicsDevice);
-	model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Vampire_A_Lusth\\Wait\\Zombie_Idle.fbx");
-	//model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Mixamo\\Sword_And_Shield_Attack\\Sword_And_Shield_Attack.fbx");
+	// モデル読み込み
+	{
+		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
+		model->Initialize(graphicsDevice);
+		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Idle\\Breathing_Idle.fbx");
+		//model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Mixamo\\Sword_And_Shield_Attack\\Sword_And_Shield_Attack.fbx");
+	}
 
-	model->LoadAnimation("..\\Data\\Assets\\Model\\Vampire_A_Lusth\\FowardWalk\\Walking_With_Shopping_Bag.fbx", -1);
-	model->LoadAnimation("..\\Data\\Assets\\Model\\Vampire_A_Lusth\\FowardRun\\Running.fbx", -1);
-	model->LoadAnimation("..\\Data\\Assets\\Model\\Vampire_A_Lusth\\Roll\\Sprinting_Forward_Roll.fbx", -1);
+	// アニメーション読み込み
+	{
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardWalk\\Walking_With_Shopping_Bag.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardRun\\Running.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Roll\\Sprinting_Forward_Roll.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack01\\Elbow_Uppercut_Combo.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack02\\Uppercut_Jab.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack03\\Strike_Foward_Jog.fbx", -1);
+	}
 
-	animationState = AnimationState::Wait;
-	isChangeAnimation = false;
+	// アニメーションパラメーターの設定
+	{
+		animationState = AnimationState::Idle;
+		attackState = AttackAnimationState::End;
+		isChangeAnimation = false;
+		isAttack = false;
+		speed = WalkSpeed;
+		animationSpeed = AnimationSpeed60;
+		attackReceptionTimeCnt = 0.0f;
+	}
 
-	model->PlayAnimation(0, 1);
-	model->UpdateTransform(1 / 60.0f);
-	model->SetLoopAnimation(true);
-	//model->PauseAnimation(true);
+	// 待機モーション開始
+	{
+		model->PlayAnimation(0, 1);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(true);
+		//model->PauseAnimation(true);
+	}
 
-	worldMatrix = Phoenix::Math::MatrixIdentity();
-	pos = { 0,0,0 };
-	rotate = { 0,0,0 };
-	scale = { 1,1,1 };
-
-	speed = WalkSpeed;
+	// トランスフォームの初期化
+	{
+		worldMatrix = Phoenix::Math::MatrixIdentity();
+		pos = { 0,0,0 };
+		rotate = { 0,0,0 };
+		scale = { 1,1,1 };
+	}
 }
 
 void Player::Update(Phoenix::Graphics::Camera& camera)
@@ -92,25 +113,85 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 	sX = GetKeyState('A') < 0 ? -1.0f : sX;
 	sX = GetKeyState('D') < 0 ? 1.0f : sX;
 
-	if (xInput[0].bAt && animationState != AnimationState::Roll)
+	if (xInput[0].bYt && animationState != AnimationState::Roll)
 	{
-		isChangeAnimation = true;
-		speed = RollSpeed;
-		animationState = AnimationState::Roll;
+		if (!isAttack && animationState != AnimationState::Attack && attackState == AttackAnimationState::End)
+		{
+			attackReceptionTimeCnt = 0;
+			animationSpeed = AnimationSpeed30;
+			isChangeAnimation = true;
+			isAttack = true;
+			animationState = AnimationState::Attack;
+			attackState = AttackAnimationState::Attack01;
+		}
+		else if (isAttack && animationState == AnimationState::Attack && attackState == AttackAnimationState::Attack01)
+		{
+			//float len = model->GetLength(); // test
+			if (Attack01ReceptionStartTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= model->GetLength())
+			{
+				attackReceptionTimeCnt = 0;
+				animationSpeed = AnimationSpeed30;
+				isChangeAnimation = true;
+				isAttack = true;
+				animationState = AnimationState::Attack;
+				attackState = AttackAnimationState::Attack02;
+			}
+		}
+		else if (isAttack && animationState == AnimationState::Attack && attackState == AttackAnimationState::Attack02)
+		{
+			//float len = model->GetLength(); // test
+			if (Attack02ReceptionStartTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= model->GetLength())
+			{
+				attackReceptionTimeCnt = 0;
+				animationSpeed = AnimationSpeed45;
+				speed = Attack03Speed;
+				isChangeAnimation = true;
+				isAttack = true;
+				animationState = AnimationState::Attack;
+				attackState = AttackAnimationState::Attack03;
+			}
+		}
 	}
-	else if (animationState == AnimationState::Roll && model->IsPlaying())
+	else if (isAttack)
 	{
-		pos.x += sinf(rotate.y) * speed;
-		pos.z += cosf(rotate.y) * speed;
+		if (animationState == AnimationState::Attack && !model->IsPlaying())
+		{
+			attackReceptionTimeCnt = 0;
+			isChangeAnimation = true;
+			isAttack = false;
+			animationState = AnimationState::Idle;
+			attackState = AttackAnimationState::End;
+		}
+		else if (animationState == AnimationState::Attack && attackState == AttackAnimationState::Attack03 && model->IsPlaying())
+		{
+			pos.x += sinf(rotate.y) * speed;
+			pos.z += cosf(rotate.y) * speed;
+		}
+
+		attackReceptionTimeCnt += animationSpeed;
 	}
-	else if (animationState == AnimationState::Roll && !model->IsPlaying())
+	else if (animationState != AnimationState::Attack)
 	{
-		isChangeAnimation = true;
-		speed = 0.0f;
-		animationState = AnimationState::Wait;
+		if (xInput[0].bAt && animationState != AnimationState::Roll)
+		{
+			isChangeAnimation = true;
+			speed = RollSpeed;
+			animationState = AnimationState::Roll;
+		}
+		else if (animationState == AnimationState::Roll && model->IsPlaying())
+		{
+			pos.x += sinf(rotate.y) * speed;
+			pos.z += cosf(rotate.y) * speed;
+		}
+		else if (animationState == AnimationState::Roll && !model->IsPlaying())
+		{
+			isChangeAnimation = true;
+			speed = 0.0f;
+			animationState = AnimationState::Idle;
+		}
 	}
 
-	if (animationState != AnimationState::Roll)
+	if (animationState != AnimationState::Roll && animationState != AnimationState::Attack)
 	{
 		if (sX != 0.0f || sY != 0.0f)
 		{
@@ -149,11 +230,11 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 		}
 		else
 		{
-			if (animationState != AnimationState::Wait)
+			if (animationState != AnimationState::Idle)
 			{
 				isChangeAnimation = true;
 				speed = 0.0f;
-				animationState = AnimationState::Wait;
+				animationState = AnimationState::Idle;
 			}
 		}
 	}
@@ -165,7 +246,7 @@ void Player::ChangeAnimation()
 
 	switch (animationState)
 	{
-	case Player::AnimationState::Wait:
+	case Player::AnimationState::Idle:
 		model->PlayAnimation(0, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
@@ -187,12 +268,47 @@ void Player::ChangeAnimation()
 		model->PlayAnimation(3, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		model->SetSpeed(1.5f);
 		break;
 
+	case AnimationState::Attack:
+		ChangeAttackAnimation();
+		break;
+	
 	default: break;
 	}
 
 	isChangeAnimation = false;
+}
+
+void Player::ChangeAttackAnimation()
+{
+	switch (attackState)
+	{
+	case AttackAnimationState::Attack01:
+		model->PlayAnimation(4, 1, 0.2f);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+		model->SetSpeed(2.0f);
+		break;
+
+	case AttackAnimationState::Attack02:
+		model->PlayAnimation(5, 1, 0.2f);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+		model->SetSpeed(2.0f);
+		break;
+
+	case AttackAnimationState::Attack03:
+		model->PlayAnimation(6, 1, 0.2f);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+		model->SetSpeed(1.5f);
+		break;
+
+	case AttackAnimationState::End: break;
+	default: break;
+	}
 }
 
 void Player::GUI()

@@ -266,7 +266,7 @@ namespace Phoenix
 		// 再生速度倍率設定
 		void AnimationPlayer::SetSpeed(f32 speed)
 		{
-			speed = speed;
+			this->speed = speed;
 		}
 
 		// 再生速度倍率取得
@@ -286,6 +286,12 @@ namespace Phoenix
 		f32 AnimationPlayer::GetBlendTime()
 		{
 			return blendLength;
+		}
+
+		// ブレンド中か
+		bool AnimationPlayer::IsBlend()
+		{
+			return blendRate != 1.0f ? true : false;
 		}
 
 		// 再生位置設定

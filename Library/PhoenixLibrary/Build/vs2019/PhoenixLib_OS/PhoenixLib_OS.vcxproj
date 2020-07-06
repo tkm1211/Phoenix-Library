@@ -22,6 +22,7 @@
     <ClInclude Include="..\..\..\Include\Phoenix\OS\CriticalSection.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Display.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Event.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\HighResolutionTimer.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Main.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Path.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Resource.h" />

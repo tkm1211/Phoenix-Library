@@ -207,10 +207,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Boss\Boss.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Player\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Boss\Boss.h" />
     <ClInclude Include="Source\Main.h" />
     <ClInclude Include="Source\Player\Player.h" />
   </ItemGroup>

@@ -26,6 +26,9 @@ namespace Phoenix
 			// FbxDouble4 Å® Vector3
 			static Math::Vector3 FbxDoble4ToVector3(const FbxDouble4& fbxValue);
 
+			// FbxDouble4 Å® Vector4
+			static Math::Vector4 FbxDoble4ToVector4(const FbxDouble4& fbxValue);
+
 			// FbxDouble4 Å® Quaternion
 			static Math::Quaternion FbxDoble4ToQuaternion(const FbxDouble4& fbxValue);
 

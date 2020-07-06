@@ -104,6 +104,9 @@ namespace Phoenix
 			// ブレンド時間取得
 			f32 GetBlendTime() override;
 
+			// ブレンド中か
+			bool IsBlend() override;
+
 			// 再生位置設定
 			void SetCurrentTime(f32 seconds) override;
 

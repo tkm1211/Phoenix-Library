@@ -47,6 +47,15 @@ namespace Phoenix
 #pragma region Functions for Vector4
 		extern DirectX::XMFLOAT4 ConvertToFloat4FromVector4(const Vector4 v);
 		extern DirectX::XMVECTOR ConvertToVectorFromVector4(const Vector4 v);
+
+		// 4Dベクトルの長さを返す
+		f32 Vector4Length(const Vector4 v);
+
+		// 4Dベクトルの正規化したベクトルを返す。
+		Vector4 Vector4Normalize(const Vector4 v);
+
+		// 2つの4Dベクトルの内積を計算する。
+		f32 Vector4Dot(const Vector4 v1, const Vector4 v2);
 #pragma endregion
 
 #pragma region Functions for Matrix

@@ -3,10 +3,18 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <locale.h>
+#include <sstream>
 
 #include "DisplayWin.h"
 #include "Phoenix/FrameWork/Input/InputDevice.h"
 
+
+LRESULT CALLBACK FnWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	Phoenix::OS::DisplayWin* d = reinterpret_cast<Phoenix::OS::DisplayWin*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+
+	return d ? d->HandleMessage(hwnd, msg, wparam, lparam) : DefWindowProc(hwnd, msg, wparam, lparam);
+}
 
 namespace Phoenix
 {
@@ -49,7 +57,7 @@ namespace Phoenix
 				WNDCLASSEX wcex;
 				wcex.cbSize = sizeof(WNDCLASSEX);
 				wcex.style = CS_HREDRAW | CS_VREDRAW;
-				wcex.lpfnWndProc = HandleMessage;
+				wcex.lpfnWndProc = FnWndProc;
 				wcex.cbClsExtra = 0;
 				wcex.cbWndExtra = 0;
 				wcex.hInstance = hInstaice;
@@ -121,111 +129,44 @@ namespace Phoenix
 			return reinterpret_cast<WindowHandle>(hwnd);
 		}
 
-		//bool ImGui_ImplWin32_UpdateMouseCursor()
-		//{
-		//	ImGuiIO& io = ImGui::GetIO();
-		//	if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange)
-		//		return false;
+		// タイマーチック
+		void DisplayWin::TimerTick()
+		{
+			timer.Tick();
+		}
 
-		//	ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
-		//	if (imgui_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor)
-		//	{
-		//		// Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
-		//		::SetCursor(NULL);
-		//	}
-		//	else
-		//	{
-		//		// Show OS mouse cursor
-		//		LPTSTR win32_cursor = IDC_ARROW;
-		//		switch (imgui_cursor)
-		//		{
-		//		case ImGuiMouseCursor_Arrow:        win32_cursor = IDC_ARROW; break;
-		//		case ImGuiMouseCursor_TextInput:    win32_cursor = IDC_IBEAM; break;
-		//		case ImGuiMouseCursor_ResizeAll:    win32_cursor = IDC_SIZEALL; break;
-		//		case ImGuiMouseCursor_ResizeEW:     win32_cursor = IDC_SIZEWE; break;
-		//		case ImGuiMouseCursor_ResizeNS:     win32_cursor = IDC_SIZENS; break;
-		//		case ImGuiMouseCursor_ResizeNESW:   win32_cursor = IDC_SIZENESW; break;
-		//		case ImGuiMouseCursor_ResizeNWSE:   win32_cursor = IDC_SIZENWSE; break;
-		//		case ImGuiMouseCursor_Hand:         win32_cursor = IDC_HAND; break;
-		//		}
-		//		::SetCursor(::LoadCursor(NULL, win32_cursor));
-		//	}
-		//	return true;
-		//}
+		// タイマーインターバル
+		f32 DisplayWin::TimerInterval()
+		{
+			return timer.TimeInterval();
+		}
+
+		// フレームレートの表示
+		void DisplayWin::CalculateFrameStats()
+		{
+			static int frames = 0;
+			static float timeTlapsed = 0.0f;
+
+			frames++;
+
+			if ((timer.timeStamp() - timeTlapsed) >= 1.0f)
+			{
+				float fps = static_cast<float>(frames);
+				float mspf = 1000.0f / fps;
+				std::ostringstream outs;
+				outs.precision(6);
+				outs << "FPS : " << fps << " / " << "Frame Time : " << mspf << " (ms)";
+				SetWindowTextA(hwnd, outs.str().c_str()); // TODO : Draw fps
+
+				frames = 0;
+				timeTlapsed += 1.0f;
+			}
+		}
 
 #define DBT_DEVNODES_CHANGED 0x0007
 
 		LRESULT CALLBACK DisplayWin::HandleMessage(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
-			//{
-			//	if (ImGui::GetCurrentContext() == NULL)
-			//		return 0;
-
-			//	ImGuiIO& io = ImGui::GetIO();
-			//	switch (msg)
-			//	{
-			//	case WM_LBUTTONDOWN: case WM_LBUTTONDBLCLK:
-			//	case WM_RBUTTONDOWN: case WM_RBUTTONDBLCLK:
-			//	case WM_MBUTTONDOWN: case WM_MBUTTONDBLCLK:
-			//	case WM_XBUTTONDOWN: case WM_XBUTTONDBLCLK:
-			//	{
-			//		int button = 0;
-			//		if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK) { button = 0; }
-			//		if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK) { button = 1; }
-			//		if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) { button = 2; }
-			//		if (msg == WM_XBUTTONDOWN || msg == WM_XBUTTONDBLCLK) { button = (GET_XBUTTON_WPARAM(wparam) == XBUTTON1) ? 3 : 4; }
-			//		if (!ImGui::IsAnyMouseDown() && ::GetCapture() == NULL)
-			//			::SetCapture(hwnd);
-			//		io.MouseDown[button] = true;
-			//		return 0;
-			//	}
-			//	case WM_LBUTTONUP:
-			//	case WM_RBUTTONUP:
-			//	case WM_MBUTTONUP:
-			//	case WM_XBUTTONUP:
-			//	{
-			//		int button = 0;
-			//		if (msg == WM_LBUTTONUP) { button = 0; }
-			//		if (msg == WM_RBUTTONUP) { button = 1; }
-			//		if (msg == WM_MBUTTONUP) { button = 2; }
-			//		if (msg == WM_XBUTTONUP) { button = (GET_XBUTTON_WPARAM(wparam) == XBUTTON1) ? 3 : 4; }
-			//		io.MouseDown[button] = false;
-			//		if (!ImGui::IsAnyMouseDown() && ::GetCapture() == hwnd)
-			//			::ReleaseCapture();
-			//		return 0;
-			//	}
-			//	case WM_MOUSEWHEEL:
-			//		io.MouseWheel += (float)GET_WHEEL_DELTA_WPARAM(wparam) / (float)WHEEL_DELTA;
-			//		return 0;
-			//	case WM_MOUSEHWHEEL:
-			//		io.MouseWheelH += (float)GET_WHEEL_DELTA_WPARAM(wparam) / (float)WHEEL_DELTA;
-			//		return 0;
-			//	case WM_KEYDOWN:
-			//	case WM_SYSKEYDOWN:
-			//		if (wparam < 256)
-			//			io.KeysDown[wparam] = 1;
-			//		return 0;
-			//	case WM_KEYUP:
-			//	case WM_SYSKEYUP:
-			//		if (wparam < 256)
-			//			io.KeysDown[wparam] = 0;
-			//		return 0;
-			//	case WM_CHAR:
-			//		// You can also use ToAscii()+GetKeyboardState() to retrieve characters.
-			//		io.AddInputCharacter((unsigned int)wparam);
-			//		return 0;
-			//	case WM_SETCURSOR:
-			//		if (LOWORD(lparam) == HTCLIENT && ImGui_ImplWin32_UpdateMouseCursor())
-			//			return 1;
-			//		return 0;
-			//	/*case WM_DEVICECHANGE:
-			//		if ((UINT)wparam == DBT_DEVNODES_CHANGED)
-			//			g_WantUpdateHasGamepad = true;
-			//		return 0;*/
-			//	}
-			//	return 0;
-			//}
-
 			if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam))
 			{
 				return 1;
@@ -248,7 +189,7 @@ namespace Phoenix
 				if (wparam == VK_ESCAPE)  PostMessage(hwnd, WM_CLOSE, 0, 0);
 				break;
 			case WM_ENTERSIZEMOVE:
-				//timer.Stop();
+				timer.Stop();
 				break;
 			case WM_EXITSIZEMOVE:
 				//timer.Start();

@@ -19,27 +19,27 @@ namespace Phoenix
 		{
 			Phoenix::Graphics::PhoenixInputElementDesc inputElementDesc[] =
 			{
-				// SemanticName	 SemanticIndex	Format													InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
-				{"POSITION",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,		0,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-				{"TEXCOORD",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32_FLOAT,			1,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-				{"BLENDWEIGHT",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	2,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-				{"BLENDWEIGHT",	 1,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,	3,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-				{"BLENDINDICES", 0,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		4,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
-				{"BLENDINDICES", 1,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,		5,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				// SemanticName	 SemanticIndex	Format														InputSlot	AlignedByteOffset	InputSlotClass										InstanceDataStepRate
+				{"POSITION",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32_FLOAT,			0,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"TEXCOORD",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32_FLOAT,				1,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"BLENDWEIGHT",	 0,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,		2,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"BLENDWEIGHT",	 1,				Phoenix::Graphics::PHOENIX_FORMAT_R32G32B32A32_FLOAT,		3,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"BLENDINDICES", 0,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,			4,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
+				{"BLENDINDICES", 1,				Phoenix::Graphics::PHOENIX_FORMAT_R8G8B8A8_UINT,			5,			0,					Phoenix::Graphics::PHOENIX_INPUT_PER_VERTEX_DATA,	0 },
 			};
 
 			shader = Graphics::IShader::Create();
 			shader->LoadVS
 			(
 				graphicsDevice->GetDevice(),
-				"C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVSSkin.cso",
+				"..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVSSkin.cso",
 				inputElementDesc,
 				Phoenix::FND::ArraySize(inputElementDesc)
 			);
 			shader->LoadPS
 			(
 				graphicsDevice->GetDevice(),
-				"C:\\Users\\2180082.MAETEL\\Desktop\\Phoenix\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicPS.cso"
+				"..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicPS.cso"
 			);
 
 			cbMatrial = Phoenix::Graphics::IBuffer::Create();
@@ -105,7 +105,7 @@ namespace Phoenix
 
 			// メッシュ定数バッファ更新
 			CbMaterial cb = {};
-			cb.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			cb.color = { 1.5f, 1.5f, 1.5f, 1.0f };
 			context->UpdateSubresource(cbMatrial.get(), 0, 0, &cb, 0, 0);
 
 			shader->Activate(graphicsDevice->GetDevice());
@@ -130,9 +130,8 @@ namespace Phoenix
 				}
 
 				Graphics::IMesh* mesh = modelResource->GetMesh(i);
-				Graphics::ModelData::Mesh meshData = modelData.meshes[i];
 
-				for (Graphics::ModelData::Subset& subset : meshData.subsets)
+				for (const Graphics::ModelData::Subset& subset : modelResource->GetModelData().meshes[i].subsets)
 				{
 					u32 size = model->GetTextureSize(subset.materialIndex);
 					for (u32 j = 0; j < size; ++j)

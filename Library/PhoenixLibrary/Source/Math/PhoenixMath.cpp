@@ -194,6 +194,43 @@ namespace Phoenix
 
 			return v4;
 		}
+
+		// 4Dベクトルの長さを返す
+		f32 Vector4Length(const Vector4 v)
+		{
+			return SqrtF32((v.x) * (v.x) + (v.y) * (v.y) + (v.z) * (v.z) + (v.w) * (v.w));
+		}
+
+		// 4Dベクトルの正規化したベクトルを返す
+		Vector4 Vector4Normalize(const Vector4 v)
+		{
+			Vector4 vT;
+
+			f32 norm = Vector4Length(v);
+			if (!norm)
+			{
+				vT.x = 0.0f;
+				vT.y = 0.0f;
+				vT.z = 0.0f;
+				vT.w = 0.0f;
+			}
+			else
+			{
+				norm = 1.0f / norm;
+				vT.x = v.x * norm;
+				vT.y = v.y * norm;
+				vT.z = v.z * norm;
+				vT.w = v.w * norm;
+			}
+			return vT;
+		}
+
+		// 2つの4Dベクトルの内積を計算する
+		f32 Vector4Dot(const Vector4 v1, const Vector4 v2)
+		{
+			return (v1.x) * (v2.x) + (v1.y) * (v2.y) + (v1.z) * (v2.z) + (v1.w) * (v2.w);
+		}
+
 #pragma endregion
 
 #pragma region Functions for Vector4x4

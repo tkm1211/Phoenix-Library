@@ -158,6 +158,18 @@ namespace Phoenix
 			// アニメーションの更新
 			void UpdateAnimation(f32 elapsedTime);
 
+			// 再生時間長(秒)取得
+			f32 GetLength();
+
+			// 再生速度倍率設定
+			void SetSpeed(f32 speed);
+
+			// 再生速度倍率取得
+			f32 GetSpeed();
+
+			// ブレンド中か
+			bool IsBlend();
+
 			// モデルリソースの取得
 			Graphics::IModelResource* GetModelResource() { return modelResource.get(); }
 
@@ -311,6 +323,30 @@ namespace Phoenix
 			bool IsLoop()
 			{
 				return currentAnimation->player->IsLoop();
+			}
+
+			// 再生時間長(秒)取得
+			f32 GetLength()
+			{
+				return currentAnimation->player->GetLength();
+			}
+
+			// 再生速度倍率設定
+			void SetSpeed(f32 speed)
+			{
+				currentAnimation->player->SetSpeed(speed);
+			}
+
+			// 再生速度倍率取得
+			f32 GetSpeed()
+			{
+				return currentAnimation->player->GetSpeed();
+			}
+
+			// ブレンド中か
+			bool IsBlend()
+			{
+				return currentAnimation->player->IsBlend();
 			}
 
 			// アニメーションバンクインデックス取得

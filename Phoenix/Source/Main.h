@@ -18,6 +18,7 @@
 #include "../Source/Loader/Loader.h"
 #include "imgui.h"
 #include "Player/Player.h"
+#include "Boss/Boss.h"
 
 
 //****************************************************************************
@@ -28,6 +29,7 @@ class Main : public Phoenix::FrameWork::Main
 private:
 	using Super = Phoenix::FrameWork::Main;
 	std::unique_ptr<Player> player;
+	std::unique_ptr<Boss> boss;
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> stageModel;
 	std::vector<std::unique_ptr<Phoenix::FrameWork::Renderer>> renderer;
 	std::unique_ptr<Phoenix::FrameWork::IShader> basicShader;

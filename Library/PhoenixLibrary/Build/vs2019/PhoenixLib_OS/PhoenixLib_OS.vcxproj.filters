@@ -99,6 +99,9 @@
     <ClInclude Include="..\..\..\Source\OS\Stream\Win\FileStreamWin.h">
       <Filter>Source\Stream\Win</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\HighResolutionTimer.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\OS\Main\Win\MainWin.cpp">
