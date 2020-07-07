@@ -41,6 +41,8 @@ private:
 	float attackReceptionTimeCnt;
 	float animationSpeed;
 
+	Phoenix::f32 radius;
+
 public:
 	Boss() {}
 	~Boss() {}
@@ -57,4 +59,5 @@ public:
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
 	Phoenix::Math::Vector3 GetPosition() { return pos; }
+	Phoenix::f32 GetRadius() { return radius; }
 };

@@ -55,6 +55,8 @@ private:
 	float attackReceptionTimeCnt;
 	float animationSpeed;
 
+	Phoenix::f32 radius;
+
 public:
 	Player() : 
 		worldMatrix(Phoenix::Math::MatrixIdentity()), 
@@ -64,7 +66,8 @@ public:
 		isChangeAnimation(false), 
 		isAttack(false),
 		attackReceptionTimeCnt(0.0f), 
-		animationSpeed(0.0f)
+		animationSpeed(0.0f),
+		radius(0.0f)
 	{}
 	~Player() {}
 
@@ -72,6 +75,7 @@ public:
 	static std::unique_ptr<Player> Create();
 	void Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 	void Update(Phoenix::Graphics::Camera& camera);
+	void UpdateTrasform();
 	void Control(Phoenix::Graphics::Camera& camera);
 	void ChangeAnimation();
 	void ChangeAttackAnimation();
@@ -80,4 +84,7 @@ public:
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
 	Phoenix::Math::Vector3 GetPosition() { return pos; }
+	Phoenix::f32 GetRadius() { return radius; }
+
+	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 };

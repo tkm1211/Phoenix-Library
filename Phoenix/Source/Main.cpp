@@ -21,6 +21,18 @@ namespace Phoenix
 	}
 }
 
+//******************************************************
+//球体　vs　球体
+//******************************************************
+bool SphereVsSphere(Phoenix::Math::Vector3 pos1, Phoenix::Math::Vector3 pos2, float r1, float r2)
+{
+	if ((pos2.x - pos1.x) * (pos2.x - pos1.x) + (pos2.y - pos1.y) * (pos2.y - pos1.y) + (pos2.z - pos1.z) * (pos2.z - pos1.z) <= (r1 + r2) * (r1 + r2))
+	{
+		return true;
+	}
+	else return false;
+}
+
 bool Main::Initialize(Phoenix::uintPtr instance)
 {
 	Super::Initialize(instance);
@@ -74,6 +86,20 @@ void Main::Update()
 		boss->Update(camera);
 	}
 
+	// 当たり判定
+	{
+		if (SphereVsSphere(player->GetPosition(), boss->GetPosition(), player->GetRadius(), boss->GetRadius()))
+		{
+			Phoenix::Math::Vector3 pos;
+			Phoenix::Math::Vector3 dir = player->GetPosition() - boss->GetPosition();
+			dir = Phoenix::Math::Vector3Normalize(dir);
+
+			pos = boss->GetPosition() + dir * (player->GetRadius() + boss->GetRadius());
+			player->SetPosition(pos);
+			player->UpdateTrasform();
+		}
+	}
+
 	// カメラ更新
 	{
 		if (cameraFlg)
@@ -82,7 +108,14 @@ void Main::Update()
 		}
 		else
 		{
-			camera.ControllerCamera(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 100.0f, 0.0f));
+			//camera.ControllerCamera(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 100.0f, 0.0f));
+
+			Phoenix::Math::Vector3 bossPos = boss->GetPosition();
+			Phoenix::Math::Vector3 playerPos = player->GetPosition();
+
+			bossPos.y += 150.0f;
+			playerPos.y += 150.0f;
+			camera.LockOnCamera(bossPos, playerPos);
 		}
 		camera.Update();
 	}

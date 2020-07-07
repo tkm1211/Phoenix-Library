@@ -65,6 +65,7 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		pos = { 0,0,0 };
 		rotate = { 0,0,0 };
 		scale = { 1,1,1 };
+		radius = 50.0f;
 	}
 }
 
@@ -87,17 +88,22 @@ void Player::Update(Phoenix::Graphics::Camera& camera)
 
 	// ƒ[ƒ‹ƒhs—ñ‚ðì¬
 	{
-		Phoenix::Math::Vector3 scale = this->scale;
-		Phoenix::Math::Vector3 rotate = this->rotate;
-		Phoenix::Math::Vector3 translate = pos;
-
-		Phoenix::Math::Matrix S, R, T;
-		S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
-		R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
-		T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
-
-		worldMatrix = S * R * T;
+		UpdateTrasform();
 	}
+}
+
+void Player::UpdateTrasform()
+{
+	Phoenix::Math::Vector3 scale = this->scale;
+	Phoenix::Math::Vector3 rotate = this->rotate;
+	Phoenix::Math::Vector3 translate = pos;
+
+	Phoenix::Math::Matrix S, R, T;
+	S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
+	R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
+	T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
+
+	worldMatrix = S * R * T;
 }
 
 void Player::Control(Phoenix::Graphics::Camera& camera)

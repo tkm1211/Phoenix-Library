@@ -493,7 +493,22 @@ namespace Phoenix
 
 		void Camera::LockOnCamera(const Math::Vector3& center, const Math::Vector3& pos)
 		{
-			SetLookAt(pos, center, up);
+			Math::Vector3 cameraPos;
+
+			Math::Vector3 dir = pos - center;
+			dir.y = 0.0f;
+
+			f32 len = Math::Vector3Length(dir) + 150.0f;
+			Math::Vector3 dirN = Math::Vector3Normalize(dir);
+
+			rotateY = atan2f(dirN.x, dirN.z);
+			cameraPos = center + dirN * len;
+
+			Math::Vector3 right = Math::Vector3Cross(Math::Vector3::OneY, -dirN);
+			cameraPos += right * -75.0f;
+			cameraPos.y = pos.y;
+
+			SetLookAt(cameraPos, center, Math::Vector3::OneY);
 		}
 	} // namespace Graphics
 } // namespace Phoenix

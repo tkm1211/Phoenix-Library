@@ -52,6 +52,7 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		pos = { 0,0,-1000.0f };
 		rotate = { 0,0,0 };
 		scale = { 1.5f,1.5f,1.5f };
+		radius = 50.0f;
 	}
 }
 

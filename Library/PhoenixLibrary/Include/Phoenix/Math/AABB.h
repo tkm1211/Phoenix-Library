@@ -22,6 +22,7 @@ namespace Phoenix
 		public:
 			AABB() {}
 			AABB(const Vector3& min, const Vector3& max) { this->min = min; this->max = max; }
+			~AABB() {}
 
 		public:
 			// AABB‚Ì”ÍˆÍ‚ðƒŠƒZƒbƒg‚µ‚Ü‚·
