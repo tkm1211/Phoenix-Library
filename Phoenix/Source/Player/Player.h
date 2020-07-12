@@ -6,6 +6,27 @@
 #include "Phoenix/FrameWork/Object/Object.h"
 
 
+//******************************************************
+//ãÖëÃÅ@vsÅ@ãÖëÃ
+//******************************************************
+static bool SphereVsSphere(Phoenix::Math::Vector3 pos1, Phoenix::Math::Vector3 pos2, float r1, float r2)
+{
+	if ((pos2.x - pos1.x) * (pos2.x - pos1.x) + (pos2.y - pos1.y) * (pos2.y - pos1.y) + (pos2.z - pos1.z) * (pos2.z - pos1.z) <= (r1 + r2) * (r1 + r2))
+	{
+		return true;
+	}
+	else return false;
+}
+
+static bool CircleVsCircle(Phoenix::Math::Vector2 pos1, Phoenix::Math::Vector2 pos2, float r1, float r2)
+{
+	if ((pos2.x - pos1.x) * (pos2.x - pos1.x) + (pos2.y - pos1.y) * (pos2.y - pos1.y) <= (r1 + r2) * (r1 + r2))
+	{
+		return true;
+	}
+	else return false;
+}
+
 class Player
 {
 private:
@@ -45,17 +66,19 @@ private:
 	Phoenix::Math::Matrix worldMatrix;
 	Phoenix::Math::Vector3 pos;
 	Phoenix::Math::Vector3 rotate;
+	//Phoenix::Math::Quaternion rotate;
 	Phoenix::Math::Vector3 scale;
+	Phoenix::f32 radius;
 	Phoenix::f32 speed;
 
 	AnimationState animationState;
 	AttackAnimationState attackState;
+
 	bool isChangeAnimation;
 	bool isAttack;
 	float attackReceptionTimeCnt;
 	float animationSpeed;
 
-	Phoenix::f32 radius;
 
 public:
 	Player() : 

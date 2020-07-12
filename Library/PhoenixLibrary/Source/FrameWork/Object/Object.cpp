@@ -134,8 +134,7 @@ namespace Phoenix
 		// ボーン変換行列を更新
 		void ModelObject::UpdateBoneTransform()
 		{
-			Graphics::IModelResource* modelResource = GetModelResource();
-			const Graphics::ModelData& modelData = modelResource->GetModelData();
+			const Graphics::ModelData& modelData = GetModelResource()->GetModelData();
 
 			if (meshNodes.size() < modelData.meshes.size())
 			{
@@ -153,8 +152,7 @@ namespace Phoenix
 
 				for (u32 j = 0; j < meshNode.boneTransform.size(); ++j)
 				{
-					const Node& node = nodes.at(modelData.meshes.at(i).nodeIndices.at(j));
-					meshNode.boneTransform.at(j) = Math::MatrixMultiply(modelData.meshes.at(i).offsetTransforms.at(j), node.worldTransform);
+					meshNode.boneTransform.at(j) = Math::MatrixMultiply(modelData.meshes.at(i).offsetTransforms.at(j), nodes.at(modelData.meshes.at(i).nodeIndices.at(j)).worldTransform);
 				}
 				meshNode.boneTransformCount = meshNode.boneTransform.size();
 			}

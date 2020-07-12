@@ -64,6 +64,7 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		worldMatrix = Phoenix::Math::MatrixIdentity();
 		pos = { 0,0,0 };
 		rotate = { 0,0,0 };
+		//rotate = { 0,0,0,1 };
 		scale = { 1,1,1 };
 		radius = 50.0f;
 	}
@@ -96,11 +97,13 @@ void Player::UpdateTrasform()
 {
 	Phoenix::Math::Vector3 scale = this->scale;
 	Phoenix::Math::Vector3 rotate = this->rotate;
+	//Phoenix::Math::Quaternion rotate = this->rotate;
 	Phoenix::Math::Vector3 translate = pos;
 
 	Phoenix::Math::Matrix S, R, T;
 	S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
 	R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
+	//R = Phoenix::Math::MatrixRotationQuaternion(&rotate);
 	T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
 
 	worldMatrix = S * R * T;
@@ -119,7 +122,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 	sX = GetKeyState('A') < 0 ? -1.0f : sX;
 	sX = GetKeyState('D') < 0 ? 1.0f : sX;
 
-	if (xInput[0].bYt && animationState != AnimationState::Roll)
+	if (xInput[0].bXt && animationState != AnimationState::Roll)
 	{
 		if (!isAttack && animationState != AnimationState::Attack && attackState == AttackAnimationState::End)
 		{
@@ -214,6 +217,23 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 			sX *= mag;
 			sY *= mag;
 
+			/*Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+			Phoenix::Math::Vector3 foward = { matrix._31, matrix._32, matrix._33 };
+			Phoenix::Math::Vector3 dir = { sX, 0.0f, sY };
+
+			Phoenix::Math::Vector3 axis = Phoenix::Math::Vector3Cross(foward, dir);
+			Phoenix::f32 angle = acosf(Phoenix::Math::Vector3Dot(dir, foward));
+
+			if (1e-8f < fabs(angle))
+			{
+				Phoenix::Math::Quaternion q;
+				q = Phoenix::Math::QuaternionRotationAxis(axis, angle);
+
+				Phoenix::Math::Quaternion rotateT = rotate;
+				rotateT *= q;
+				rotate = Phoenix::Math::QuaternionSlerp(rotate, rotateT, 0.03f);
+			}*/
+
 			Phoenix::Math::Vector3 oldAngle = rotate;
 			oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
 			rotate = oldAngle;
@@ -227,7 +247,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 				speed = WalkSpeed;
 				animationState = AnimationState::Walk;
 			}
-			if (xInput[0].bRBs && animationState != AnimationState::Run)
+			if ((xInput[0].bRBs || GetKeyState(VK_SHIFT) < 0) && animationState != AnimationState::Run)
 			{
 				isChangeAnimation = true;
 				speed = RunSpeed;
@@ -321,31 +341,35 @@ void Player::GUI()
 {
 	static Phoenix::s32 animClip = 0;
 
-	if (ImGui::TreeNode("Transform"))
+	if (ImGui::TreeNode("Player"))
 	{
-		ImGui::DragFloat3("pos", &pos.x);
-		ImGui::DragFloat3("rotate", &rotate.x);
-		ImGui::DragFloat3("scale", &scale.x);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Speed"))
-	{
-		ImGui::Text("speed : %f", speed);
-		ImGui::DragFloat("WalkSpeed", &WalkSpeed, 0.1f);
-		ImGui::DragFloat("RunSpeed", &RunSpeed, 0.1f);
-		ImGui::DragFloat("RollSpeed", &RollSpeed, 0.1f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Animation"))
-	{
-		ImGui::InputInt("AnimClip", &animClip);
-		if (ImGui::Button("Play"))
+		if (ImGui::TreeNode("Transform"))
 		{
-			model->PlayAnimation(0, animClip);
+			ImGui::DragFloat3("pos", &pos.x);
+			ImGui::DragFloat3("rotate", &rotate.x);
+			ImGui::DragFloat3("scale", &scale.x);
+			ImGui::TreePop();
 		}
-		if (ImGui::Button("LoopPlay"))
+		if (ImGui::TreeNode("Speed"))
 		{
-			model->SetLoopAnimation(true);
+			ImGui::Text("speed : %f", speed);
+			ImGui::DragFloat("WalkSpeed", &WalkSpeed, 0.1f);
+			ImGui::DragFloat("RunSpeed", &RunSpeed, 0.1f);
+			ImGui::DragFloat("RollSpeed", &RollSpeed, 0.1f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Animation"))
+		{
+			ImGui::InputInt("AnimClip", &animClip);
+			if (ImGui::Button("Play"))
+			{
+				model->PlayAnimation(0, animClip);
+			}
+			if (ImGui::Button("LoopPlay"))
+			{
+				model->SetLoopAnimation(true);
+			}
+			ImGui::TreePop();
 		}
 		ImGui::TreePop();
 	}

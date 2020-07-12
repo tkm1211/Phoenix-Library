@@ -178,6 +178,21 @@ namespace Phoenix
 
 			// ボーントランスフォームの取得
 			Math::Matrix* GetBoneTransforms(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransform.data(); }
+			Math::Matrix GetBoneTransforms(u32 meshIndex, u32 boneIndex) { return meshNodes.at(meshIndex).boneTransform.at(boneIndex); }
+
+			// ボーンインデックスの取得
+			u32 GetBoneIndex(const char* name)
+			{
+				for (u32 i = 0; i < nodes.size(); ++i)
+				{
+					if (FND::StrCmp(nodes[i].name, name) == 0)
+					{
+						return i;
+					}
+				}
+
+				return -1;
+			}
 
 			// メッシュノードのサイズ取得
 			u32 GetMeshNodes() { return meshNodes.size(); }

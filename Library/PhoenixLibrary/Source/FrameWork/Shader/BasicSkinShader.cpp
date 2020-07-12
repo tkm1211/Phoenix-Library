@@ -115,9 +115,7 @@ namespace Phoenix
 		void BasicSkinShader::Draw(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& worldTransform, ModelObject* model)
 		{
 			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
-
 			Graphics::IModelResource* modelResource = model->GetModelResource();
-			Graphics::ModelData modelData = modelResource->GetModelData();
 
 			// メッシュ定数バッファ更新
 			context->UpdateConstantBufferMesh(worldTransform);

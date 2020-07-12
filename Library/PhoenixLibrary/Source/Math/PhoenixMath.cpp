@@ -30,6 +30,11 @@ namespace Phoenix
 
 			return v2;
 		}
+
+		f32 Vector2Length(const Vector2 v)
+		{
+			return SqrtF32((v.x) * (v.x) + (v.y) * (v.y));
+		}
 #pragma endregion
 
 #pragma region Functions for Vector3
@@ -488,15 +493,35 @@ namespace Phoenix
 			Matrix rM;
 			rM = MatrixIdentity();
 
-			rM.m[0][0] = 1.0f - 2.0f * (q->y * q->y + q->z * q->z);
-			rM.m[0][1] = 2.0f * (q->x * q->y + q->z * q->w);
-			rM.m[0][2] = 2.0f * (q->x * q->z - q->y * q->w);
-			rM.m[1][0] = 2.0f * (q->x * q->y - q->z * q->w);
-			rM.m[1][1] = 1.0f - 2.0f * (q->x * q->x + q->z * q->z);
-			rM.m[1][2] = 2.0f * (q->y * q->z + q->x * q->w);
-			rM.m[2][0] = 2.0f * (q->x * q->z + q->y * q->w);
-			rM.m[2][1] = 2.0f * (q->y * q->z - q->x * q->w);
-			rM.m[2][2] = 1.0f - 2.0f * (q->x * q->x + q->y * q->y);
+			/*rM.m[0][0] = 1.0f - 2.0f * (q->y * q->y + q->z * q->z);
+			  rM.m[0][1] = 2.0f * (q->x * q->y + q->z * q->w);
+			  rM.m[0][2] = 2.0f * (q->x * q->z - q->y * q->w);
+			  rM.m[1][0] = 2.0f * (q->x * q->y - q->z * q->w);
+			  rM.m[1][1] = 1.0f - 2.0f * (q->x * q->x + q->z * q->z);
+			  rM.m[1][2] = 2.0f * (q->y * q->z + q->x * q->w);
+			  rM.m[2][0] = 2.0f * (q->x * q->z + q->y * q->w);
+			  rM.m[2][1] = 2.0f * (q->y * q->z - q->x * q->w);
+			  rM.m[2][2] = 1.0f - 2.0f * (q->x * q->x + q->y * q->y);*/
+
+			rM.m[0][0] = 1.0f - (2.0f * q->y * q->y) - (2.0f * q->z * q->z);
+			rM.m[0][1] = (2.0f * q->x * q->y) + (2.0f * q->w * q->z);
+			rM.m[0][2] = (2.0f * q->x * q->z) - (2.0f * q->w * q->y);
+			rM.m[0][3] = 0.0f;
+
+			rM.m[1][0] = (2.0f * q->x * q->y) - (2.0f * q->w * q->z);
+			rM.m[1][1] = 1.0f - (2.0f * q->x * q->x) - (2.0f * q->z * q->z);
+			rM.m[1][2] = (2.0f * q->y * q->z) + (2.0f * q->w * q->x);
+			rM.m[1][3] = 0.0f;
+
+			rM.m[2][0] = (2.0f * q->x * q->z) + (2.0f * q->w * q->y);
+			rM.m[2][1] = (2.0f * q->y * q->z) - (2.0f * q->w * q->x);
+			rM.m[2][2] = 1.0f - (2.0f * q->x * q->x) - (2.0f * q->y * q->y);
+			rM.m[2][3] = 0.0f;
+
+			rM.m[3][0] = 0.0f;
+			rM.m[3][1] = 0.0f;
+			rM.m[3][2] = 0.0f;
+			rM.m[3][3] = 1.0f;
 
 			return rM;
 		}
@@ -746,7 +771,7 @@ namespace Phoenix
 		{
 			Quaternion rq;
 
-			DirectX::XMVECTOR vq = DirectX::XMQuaternionRotationAxis(DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(axis.x, axis.y, axis.z, 0.0f)), angle);
+			DirectX::XMVECTOR vq = DirectX::XMQuaternionRotationAxis(DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(axis.x, axis.y, axis.z, 1.0f)), angle);
 
 			DirectX::XMFLOAT4 fq;
 			DirectX::XMStoreFloat4(&fq, vq);
@@ -759,18 +784,46 @@ namespace Phoenix
 			return rq;
 		}
 
+		// Y軸を回転軸としてクォータニオンを回転させる
+		Quaternion QuaternionRotationY(f32 angle)
+		{
+			Quaternion rq;
+
+			angle *= 0.5f;
+
+			rq.x = 0;
+			rq.y = SinF32(angle);
+			rq.z = 0;
+			rq.w = CosF32(angle);
+
+			return rq;
+		}
+
 		Quaternion QuaternionSlerp(const Quaternion q1, const Quaternion q2, f32 t)
 		{
 			Quaternion qT;
 
-			f32 epsilon = 1.0f;
+			DirectX::XMVECTOR qV;
+			DirectX::XMVECTOR q1T = DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(q1.x, q1.y, q1.z, q1.w));
+			DirectX::XMVECTOR q2T = DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(q2.x, q2.y, q2.z, q2.w));
+
+			qV = DirectX::XMQuaternionSlerp(q1T, q2T, t);
+			DirectX::XMFLOAT4 qF;
+			DirectX::XMStoreFloat4(&qF, qV);
+
+			qT.x = qF.x;
+			qT.y = qF.y;
+			qT.z = qF.z;
+			qT.w = qF.w;
+
+			/*f32 epsilon = 1.0f;
 			f32 dot = QuaternionDot(q1, q2);
 			if (dot < 0.0f) epsilon = -1.0f;
 
 			qT.x = (1.0f - t) * q1.x + epsilon * t * q2.x;
 			qT.y = (1.0f - t) * q1.y + epsilon * t * q2.y;
 			qT.z = (1.0f - t) * q1.z + epsilon * t * q2.z;
-			qT.w = (1.0f - t) * q1.w + epsilon * t * q2.w;
+			qT.w = (1.0f - t) * q1.w + epsilon * t * q2.w;*/
 
 			return qT;
 		}

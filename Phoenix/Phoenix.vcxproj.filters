@@ -16,6 +16,9 @@
     <Filter Include="Source\Boss">
       <UniqueIdentifier>{0efa3f80-4869-4d74-83be-82aa5cd974e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Boss\AIState">
+      <UniqueIdentifier>{dd4fc57b-b2e2-4cdf-acf8-bcac2e981e05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -27,6 +30,30 @@
     <ClCompile Include="Source\Boss\Boss.cpp">
       <Filter>Source\Boss</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\SceneSystem.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\SceneGame.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\SceneTitle.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Boss\BossAI.cpp">
+      <Filter>Source\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Boss\AIState\WaitState.cpp">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Boss\AIState\MoveState.cpp">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Boss\AIState\JumpAttackState.cpp">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Boss\AIState\SwingAttackState.cpp">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -37,6 +64,33 @@
     </ClInclude>
     <ClInclude Include="Source\Boss\Boss.h">
       <Filter>Source\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Scene.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\SceneSystem.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\AI.h">
+      <Filter>Source\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\BossAI.h">
+      <Filter>Source\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\AIState\AIState.h">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\AIState\WaitState.h">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\AIState\MoveState.h">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\AIState\JumpAttackState.h">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\AIState\SwingAttackState.h">
+      <Filter>Source\Boss\AIState</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

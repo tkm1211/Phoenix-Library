@@ -15,6 +15,9 @@ namespace Phoenix
 #pragma region Functions for Vector2
 		extern DirectX::XMFLOAT2 ConvertToFloat2FromVector2(const Vector2 v);
 		extern DirectX::XMVECTOR ConvertToVectorFromVector2(const Vector2 v);
+
+		// 2Dベクトルの長さを返す。
+		extern f32 Vector2Length(const Vector2 v);
 #pragma endregion
 
 #pragma region Functions for Vector3
@@ -126,6 +129,10 @@ namespace Phoenix
 		extern f32 QuaternionDot(const Quaternion q1, const Quaternion q2);
 		extern Quaternion QuaternionMultiply(const Quaternion& q1, const Quaternion& q2);
 		extern Quaternion QuaternionRotationAxis(Vector3 axis, float angle);
+
+		// Y軸を回転軸としてクォータニオンを回転させる
+		Quaternion QuaternionRotationY(f32 angle);
+
 		extern Quaternion QuaternionSlerp(const Quaternion q1, const Quaternion q2, f32 t);
 #pragma endregion
 	} // namespace Math

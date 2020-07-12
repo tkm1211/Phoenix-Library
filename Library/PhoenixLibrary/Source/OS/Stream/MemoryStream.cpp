@@ -35,7 +35,7 @@ namespace Phoenix
 		// ì«Ç›çûÇ›
 		s32 MemoryStream::Read(void* buffer, s32 size)
 		{
-			s32 remain = size - static_cast<s32>(current - buffer);
+			s32 remain = size - static_cast<s32>(current - static_cast<u8*>(buffer));
 			s32 read = (remain < size) ? remain : size;
 
 			FND::MemCpy(buffer, current, read);
@@ -47,7 +47,7 @@ namespace Phoenix
 		// èëÇ´çûÇ›
 		s32 MemoryStream::Write(const void* buffer, s32 size)
 		{
-			s32 remain = size - static_cast<s32>(current - buffer);
+			s32 remain = size - static_cast<s32>(current - static_cast<const u8*>(buffer));
 			s32 write = (remain < size) ? remain : size;
 
 			FND::MemCpy(current, buffer, write);

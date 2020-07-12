@@ -19,6 +19,7 @@
 #include "imgui.h"
 #include "Player/Player.h"
 #include "Boss/Boss.h"
+#include "Scene/SceneSystem.h"
 
 
 //****************************************************************************
@@ -28,15 +29,7 @@ class Main : public Phoenix::FrameWork::Main
 {
 private:
 	using Super = Phoenix::FrameWork::Main;
-	std::unique_ptr<Player> player;
-	std::unique_ptr<Boss> boss;
-	std::unique_ptr<Phoenix::FrameWork::ModelObject> stageModel;
-	std::vector<std::unique_ptr<Phoenix::FrameWork::Renderer>> renderer;
-	std::unique_ptr<Phoenix::FrameWork::IShader> basicShader;
-	std::unique_ptr<Phoenix::FrameWork::IShader> basicSkinShader;
-	std::unique_ptr<Phoenix::FrameWork::IShader> standardShader;
-	Phoenix::Graphics::Camera camera;
-	bool cameraFlg = false;
+	std::unique_ptr<SceneSystem> sceneSystem;
 
 public:
 	Main() {}

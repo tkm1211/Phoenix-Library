@@ -1,46 +1,40 @@
-#include <imgui.h>
-#include <imgui_impl_win32.h>
-#include <imgui_impl_dx11.h>
-#include <imgui_internal.h>
+#include "Scene.h"
+#include "SceneSystem.h"
+#include "../../ExternalLibrary/ImGui/Include/imgui.h"
+#include "../../ExternalLibrary/ImGui/Include/imgui_impl_win32.h"
+#include "../../ExternalLibrary/ImGui/Include/imgui_impl_dx11.h"
+#include "../../ExternalLibrary/ImGui/Include/imgui_internal.h"
+#include "Phoenix/FrameWork/Input/InputDevice.h"
 
-#include "SceneTitle.h"
 
-
-void SceneTitle::Init()
+void SceneTitle::Init(SceneSystem* sceneSystem)
 {
-	vector3 = Phoenix::Lib::Vector3(0.0f, 0.0f, 0.0f);
-}
-
-void SceneTitle::UnInit()
-{
-
+	this->sceneSystem = sceneSystem;
+	graphicsDevice = sceneSystem->GetGraphicsDevice();
 }
 
 void SceneTitle::Update()
 {
-	vector3.x++;
-	vector3.y++;
-	vector3.z++;
+	if (xInput[0].bBACKt)
+	{
+		sceneSystem->ChangeScene(SceneType::Game, false);
+	}
 }
 
-void SceneTitle::Render()
+void SceneTitle::Draw()
 {
 
 }
 
-void SceneTitle::ImGui()
+void SceneTitle::GUI()
 {
-	ImGui::Begin("Vector3");
-	ImGui::Text("%f, %f, %f", vector3.x, vector3.y, vector3.z);
+	ImGui::Begin("Title");
+	{
+		ImGui::Text("test");
+		if (ImGui::Button("Chage Scene Game"))
+		{
+			sceneSystem->ChangeScene(SceneType::Game, false);
+		}
+	}
 	ImGui::End();
-}
-
-void SceneTitle::SetSceneManger(SceneManager* pSceneManager)
-{
-	sceneManager = pSceneManager;
-}
-
-void SceneTitle::SetGraphicsDevice(GraphicsDevice* pGraphicsDevice)
-{
-	graphicsDevice = pGraphicsDevice;
 }
