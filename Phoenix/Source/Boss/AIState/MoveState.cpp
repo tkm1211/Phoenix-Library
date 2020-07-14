@@ -10,6 +10,7 @@ void MoveState::Init()
 	isChangeState = false;
 
 	oldPos = { 0,0,0 };
+	moveCnt = 0;
 }
 
 void MoveState::Update(Boss* boss, Player* player)
@@ -22,8 +23,9 @@ void MoveState::Update(Boss* boss, Player* player)
 	{
 		isChangeState = true;
 		nextStateType = AIStateType::SwingAttack01;
+		return;
 	}
-	else if (((boss->GetRadius() + player->GetRadius() + 100.0f) <= len && len <= (boss->GetRadius() + player->GetRadius() + 600.0f))
+	/*else if (((boss->GetRadius() + player->GetRadius() + 100.0f) <= len && len <= (boss->GetRadius() + player->GetRadius() + 600.0f))
 		&& (player->GetAnimationState() == Player::AnimationState::Idle
 		|| player->GetAnimationState() == Player::AnimationState::Roll
 		|| player->GetAnimationState() == Player::AnimationState::Walk
@@ -31,6 +33,12 @@ void MoveState::Update(Boss* boss, Player* player)
 	{
 		isChangeState = true;
 		nextStateType = AIStateType::JumpAttack;
+	}*/
+	else if (MoveMaxCnt <= moveCnt++)
+	{
+		isChangeState = true;
+		nextStateType = AIStateType::JumpAttack;
+		return;
 	}
 
 #if 0

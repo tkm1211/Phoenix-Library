@@ -195,7 +195,7 @@ namespace Phoenix
 			}
 
 			// メッシュノードのサイズ取得
-			u32 GetMeshNodes() { return meshNodes.size(); }
+			sizeT GetMeshNodes() { return meshNodes.size(); }
 
 			// ボーントランスフォームのサイズ取得
 			u32 GetBoneTransformCount(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransformCount; }
@@ -207,10 +207,10 @@ namespace Phoenix
 			}
 
 			// マテリアルのサイズ取得
-			u32 GetMaterialSize() { return materials.size(); }
+			sizeT GetMaterialSize() { return materials.size(); }
 
 			// マテリアルのテクスチャサイズ取得
-			u32 GetTextureSize(u32 index) { return materials.at(index).textures.size(); }
+			sizeT GetTextureSize(u32 index) { return materials.at(index).textures.size(); }
 		};
 
 		class Animator
@@ -371,7 +371,7 @@ namespace Phoenix
 				{
 					if (0 == FND::StrCmp(name, OS::Path::GetFileNameWithoutExtension(animations.at(i).filename.c_str())))
 					{
-						return i;
+						return static_cast<u32>(i);
 					}
 				}
 				return -1;
@@ -386,7 +386,7 @@ namespace Phoenix
 
 					if (animationPlayer->IsPlaying())
 					{
-						s32 animationNodeCount = nodes->size();
+						s32 animationNodeCount = static_cast<s32>(nodes->size());
 						for (s32 animationNodeID = 0; animationNodeID < animationNodeCount; ++animationNodeID)
 						{
 							s16 bindNodeID = currentAnimation->bindNodeIDs.at(animationNodeID);

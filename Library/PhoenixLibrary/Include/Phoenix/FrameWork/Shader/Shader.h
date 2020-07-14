@@ -43,7 +43,7 @@ namespace Phoenix
 			virtual Graphics::VertexBufferKind* GetVectexBuferKinds() = 0;
 
 			// 頂点バッファ種類のサイズ
-			virtual u32 GetVectexBuferKindsSize() = 0;
+			virtual sizeT GetVectexBuferKindsSize() = 0;
 		};
 	} // namespace FrameWork
 } // namespace Phoenix

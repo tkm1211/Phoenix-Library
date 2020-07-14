@@ -45,6 +45,7 @@
     <ClCompile Include="..\..\..\Source\OS\Path\Path.cpp" />
     <ClCompile Include="..\..\..\Source\OS\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\OS\ResourceManager\ResourceManager.cpp" />
     <ClCompile Include="..\..\..\Source\OS\Stream\MemoryStream.cpp" />
@@ -176,6 +177,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>../../../Source/OS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

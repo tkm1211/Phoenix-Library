@@ -171,6 +171,18 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 			animationState = AnimationState::Idle;
 			attackState = AttackAnimationState::End;
 		}
+		if (xInput[0].bAt
+			&& ((1.5f <= attackReceptionTimeCnt && attackState == AttackAnimationState::Attack01)
+			|| (1.75f <= attackReceptionTimeCnt && attackState == AttackAnimationState::Attack02)))
+		{
+			speed = RollSpeed;
+			attackReceptionTimeCnt = 0;
+			animationSpeed = 0;
+			isChangeAnimation = true;
+			isAttack = false;
+			animationState = AnimationState::Roll;
+			attackState = AttackAnimationState::End;
+		}
 		else if (animationState == AnimationState::Attack && attackState == AttackAnimationState::Attack03 && model->IsPlaying())
 		{
 			pos.x += sinf(rotate.y) * speed;
@@ -179,7 +191,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 
 		attackReceptionTimeCnt += animationSpeed;
 	}
-	else if (animationState != AnimationState::Attack)
+	else if ((animationState != AnimationState::Attack))
 	{
 		if (xInput[0].bAt && animationState != AnimationState::Roll)
 		{

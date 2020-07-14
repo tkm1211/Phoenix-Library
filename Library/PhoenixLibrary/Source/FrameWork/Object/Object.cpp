@@ -50,7 +50,7 @@ namespace Phoenix
 			const std::vector<Graphics::ModelData::Node>& resourceNodes = modelResource->GetModelData().nodes;
 			nodes.resize(resourceNodes.size());
 
-			for (size_t nodeIndex = 0; nodeIndex < nodes.size(); nodeIndex++)
+			for (sizeT nodeIndex = 0; nodeIndex < nodes.size(); nodeIndex++)
 			{
 				auto&& src = resourceNodes.at(nodeIndex);
 				auto&& dst = nodes.at(nodeIndex);
@@ -65,7 +65,7 @@ namespace Phoenix
 			const std::vector<Graphics::ModelData::Material>& resourceMaterials = modelResource->GetModelData().materials;
 			materials.resize(resourceMaterials.size());
 
-			for (u32 i = 0; i < materials.size(); ++i)
+			for (sizeT i = 0; i < materials.size(); ++i)
 			{
 				ModelObject::Material& material = materials.at(i);
 				material.name = resourceMaterials.at(i).name;
@@ -73,7 +73,7 @@ namespace Phoenix
 				material.textures.resize(resourceMaterials.at(i).textureFilename.size());
 				material.colors.resize(resourceMaterials.at(i).color.size());
 
-				for (u32 j = 0; j < material.textures.size(); ++j)
+				for (sizeT j = 0; j < material.textures.size(); ++j)
 				{
 					material.colors.at(j) = resourceMaterials.at(i).color.at(j);
 					material.textures.at(j) = Graphics::ITexture::Create();
@@ -104,7 +104,7 @@ namespace Phoenix
 		// ローカル変換行列を更新
 		void ModelObject::UpdateLocalTransform()
 		{
-			for (u32 i = 0; i < nodes.size(); ++i)
+			for (sizeT i = 0; i < nodes.size(); ++i)
 			{
 				Math::Matrix scale, rotate, translate;
 				scale = Math::MatrixScaling(nodes[i].scale.x, nodes[i].scale.y, nodes[i].scale.z);
@@ -118,7 +118,7 @@ namespace Phoenix
 		// ワールド変換行列を更新
 		void ModelObject::UpdateWorldTransform()
 		{
-			for (u32 i = 0; i < nodes.size(); ++i)
+			for (sizeT i = 0; i < nodes.size(); ++i)
 			{
 				if (nodes[i].parent != nullptr)
 				{
@@ -141,7 +141,7 @@ namespace Phoenix
 				meshNodes.resize(modelData.meshes.size());
 			}
 
-			for (u32 i = 0; i < meshNodes.size(); ++i)
+			for (sizeT i = 0; i < meshNodes.size(); ++i)
 			{
 				MeshNode& meshNode = meshNodes.at(i);
 
@@ -150,11 +150,11 @@ namespace Phoenix
 					meshNode.boneTransform.resize(modelData.meshes.at(i).nodeIndices.size());
 				}
 
-				for (u32 j = 0; j < meshNode.boneTransform.size(); ++j)
+				for (sizeT j = 0; j < meshNode.boneTransform.size(); ++j)
 				{
 					meshNode.boneTransform.at(j) = Math::MatrixMultiply(modelData.meshes.at(i).offsetTransforms.at(j), nodes.at(modelData.meshes.at(i).nodeIndices.at(j)).worldTransform);
 				}
-				meshNode.boneTransformCount = meshNode.boneTransform.size();
+				meshNode.boneTransformCount = static_cast<u32>(meshNode.boneTransform.size());
 			}
 		}
 

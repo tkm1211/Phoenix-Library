@@ -17,7 +17,8 @@ void AvoidState::Update(Boss* boss, Player* player)
 	if (!boss->GetModel()->IsPlaying())
 	{
 		isChangeState = true;
-		nextStateType = AIStateType::Move;
+		//nextStateType = AIStateType::Move;
+		nextStateType = AIStateType::JumpAttack;
 		return;
 	}
 	if (animationCnt <= 0.0f)

@@ -131,13 +131,13 @@ namespace Phoenix
 
 				for (const Graphics::ModelData::Subset& subset : modelResource->GetModelData().meshes[i].subsets)
 				{
-					u32 size = model->GetTextureSize(subset.materialIndex);
+					u32 size = static_cast<u32>(model->GetTextureSize(subset.materialIndex));
 					for (u32 j = 0; j < size; ++j)
 					{
 						Graphics::ITexture* texture[] = { model->GetTexture(subset.materialIndex, j) };
 						graphicsDevice->GetContext()->SetShaderResources(Graphics::ShaderType::Pixel, j, 1, texture);
 					}
-					mesh->Draw(graphicsDevice->GetDevice(), GetVectexBuferKinds(), GetVectexBuferKindsSize(), subset.startIndex, subset.indexCount, Graphics::PrimitiveTopology::TriangleList);
+					mesh->Draw(graphicsDevice->GetDevice(), GetVectexBuferKinds(), static_cast<u32>(GetVectexBuferKindsSize()), subset.startIndex, subset.indexCount, Graphics::PrimitiveTopology::TriangleList);
 				}
 			}
 		}

@@ -36,7 +36,7 @@ namespace Phoenix
 			IDXGIAdapter* dxgiAdapter;
 			std::vector<IDXGIAdapter*> dxgiAdapters;
 
-			for (size_t i = 0; dxgiFactory->EnumAdapters(i, &dxgiAdapter) != DXGI_ERROR_NOT_FOUND; i++)
+			for (UINT i = 0; dxgiFactory->EnumAdapters(i, &dxgiAdapter) != DXGI_ERROR_NOT_FOUND; i++)
 			{
 				dxgiAdapters.push_back(dxgiAdapter);
 			}

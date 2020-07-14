@@ -20,7 +20,7 @@ void JumpAttackState::Update(Boss* boss, Player* player)
 	if (!boss->GetModel()->IsPlaying())
 	{
 		isChangeState = true;
-		nextStateType = AIStateType::Wait;
+		nextStateType = AIStateType::Move;
 		return;
 	}
 
@@ -38,7 +38,7 @@ void JumpAttackState::Update(Boss* boss, Player* player)
 	Phoenix::f32 angle;
 	angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
 
-	if (!beginTrun)
+	if (animationCnt <= 0.4f)
 	{
 		/*Phoenix::Math::Vector3 axis;
 		axis = Phoenix::Math::Vector3Cross(forward, dir);*/
@@ -54,13 +54,19 @@ void JumpAttackState::Update(Boss* boss, Player* player)
 
 			Phoenix::Math::Quaternion q;
 			q = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
-			rotate *= q;
+			//rotate *= q;
+
+			Phoenix::Math::Quaternion rotateT = rotate;
+			rotateT *= q;
+			rotate = Phoenix::Math::QuaternionSlerp(rotate, rotateT, 0.17f);
+		}
+		else
+		{
+			beginTrun = true;
 		}
 		boss->SetRotate(rotate);
-
-		beginTrun = true;
 	}
-	if (animationCnt <= 1.68f)
+	else if (animationCnt <= 1.68f)
 	{
 		Phoenix::Math::Vector3 bossPos = boss->GetPosition();
 		Phoenix::Math::Matrix boneM = boss->GetModel()->GetBoneTransforms(0, boss->GetBoneIndex());

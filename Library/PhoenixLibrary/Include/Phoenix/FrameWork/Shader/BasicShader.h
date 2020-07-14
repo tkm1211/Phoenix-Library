@@ -47,7 +47,7 @@ namespace Phoenix
 			Graphics::VertexBufferKind* GetVectexBuferKinds() override { return vbKinds.data(); }
 
 			// 頂点バッファ種類のサイズ
-			u32 GetVectexBuferKindsSize() override { return vbKinds.size(); }
+			sizeT GetVectexBuferKindsSize() override { return vbKinds.size(); }
 		};
 	}
 }

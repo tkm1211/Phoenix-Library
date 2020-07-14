@@ -112,7 +112,7 @@ namespace Phoenix
 			virtual IMesh* GetMesh(s32 index) = 0;
 
 			// メッシュサイズ取得
-			virtual s32 GetMeshSize() = 0;
+			virtual sizeT GetMeshSize() = 0;
 		};
 
 		//****************************************************************************

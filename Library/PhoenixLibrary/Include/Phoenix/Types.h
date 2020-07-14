@@ -17,6 +17,7 @@ namespace Phoenix
 	typedef float					f32;
 	typedef double					f64;
 	typedef uintptr_t				uintPtr;
+	typedef size_t					sizeT;
 	// ※s8のsは「signed」、8は「8ビット」を示している。
 #else
 	ターゲットが宣言されていません。

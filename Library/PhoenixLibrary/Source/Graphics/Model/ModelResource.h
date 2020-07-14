@@ -27,7 +27,7 @@ namespace Phoenix
 			IMesh* GetMesh(s32 index) override { return meshes.at(index).get(); }
 
 			// メッシュサイズ取得
-			s32 GetMeshSize() override { return meshes.size(); }
+			sizeT GetMeshSize() override { return meshes.size(); }
 		};
 
 		//****************************************************************************

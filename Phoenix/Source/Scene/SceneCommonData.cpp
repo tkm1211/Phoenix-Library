@@ -26,7 +26,7 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	basicSkinShader->Initialize(graphicsDevice);
 
 	standardShader = Phoenix::FrameWork::StandardShader::Create();
-	standardShader->Initialize(graphicsDevice);
+	//standardShader->Initialize(graphicsDevice);
 
 	camera = std::make_shared<Phoenix::Graphics::Camera>();
 }

@@ -24,6 +24,12 @@
     <FxCompile Include="..\..\..\Source\HLSL\StandardPS.hlsl">
       <Filter>Source</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\GeometricPrimitivePS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\GeometricPrimitiveVS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\CommonVS.hlsli">
@@ -39,6 +45,9 @@
       <Filter>Source</Filter>
     </None>
     <None Include="..\..\..\Source\HLSL\CommonPS.hlsli">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\GeometricPrimitive.hlsli">
       <Filter>Source</Filter>
     </None>
   </ItemGroup>

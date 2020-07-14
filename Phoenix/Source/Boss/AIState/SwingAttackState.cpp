@@ -24,7 +24,7 @@ void SwingAttackState01::Update(Boss* boss, Player* player)
 			isChangeState = true;
 			nextStateType = AIStateType::Avoid;
 		}
-		else if ((boss->GetRadius() + player->GetRadius() + 100.0f) <= len
+		/*else if ((boss->GetRadius() + player->GetRadius() + 100.0f) <= len
 			&& player->GetAnimationState() == Player::AnimationState::Idle
 			|| player->GetAnimationState() == Player::AnimationState::Roll
 			|| player->GetAnimationState() == Player::AnimationState::Walk
@@ -32,7 +32,7 @@ void SwingAttackState01::Update(Boss* boss, Player* player)
 		{
 			isChangeState = true;
 			nextStateType = AIStateType::Move;
-		}
+		}*/
 		else
 		{
 			isChangeState = true;
