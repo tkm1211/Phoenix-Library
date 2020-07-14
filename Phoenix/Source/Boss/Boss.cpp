@@ -20,6 +20,7 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 	// アニメーション読み込み
 	{
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Run\\Mutant_Run.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Avoid\\Sprinting_Forward_Roll.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Right\\Mutant_Swiping.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Left\\Mutant_Punch.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Jump\\Jump_Attack.fbx", -1);
@@ -39,7 +40,8 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		pos = { 0,0,-1000.0f };
 		//rotate = { 0,0,0 };
 		rotate = { 0,0,0,1 };
-		scale = { 1.5f,1.5f,1.5f };
+		scale = { 1.25f,1.25f,1.25f };
+		//scale = { 1.0f,1.0f,1.0f };
 		radius = 75.0f;
 	}
 
@@ -118,20 +120,27 @@ void Boss::ChangeAnimation(AIStateType type)
 		model->SetLoopAnimation(true);
 		break;
 
-	case AIStateType::SwingAttack01:
+	case AIStateType::Avoid:
 		model->PlayAnimation(2, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		model->SetSpeed(1.5f);
 		break;
 
-	case AIStateType::SwingAttack02:
+	case AIStateType::SwingAttack01:
 		model->PlayAnimation(3, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		break;
 
+	case AIStateType::SwingAttack02:
+		model->PlayAnimation(4, 1, 0.2f);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+		break;
+
 	case AIStateType::JumpAttack:
-		model->PlayAnimation(4, 0, 0.2f);
+		model->PlayAnimation(5, 0, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		break;

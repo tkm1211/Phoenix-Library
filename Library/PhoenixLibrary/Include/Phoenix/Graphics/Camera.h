@@ -60,6 +60,7 @@ namespace Phoenix
 
 		public:
 			Camera();
+			~Camera() {}
 
 		public:
 			// ビュータイプ設定

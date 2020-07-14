@@ -6,7 +6,7 @@
 class WaitState : public AIState
 {
 private:
-	/*static constexpr*/ int WaitMaxTime = 5 * 60;
+	/*static constexpr*/ int WaitMaxTime = 1 * 60;
 
 private:
 	int waitTimer = 0;

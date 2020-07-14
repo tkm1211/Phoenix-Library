@@ -6,35 +6,21 @@
 #include "../../ExternalLibrary/ImGui/Include/imgui_internal.h"
 #include "Phoenix/FrameWork/Input/InputDevice.h"
 #include "Phoenix/Math/PhoenixMath.h"
-#include "Phoenix/FrameWork/Shader/BasicShader.h"
-#include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
-#include "Phoenix/FrameWork/Shader/StandardShader.h"
 
 
 void SceneGame::Init(SceneSystem* sceneSystem)
 {
 	this->sceneSystem = sceneSystem;
 	graphicsDevice = sceneSystem->GetGraphicsDevice();
+	commonData = sceneSystem->GetSceneCommonData();
 
-	player = Player::Create();
-	player->Init(graphicsDevice);
-
-	boss = Boss::Create();
-	boss->Init(graphicsDevice, player.get());
-
-	const char* filename = "..\\Data\\Assets\\Model\\stage\\stage01.fbx";
-	stageModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
-	stageModel->Initialize(graphicsDevice);
-	stageModel->Load(graphicsDevice, Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), filename));
-
-	basicShader = Phoenix::FrameWork::BasicShader::Create();
-	basicShader->Initialize(graphicsDevice);
-
-	basicSkinShader = Phoenix::FrameWork::BasicSkinShader::Create();
-	basicSkinShader->Initialize(graphicsDevice);
-
-	standardShader = Phoenix::FrameWork::StandardShader::Create();
-	standardShader->Initialize(graphicsDevice);
+	player = commonData->player.get();
+	boss = commonData->boss.get();
+	stageModel = commonData->stageModel.get();
+	basicShader = commonData->basicShader.get();
+	basicSkinShader = commonData->basicSkinShader.get();
+	standardShader = commonData->standardShader.get();
+	camera = commonData->camera.get();
 
 	cameraFlg = false;
 }
@@ -43,7 +29,7 @@ void SceneGame::Update()
 {
 	// プレイヤー更新
 	{
-		player->Update(camera);
+		player->Update(*camera);
 	}
 
 	// ボス更新
@@ -56,7 +42,18 @@ void SceneGame::Update()
 		// TODO : カプセルVSカプセルに変更
 		Phoenix::Math::Vector3 playerPos = player->GetPosition();
 		Phoenix::Math::Vector3 bossPos = boss->GetPosition();
-		if (CircleVsCircle(Phoenix::Math::Vector2(playerPos.x, playerPos.z), Phoenix::Math::Vector2(bossPos.x, bossPos.z), player->GetRadius(), boss->GetRadius()))
+		/*if (CircleVsCircle(Phoenix::Math::Vector2(playerPos.x, playerPos.z), Phoenix::Math::Vector2(bossPos.x, bossPos.z), player->GetRadius(), boss->GetRadius()))
+		{
+			Phoenix::Math::Vector3 pos;
+			Phoenix::Math::Vector3 dir = player->GetPosition() - boss->GetPosition();
+			dir = Phoenix::Math::Vector3Normalize(dir);
+			dir.y = 0.0f;
+
+			pos = Phoenix::Math::Vector3(bossPos.x, playerPos.y, bossPos.z) + dir * (player->GetRadius() + boss->GetRadius());
+			player->SetPosition(pos);
+			player->UpdateTrasform();
+		}*/
+		if (SphereVsSphere(playerPos, bossPos, player->GetRadius(), boss->GetRadius()))
 		{
 			Phoenix::Math::Vector3 pos;
 			Phoenix::Math::Vector3 dir = player->GetPosition() - boss->GetPosition();
@@ -73,7 +70,7 @@ void SceneGame::Update()
 	{
 		if (cameraFlg)
 		{
-			camera.FreeCamera();
+			camera->FreeCamera();
 		}
 		else
 		{
@@ -84,9 +81,9 @@ void SceneGame::Update()
 
 			bossPos.y += 150.0f;
 			playerPos.y += 150.0f;
-			camera.LockOnCamera(bossPos, playerPos);
+			camera->LockOnCamera(bossPos, playerPos);
 		}
-		camera.Update();
+		camera->Update();
 	}
 }
 
@@ -111,7 +108,7 @@ void SceneGame::Draw()
 
 	// メッシュ描画
 #if 1
-	basicSkinShader->Begin(graphicsDevice, camera);
+	basicSkinShader->Begin(graphicsDevice, *camera);
 	basicSkinShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
 	basicSkinShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
 	basicSkinShader->End(graphicsDevice);
@@ -132,12 +129,12 @@ void SceneGame::Draw()
 #endif
 
 #if 1
-	basicShader->Begin(graphicsDevice, camera);
-	basicShader->Draw(graphicsDevice, W, stageModel.get());
+	basicShader->Begin(graphicsDevice, *camera);
+	basicShader->Draw(graphicsDevice, W, stageModel);
 	basicShader->End(graphicsDevice);
 #else
 	standardShader->Begin(graphicsDevice, camera);
-	standardShader->Draw(graphicsDevice, W, stageModel.get());
+	standardShader->Draw(graphicsDevice, W, stageModel);
 	standardShader->End(graphicsDevice);
 #endif
 }
@@ -153,7 +150,7 @@ void SceneGame::GUI()
 			ImGui::Checkbox("FreeCamera", &cameraFlg);
 			ImGui::TreePop();
 		}
-		Phoenix::Graphics::DirLight* dir = static_cast<Phoenix::FrameWork::StandardShader*>(standardShader.get())->GetLight()->GetDefaultDirLight();
+		Phoenix::Graphics::DirLight* dir = static_cast<Phoenix::FrameWork::StandardShader*>(standardShader)->GetLight()->GetDefaultDirLight();
 		if (ImGui::TreeNode("Light"))
 		{
 			ImGui::DragFloat3("dir", &dir->direction.x, 0.01f, -1.0f, 1.0f);

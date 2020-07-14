@@ -54,6 +54,12 @@
     <ClCompile Include="Source\Boss\AIState\SwingAttackState.cpp">
       <Filter>Source\Boss\AIState</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\SceneCommonData.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Boss\AIState\AvoidState.cpp">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -90,6 +96,12 @@
       <Filter>Source\Boss\AIState</Filter>
     </ClInclude>
     <ClInclude Include="Source\Boss\AIState\SwingAttackState.h">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\SceneCommonData.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\AIState\AvoidState.h">
       <Filter>Source\Boss\AIState</Filter>
     </ClInclude>
   </ItemGroup>

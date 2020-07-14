@@ -4,6 +4,7 @@
 #include <memory>
 #include "Scene.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
+#include "SceneCommonData.h"
 
 
 enum class SceneType
@@ -19,7 +20,9 @@ private:
 	Scene* currentScene = nullptr;
 	Scene* nextScene = nullptr;
 	Scene* stackScene = nullptr;
+
 	Phoenix::Graphics::IGraphicsDevice* graphicsDevice = nullptr;
+	std::shared_ptr<SceneCommonData> commonData;
 
 public:
 	SceneSystem() {}
@@ -34,6 +37,7 @@ public:
 	void ChangeScene(SceneType sceneType, bool stack);
 	void ReSetStackScene();
 	Phoenix::Graphics::IGraphicsDevice* GetGraphicsDevice() { return graphicsDevice; }
+	SceneCommonData* GetSceneCommonData() { return commonData.get(); }
 
 public:
 	template<class T>

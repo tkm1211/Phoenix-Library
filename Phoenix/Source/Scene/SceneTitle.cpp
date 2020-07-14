@@ -5,12 +5,15 @@
 #include "../../ExternalLibrary/ImGui/Include/imgui_impl_dx11.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui_internal.h"
 #include "Phoenix/FrameWork/Input/InputDevice.h"
+//#include "../../Effekseer/include/Effekseer/Effekseer.h"
+//#include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
 
 
 void SceneTitle::Init(SceneSystem* sceneSystem)
 {
 	this->sceneSystem = sceneSystem;
 	graphicsDevice = sceneSystem->GetGraphicsDevice();
+	commonData = sceneSystem->GetSceneCommonData();
 }
 
 void SceneTitle::Update()

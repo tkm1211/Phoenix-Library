@@ -14,19 +14,24 @@ void MoveState::Init()
 
 void MoveState::Update(Boss* boss, Player* player)
 {
-	if (SphereVsSphere(boss->GetPosition(), player->GetPosition(), boss->GetRadius() * 10.0f, player->GetRadius()))
+	Phoenix::Math::Vector3 dir = player->GetPosition() - boss->GetPosition();
+	Phoenix::f32 len = Phoenix::Math::Vector3Length(Phoenix::Math::Vector3(dir.x, 0.0f, dir.z));
+	dir = Phoenix::Math::Vector3Normalize(dir);
+
+	if (SphereVsSphere(boss->GetPosition(), player->GetPosition(), boss->GetRadius() * 1.5f, player->GetRadius()))
 	{
 		isChangeState = true;
 		nextStateType = AIStateType::SwingAttack01;
 	}
-	/*else if (SphereVsSphere(boss->GetPosition(), player->GetPosition(), boss->GetRadius() * 12.0f, player->GetRadius()))
+	else if (((boss->GetRadius() + player->GetRadius() + 100.0f) <= len && len <= (boss->GetRadius() + player->GetRadius() + 600.0f))
+		&& (player->GetAnimationState() == Player::AnimationState::Idle
+		|| player->GetAnimationState() == Player::AnimationState::Roll
+		|| player->GetAnimationState() == Player::AnimationState::Walk
+		|| player->GetAnimationState() == Player::AnimationState::Run))
 	{
 		isChangeState = true;
 		nextStateType = AIStateType::JumpAttack;
-	}*/
-
-	Phoenix::Math::Vector3 dir = player->GetPosition() - boss->GetPosition();
-	dir = Phoenix::Math::Vector3Normalize(dir);
+	}
 
 #if 0
 	Phoenix::f32 angle = atan2f(dir.x, dir.z);
@@ -39,15 +44,23 @@ void MoveState::Update(Boss* boss, Player* player)
 #else
 	Phoenix::Math::Quaternion rotate = boss->GetRotate();
 	Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&rotate);
-	Phoenix::Math::Vector3 foward = { matrix._31, matrix._32, matrix._33 };
+	Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
+	Phoenix::Math::Vector3 up = Phoenix::Math::Vector3(matrix._21, matrix._22, matrix._23);
+	Phoenix::Math::Vector3 right = Phoenix::Math::Vector3(matrix._11, matrix._12, matrix._13);
 
-	Phoenix::Math::Vector3 axis = Phoenix::Math::Vector3Cross(foward, dir);
-	Phoenix::f32 angle = acosf(Phoenix::Math::Vector3Dot(dir, foward));
+	//Phoenix::Math::Vector3 axis = Phoenix::Math::Vector3Cross(foward, dir);
+	Phoenix::f32 angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
 
 	if (1e-8f < fabs(angle))
 	{
+		Phoenix::f32 angleR;
+		angleR = acosf(Phoenix::Math::Vector3Dot(dir, right));
+		angleR -= (90.0f * 0.01745f);
+
+		if (0.0f < angleR) angle *= -1;
+
 		Phoenix::Math::Quaternion q;
-		q = Phoenix::Math::QuaternionRotationAxis(axis, angle);
+		q = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
 
 		Phoenix::Math::Quaternion rotateT = rotate;
 		rotateT *= q;
@@ -56,9 +69,9 @@ void MoveState::Update(Boss* boss, Player* player)
 	boss->SetRotate(rotate);
 
 	matrix = Phoenix::Math::MatrixRotationQuaternion(&rotate);
-	foward = { matrix._31, matrix._32, matrix._33 };
+	forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
 	
-	angle = atan2f(foward.x, foward.z);
+	angle = atan2f(forward.x, forward.z);
 	
 	Phoenix::Math::Vector3 pos = boss->GetPosition();
 	pos.x += sinf(angle) * MoveSpeed;

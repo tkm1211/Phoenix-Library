@@ -1,6 +1,7 @@
 #include "BossAI.h"
 #include "AIState/WaitState.h"
 #include "AIState/MoveState.h"
+#include "AIState/AvoidState.h"
 #include "AIState/SwingAttackState.h"
 #include "AIState/JumpAttackState.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
@@ -19,6 +20,7 @@ void BossAI::Init()
 	{
 		AddState<WaitState>();
 		AddState<MoveState>();
+		AddState<AvoidState>();
 		AddState<SwingAttackState01>();
 		AddState<SwingAttackState02>();
 		AddState<JumpAttackState>();

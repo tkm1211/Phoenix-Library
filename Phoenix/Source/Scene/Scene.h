@@ -4,18 +4,23 @@
 #include "../Player/Player.h"
 #include "../Boss/Boss.h"
 #include "Phoenix/Types.h"
-#include "Phoenix/FrameWork/Object/Object.h"
-#include "Phoenix/FrameWork/Shader/Shader.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Camera.h"
+#include "Phoenix/FrameWork/Object/Object.h"
+#include "Phoenix/FrameWork/Shader/Shader.h"
+#include "Phoenix/FrameWork/Shader/BasicShader.h"
+#include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
+#include "Phoenix/FrameWork/Shader/StandardShader.h"
 
 
 class SceneSystem;
+class SceneCommonData;
 class Scene
 {
 protected:
 	SceneSystem* sceneSystem = nullptr;
 	Phoenix::Graphics::IGraphicsDevice* graphicsDevice = nullptr;
+	SceneCommonData* commonData = nullptr;
 
 public:
 	Scene() {}
@@ -47,13 +52,13 @@ public:
 class SceneGame : public Scene
 {
 private:
-	std::unique_ptr<Player> player;
-	std::unique_ptr<Boss> boss;
-	std::unique_ptr<Phoenix::FrameWork::ModelObject> stageModel;
-	std::unique_ptr<Phoenix::FrameWork::IShader> basicShader;
-	std::unique_ptr<Phoenix::FrameWork::IShader> basicSkinShader;
-	std::unique_ptr<Phoenix::FrameWork::IShader> standardShader;
-	Phoenix::Graphics::Camera camera;
+	Player* player;
+	Boss* boss;
+	Phoenix::FrameWork::ModelObject* stageModel;
+	Phoenix::FrameWork::IShader* basicShader;
+	Phoenix::FrameWork::IShader* basicSkinShader;
+	Phoenix::FrameWork::IShader* standardShader;
+	Phoenix::Graphics::Camera* camera;
 	bool cameraFlg = false;
 
 public:

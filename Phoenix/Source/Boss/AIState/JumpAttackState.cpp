@@ -30,19 +30,30 @@ void JumpAttackState::Update(Boss* boss, Player* player)
 
 	Phoenix::Math::Quaternion rotate = boss->GetRotate();
 	Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
-	Phoenix::Math::Vector3 foward = Phoenix::Math::Vector3(m._31, m._32, m._33);
+	Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
+	Phoenix::Math::Vector3 up = Phoenix::Math::Vector3(m._21, m._22, m._23);
+	Phoenix::Math::Vector3 right = Phoenix::Math::Vector3(m._11, m._12, m._13);
+	forward.y = 0.0f;
+
 	Phoenix::f32 angle;
+	angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
 
 	if (!beginTrun)
 	{
-		Phoenix::Math::Vector3 axis;
-		axis = Phoenix::Math::Vector3Cross(foward, dir);
-		angle = acosf(Phoenix::Math::Vector3Dot(dir, foward));
+		/*Phoenix::Math::Vector3 axis;
+		axis = Phoenix::Math::Vector3Cross(forward, dir);*/
+		//angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
 
 		if (1e-8f < fabs(angle))
 		{
+			Phoenix::f32 angleR;
+			angleR = acosf(Phoenix::Math::Vector3Dot(dir, right));
+			angleR -= (90.0f * 0.01745f);
+
+			if (0.0f < angleR) angle *= -1;
+
 			Phoenix::Math::Quaternion q;
-			q = Phoenix::Math::QuaternionRotationAxis(axis, angle);
+			q = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
 			rotate *= q;
 		}
 		boss->SetRotate(rotate);
@@ -54,7 +65,7 @@ void JumpAttackState::Update(Boss* boss, Player* player)
 		Phoenix::Math::Vector3 bossPos = boss->GetPosition();
 		Phoenix::Math::Matrix boneM = boss->GetModel()->GetBoneTransforms(0, boss->GetBoneIndex());
 
-		angle = atan2f(foward.x, foward.z);
+		angle = atan2f(forward.x, forward.z);
 
 		bossPos.x += sinf(angle) * MoveSpeed;
 		bossPos.y += boneM._42 - oldPosY;

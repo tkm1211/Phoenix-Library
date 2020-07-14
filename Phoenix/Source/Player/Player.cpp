@@ -272,25 +272,25 @@ void Player::ChangeAnimation()
 
 	switch (animationState)
 	{
-	case Player::AnimationState::Idle:
+	case AnimationState::Idle:
 		model->PlayAnimation(0, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
 		break;
 
-	case Player::AnimationState::Walk:
+	case AnimationState::Walk:
 		model->PlayAnimation(1, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
 		break;
 
-	case Player::AnimationState::Run:
+	case AnimationState::Run:
 		model->PlayAnimation(2, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
 		break;
 
-	case Player::AnimationState::Roll:
+	case AnimationState::Roll:
 		model->PlayAnimation(3, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);

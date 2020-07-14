@@ -16,12 +16,6 @@
     <Filter Include="Source\Object">
       <UniqueIdentifier>{b628d7df-22d5-4882-bea4-0b216645c1a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Include\Renderer">
-      <UniqueIdentifier>{218c95a0-d77c-4368-b5e7-55e9114fba46}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Renderer">
-      <UniqueIdentifier>{3a82e955-0b7f-4429-b2d9-88283ed8c27f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Include\Shader">
       <UniqueIdentifier>{05234696-b175-4234-8212-a0149bc28e82}</UniqueIdentifier>
     </Filter>
@@ -44,12 +38,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\Object.h">
       <Filter>Include\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Renderer\ModelRenderer.h">
-      <Filter>Include\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Renderer\Renderer.h">
-      <Filter>Include\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicShader.h">
       <Filter>Include\Shader</Filter>
@@ -76,9 +64,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Object\Object.cpp">
       <Filter>Source\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\FrameWork\Renderer\ModelRenderer.cpp">
-      <Filter>Source\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicShader.cpp">
       <Filter>Source\Shader</Filter>
