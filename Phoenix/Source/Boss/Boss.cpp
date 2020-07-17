@@ -1,6 +1,8 @@
 #include "Boss.h"
 #include "BossAI.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
+#include "AIState/SwingAttackState.h"
+#include "AIState/JumpAttackState.h"
 
 
 std::unique_ptr<Boss> Boss::Create()
@@ -43,6 +45,7 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		scale = { 1.25f,1.25f,1.25f };
 		//scale = { 1.0f,1.0f,1.0f };
 		radius = 75.0f;
+		life = 1000;
 	}
 
 	// プレイヤーアドレス取得
@@ -65,6 +68,27 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 	// インデックス取得
 	{
 		boneIndex = model->GetBoneIndex("Mutant:Hips");
+	}
+
+	// コリジョン初期化
+	{
+		collisionDatas.resize(4);
+
+		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(0).radius = 125.0f;
+		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Mutant:Hips");
+
+		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(1).radius = 25.0f;
+		collisionDatas.at(1).boneIndex = model->GetBoneIndex("Mutant:RightHandIndex1");
+
+		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(2).radius = 65.0f;
+		collisionDatas.at(2).boneIndex = model->GetBoneIndex("Mutant:LeftHand");
+
+		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(3).radius = 265.0f;
+		collisionDatas.at(3).boneIndex = -1;
 	}
 }
 
@@ -101,6 +125,27 @@ void Boss::Update()
 		R = Phoenix::Math::MatrixRotationQuaternion(&rotate);
 		T = Phoenix::Math::MatrixTranslation(pos.x, pos.y, pos.z);
 		worldMatrix = S * R * T;
+	}
+
+	// コリジョン更新
+	{
+		auto nodes = model->GetNodes();
+		for (auto& data : collisionDatas)
+		{
+			if (data.boneIndex == -1)
+			{
+				data.pos = pos;
+				continue;
+			}
+			Phoenix::Math::Matrix bone = nodes->at(data.boneIndex).worldTransform;
+			bone *= worldMatrix;
+			data.pos = Phoenix::Math::Vector3(bone._41, bone._42, bone._43);
+		}
+	}
+
+	// アタック判定中
+	{
+		AttackJudgment();
 	}
 }
 
@@ -152,6 +197,70 @@ void Boss::ChangeAnimation(AIStateType type)
 	}
 }
 
+void Boss::AttackJudgment()
+{
+	auto Judgment = [&](Phoenix::s32 index)
+	{
+		if (isHit)
+		{
+			isAttackJudgment = false;
+			return;
+		}
+
+		isAttackJudgment = true;
+		attackCollisionIndex = index;
+	};
+	auto NoJudgment = [&]()
+	{
+		isAttackJudgment = false;
+		isHit = false;
+		attackCollisionIndex = -1;
+	};
+
+	if (currentType == AIStateType::SwingAttack01)
+	{
+		BossAI* bossAI = static_cast<BossAI*>(ai.get());
+		float time = static_cast<SwingAttackState01*>(bossAI->GetCurrentState())->GetAnimationCnt() * 60.0f;
+
+		if (76.0f <= time && time <= 90.0f)
+		{
+			Judgment(2);
+		}
+		else
+		{
+			NoJudgment();
+		}
+	}
+	else if (currentType == AIStateType::SwingAttack02)
+	{
+		BossAI* bossAI = static_cast<BossAI*>(ai.get());
+		float time = static_cast<SwingAttackState02*>(bossAI->GetCurrentState())->GetAnimationCnt() * 60.0f;
+
+		if (14.0f <= time && time <= 23.0f)
+		{
+			Judgment(1);
+		}
+		else
+		{
+			NoJudgment();
+		}
+	}
+	else if (currentType == AIStateType::JumpAttack)
+	{
+		BossAI* bossAI = static_cast<BossAI*>(ai.get());
+		float time = static_cast<JumpAttackState*>(bossAI->GetCurrentState())->GetAnimationCnt() * 60.0f;
+
+		if (37.0f <= time && time <= 50.0f)
+		{
+			Judgment(3);
+		}
+		else
+		{
+			NoJudgment();
+		}
+	}
+}
+
 void Boss::GUI()
 {
 	if (ImGui::TreeNode("Boss"))
@@ -159,6 +268,7 @@ void Boss::GUI()
 		if (ImGui::TreeNode("Prameter"))
 		{
 			ImGui::DragFloat3("pos", &pos.x);
+			ImGui::Text("HP : %d", life);
 			ImGui::TreePop();
 		}
 		ai->GUI();
@@ -178,6 +288,15 @@ void Boss::GUI()
 					ImGui::Text("translate : %f, %f, %f", node.translate.x, node.translate.y, node.translate.z);
 				}
 			}*/
+
+			if (ImGui::TreeNode("BoneName"))
+			{
+				//ImGui::ListBox("BoneListBox\n(single select)", &boneIndex, model->GetBoneNode()->at(0).name.data(), model->GetBoneNode()->at(0).name.size(), 4);
+				//ImGui::ListBox("NodeListBox\n(single select)", &nodeIndex, model->GetNodes()->data(), model->GetNodes()->size(), 4);
+				Phoenix::s32 index = 0;
+				ImGui::ListBox("ListBox\n(single select)", &index, model->GetBoneNames().data(), model->GetBoneNames().size(), 4);
+				ImGui::TreePop();
+			}
 
 			Phoenix::Math::Matrix boneM = model->GetBoneTransforms(0, boneIndex);
 			Phoenix::Math::Matrix mat = boneM * worldMatrix;

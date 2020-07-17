@@ -22,4 +22,5 @@ public:
 public:
 	void Init() override;
 	void Update(Boss* boss, Player* player) override;
+	Phoenix::f32 GetAnimationCnt() { return animationCnt; }
 };

@@ -81,6 +81,12 @@ namespace Phoenix
 				}
 			}
 
+			boneNames.resize(nodes.size());
+			for (sizeT i = 0; i < boneNames.size(); ++i)
+			{
+				boneNames.at(i) = nodes.at(i).name;
+			}
+
 			animator = std::make_unique<Animator>();
 			animator->Initialize(this);
 			LoadAnimation(fullPass, -1);

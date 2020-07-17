@@ -12,6 +12,7 @@
 #include "Phoenix/FrameWork/Shader/BasicShader.h"
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
 #include "Phoenix/FrameWork/Shader/StandardShader.h"
+#include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
 #include "../../Effekseer/include/Effekseer/Effekseer.h"
 #include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
 #include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
@@ -40,10 +41,8 @@ public:
 class SceneTitle : public Scene
 {
 private:
-	::EffekseerRenderer::Renderer* renderer;
-	::Effekseer::Manager* manager;
-	::Effekseer::Handle handle;
-	::Effekseer::Effect* effect;
+	::Effekseer::Effect* effect = nullptr;
+	::Effekseer::Handle handle = 0;
 
 public:
 	SceneTitle() {}
@@ -51,15 +50,6 @@ public:
 	{
 		// エフェクトを解放します。再生中の場合は、再生が終了した後、自動的に解放されます。
 		ES_SAFE_RELEASE(effect);
-
-		// エフェクト管理用インスタンスを破棄
-		manager->Destroy();
-
-		// サウンド用インスタンスを破棄
-		//sound->Destroy();
-
-		// 描画用インスタンスを破棄
-		renderer->Destroy();
 	}
 
 public:
@@ -83,13 +73,25 @@ private:
 
 	std::shared_ptr<GeometricPrimitive> primitive;
 
+	bool isHitCollision = false;
+
+	::Effekseer::Effect* hitEffect = nullptr;
+	::Effekseer::Handle hitEffectHandle = 0;
+
 public:
 	SceneGame() {}
-	~SceneGame() {}
+	~SceneGame()
+	{
+		// エフェクトを解放します。再生中の場合は、再生が終了した後、自動的に解放されます。
+		ES_SAFE_RELEASE(hitEffect);
+	}
 
 public:
 	void Init(SceneSystem* sceneSystem) override;
 	void Update() override;
 	void Draw() override;
 	void GUI() override;
+
+private:
+	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale);
 };

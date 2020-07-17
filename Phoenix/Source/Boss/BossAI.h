@@ -17,6 +17,7 @@ private:
 	AIState* nextState = nullptr;
 	Boss* boss = nullptr;
 	Player* player = nullptr;
+	bool isAI = false;
 
 public:
 	BossAI() {}
@@ -49,6 +50,8 @@ public:
 		}
 		return AIStateType::None;
 	}
+
+	AIState* GetCurrentState() { return currentState; }
 
 private:
 	template<class T>

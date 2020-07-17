@@ -74,6 +74,13 @@ namespace Phoenix
 			virtual const Math::AABB& GetBounds() = 0;
 		};*/
 
+		struct CollisionData
+		{
+			Phoenix::Math::Vector3 pos;
+			Phoenix::f32 radius = 0.0f;
+			Phoenix::s32 boneIndex = 0;
+		};
+
 		class Animator;
 		class ModelObject
 		{
@@ -110,6 +117,9 @@ namespace Phoenix
 			std::vector<Material> materials;
 			std::unique_ptr<OS::IResourceManager> resourceManamger;
 			std::unique_ptr<OS::IFileStream> file;
+
+			// ボーン名列挙用
+			std::vector<const char*> boneNames;
 
 		public:
 			ModelObject() {}
@@ -175,6 +185,9 @@ namespace Phoenix
 
 			// ノードの取得
 			std::vector<Node>* GetNodes() { return &nodes; }
+
+			// ボーン名取得
+			std::vector<const char*> GetBoneNames() { return boneNames; }
 
 			// ボーントランスフォームの取得
 			Math::Matrix* GetBoneTransforms(u32 meshIndex) { return meshNodes.at(meshIndex).boneTransform.data(); }

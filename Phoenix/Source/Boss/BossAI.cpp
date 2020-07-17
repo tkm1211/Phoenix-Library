@@ -36,10 +36,14 @@ void BossAI::Init()
 	{
 		currentState = GetState(AIStateType::Wait);
 	}
+
+	isAI = true;
 }
 
 void BossAI::Update()
 {
+	if (!isAI) return;
+
 	// ステート移行
 	if (nextState)
 	{
@@ -64,6 +68,7 @@ void BossAI::GUI()
 {
 	if (ImGui::TreeNode("AI"))
 	{
+		ImGui::Checkbox("On", &isAI);
 		switch (currentState->GetStateType())
 		{
 		case AIStateType::None:

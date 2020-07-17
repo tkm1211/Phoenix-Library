@@ -11,6 +11,9 @@
 #include "Phoenix/FrameWork/Shader/BasicShader.h"
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
 #include "Phoenix/FrameWork/Shader/StandardShader.h"
+#include "../../Effekseer/include/Effekseer/Effekseer.h"
+#include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
+#include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
 
 
 class SceneCommonData
@@ -24,9 +27,25 @@ public:
 	std::shared_ptr<Phoenix::FrameWork::IShader> standardShader;
 	std::shared_ptr<Phoenix::Graphics::Camera> camera;
 
+	::EffekseerRenderer::Renderer* renderer = nullptr;
+	::Effekseer::Manager* manager = nullptr;
+
 public:
 	SceneCommonData() {}
-	~SceneCommonData() {}
+	~SceneCommonData()
+	{
+		// エフェクトを解放します。再生中の場合は、再生が終了した後、自動的に解放されます。
+		//ES_SAFE_RELEASE(effect);
+
+		// エフェクト管理用インスタンスを破棄
+		manager->Destroy();
+
+		// サウンド用インスタンスを破棄
+		//sound->Destroy();
+
+		// 描画用インスタンスを破棄
+		renderer->Destroy();
+	}
 
 public:
 	// 生成

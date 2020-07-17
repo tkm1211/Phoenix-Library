@@ -79,9 +79,22 @@ private:
 	float attackReceptionTimeCnt;
 	float animationSpeed;
 
+	std::vector<Phoenix::FrameWork::CollisionData> collisionDatas;
+
+	// HP
+	Phoenix::s32 life = 0;
+
+	// アタックが当たったか？
+	bool isHit = false;
+
+	// アタックの判定中か？
+	bool isAttackJudgment = false;
+
+	// コリジョンデータの要素数
+	Phoenix::u32 attackCollisionIndex = 0;
 
 public:
-	Player() : 
+	Player() :
 		worldMatrix(Phoenix::Math::MatrixIdentity()), 
 		speed(0.0f), 
 		animationState(AnimationState::Idle),
@@ -102,7 +115,9 @@ public:
 	void Control(Phoenix::Graphics::Camera& camera);
 	void ChangeAnimation();
 	void ChangeAttackAnimation();
+	void AttackJudgment();
 	void GUI();
+	void Damage(int damage) { life -= damage; }
 
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
@@ -110,6 +125,10 @@ public:
 	Phoenix::Math::Vector3 GetRotate() { return rotate; }
 	Phoenix::f32 GetRadius() { return radius; }
 	AnimationState GetAnimationState() { return animationState; }
+	std::vector<Phoenix::FrameWork::CollisionData>* GetCollisionDatas() { return &collisionDatas; }
+	bool IsAttackJudgment() { return isAttackJudgment; }
+	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
+	void SetIsHit(bool isHit) { this->isHit = isHit; }
 };

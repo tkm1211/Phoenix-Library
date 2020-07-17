@@ -19,6 +19,7 @@ public:
 public:
 	void Init() override;
 	void Update(Boss* boss, Player* player) override;
+	Phoenix::f32 GetAnimationCnt() { return animationCnt; }
 };
 
 class SwingAttackState02 : public AIState
@@ -36,4 +37,5 @@ public:
 public:
 	void Init() override;
 	void Update(Boss* boss, Player* player) override;
+	Phoenix::f32 GetAnimationCnt() { return animationCnt; }
 };

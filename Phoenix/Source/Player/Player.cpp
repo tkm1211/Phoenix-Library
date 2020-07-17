@@ -67,6 +67,29 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		//rotate = { 0,0,0,1 };
 		scale = { 1,1,1 };
 		radius = 50.0f;
+		life = 100;
+		attackCollisionIndex = -1;
+	}
+
+	// コリジョン初期化
+	{
+		collisionDatas.resize(4);
+
+		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(0).radius = 50.0f;
+		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Hips");
+
+		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(1).radius = 25.0f;
+		collisionDatas.at(1).boneIndex = model->GetBoneIndex("RightHandIndex1");
+
+		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(2).radius = 25.0f;
+		collisionDatas.at(2).boneIndex = model->GetBoneIndex("LeftHandIndex1");
+
+		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(3).radius = 25.0f;
+		collisionDatas.at(3).boneIndex = model->GetBoneIndex("RightFoot");
 	}
 }
 
@@ -90,6 +113,22 @@ void Player::Update(Phoenix::Graphics::Camera& camera)
 	// ワールド行列を作成
 	{
 		UpdateTrasform();
+	}
+
+	// コリジョン更新
+	{
+		auto nodes = model->GetNodes();
+		for (auto& data : collisionDatas)
+		{
+			Phoenix::Math::Matrix bone = nodes->at(data.boneIndex).worldTransform;
+			bone *= worldMatrix;
+			data.pos = Phoenix::Math::Vector3(bone._41, bone._42, bone._43);
+		}
+	}
+
+	// アタック判定中
+	{
+		AttackJudgment();
 	}
 }
 
@@ -130,6 +169,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 			animationSpeed = AnimationSpeed30;
 			isChangeAnimation = true;
 			isAttack = true;
+			isHit = false;
 			animationState = AnimationState::Attack;
 			attackState = AttackAnimationState::Attack01;
 		}
@@ -142,6 +182,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 				animationSpeed = AnimationSpeed30;
 				isChangeAnimation = true;
 				isAttack = true;
+				isHit = false;
 				animationState = AnimationState::Attack;
 				attackState = AttackAnimationState::Attack02;
 			}
@@ -156,6 +197,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 				speed = Attack03Speed;
 				isChangeAnimation = true;
 				isAttack = true;
+				isHit = false;
 				animationState = AnimationState::Attack;
 				attackState = AttackAnimationState::Attack03;
 			}
@@ -182,6 +224,26 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 			isAttack = false;
 			animationState = AnimationState::Roll;
 			attackState = AttackAnimationState::End;
+
+			if (sX != 0.0f || sY != 0.0f)
+			{
+				float len = sqrtf(sX * sX + sY * sY);
+
+				if (len <= 0)
+				{
+					sX = 0;
+					sY = 0;
+				}
+
+				float mag = 1 / len;
+
+				sX *= mag;
+				sY *= mag;
+
+				Phoenix::Math::Vector3 oldAngle = rotate;
+				oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
+				rotate = oldAngle;
+			}
 		}
 		else if (animationState == AnimationState::Attack && attackState == AttackAnimationState::Attack03 && model->IsPlaying())
 		{
@@ -228,23 +290,6 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 
 			sX *= mag;
 			sY *= mag;
-
-			/*Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&rotate);
-			Phoenix::Math::Vector3 foward = { matrix._31, matrix._32, matrix._33 };
-			Phoenix::Math::Vector3 dir = { sX, 0.0f, sY };
-
-			Phoenix::Math::Vector3 axis = Phoenix::Math::Vector3Cross(foward, dir);
-			Phoenix::f32 angle = acosf(Phoenix::Math::Vector3Dot(dir, foward));
-
-			if (1e-8f < fabs(angle))
-			{
-				Phoenix::Math::Quaternion q;
-				q = Phoenix::Math::QuaternionRotationAxis(axis, angle);
-
-				Phoenix::Math::Quaternion rotateT = rotate;
-				rotateT *= q;
-				rotate = Phoenix::Math::QuaternionSlerp(rotate, rotateT, 0.03f);
-			}*/
 
 			Phoenix::Math::Vector3 oldAngle = rotate;
 			oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
@@ -349,12 +394,100 @@ void Player::ChangeAttackAnimation()
 	}
 }
 
+void Player::AttackJudgment()
+{
+	if (isAttack)
+	{
+		auto Judgment = [&](Phoenix::s32 index)
+		{
+			if (isHit)
+			{
+				isAttackJudgment = false;
+				return;
+			}
+
+			isAttackJudgment = true;
+			attackCollisionIndex = index;
+		};
+		auto NoJudgment = [&]()
+		{
+			isAttackJudgment = false;
+			isHit = false;
+			attackCollisionIndex = -1;
+		};
+
+		float time = attackReceptionTimeCnt * 60.0f;
+		if (attackState == AttackAnimationState::Attack01)
+		{
+			if (36.0f <= time && time <= 46.0f)
+			{
+				Judgment(2);
+			}
+			else if (68.0f <= time && time <= 80.0f)
+			{
+				Judgment(1);
+			}
+			else
+			{
+				NoJudgment();
+			}
+		}
+		else if (attackState == AttackAnimationState::Attack02)
+		{
+			if (40.0f <= time && time <= 55.0f)
+			{
+				Judgment(2);
+			}
+			else if (75.0f <= time && time <= 85.0f)
+			{
+				Judgment(1);
+			}
+			else if (96.0f <= time && time <= 107.0f)
+			{
+				Judgment(2);
+			}
+			else if (113.0f <= time && time <= 120.0f)
+			{
+				Judgment(1);
+			}
+			else if (129.0f <= time && time <= 139.0f)
+			{
+				Judgment(2);
+			}
+			else if (146.0f <= time && time <= 156.0f)
+			{
+				Judgment(1);
+			}
+			else
+			{
+				NoJudgment();
+			}
+		}
+		else if (attackState == AttackAnimationState::Attack03)
+		{
+			if (22.0f <= time && time <= 42.0f)
+			{
+				Judgment(3);
+			}
+			else
+			{
+				NoJudgment();
+			}
+		}
+	}
+}
+
 void Player::GUI()
 {
 	static Phoenix::s32 animClip = 0;
 
 	if (ImGui::TreeNode("Player"))
 	{
+		if (ImGui::TreeNode("Prameter"))
+		{
+			ImGui::Text("HP : %d", life);
+			ImGui::TreePop();
+		}
 		if (ImGui::TreeNode("Transform"))
 		{
 			ImGui::DragFloat3("pos", &pos.x);
@@ -370,9 +503,18 @@ void Player::GUI()
 			ImGui::DragFloat("RollSpeed", &RollSpeed, 0.1f);
 			ImGui::TreePop();
 		}
+		if (ImGui::TreeNode("Bone"))
+		{
+			//ImGui::ListBox("BoneListBox\n(single select)", &boneIndex, model->GetBoneNode()->at(0).name.data(), model->GetBoneNode()->at(0).name.size(), 4);
+			//ImGui::ListBox("NodeListBox\n(single select)", &nodeIndex, model->GetNodes()->data(), model->GetNodes()->size(), 4);
+			//ImGui::ListBox("ListBox\n(single select)", &boneIndex, model->GetBoneNames().data(), model->GetBoneNames().size(), 4);
+			ImGui::TreePop();
+		}
 		if (ImGui::TreeNode("Animation"))
 		{
 			ImGui::InputInt("AnimClip", &animClip);
+			ImGui::Text("Len : %f", model->GetLength());
+			ImGui::Text("RunLen : %f", attackReceptionTimeCnt);
 			if (ImGui::Button("Play"))
 			{
 				model->PlayAnimation(0, animClip);
