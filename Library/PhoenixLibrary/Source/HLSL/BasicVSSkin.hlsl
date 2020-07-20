@@ -7,5 +7,5 @@
 //--------------------------------------------------------------------------------------
 VS_OUTPUT main(VS_INPUT input)
 {
-    return VSCommon(input);
+    return VSCommon(input); 
 }

@@ -29,8 +29,10 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	standardShader = Phoenix::FrameWork::StandardShader::Create();
 	//standardShader->Initialize(graphicsDevice);
 
-	camera = std::make_shared<Phoenix::Graphics::Camera>();
+	pbrShader = Phoenix::FrameWork::PBRShader::Create();
+	pbrShader->Initialize(graphicsDevice);
 
+	camera = std::make_shared<Phoenix::Graphics::Camera>();
 
 	Phoenix::Graphics::DeviceDX11* deviceDX11 = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
 

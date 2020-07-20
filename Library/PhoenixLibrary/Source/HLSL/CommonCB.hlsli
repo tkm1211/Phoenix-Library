@@ -7,6 +7,8 @@
 #if defined(CB_SCENE)
 cbuffer CbScene : register(CB_SCENE)
 {
+	float4x4    cb_view;
+	float4x4    cb_projection;
 	float4x4    cb_view_projection;
 	float4      cb_viewport;
 };

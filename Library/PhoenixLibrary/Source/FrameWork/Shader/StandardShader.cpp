@@ -35,14 +35,14 @@ namespace Phoenix
 			shader->LoadVS
 			(
 				graphicsDevice->GetDevice(),
-				"..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\StandardVSSkin.cso",
+				"StandardVSSkin.cso",
 				inputElementDesc,
 				Phoenix::FND::ArraySize(inputElementDesc)
 			);
 			shader->LoadPS
 			(
 				graphicsDevice->GetDevice(),
-				"..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\StandardPS.cso"
+				"StandardPS.cso"
 			);
 
 			cbScene = Phoenix::Graphics::IBuffer::Create();

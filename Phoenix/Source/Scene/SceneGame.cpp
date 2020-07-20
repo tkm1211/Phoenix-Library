@@ -20,10 +20,12 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	basicShader = commonData->basicShader.get();
 	basicSkinShader = commonData->basicSkinShader.get();
 	standardShader = commonData->standardShader.get();
+	pbrShader = commonData->pbrShader.get();
 	camera = commonData->camera.get();
 
 	cameraFlg = false;
 	isHitCollision = false;
+	isUpdate = false;
 
 	Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
 	primitive = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 1);
@@ -41,11 +43,13 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 void SceneGame::Update()
 {
 	// プレイヤー更新
+	if (isUpdate)
 	{
 		player->Update(*camera);
 	}
 
 	// ボス更新
+	if (isUpdate)
 	{
 		boss->Update();
 	}
@@ -214,7 +218,7 @@ void SceneGame::Draw()
 		commonData->manager->Draw();
 		commonData->renderer->EndRendering();
 	}
-	basicSkinShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+	//basicSkinShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
 	basicSkinShader->End(graphicsDevice);
 #else
 	standardShader->Begin(graphicsDevice, camera);
@@ -231,6 +235,10 @@ void SceneGame::Draw()
 	standardShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
 	standardShader->End(graphicsDevice);
 #endif
+
+	pbrShader->Begin(graphicsDevice, *camera);
+	pbrShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+	pbrShader->End(graphicsDevice);
 
 	if (isHitCollision)
 	{
@@ -294,6 +302,7 @@ void SceneGame::GUI()
 {
 	ImGui::Begin("Game");
 	{
+		ImGui::Checkbox("Update", &isUpdate);
 		player->GUI();
 		boss->GUI();
 		if (ImGui::TreeNode("Camera"))
@@ -304,6 +313,18 @@ void SceneGame::GUI()
 		if (ImGui::TreeNode("Collision"))
 		{
 			ImGui::Checkbox("On", &isHitCollision);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Shader"))
+		{
+			Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
+			Phoenix::FrameWork::MaterialState* material = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetMaterial();
+
+			ImGui::DragFloat4("dir", &light->direction.x);
+			ImGui::DragFloat4("color", &light->color.x);
+			ImGui::DragFloat4("albedo", &material->albedo.x);
+			ImGui::DragFloat("metallic", &material->metallic, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
 			ImGui::TreePop();
 		}
 		/*Phoenix::Graphics::DirLight* dir = static_cast<Phoenix::FrameWork::StandardShader*>(standardShader)->GetLight()->GetDefaultDirLight();

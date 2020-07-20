@@ -12,6 +12,7 @@
 #include "Phoenix/FrameWork/Shader/BasicShader.h"
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
 #include "Phoenix/FrameWork/Shader/StandardShader.h"
+#include "Phoenix/FrameWork/Shader/PBRShader.h"
 #include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
 #include "../../Effekseer/include/Effekseer/Effekseer.h"
 #include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
@@ -43,6 +44,7 @@ class SceneTitle : public Scene
 private:
 	::Effekseer::Effect* effect = nullptr;
 	::Effekseer::Handle handle = 0;
+	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
 
 public:
 	SceneTitle() {}
@@ -68,6 +70,7 @@ private:
 	Phoenix::FrameWork::IShader* basicShader = nullptr;
 	Phoenix::FrameWork::IShader* basicSkinShader = nullptr;
 	Phoenix::FrameWork::IShader* standardShader = nullptr;
+	Phoenix::FrameWork::IShader* pbrShader = nullptr;
 	Phoenix::Graphics::Camera* camera = nullptr;
 	bool cameraFlg = false;
 
@@ -77,6 +80,8 @@ private:
 
 	::Effekseer::Effect* hitEffect = nullptr;
 	::Effekseer::Handle hitEffectHandle = 0;
+
+	bool isUpdate = false;
 
 public:
 	SceneGame() {}

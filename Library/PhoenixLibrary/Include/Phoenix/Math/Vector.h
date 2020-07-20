@@ -133,6 +133,7 @@ namespace Phoenix
 			Vector4(const Vector4&) = default;
 			Vector4(const f32* pf) : x(pf[0]), y(pf[1]), z(pf[2]), w(pf[3]) {}
 			Vector4(f32 fx, f32 fy, f32 fz, f32 fw) : x(fx), y(fy), z(fz), w(fw) {}
+			Vector4(const Vector3& v3, const f32 w) : x(v3.x), y(v3.y), z(v3.z), w(w) {}
 
 		public:
 			// 演算子のキャスティング

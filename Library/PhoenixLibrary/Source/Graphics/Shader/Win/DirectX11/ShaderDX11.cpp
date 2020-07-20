@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <list>
 #include "ShaderDX11.h"
+#include "Phoenix/OS/Path.h"
 #include "Phoenix/FND/Util.h"
 #include "../Graphics/Device/Win/DirectX11/DeviceDX11.h"
 #include "../Graphics/Context/Win/DirectX11/ContextDX11.h"
@@ -32,6 +33,11 @@ namespace Phoenix
 		// 頂点シェーダー読み込み
 		void ShaderDX11::LoadVS(IDevice* device, const char* csoNameOfVertexShader, PhoenixInputElementDesc* inputElementDesc, u32 numElements)
 		{
+#ifdef _WIN64
+			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x64\\Debug\\", csoNameOfVertexShader);
+#else
+			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\", csoNameOfVertexShader);
+#endif
 			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
 
 			std::vector<D3D11_INPUT_ELEMENT_DESC> descList;
@@ -49,21 +55,33 @@ namespace Phoenix
 				descList.emplace_back(desc);
 			}
 
-			if (csoNameOfVertexShader) ResourceManager::CreateVertexShaderAndInputLayout(d3dDevice, csoNameOfVertexShader, &vertexShader, &inputLayout, descList.data(), numElements);
+			if (filename) ResourceManager::CreateVertexShaderAndInputLayout(d3dDevice, filename, &vertexShader, &inputLayout, descList.data(), numElements);
 		}
 
 		// ジオメトリシェーダー読み込み
 		void ShaderDX11::LoadGS(IDevice* device, const char* csoNameOfGeometryShader)
 		{
+#ifdef _WIN64
+			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x64\\Debug\\", csoNameOfGeometryShader);
+#else
+			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\", csoNameOfGeometryShader);
+#endif
+
 			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
-			if (csoNameOfGeometryShader) ResourceManager::CreateGeometryShader(d3dDevice, csoNameOfGeometryShader, &geometryShader);
+			if (filename) ResourceManager::CreateGeometryShader(d3dDevice, filename, &geometryShader);
 		}
 
 		// ピクセルシェーダー読み込み
 		void ShaderDX11::LoadPS(IDevice* device, const char* csoNameOfPixelShader)
 		{
+#ifdef _WIN64
+			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x64\\Debug\\", csoNameOfPixelShader);
+#else
+			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\", csoNameOfPixelShader);
+#endif
+
 			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
-			if (csoNameOfPixelShader) ResourceManager::CreatePixelShader(d3dDevice, csoNameOfPixelShader, &pixelShader);
+			if (filename) ResourceManager::CreatePixelShader(d3dDevice, filename, &pixelShader);
 		}
 
 		// シェーダー開始

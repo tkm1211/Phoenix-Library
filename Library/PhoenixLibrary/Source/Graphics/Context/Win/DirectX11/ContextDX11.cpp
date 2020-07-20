@@ -477,6 +477,8 @@ namespace Phoenix
 		void ContextDX11::UpdateConstantBufferScene(const Math::Matrix& viewTransform, const Math::Matrix& projectionTransform)
 		{
 			CbScene constantBufferScene;
+			constantBufferScene.view = viewTransform;
+			constantBufferScene.projection = projectionTransform;
 			constantBufferScene.viewProjection = Math::MatrixMultiplyTranspose(viewTransform, projectionTransform);
 			
 			u32 viewportCount = 1;

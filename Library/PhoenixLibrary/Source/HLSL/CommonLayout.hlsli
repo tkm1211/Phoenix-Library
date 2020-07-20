@@ -67,7 +67,13 @@ struct VS_OUTPUT
 	float2 texcoord3    : TEXCOORD3;
 #endif
 #if defined(USE_SHADOW)
-	float4 shadow        : TEXCOORD4;
+	float4 shadow       : TEXCOORD4;
+#endif
+	
+#if defined(USE_PBR)
+	float4 mvPosition   : MV_POSITION;
+    float4 vViewPosition : V_POSITION;
+    float4 vNormal : V_NORMAL;
 #endif
 };
 

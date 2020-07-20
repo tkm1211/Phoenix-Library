@@ -24,6 +24,7 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\Object.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicSkinShader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\PBRShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\Shader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\StandardShader.h" />
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h" />
@@ -38,6 +39,7 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicSkinShader.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Shader\PBRShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\StandardShader.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

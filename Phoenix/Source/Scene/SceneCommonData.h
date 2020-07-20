@@ -11,6 +11,7 @@
 #include "Phoenix/FrameWork/Shader/BasicShader.h"
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
 #include "Phoenix/FrameWork/Shader/StandardShader.h"
+#include "Phoenix/FrameWork/Shader/PBRShader.h"
 #include "../../Effekseer/include/Effekseer/Effekseer.h"
 #include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
 #include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
@@ -25,6 +26,7 @@ public:
 	std::shared_ptr<Phoenix::FrameWork::IShader> basicShader;
 	std::shared_ptr<Phoenix::FrameWork::IShader> basicSkinShader;
 	std::shared_ptr<Phoenix::FrameWork::IShader> standardShader;
+	std::shared_ptr<Phoenix::FrameWork::IShader> pbrShader;
 	std::shared_ptr<Phoenix::Graphics::Camera> camera;
 
 	::EffekseerRenderer::Renderer* renderer = nullptr;

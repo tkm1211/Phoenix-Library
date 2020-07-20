@@ -24,6 +24,8 @@ namespace Phoenix
 		public:
 			struct CbScene
 			{
+				Math::Matrix view;
+				Math::Matrix projection;
 				Math::Matrix viewProjection;
 				Math::Vector4 viewport;
 			};

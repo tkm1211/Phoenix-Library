@@ -4,6 +4,9 @@
     <Filter Include="Source">
       <UniqueIdentifier>{833be475-b1f3-458e-9d8a-b6dc605a0340}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\PBR">
+      <UniqueIdentifier>{f59838ed-6cf4-4a5a-8cb1-bfe8a0d27fd0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\..\Source\HLSL\BasicVS.hlsl">
@@ -29,6 +32,12 @@
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\GeometricPrimitiveVS.hlsl">
       <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingVS.hlsl">
+      <Filter>Source\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingPS.hlsl">
+      <Filter>Source\PBR</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

@@ -28,14 +28,14 @@ namespace Phoenix
 			shader->LoadVS
 			(
 				graphicsDevice->GetDevice(),
-				"..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicVS.cso",
+				"BasicVS.cso",
 				inputElementDesc,
 				Phoenix::FND::ArraySize(inputElementDesc)
 			);
 			shader->LoadPS
 			(
 				graphicsDevice->GetDevice(),
-				"..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\BasicPS.cso"
+				"BasicPS.cso"
 			);
 
 			cbMatrial = Phoenix::Graphics::IBuffer::Create();

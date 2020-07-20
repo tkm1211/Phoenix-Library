@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\StandardShader.h">
       <Filter>Include\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\PBRShader.h">
+      <Filter>Include\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -75,6 +78,9 @@
       <Filter>Source\Input</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\StandardShader.cpp">
+      <Filter>Source\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Shader\PBRShader.cpp">
       <Filter>Source\Shader</Filter>
     </ClCompile>
   </ItemGroup>
