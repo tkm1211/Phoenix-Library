@@ -59,6 +59,9 @@ namespace Phoenix
 			float distance;
 
 		public:
+			f32 speed = 10.0f;
+
+		public:
 			Camera();
 			~Camera() {}
 

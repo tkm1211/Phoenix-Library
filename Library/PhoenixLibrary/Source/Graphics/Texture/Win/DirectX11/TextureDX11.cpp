@@ -276,6 +276,18 @@ namespace Phoenix
 					LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
 				}
 				break;
+			case Phoenix::Graphics::MaterialType::Emissive:
+				if (filename[0] == NULL)
+				{
+					DWORD RGBA = 0;
+					convert(color, RGBA);
+					CreateDummyTexture(d3dDevice, &shaderResourceView, 0x00000000, 1, true, true);
+				}
+				else
+				{
+					LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
+				}
+				break;
 			default: break;
 			}
 

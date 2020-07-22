@@ -644,8 +644,8 @@ namespace Phoenix
 			FbxFileTexture* fbxTexture = nullptr;
 
 			material.name = fbxSurfaceMaterial->GetName();
-			material.textureFilename.resize(5);
-			material.color.resize(5);
+			material.textureFilename.resize(6);
+			material.color.resize(6);
 
 			std::function<void(Graphics::ModelData::Material&, int, const char*, const char*)> FetchMaterial = [&](Graphics::ModelData::Material& material, int index, const char* propertyName, const char* factorName)
 			{
@@ -681,6 +681,7 @@ namespace Phoenix
 			FetchMaterial(material, 2, FbxSurfaceMaterial::sSpecular, FbxSurfaceMaterial::sSpecularFactor);
 			FetchMaterial(material, 3, FbxSurfaceMaterial::sNormalMap, FbxSurfaceMaterial::sBumpFactor);
 			FetchMaterial(material, 4, FbxSurfaceMaterial::sBump, FbxSurfaceMaterial::sBumpFactor);
+			FetchMaterial(material, 5, FbxSurfaceMaterial::sEmissive, FbxSurfaceMaterial::sEmissiveFactor);
 		}
 
 		// マテリアルプロパティ取得

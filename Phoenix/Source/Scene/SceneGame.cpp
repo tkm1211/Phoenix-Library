@@ -308,6 +308,7 @@ void SceneGame::GUI()
 		if (ImGui::TreeNode("Camera"))
 		{
 			ImGui::Checkbox("FreeCamera", &cameraFlg);
+			ImGui::DragFloat("MoveSpeed", &camera->speed, 0.1f, 0.1f, 50.0f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Collision"))
@@ -319,13 +320,15 @@ void SceneGame::GUI()
 		{
 			Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
 			Phoenix::FrameWork::MaterialState* material = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetMaterial();
+			ImGuiColorEditFlags flag = ImGuiColorEditFlags_Float; // 0 ~ 255表記ではなく、0.0 ~ 1.0表記にします。
 
 			ImGui::DragFloat4("dir", &light->direction.x);
 			ImGui::DragFloat4("color", &light->color.x);
-			ImGui::DragFloat4("albedo", &material->albedo.x);
+			ImGui::ColorEdit4("albedo", material->albedo, flag);
 			ImGui::DragFloat("metallic", &material->metallic, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
 			ImGui::TreePop();
+
 		}
 		/*Phoenix::Graphics::DirLight* dir = static_cast<Phoenix::FrameWork::StandardShader*>(standardShader)->GetLight()->GetDefaultDirLight();
 		if (ImGui::TreeNode("Light"))

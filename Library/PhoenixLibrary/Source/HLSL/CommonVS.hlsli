@@ -66,29 +66,18 @@ VS_OUTPUT VSCommon(VS_INPUT input)
 	input.tangent = SkinningVector(input.tangent, input.blend_index0, input.blend_index1, input.blend_weight0, input.blend_weight1);
 #endif
 #endif
-	
-#if defined(USE_PBR)
-    float3 position = mul(input.position, cb_world).xyz;
-    output.sv_position = mul(float4(position, 1.0f), cb_view_projection); 
-    output.mvPosition = mul(float4(position, 1.0f), cb_view);
-    output.vViewPosition = -output.mvPosition;
     
-#else
     float3 position = mul(input.position, cb_world).xyz;
     output.sv_position = mul(float4(position, 1.0f), cb_view_projection); 
-#endif
 	
 #if defined(USE_POSITION)
 	output.position = position;
 #endif
 #if defined(USE_NORMAL)
 	output.normal = mul(float4(input.normal, 0.0f), cb_world).xyz;
-#if defined(USE_PBR)
-    output.vNormal = mul(float4(output.normal, 0.0f), cb_view);
-#endif
 #endif
 #if defined(USE_TANGENT)
-	output.tangent = mul(float4(input.tangent, 0.0f), cb_world_inverse).xyz;
+	output.tangent = mul(float4(input.tangent, 0.0f), cb_world).xyz;
 #endif
 
 #if defined(USE_COLOR)

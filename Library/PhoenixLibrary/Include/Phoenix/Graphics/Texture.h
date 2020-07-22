@@ -69,6 +69,7 @@ namespace Phoenix
 			Specular,
 			NormalMap,
 			Bump,
+			Emissive,
 		};
 
 		//****************************************************************************

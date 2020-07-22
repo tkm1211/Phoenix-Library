@@ -16,6 +16,7 @@ void SceneTitle::Init(SceneSystem* sceneSystem)
 	//const char* filename = "..\\Data\\Assets\\Model\\TestModel\\BlackSword03.fbx";
 	const char* filename = "..\\Data\\Assets\\Model\\TestModel\\danbo_fbx\\danbo_atk.fbx";
 	//const char* filename = "..\\Data\\Assets\\Model\\TestModel\\Sphere01\\Sphere01.fbx";
+	//const char* filename = "..\\Data\\Assets\\Model\\TestModel\\mari\\mari.fbx";
 	model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	model->Initialize(graphicsDevice);
 	model->Load(graphicsDevice, Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), filename));

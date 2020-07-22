@@ -397,51 +397,108 @@ namespace Phoenix
 			f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
 			f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
 
-			if (GetKeyState(VK_MENU) < 0)
+			//if (GetKeyState(VK_MENU) < 0)
+			//{
+			//	if (GetKeyState(VK_LBUTTON) < 0)
+			//	{
+			//		rotateY -= moveX * 0.5f;
+			//		rotateX += moveY * 0.5f;
+			//	}
+			//	else if (GetKeyState(VK_MBUTTON) < 0)
+			//	{
+			//		float s = distance * 0.035f;
+			//		float x = moveX * s;
+			//		float y = moveY * s;
+
+			//		target.x -= right.x * x;
+			//		target.y -= right.y * x;
+			//		target.z -= right.z * x;
+
+			//		target.x += up.x * y;
+			//		target.y += up.y * y;
+			//		target.z += up.z * y;
+			//	}
+			//	else if (GetKeyState(VK_RBUTTON) < 0)
+			//	{
+			//		distance += (-moveY - moveX) * distance * 0.1f;
+			//	}
+			//	else
+			//	{
+			//		//distance -= (float)MOUSE.diMouseState.lZ / 1.0f;
+			//	}
+
+			//	f32 xSin = sinf(rotateX);
+			//	f32 xCos = cosf(rotateX);
+			//	f32 ySin = sinf(rotateY);
+			//	f32 yCos = cosf(rotateY);
+
+			//	Math::Vector3 front = { -xCos * ySin, -xSin, -xCos * yCos };
+			//	Math::Vector3 _right = { yCos, 0.0f, -ySin };
+			//	Math::Vector3 _up = Math::Vector3Cross(_right, front);
+
+			//	Math::Vector3 _target = target;
+			//	Math::Vector3 _distance = { distance, distance, distance };
+			//	Math::Vector3 _pos = _target - (front * _distance);
+
+			//	SetLookAt(_pos, _target, _up);
+			//}
+			//else 
+			if (GetKeyState(VK_RBUTTON) < 0)
 			{
-				if (GetKeyState(VK_LBUTTON) < 0)
-				{
-					rotateY -= moveX * 0.5f;
-					rotateX += moveY * 0.5f;
-				}
-				else if (GetKeyState(VK_MBUTTON) < 0)
-				{
-					float s = distance * 0.035f;
-					float x = moveX * s;
-					float y = moveY * s;
+				f32 xSin = sinf(rotateX);
+				f32 xCos = cosf(rotateX);
+				f32 ySin = sinf(rotateY);
+				f32 yCos = cosf(rotateY);
 
-					target.x -= right.x * x;
-					target.y -= right.y * x;
-					target.z -= right.z * x;
+				Math::Vector3 front = { xCos * -ySin, xSin, xCos * -yCos };
+				Math::Vector3 _right = { yCos, 0.0f, -ySin };
+				Math::Vector3 _up = Math::Vector3Cross(_right, front);
 
-					target.x += up.x * y;
-					target.y += up.y * y;
-					target.z += up.z * y;
-				}
-				else if (GetKeyState(VK_RBUTTON) < 0)
+				rotateY -= moveX * 0.25f;
+				rotateX += moveY * 0.25f;
+
+				if (GetKeyState('W') < 0)
 				{
-					distance += (-moveY - moveX) * distance * 0.1f;
+					eye += -front * speed;
 				}
-				else
+				if (GetKeyState('S') < 0)
 				{
-					//distance -= (float)MOUSE.diMouseState.lZ / 1.0f;
+					eye += front * speed;
 				}
+				if (GetKeyState('A') < 0)
+				{
+					eye += -right * speed;
+				}
+				if (GetKeyState('D') < 0)
+				{
+					eye += right * speed;
+				}
+				if (GetKeyState('Q') < 0)
+				{
+					eye += -up * speed;
+				}
+				if (GetKeyState('E') < 0)
+				{
+					eye += up * speed;
+				}
+
+				xSin = sinf(rotateX);
+				xCos = cosf(rotateX);
+				ySin = sinf(rotateY);
+				yCos = cosf(rotateY);
+
+				front = { xCos * -ySin, xSin, xCos * -yCos };
+				_right = { yCos, 0.0f, -ySin };
+				_up = Math::Vector3Cross(_right, front);
+
+				Math::Vector3 _pos = eye;
+				Math::Vector3 _distance = { distance, distance, distance };
+				//Math::Vector3 _pos = _target - (front * _distance);
+				Math::Vector3 _target = _pos - (front * _distance);
+				//target = _target;
+
+				SetLookAt(_pos, _target, _up);
 			}
-
-			f32 xSin = sinf(rotateX);
-			f32 xCos = cosf(rotateX);
-			f32 ySin = sinf(rotateY);
-			f32 yCos = cosf(rotateY);
-
-			Math::Vector3 front = { -xCos * ySin, -xSin, -xCos * yCos };
-			Math::Vector3 _right = { yCos, 0.0f, -ySin };
-			Math::Vector3 _up = Math::Vector3Cross(_right, front);
-
-			Math::Vector3 _target = target;
-			Math::Vector3 _distance = { distance, distance, distance };
-			Math::Vector3 _pos = _target - (front * _distance);
-
-			SetLookAt(_pos, _target, _up);
 		}
 
 		void Camera::ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust)
