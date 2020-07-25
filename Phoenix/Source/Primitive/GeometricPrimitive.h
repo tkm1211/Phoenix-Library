@@ -64,6 +64,8 @@ public:
 		bool //üE“h‚è‚Â‚Ô‚µ•`‰æƒtƒ‰ƒO
 	);
 
+	void Render(ID3D11DeviceContext*);
+
 private:
 	void GeometricCube(ID3D11Device* device, DirectX::XMFLOAT3 scale, bool isCreateBottom);
 	void GeometricCylinder(ID3D11Device* device);

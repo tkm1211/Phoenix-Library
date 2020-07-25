@@ -16,8 +16,9 @@ std::unique_ptr<SceneSystem> SceneSystem::Create()
 	return std::make_unique<SceneSystem>();
 }
 
-void SceneSystem::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
+void SceneSystem::Init(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
+	this->display = display;
 	this->graphicsDevice = graphicsDevice;
 	commonData = SceneCommonData::Create();
 	commonData->Initialize(graphicsDevice);

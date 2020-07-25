@@ -19,17 +19,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\FrameBuffer\FrameBuffer.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Input\InputDevice.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Main.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\Object.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Quad\Quad.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicSkinShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\PBRShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\Shader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\StandardShader.h" />
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\FrameBuffer\FrameBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Input\InputDevice.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Main\Main.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Object\Object.cpp" />
@@ -37,6 +42,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Quad\Quad.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicSkinShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\PBRShader.cpp" />

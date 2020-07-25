@@ -41,6 +41,45 @@ namespace Phoenix
 		}
 
 		// èâä˙âª
+		bool RenderTargetSurfaceDX11::Initialize(ID3D11Device* d3dDevice, const D3D11_TEXTURE2D_DESC& texDesc, const D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, const D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc)
+		{
+			HRESULT hr;
+
+			ID3D11Texture2D* d3dTexture;
+			hr = d3dDevice->CreateTexture2D(&texDesc, nullptr, &d3dTexture);
+			if (FAILED(hr))
+			{
+				PHOENIX_LOG_GRP_ERROR("ID3D11Device::CreateTexture2D() : Failed!!\n");
+				return false;
+			}
+
+			ID3D11ShaderResourceView* d3dShaderResourceView;
+			hr = d3dDevice->CreateShaderResourceView(d3dTexture, srvDesc, &d3dShaderResourceView);
+			if (FAILED(hr))
+			{
+				d3dTexture->Release();
+				PHOENIX_LOG_GRP_ERROR("ID3D11Device::CreateShaderResourceView() : Failed!!\n");
+				return false;
+			}
+
+			texture = ITexture::Create();
+			auto textureDX11 = static_cast<TextureDX11*>(texture.get());
+			if (!textureDX11->Initialize(d3dTexture, d3dShaderResourceView))
+			{
+				return false;
+			}
+
+			hr = d3dDevice->CreateRenderTargetView(textureDX11->GetD3DTexture(), rtvDesc, &renderTargetView);
+			if (FAILED(hr))
+			{
+				PHOENIX_LOG_GRP_ERROR("ID3D11Device::CreateRenderTargetView() : Failed!!\n");
+				return false;
+			}
+
+			return true;
+		}
+
+		// èâä˙âª
 		bool RenderTargetSurfaceDX11::Initialize(IDevice* device, const RenderTargetSurfaceDesc& desc)
 		{
 			HRESULT hr;

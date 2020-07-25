@@ -10,6 +10,7 @@
 void SceneTitle::Init(SceneSystem* sceneSystem)
 {
 	this->sceneSystem = sceneSystem;
+	display = sceneSystem->GetDisplay();
 	graphicsDevice = sceneSystem->GetGraphicsDevice();
 	commonData = sceneSystem->GetSceneCommonData();
 

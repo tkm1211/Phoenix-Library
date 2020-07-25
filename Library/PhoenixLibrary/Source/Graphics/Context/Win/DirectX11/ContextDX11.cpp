@@ -176,6 +176,12 @@ namespace Phoenix
 			}
 		}
 
+		// 描画
+		void ContextDX11::Draw(u32 vertexCount, u32 startVertexLocation)
+		{
+			deviceContext->Draw(vertexCount, startVertexLocation);
+		}
+
 		// 描画開始
 		void ContextDX11::Begin()
 		{
@@ -198,14 +204,20 @@ namespace Phoenix
 		void ContextDX11::ClearRenderTargetView(IRenderTargetSurface* renderTargetSurface, const f32* color)
 		{
 			ID3D11RenderTargetView* renderTargetView = static_cast<RenderTargetSurfaceDX11*>(renderTargetSurface)->GetD3DRenderTargetView();
-			deviceContext->ClearRenderTargetView(renderTargetView, color);
+			if (renderTargetView)
+			{
+				deviceContext->ClearRenderTargetView(renderTargetView, color);
+			}
 		}
 
 		// 深度ステンシルクリア
 		void ContextDX11::ClearDepthStencilView(IDepthStencilSurface* depthStencilSurface, f32 depth, u8 stencil)
 		{
 			ID3D11DepthStencilView* depthStencilView = static_cast<DepthStencilSurfaceDX11*>(depthStencilSurface)->GetD3DDepthStencilView();
-			deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
+			if (depthStencilView)
+			{
+				deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
+			}
 		}
 
 		// レンダーターゲット設定
@@ -356,11 +368,25 @@ namespace Phoenix
 			deviceContext->OMSetDepthStencilState(d3dDepthStencil, stencilRef);
 		}
 
+		// 深度ステンシルステート取得
+		void ContextDX11::GetDepthStencil(IDepthStencil* depthStencil, u32 stencilRef)
+		{
+			ID3D11DepthStencilState* d3dDepthStencil = static_cast<DepthStencilDX11*>(depthStencil)->GetD3DDepthStencilState();
+			deviceContext->OMGetDepthStencilState(&d3dDepthStencil, &stencilRef);
+		}
+
 		// ラスタライザーステート設定
 		void ContextDX11::SetRasterizer(IRasterizer* rasterizer)
 		{
 			ID3D11RasterizerState* d3dRasterizer = static_cast<RasterizerDX11*>(rasterizer)->GetD3DRasterizerState();
 			deviceContext->RSSetState(d3dRasterizer);
+		}
+
+		// ラスタライザーステート取得
+		void ContextDX11::GetRasterizer(IRasterizer* rasterizer)
+		{
+			ID3D11RasterizerState* d3dRasterizer = static_cast<RasterizerDX11*>(rasterizer)->GetD3DRasterizerState();
+			deviceContext->RSGetState(&d3dRasterizer);
 		}
 
 		// サンプラーステート設定
@@ -387,6 +413,36 @@ namespace Phoenix
 
 			case ShaderType::Pixel:
 				deviceContext->PSSetSamplers(startSlot, numViews, d3dSampler);
+				break;
+
+			default: break;
+			}
+		}
+
+		// サンプラーステート取得
+		void ContextDX11::GetSamplers(ShaderType shadowType, u32 startSlot, u32 numViews, ISampler* sampler[])
+		{
+			ID3D11SamplerState* d3dSampler[8] = { nullptr };
+			u32 size = static_cast<u32>(sizeof(sampler));
+			numViews = numViews < size ? numViews : size;
+
+			for (u32 i = 0; i < numViews; i++)
+			{
+				SamplerDX11* samplerDX11 = static_cast<SamplerDX11*>(sampler[i]);
+				if (samplerDX11 != nullptr)
+				{
+					d3dSampler[i] = samplerDX11->GetD3DSamplerState();
+				}
+			}
+
+			switch (shadowType)
+			{
+			case ShaderType::Vertex:
+				deviceContext->VSGetSamplers(startSlot, numViews, d3dSampler);
+				break;
+
+			case ShaderType::Pixel:
+				deviceContext->PSGetSamplers(startSlot, numViews, d3dSampler);
 				break;
 
 			default: break;

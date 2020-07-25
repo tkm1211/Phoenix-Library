@@ -301,6 +301,28 @@ namespace Phoenix
 			FND::SafeRelease(shaderResourceView);
 		}
 
+		// テクスチャ設定の取得
+		void TextureDX11::GetTextureDesc(TextureDesc* desc)
+		{
+			D3D11_TEXTURE2D_DESC texture2dDesc;
+			texture2d->GetDesc(&texture2dDesc);
+
+			desc->width = texture2dDesc.Width;
+			desc->height = texture2dDesc.Height;
+			desc->arraySize = texture2dDesc.ArraySize;
+			desc->mipLevels = texture2dDesc.MipLevels;
+		}
+
+		// テクスチャ設定の取得
+		void TextureDX11::GetShaderResourceViewDesc(TextureDescDx* desc)
+		{
+			D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
+			shaderResourceView->GetDesc(&shaderResourceViewDesc);
+
+			desc->format = GetFormat(shaderResourceViewDesc.Format);
+			desc->dimension = GetShaderResourceDimension(shaderResourceViewDesc.ViewDimension);
+		}
+
 		// テクスチャの読み込み
 		bool TextureDX11::LoadTextureFromFile
 		(
@@ -335,7 +357,16 @@ namespace Phoenix
 
 				DirectX::TexMetadata metaData;
 				DirectX::ScratchImage image;
-				if (strcmp(ext, ".tga") == 0)
+				if (strcmp(ext, ".png") == 0 || strcmp(ext, ".bmp") == 0)
+				{
+					hr = DirectX::LoadFromWICFile(_fileName, 0, &metaData, image);
+					if (FAILED(hr))
+					{
+						PHOENIX_LOG_GRP_ERROR("DirectX::LoadFromWICFile() : Failed!!\n");
+						return false;
+					}
+				}
+				else if (strcmp(ext, ".tga") == 0)
 				{
 					hr = DirectX::LoadFromTGAFile(_fileName, &metaData, image);
 					if (FAILED(hr))
@@ -344,12 +375,12 @@ namespace Phoenix
 						return false;
 					}
 				}
-				else if (strcmp(ext, ".png") == 0 || strcmp(ext, ".bmp") == 0)
+				else if (strcmp(ext, ".dds") == 0)
 				{
-					hr = DirectX::LoadFromWICFile(_fileName, 0, &metaData, image);
+					hr = DirectX::LoadFromDDSFile(_fileName, 0, &metaData, image);
 					if (FAILED(hr))
 					{
-						PHOENIX_LOG_GRP_ERROR("DirectX::LoadFromWICFile() : Failed!!\n");
+						PHOENIX_LOG_GRP_ERROR("DirectX::LoadFromDDSFile() : Failed!!\n");
 						return false;
 					}
 				}
@@ -471,9 +502,12 @@ namespace Phoenix
 			{
 			case TextureFormat::R8G8B8A8:		return DXGI_FORMAT_R8G8B8A8_UNORM;
 			case TextureFormat::B8G8R8A8:		return DXGI_FORMAT_B8G8R8A8_UNORM;
+			case TextureFormat::R24G8:			return DXGI_FORMAT_R24G8_TYPELESS;
+			case TextureFormat::R32:			return DXGI_FORMAT_R32_TYPELESS;
 			case TextureFormat::B4G4R4A4:		return DXGI_FORMAT_B4G4R4A4_UNORM;
 			case TextureFormat::B5G5R5A1:		return DXGI_FORMAT_B5G5R5A1_UNORM;
 			case TextureFormat::B5G6R5:			return DXGI_FORMAT_B5G6R5_UNORM;
+			case TextureFormat::R16:			return DXGI_FORMAT_R16_TYPELESS;
 			case TextureFormat::A8:				return DXGI_FORMAT_A8_UNORM;
 			case TextureFormat::R8:				return DXGI_FORMAT_R8_UNORM;
 			case TextureFormat::BC1:			return DXGI_FORMAT_BC1_UNORM;
@@ -497,6 +531,62 @@ namespace Phoenix
 			return D3D11_RESOURCE_DIMENSION_UNKNOWN;
 		}
 
+		// フォーマット取得
+		TextureFormat TextureDX11::GetFormat(DXGI_FORMAT format)
+		{
+			switch (format)
+			{
+			case DXGI_FORMAT_R8G8B8A8_UNORM:	return TextureFormat::R8G8B8A8;
+			case DXGI_FORMAT_B8G8R8A8_UNORM:	return TextureFormat::B8G8R8A8;
+			case DXGI_FORMAT_R24G8_TYPELESS:	return TextureFormat::R24G8;
+			case DXGI_FORMAT_R32_TYPELESS:		return TextureFormat::R32;
+			case DXGI_FORMAT_B4G4R4A4_UNORM:	return TextureFormat::B4G4R4A4;
+			case DXGI_FORMAT_B5G5R5A1_UNORM:	return TextureFormat::B5G5R5A1;
+			case DXGI_FORMAT_B5G6R5_UNORM:		return TextureFormat::B5G6R5;
+			case DXGI_FORMAT_R16_TYPELESS:		return TextureFormat::R16;
+			case DXGI_FORMAT_A8_UNORM:			return TextureFormat::A8;
+			case DXGI_FORMAT_R8_UNORM:			return TextureFormat::R8;
+			case DXGI_FORMAT_BC1_UNORM:			return TextureFormat::BC1;
+			case DXGI_FORMAT_BC2_UNORM:			return TextureFormat::BC2;
+			case DXGI_FORMAT_BC3_UNORM:			return TextureFormat::BC3;
+			}
+			return TextureFormat::UNKNOWN;
+		}
+
+		// リソース次元取得
+		TextureDimension TextureDX11::GetResourceDimension(D3D11_SRV_DIMENSION dimension)
+		{
+			switch (dimension)
+			{
+			case D3D11_RESOURCE_DIMENSION_TEXTURE1D:	return TextureDimension::Tex1D;
+			case D3D11_RESOURCE_DIMENSION_TEXTURE2D:	return TextureDimension::Tex2D;
+			case D3D11_RESOURCE_DIMENSION_TEXTURE3D:	return TextureDimension::Tex3D;
+			}
+
+			return TextureDimension::Cube;
+		}
+
+		// シェーダーリソース次元取得
+		TextureDimensionDx TextureDX11::GetShaderResourceDimension(D3D11_SRV_DIMENSION dimension)
+		{
+			switch (dimension)
+			{
+			case D3D_SRV_DIMENSION_UNKNOWN:				return TextureDimensionDx::SRV_DIMENSION_UNKNOWN;
+			case D3D_SRV_DIMENSION_BUFFER:				return TextureDimensionDx::SRV_DIMENSION_BUFFER;
+			case D3D_SRV_DIMENSION_TEXTURE1D:			return TextureDimensionDx::SRV_DIMENSION_TEXTURE1D;
+			case D3D_SRV_DIMENSION_TEXTURE1DARRAY:		return TextureDimensionDx::SRV_DIMENSION_TEXTURE1DARRAY;
+			case D3D_SRV_DIMENSION_TEXTURE2D:			return TextureDimensionDx::SRV_DIMENSION_TEXTURE2D;
+			case D3D_SRV_DIMENSION_TEXTURE2DARRAY:		return TextureDimensionDx::SRV_DIMENSION_TEXTURE2DARRAY;
+			case D3D_SRV_DIMENSION_TEXTURE2DMS:			return TextureDimensionDx::SRV_DIMENSION_TEXTURE2DMS;
+			case D3D_SRV_DIMENSION_TEXTURE2DMSARRAY:	return TextureDimensionDx::SRV_DIMENSION_TEXTURE2DMSARRAY;
+			case D3D_SRV_DIMENSION_TEXTURE3D:			return TextureDimensionDx::SRV_DIMENSION_TEXTURE3D;
+			case D3D_SRV_DIMENSION_TEXTURECUBE:			return TextureDimensionDx::SRV_DIMENSION_TEXTURECUBE;
+			case D3D_SRV_DIMENSION_TEXTURECUBEARRAY:	return TextureDimensionDx::SRV_DIMENSION_TEXTURECUBEARRAY;
+			case D3D_SRV_DIMENSION_BUFFEREX:			return TextureDimensionDx::SRV_DIMENSION_BUFFEREX;
+			}
+
+			return TextureDimensionDx::SRV_DIMENSION_UNKNOWN;
+		}
 
 		// サーフェイス情報取得
 		UINT TextureDX11::BitsPerPixel(DXGI_FORMAT dxgiFormat)

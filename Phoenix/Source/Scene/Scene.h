@@ -5,8 +5,10 @@
 #include "../Boss/Boss.h"
 #include "../Primitive/GeometricPrimitive.h"
 #include "Phoenix/Types.h"
+#include "Phoenix/OS/Display.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Camera.h"
+#include "Phoenix/Graphics/Texture.h"
 #include "Phoenix/FrameWork/Object/Object.h"
 #include "Phoenix/FrameWork/Shader/Shader.h"
 #include "Phoenix/FrameWork/Shader/BasicShader.h"
@@ -17,6 +19,8 @@
 #include "../../Effekseer/include/Effekseer/Effekseer.h"
 #include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
 #include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
+#include "Phoenix/FrameWork/FrameBuffer/FrameBuffer.h"
+#include "Phoenix/FrameWork/Quad/Quad.h"
 
 
 class SceneSystem;
@@ -25,6 +29,7 @@ class Scene
 {
 protected:
 	SceneSystem* sceneSystem = nullptr;
+	Phoenix::OS::IDisplay* display = nullptr;
 	Phoenix::Graphics::IGraphicsDevice* graphicsDevice = nullptr;
 	SceneCommonData* commonData = nullptr;
 
@@ -82,6 +87,14 @@ private:
 	::Effekseer::Handle hitEffectHandle = 0;
 
 	bool isUpdate = false;
+
+	std::unique_ptr<Phoenix::Graphics::ITexture> skyMap;
+	std::shared_ptr<GeometricPrimitive> skyBox;
+	std::shared_ptr<Phoenix::FrameWork::IShader> skyMapShader;
+
+	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[3];
+
+	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
 
 public:
 	SceneGame() {}

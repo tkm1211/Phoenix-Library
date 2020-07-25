@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include "Scene.h"
+#include "Phoenix/OS/Display.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "SceneCommonData.h"
 
@@ -21,6 +22,7 @@ private:
 	Scene* nextScene = nullptr;
 	Scene* stackScene = nullptr;
 
+	Phoenix::OS::IDisplay* display = nullptr;
 	Phoenix::Graphics::IGraphicsDevice* graphicsDevice = nullptr;
 	std::shared_ptr<SceneCommonData> commonData;
 
@@ -30,12 +32,14 @@ public:
 
 public:
 	static std::unique_ptr<SceneSystem> Create();
-	void Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
+	void Init(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 	void Update();
 	void Draw();
 	void GUI();
 	void ChangeScene(SceneType sceneType, bool stack);
 	void ReSetStackScene();
+
+	Phoenix::OS::IDisplay* GetDisplay() { return display; }
 	Phoenix::Graphics::IGraphicsDevice* GetGraphicsDevice() { return graphicsDevice; }
 	SceneCommonData* GetSceneCommonData() { return commonData.get(); }
 

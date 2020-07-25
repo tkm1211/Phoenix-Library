@@ -42,6 +42,12 @@ namespace Phoenix
 			// ハンドル取得
 			void* Handle() override { return shaderResourceView; }
 
+			// テクスチャ設定の取得
+			void GetTextureDesc(TextureDesc* desc) override;
+
+			// テクスチャ設定の取得
+			void GetShaderResourceViewDesc(TextureDescDx* desc) override;
+
 			// D3Dテクスチャ取得
 			ID3D11Texture2D* GetD3DTexture() const { return texture2d; }
 
@@ -51,7 +57,7 @@ namespace Phoenix
 			// D3Dシェーダーリソースビュー設定
 			void SetD3DShaderResourceView(ID3D11ShaderResourceView* d3dShaderResourceView) { shaderResourceView = d3dShaderResourceView; }
 
-		private:
+		public:
 			// テクスチャの読み込み
 			static bool LoadTextureFromFile
 			(
@@ -76,6 +82,15 @@ namespace Phoenix
 
 			// D3Dリソース次元取得
 			static D3D11_RESOURCE_DIMENSION GetD3DResourceDimension(TextureDimension dimension);
+
+			// フォーマット取得
+			static TextureFormat GetFormat(DXGI_FORMAT format);
+
+			// リソース次元取得
+			static TextureDimension GetResourceDimension(D3D11_SRV_DIMENSION dimension);
+
+			// シェーダーリソース次元取得
+			static TextureDimensionDx GetShaderResourceDimension(D3D11_SRV_DIMENSION dimension);
 
 			// 1ピクセルあたりのビット数取得
 			static UINT BitsPerPixel(DXGI_FORMAT dxgiformat);

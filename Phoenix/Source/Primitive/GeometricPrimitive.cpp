@@ -116,6 +116,26 @@ void GeometricPrimitive::Render(ID3D11DeviceContext* deviceContext,
 	deviceContext->DrawIndexed(numIndex, 0, 0);
 }
 
+void GeometricPrimitive::Render(ID3D11DeviceContext* deviceContext)
+{
+	//頂点バッファのバインド
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+
+	//インデックスバッファのバインド
+	deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	//プリミティブモードの設定
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//入力レイアウトのバインド
+	//deviceContext->IASetInputLayout(inputLayout.Get());
+
+	//プリミティブの描画(index付き)
+	deviceContext->DrawIndexed(numIndex, 0, 0);
+}
+
 void GeometricPrimitive::CreateBuffer(ID3D11Device *device, Vertex* vertices, unsigned int* indices, int numV, int numI)
 {
 	HRESULT hr = S_OK;

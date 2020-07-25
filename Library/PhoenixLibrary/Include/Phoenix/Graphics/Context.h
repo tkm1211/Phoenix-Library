@@ -41,6 +41,9 @@ namespace Phoenix
 			// 終了化
 			virtual void Finalize() = 0;
 
+			// 描画
+			virtual void Draw(u32 vertexCount, u32 startVertexLocation) = 0;
+
 			// 描画開始
 			virtual void Begin() = 0;
 
@@ -77,11 +80,20 @@ namespace Phoenix
 			// 深度ステンシルステート設定
 			virtual void SetDepthStencil(IDepthStencil* depthStencil, u32 stencilRef) = 0;
 
+			// 深度ステンシルステート取得
+			virtual void GetDepthStencil(IDepthStencil* depthStencil, u32 stencilRef) = 0;
+
 			// ラスタライザーステート設定
 			virtual void SetRasterizer(IRasterizer* rasterizer) = 0;
 
+			// ラスタライザーステート取得
+			virtual void GetRasterizer(IRasterizer* rasterizer) = 0;
+
 			// サンプラーステート設定
 			virtual void SetSamplers(ShaderType shadowType, u32 startSlot, u32 numViews, ISampler* sampler[]) = 0;
+
+			// サンプラーステート取得
+			virtual void GetSamplers(ShaderType shadowType, u32 startSlot, u32 numViews, ISampler* sampler[]) = 0;
 
 			// バッファ更新
 			virtual void UpdateSubresource(IBuffer* buffer, u32 dstSubresource, const PhoenixBox* dstBox, const void* drcData, u32 srcRowPitch, u32 srcDepthPitch) = 0;

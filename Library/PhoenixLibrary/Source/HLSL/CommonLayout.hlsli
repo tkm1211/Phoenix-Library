@@ -66,6 +66,9 @@ struct VS_OUTPUT
 #if defined(USE_TEXCOORD3)
 	float2 texcoord3    : TEXCOORD3;
 #endif
+#if defined(USE_UVW)
+	float3 uvw          : UVW;
+#endif
 #if defined(USE_SHADOW)
 	float4 shadow       : TEXCOORD4;
 #endif

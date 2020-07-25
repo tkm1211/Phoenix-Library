@@ -23,6 +23,9 @@ namespace Phoenix
 
 		public:
 			// èâä˙âª
+			bool Initialize(ID3D11Device* d3dDevice, const D3D11_TEXTURE2D_DESC& texDesc, const D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, const D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc);
+
+			// èâä˙âª
 			bool Initialize(IDevice* device, const DepthStencilSurfaceDesc& desc) override;
 
 			// èIóπâª

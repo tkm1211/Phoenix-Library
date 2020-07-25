@@ -294,7 +294,7 @@ void Boss::GUI()
 				//ImGui::ListBox("BoneListBox\n(single select)", &boneIndex, model->GetBoneNode()->at(0).name.data(), model->GetBoneNode()->at(0).name.size(), 4);
 				//ImGui::ListBox("NodeListBox\n(single select)", &nodeIndex, model->GetNodes()->data(), model->GetNodes()->size(), 4);
 				Phoenix::s32 index = 0;
-				ImGui::ListBox("ListBox\n(single select)", &index, model->GetBoneNames().data(), model->GetBoneNames().size(), 4);
+				ImGui::ListBox("ListBox\n(single select)", &index, model->GetBoneNames().data(), static_cast<Phoenix::s32>(model->GetBoneNames().size()), 4);
 				ImGui::TreePop();
 			}
 

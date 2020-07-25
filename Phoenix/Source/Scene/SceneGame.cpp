@@ -6,11 +6,15 @@
 #include "../../ExternalLibrary/ImGui/Include/imgui_internal.h"
 #include "Phoenix/FrameWork/Input/InputDevice.h"
 #include "Phoenix/Math/PhoenixMath.h"
+#include "Phoenix/FrameWork/Shader/SkyMapShader.h"
+#include "../Source/Graphics/Texture/Win/DirectX11/TextureDX11.h"
+#include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
 
 
 void SceneGame::Init(SceneSystem* sceneSystem)
 {
 	this->sceneSystem = sceneSystem;
+	display = sceneSystem->GetDisplay();
 	graphicsDevice = sceneSystem->GetGraphicsDevice();
 	commonData = sceneSystem->GetSceneCommonData();
 
@@ -33,11 +37,34 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	// エフェクトの読込
 	//auto effect = Effekseer::Effect::Create(manager, EFK_EXAMPLE_ASSETS_DIR_U16 "Laser01.efk");
 	//effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\Resources\\Laser01.efk");
-	hitEffect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\MAGICALxSPIRAL\\HitEffect06.efk");
+	//hitEffect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\MAGICALxSPIRAL\\HitEffect06.efk");
 
 	// エフェクトの再生
-	hitEffectHandle = commonData->manager->Play(hitEffect, 0, 0, 0);
-	commonData->manager->SetPaused(hitEffectHandle, false);
+	//hitEffectHandle = commonData->manager->Play(hitEffect, 0, 0, 0);
+	//commonData->manager->SetPaused(hitEffectHandle, false);
+
+	Phoenix::Graphics::TextureDesc desc = {};
+
+	skyMap = Phoenix::Graphics::ITexture::Create();
+	//skyMap->Initialize(graphicsDevice->GetDevice(), "D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Texture\\SkyMap\\skybox1.dds", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+	skyMap->Initialize(graphicsDevice->GetDevice(), "D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Cold Sunset\\Cold Sunset Equirect.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+
+	DirectX::XMFLOAT3 s = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+	skyBox = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 0, false, &s);
+
+	skyMapShader = Phoenix::FrameWork::SkyMapShader::Create();
+	skyMapShader->Initialize(graphicsDevice);
+
+	frameBuffer[0] = Phoenix::FrameWork::FrameBuffer::Create();
+	//frameBuffer[1] = Phoenix::FrameWork::FrameBuffer::Create();
+	//frameBuffer[2] = Phoenix::FrameWork::FrameBuffer::Create();
+
+	frameBuffer[0]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), true, 8, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
+	//frameBuffer[1]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
+	//frameBuffer[2]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::UNKNOWN);
+
+	quad = Phoenix::FrameWork::Quad::Create();
+	quad->Initialize(graphicsDevice);
 }
 
 void SceneGame::Update()
@@ -148,40 +175,43 @@ void SceneGame::Update()
 	}
 
 	// エフェクト更新
-	{
-		// 投影行列の更新 + カメラ行列の更新
-		Phoenix::Math::Matrix projection = camera->GetProjection();
-		Phoenix::Math::Matrix view = camera->GetView();
+	//{
+	//	// 投影行列の更新 + カメラ行列の更新
+	//	Phoenix::Math::Matrix projection = camera->GetProjection();
+	//	Phoenix::Math::Matrix view = camera->GetView();
 
-		::Effekseer::Matrix44 projectionMat;
-		::Effekseer::Matrix44 viewMat;
+	//	::Effekseer::Matrix44 projectionMat;
+	//	::Effekseer::Matrix44 viewMat;
 
-		for (Phoenix::u32 i = 0; i < 4; ++i)
-		{
-			for (Phoenix::u32 j = 0; j < 4; ++j)
-			{
-				projectionMat.Values[i][j] = projection.m[i][j];
-				viewMat.Values[i][j] = view.m[i][j];
-			}
-		}
-		commonData->renderer->SetProjectionMatrix(projectionMat);
-		commonData->renderer->SetCameraMatrix(viewMat);
+	//	for (Phoenix::u32 i = 0; i < 4; ++i)
+	//	{
+	//		for (Phoenix::u32 j = 0; j < 4; ++j)
+	//		{
+	//			projectionMat.Values[i][j] = projection.m[i][j];
+	//			viewMat.Values[i][j] = view.m[i][j];
+	//		}
+	//	}
+	//	commonData->renderer->SetProjectionMatrix(projectionMat);
+	//	commonData->renderer->SetCameraMatrix(viewMat);
 
-		// 3Dサウンド用リスナー設定の更新
-		//sound->SetListener(リスナー位置, 注目点, 上方向ベクトル);
+	//	// 3Dサウンド用リスナー設定の更新
+	//	//sound->SetListener(リスナー位置, 注目点, 上方向ベクトル);
 
-		// 再生中のエフェクトの移動等(::Effekseer::Manager経由で様々なパラメーターが設定できます。)
-		//commonData->manager->AddLocation(handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
+	//	// 再生中のエフェクトの移動等(::Effekseer::Manager経由で様々なパラメーターが設定できます。)
+	//	//commonData->manager->AddLocation(handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
 
-		// 全てのエフェクトの更新
-		commonData->manager->Flip();
-		commonData->manager->Update();
-	}
+	//	// 全てのエフェクトの更新
+	//	commonData->manager->Flip();
+	//	commonData->manager->Update();
+	//}
 }
 
 void SceneGame::Draw()
 {
 	Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
+
+	frameBuffer[0]->Clear(graphicsDevice, 0.0f, 0.0f, 0.0f, 1.0f);
+	frameBuffer[0]->Activate(graphicsDevice);
 
 	// ワールド行列を作成
 	Phoenix::Math::Matrix W;
@@ -254,6 +284,46 @@ void SceneGame::Draw()
 			PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 		}
 	}
+
+	frameBuffer[0]->Deactivate(graphicsDevice);
+
+	quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface->GetTexture(), 256 * 0, 0, 256, 256);
+
+	// スカイボックス描画
+	//{
+	//	// ワールド行列を作成
+	//	Phoenix::Math::Matrix W;
+	//	{
+	//		Phoenix::Math::Vector3 scale = { 1.0f, 1.0f, 1.0f };
+	//		Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
+	//		Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
+
+	//		Phoenix::Math::Matrix S, R, T;
+	//		S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
+	//		R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
+	//		T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
+
+	//		W = S * R * T;
+	//	}
+
+	//	Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
+	//	Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
+	//	Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+
+	//	// メッシュ定数バッファ更新
+	//	context->UpdateConstantBufferMesh(W);
+
+	//	// シェーダーリソースビュー設定
+	//	Phoenix::Graphics::ITexture* texture[] = { skyMap.get() };
+	//	graphicsDevice->GetContext()->SetShaderResources(Phoenix::Graphics::ShaderType::Pixel, 0, 1, texture);
+
+	//	// 描画
+	//	context->SetRasterizer(contextDX11->GetRasterizerState(Phoenix::Graphics::RasterizerState::SolidCullFront));
+	//	skyMapShader->Begin(graphicsDevice, *camera);
+	//	skyBox->Render(device->GetD3DContext());
+	//	skyMapShader->End(graphicsDevice);
+	//	context->SetRasterizer(contextDX11->GetRasterizerState(Phoenix::Graphics::RasterizerState::SolidCullNone));
+	//}
 
 	//// ワールド行列を作成
 	//Phoenix::Math::Matrix primitiveM;
@@ -329,6 +399,19 @@ void SceneGame::GUI()
 			ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
 			ImGui::TreePop();
 
+		}
+		if (ImGui::TreeNode("FrameBuffer"))
+		{
+			//graphicsDevice->GetSwapChain()->GetRenderTargerSurface()->GetTexture()->Handle();
+			//ImGui::Image(graphicsDevice->GetSwapChain()->GetRenderTargerSurface()->GetTexture()->Handle(), ImVec2(256.0f, 256.0f));
+
+			//ID3D11ShaderResourceView* srv = static_cast<Phoenix::Graphics::TextureDX11*>(graphicsDevice->GetSwapChain()->GetRenderTargerSurface()->GetTexture())->GetD3DShaderResourceView();
+			//ImGui::Image(srv, ImVec2(256.0f, 256.0f));
+			//frameBuffer[0]->DrawSRV(true, false);
+			ID3D11ShaderResourceView* srv = static_cast<Phoenix::Graphics::TextureDX11*>(skyMap.get())->GetD3DShaderResourceView();
+			ImGui::Image(srv, ImVec2(100.0f, 100.0f));
+
+			ImGui::TreePop();
 		}
 		/*Phoenix::Graphics::DirLight* dir = static_cast<Phoenix::FrameWork::StandardShader*>(standardShader)->GetLight()->GetDefaultDirLight();
 		if (ImGui::TreeNode("Light"))

@@ -39,6 +39,21 @@
     <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingPS.hlsl">
       <Filter>Source\PBR</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\SkyMapVS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\SkyMapPS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\QuadVS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\QuadPS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\QuadPSMS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\CommonVS.hlsli">

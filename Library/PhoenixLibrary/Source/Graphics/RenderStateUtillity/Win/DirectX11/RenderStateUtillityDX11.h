@@ -56,10 +56,13 @@ namespace Phoenix
 		{
 			PointWrap,
 			PointClamp,
+			PointBorder,
 			LinearWrap,
 			LinearClamp,
+			LinearBorder,
 			AnisotropicWrap,
 			AnisotropicClamp,
+			AnisotropicBorder,
 
 			TypeNum
 		};

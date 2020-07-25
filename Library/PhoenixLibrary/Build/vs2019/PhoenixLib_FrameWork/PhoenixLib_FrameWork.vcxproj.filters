@@ -28,6 +28,18 @@
     <Filter Include="Source\Input">
       <UniqueIdentifier>{e72b62fb-6177-4803-a2a4-2ae1452c062f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\FrameBuffer">
+      <UniqueIdentifier>{9d3dfb7d-308e-421a-9bcc-53c74c5e3cc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\FrameBuffer">
+      <UniqueIdentifier>{80977c10-40ae-4ba6-8a66-f6c618586873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Quad">
+      <UniqueIdentifier>{a41b8556-a1c9-4b51-bb90-3db1698873b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Quad">
+      <UniqueIdentifier>{216d0e40-0de1-49ae-8af3-b1fe3b9be554}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -57,6 +69,15 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\PBRShader.h">
       <Filter>Include\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.h">
+      <Filter>Include\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\FrameBuffer\FrameBuffer.h">
+      <Filter>Include\FrameBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Quad\Quad.h">
+      <Filter>Include\Quad</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -82,6 +103,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\PBRShader.cpp">
       <Filter>Source\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.cpp">
+      <Filter>Source\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\FrameBuffer\FrameBuffer.cpp">
+      <Filter>Source\FrameBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Quad\Quad.cpp">
+      <Filter>Source\Quad</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

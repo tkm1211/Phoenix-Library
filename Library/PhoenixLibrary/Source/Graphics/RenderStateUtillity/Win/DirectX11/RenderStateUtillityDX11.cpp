@@ -197,6 +197,14 @@ namespace Phoenix
 				desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 				break;
 
+			case SamplerState::PointBorder:
+			case SamplerState::LinearBorder:
+			case SamplerState::AnisotropicBorder:
+				desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+				desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+				desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+				break;
+
 			default: break;
 			}
 
@@ -204,16 +212,19 @@ namespace Phoenix
 			{
 			case SamplerState::PointWrap:
 			case SamplerState::PointClamp:
+			case SamplerState::PointBorder:
 				desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 				break;
 
 			case SamplerState::LinearWrap:
 			case SamplerState::LinearClamp:
+			case SamplerState::LinearBorder:
 				desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 				break;
 
 			case SamplerState::AnisotropicWrap:
 			case SamplerState::AnisotropicClamp:
+			case SamplerState::AnisotropicBorder:
 				desc.Filter = D3D11_FILTER_ANISOTROPIC;
 				break;
 

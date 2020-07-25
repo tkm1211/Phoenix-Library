@@ -21,6 +21,9 @@ namespace Phoenix
 		public:
 			// ‰Šú‰»
 			bool Initialize(ID3D11Device* d3dDevice, ID3D11Texture2D* d3dTexture2D, ID3D11ShaderResourceView* d3dShaderResourceView);
+
+			// ‰Šú‰»
+			bool Initialize(ID3D11Device* d3dDevice, const D3D11_TEXTURE2D_DESC& texDesc, const D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, const D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc);
 			
 			// ‰Šú‰»
 			bool Initialize(IDevice* device, const RenderTargetSurfaceDesc& desc) override;
