@@ -12,9 +12,9 @@
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
 #include "Phoenix/FrameWork/Shader/StandardShader.h"
 #include "Phoenix/FrameWork/Shader/PBRShader.h"
-#include "../../Effekseer/include/Effekseer/Effekseer.h"
-#include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
-#include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
+//#include "../../Effekseer/include/Effekseer/Effekseer.h"
+//#include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
+//#include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
 
 
 class SceneCommonData
@@ -29,8 +29,8 @@ public:
 	std::shared_ptr<Phoenix::FrameWork::IShader> pbrShader;
 	std::shared_ptr<Phoenix::Graphics::Camera> camera;
 
-	::EffekseerRenderer::Renderer* renderer = nullptr;
-	::Effekseer::Manager* manager = nullptr;
+	//::EffekseerRenderer::Renderer* renderer = nullptr;
+	//::Effekseer::Manager* manager = nullptr;
 
 public:
 	SceneCommonData() {}
@@ -40,13 +40,13 @@ public:
 		//ES_SAFE_RELEASE(effect);
 
 		// エフェクト管理用インスタンスを破棄
-		manager->Destroy();
+		//manager->Destroy();
 
 		// サウンド用インスタンスを破棄
 		//sound->Destroy();
 
 		// 描画用インスタンスを破棄
-		renderer->Destroy();
+		//renderer->Destroy();
 	}
 
 public:

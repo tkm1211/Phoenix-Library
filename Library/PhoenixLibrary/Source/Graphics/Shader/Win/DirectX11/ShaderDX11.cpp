@@ -96,7 +96,10 @@ namespace Phoenix
 
 			if (vertexShader)
 			{
-				d3dDeviceContext->IASetInputLayout(inputLayout);
+				if (inputLayout)
+				{
+					d3dDeviceContext->IASetInputLayout(inputLayout);
+				}
 				d3dDeviceContext->VSSetShader(vertexShader, 0, 0);
 			}
 			if (geometryShader)

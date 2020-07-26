@@ -72,9 +72,11 @@ void ResourceManager::CreateVertexShaderAndInputLayout
 	hr = device->CreateVertexShader( csoData.get(), csoSize, NULL, vertexShader );
 	assert(!hr);
 
-
-	hr = device->CreateInputLayout( inputElementDesc, numElements, csoData.get(), csoSize, inputLayout );
-	assert(!hr);
+	if (inputElementDesc)
+	{
+		hr = device->CreateInputLayout(inputElementDesc, numElements, csoData.get(), csoSize, inputLayout);
+		assert(!hr);
+	}
 
 
 	cache.insert( std::make_pair( csoName, SetOfVertexShaderAndInputLayout( *vertexShader, *inputLayout ) ) );

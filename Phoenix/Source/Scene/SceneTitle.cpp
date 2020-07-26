@@ -33,10 +33,10 @@ void SceneTitle::Init(SceneSystem* sceneSystem)
 	// エフェクトの読込
 	//auto effect = Effekseer::Effect::Create(manager, EFK_EXAMPLE_ASSETS_DIR_U16 "Laser01.efk");
 	//effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\Resources\\Laser01.efk");
-	effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\MAGICALxSPIRAL\\HitEffect.efk");
+	//effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\MAGICALxSPIRAL\\HitEffect.efk");
 
 	// エフェクトの再生
-	handle = commonData->manager->Play(effect, 0, 0, 0);
+	//handle = commonData->manager->Play(effect, 0, 0, 0);
 }
 
 void SceneTitle::Update()
@@ -59,7 +59,7 @@ void SceneTitle::Update()
 	//commonData->manager->AddLocation(handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
 
 	// 全てのエフェクトの更新
-	commonData->manager->Update();
+	//commonData->manager->Update();
 
 	commonData->camera->FreeCamera();
 	commonData->camera->Update();
@@ -111,11 +111,11 @@ void SceneTitle::GUI()
 		{
 			sceneSystem->ChangeScene(SceneType::Game, false);
 		}
-		if (ImGui::Button("play"))
-		{
-			// エフェクトの再生
-			handle = commonData->manager->Play(effect, 0, 0, 0);
-		}
+		//if (ImGui::Button("play"))
+		//{
+		//	// エフェクトの再生
+		//	//handle = commonData->manager->Play(effect, 0, 0, 0);
+		//}
 	}
 	ImGui::End();
 

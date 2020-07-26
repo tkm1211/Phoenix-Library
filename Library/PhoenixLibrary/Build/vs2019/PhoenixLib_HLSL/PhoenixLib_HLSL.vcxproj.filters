@@ -7,6 +7,9 @@
     <Filter Include="Source\PBR">
       <UniqueIdentifier>{f59838ed-6cf4-4a5a-8cb1-bfe8a0d27fd0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Bloom">
+      <UniqueIdentifier>{dffa6037-9e32-425e-b3e8-4045720701be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\..\Source\HLSL\BasicVS.hlsl">
@@ -54,6 +57,39 @@
     <FxCompile Include="..\..\..\Source\HLSL\QuadPSMS.hlsl">
       <Filter>Source</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\MSAAResolveVS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\MSAAResolvePS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\FullScreenQuadVS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\FullScreenQuadPS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\FullScreenQuadPSMS.hlsl">
+      <Filter>Source</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\GlowExtractionPS.hlsl">
+      <Filter>Source\Bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\GaussianBlurHorizontalPS.hlsl">
+      <Filter>Source\Bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\GaussianBlurVerticalPS.hlsl">
+      <Filter>Source\Bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\GaussianBlurConvolutionPS.hlsl">
+      <Filter>Source\Bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\GaussianBlurDownsamplingPS.hlsl">
+      <Filter>Source\Bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\LensFlarePS.hlsl">
+      <Filter>Source\Bloom</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\CommonVS.hlsli">
@@ -73,6 +109,9 @@
     </None>
     <None Include="..\..\..\Source\HLSL\GeometricPrimitive.hlsli">
       <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\Bloom.hlsli">
+      <Filter>Source\Bloom</Filter>
     </None>
   </ItemGroup>
 </Project>

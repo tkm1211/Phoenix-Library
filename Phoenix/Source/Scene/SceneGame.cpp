@@ -55,16 +55,24 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	skyMapShader = Phoenix::FrameWork::SkyMapShader::Create();
 	skyMapShader->Initialize(graphicsDevice);
 
-	frameBuffer[0] = Phoenix::FrameWork::FrameBuffer::Create();
-	//frameBuffer[1] = Phoenix::FrameWork::FrameBuffer::Create();
-	//frameBuffer[2] = Phoenix::FrameWork::FrameBuffer::Create();
+	enableMSAA = true;
 
-	frameBuffer[0]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), true, 8, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
-	//frameBuffer[1]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
-	//frameBuffer[2]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::UNKNOWN);
+	frameBuffer[0] = Phoenix::FrameWork::FrameBuffer::Create();
+	frameBuffer[1] = Phoenix::FrameWork::FrameBuffer::Create();
+	frameBuffer[2] = Phoenix::FrameWork::FrameBuffer::Create();
+
+	frameBuffer[0]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), enableMSAA, 8, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
+	frameBuffer[1]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
+	frameBuffer[2]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::UNKNOWN);
 
 	quad = Phoenix::FrameWork::Quad::Create();
 	quad->Initialize(graphicsDevice);
+
+	msaaResolve = Phoenix::FrameWork::MSAAResolve::Create();
+	msaaResolve->Initialize(graphicsDevice);
+
+	bloom = Phoenix::FrameWork::Bloom::Create();
+	bloom->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight());
 }
 
 void SceneGame::Update()
@@ -135,8 +143,8 @@ void SceneGame::Update()
 
 				//hitEffectHandle = commonData->manager->Play(hitEffect, 0,0,0);
 				//hitEffectHandle = commonData->manager->Play(hitEffect, pos.x, pos.y, pos.z);
-				hitEffectHandle = commonData->manager->Play(hitEffect, { pos.x, pos.y, pos.z }, 20);
-				commonData->manager->SetScale(hitEffectHandle, 50.0f, 50.0f, 50.0f);
+				//hitEffectHandle = commonData->manager->Play(hitEffect, { pos.x, pos.y, pos.z }, 20);
+				//commonData->manager->SetScale(hitEffectHandle, 50.0f, 50.0f, 50.0f);
 				player->SetIsHit(true);
 				boss->Damage(10);
 			}
@@ -244,9 +252,9 @@ void SceneGame::Draw()
 	basicSkinShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
 	// エフェクト描画
 	{
-		commonData->renderer->BeginRendering();
-		commonData->manager->Draw();
-		commonData->renderer->EndRendering();
+		//commonData->renderer->BeginRendering();
+		//commonData->manager->Draw();
+		//commonData->renderer->EndRendering();
 	}
 	//basicSkinShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
 	basicSkinShader->End(graphicsDevice);
@@ -287,7 +295,24 @@ void SceneGame::Draw()
 
 	frameBuffer[0]->Deactivate(graphicsDevice);
 
+	Phoenix::u32 resolvedFramebuffer = 0;
+	if (enableMSAA)
+	{
+		resolvedFramebuffer = 1;
+		msaaResolve->Resolve(graphicsDevice, frameBuffer[0].get(), frameBuffer[resolvedFramebuffer].get());
+	}
+
+	bloom->Generate(graphicsDevice, frameBuffer[resolvedFramebuffer]->GetRenderTargetSurface()->GetTexture(), false);
+
+	frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
+	bloom->Draw(graphicsDevice);
+	frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
+
+	quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface->GetTexture(), 1280.0f * 0, 0.0f, 1280.0f, 720.0f);
+	
 	quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface->GetTexture(), 256 * 0, 0, 256, 256);
+	quad->Draw(graphicsDevice, frameBuffer[1]->renderTargerSurface->GetTexture(), 256 * 1, 0, 256, 256);
+	
 
 	// スカイボックス描画
 	//{
@@ -399,6 +424,12 @@ void SceneGame::GUI()
 			ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
 			ImGui::TreePop();
 
+		}
+		if (ImGui::TreeNode("Bloom"))
+		{
+			ImGui::DragFloat("glowExtractionThreshold", &bloom->shaderContants.glowExtractionThreshold);
+			ImGui::DragFloat("blurConvolutionIntensity", &bloom->shaderContants.blurConvolutionIntensity);
+			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("FrameBuffer"))
 		{

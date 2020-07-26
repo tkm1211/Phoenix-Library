@@ -16,9 +16,9 @@
 #include "Phoenix/FrameWork/Shader/StandardShader.h"
 #include "Phoenix/FrameWork/Shader/PBRShader.h"
 #include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
-#include "../../Effekseer/include/Effekseer/Effekseer.h"
-#include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
-#include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
+//#include "../../Effekseer/include/Effekseer/Effekseer.h"
+//#include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
+//#include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
 #include "Phoenix/FrameWork/FrameBuffer/FrameBuffer.h"
 #include "Phoenix/FrameWork/Quad/Quad.h"
 
@@ -47,8 +47,8 @@ public:
 class SceneTitle : public Scene
 {
 private:
-	::Effekseer::Effect* effect = nullptr;
-	::Effekseer::Handle handle = 0;
+	//::Effekseer::Effect* effect = nullptr;
+	//::Effekseer::Handle handle = 0;
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
 
 public:
@@ -56,7 +56,7 @@ public:
 	~SceneTitle()
 	{
 		// エフェクトを解放します。再生中の場合は、再生が終了した後、自動的に解放されます。
-		ES_SAFE_RELEASE(effect);
+		//ES_SAFE_RELEASE(effect);
 	}
 
 public:
@@ -83,8 +83,8 @@ private:
 
 	bool isHitCollision = false;
 
-	::Effekseer::Effect* hitEffect = nullptr;
-	::Effekseer::Handle hitEffectHandle = 0;
+	//::Effekseer::Effect* hitEffect = nullptr;
+	//::Effekseer::Handle hitEffectHandle = 0;
 
 	bool isUpdate = false;
 
@@ -92,16 +92,20 @@ private:
 	std::shared_ptr<GeometricPrimitive> skyBox;
 	std::shared_ptr<Phoenix::FrameWork::IShader> skyMapShader;
 
+	bool enableMSAA = true;
+
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[3];
 
 	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
+	std::unique_ptr<Phoenix::FrameWork::MSAAResolve> msaaResolve;
+	std::unique_ptr<Phoenix::FrameWork::Bloom> bloom;
 
 public:
 	SceneGame() {}
 	~SceneGame()
 	{
 		// エフェクトを解放します。再生中の場合は、再生が終了した後、自動的に解放されます。
-		ES_SAFE_RELEASE(hitEffect);
+		//ES_SAFE_RELEASE(hitEffect);
 	}
 
 public:

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Phoenix/FrameWork/Quad/Quad.h"
 #include "Phoenix/FND/Util.h"
+#include "Phoenix/FND/STD.h"
 #include "../Source/Graphics/Texture/Win/DirectX11/TextureDX11.h"
 #include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
 #include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
@@ -267,82 +268,14 @@ namespace Phoenix
 
 			context->Unmap(vertexBuffer.get(), 0);
 
-			//D3D11_MAP map = D3D11_MAP_WRITE_DISCARD;
-			//D3D11_MAPPED_SUBRESOURCE mapped_buffer;
-			//Graphics::BufferDX11* bufferDX11 = static_cast<Graphics::BufferDX11*>(vertexBuffer.get());
-			//hr = d3dContext->Map(bufferDX11->GetD3DBuffer(), 0, map, 0, &mapped_buffer);
-			////_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-			//vertex* vertices = static_cast<vertex*>(mapped_buffer.pData);
-			//vertices[0].position.x = x0;
-			//vertices[0].position.y = y0;
-			//vertices[1].position.x = x1;
-			//vertices[1].position.y = y1;
-			//vertices[2].position.x = x2;
-			//vertices[2].position.y = y2;
-			//vertices[3].position.x = x3;
-			//vertices[3].position.y = y3;
-			//vertices[0].position.z = vertices[1].position.z = vertices[2].position.z = vertices[3].position.z = 0.0f;
-
-			//Math::Vector4 color(r, g, b, a);
-			//vertices[0].color = vertices[1].color = vertices[2].color = vertices[3].color = color;
-
-			//vertices[0].texcoord.x = (sx) / texDesc.width;
-			//vertices[0].texcoord.y = (sy) / texDesc.height;
-			//vertices[1].texcoord.x = (sx + sw) / texDesc.width;
-			//vertices[1].texcoord.y = (sy) / texDesc.height;
-			//vertices[2].texcoord.x = (sx) / texDesc.width;
-			//vertices[2].texcoord.y = (sy + sh) / texDesc.height;
-			//vertices[3].texcoord.x = (sx + sw) / texDesc.width;
-			//vertices[3].texcoord.y = (sy + sh) / texDesc.height;
-
-			//d3dContext->Unmap(bufferDX11->GetD3DBuffer(), 0);
-
 			Graphics::BufferDX11* bufferDX11 = static_cast<Graphics::BufferDX11*>(vertexBuffer.get());
-
 
 			UINT stride = sizeof(vertex);
 			UINT offset = 0;
 			ID3D11Buffer* buffers[] = { bufferDX11->GetD3DBuffer() };
 
 			d3dContext->IASetVertexBuffers(0, 1, buffers, &stride, &offset);
-
-			//D3D11_MAP map = D3D11_MAP_WRITE_DISCARD;
-			//D3D11_MAPPED_SUBRESOURCE mapped_buffer;
-			//hr = d3dContext->Map(vertex_buffer.Get(), 0, map, 0, &mapped_buffer);
-			////_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-			//vertex* vertices = static_cast<vertex*>(mapped_buffer.pData);
-			//vertices[0].position.x = x0;
-			//vertices[0].position.y = y0;
-			//vertices[1].position.x = x1;
-			//vertices[1].position.y = y1;
-			//vertices[2].position.x = x2;
-			//vertices[2].position.y = y2;
-			//vertices[3].position.x = x3;
-			//vertices[3].position.y = y3;
-			//vertices[0].position.z = vertices[1].position.z = vertices[2].position.z = vertices[3].position.z = 0.0f;
-
-			//Math::Vector4 colour(r, g, b, a);
-			//vertices[0].color = vertices[1].color = vertices[2].color = vertices[3].color = colour;
-
-			//vertices[0].texcoord.x = (sx) / texDesc.width;
-			//vertices[0].texcoord.y = (sy) / texDesc.height;
-			//vertices[1].texcoord.x = (sx + sw) / texDesc.width;
-			//vertices[1].texcoord.y = (sy) / texDesc.height;
-			//vertices[2].texcoord.x = (sx) / texDesc.width;
-			//vertices[2].texcoord.y = (sy + sh) / texDesc.height;
-			//vertices[3].texcoord.x = (sx + sw) / texDesc.width;
-			//vertices[3].texcoord.y = (sy + sh) / texDesc.height;
-
-			//d3dContext->Unmap(vertex_buffer.Get(), 0);
-
-			//UINT stride = sizeof(vertex);
-			//UINT offset = 0;
-			//d3dContext->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
-
 			d3dContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-			//d3dContext->IASetInputLayout(embeddedInputLayout.Get());
 
 			if (useEmbeddedVertexShader)
 			{
@@ -381,9 +314,16 @@ namespace Phoenix
 			}
 			context->Draw(4, 0);
 
-			d3dContext->IASetInputLayout(0);
-			d3dContext->VSSetShader(0, 0, 0);
-			d3dContext->PSSetShader(0, 0, 0);
+
+			if (useEmbeddedVertexShader)
+			{
+				embeddedVertexShader->Deactivate(device);
+			}
+			if (useEmbeddedPixelShader)
+			{
+				u32 index = multisampled ? 1 : 0;
+				embeddedPixelShader[index]->Deactivate(device);
+			}
 
 			Graphics::ITexture* nullTexture[] = { nullptr };
 			context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, nullTexture);
@@ -420,11 +360,511 @@ namespace Phoenix
 			Graphics::TextureDesc texDesc = {};
 			shaderResourceView->GetTextureDesc(&texDesc);
 
-			//Draw(graphicsDevice, shaderResourceView, dx, dy, dw, dh, 0.0f, 0.0f, static_cast<float>(texDesc.width), static_cast<float>(texDesc.height), angle, r, g, b, a,
-			//	useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState);
-
-			Draw(graphicsDevice, shaderResourceView, dx, dy, dw, dh, 0.0f, 0.0f, 1280.0f, 720.0f, angle, r, g, b, a,
+			Draw(graphicsDevice, shaderResourceView, dx, dy, dw, dh, 0.0f, 0.0f, static_cast<float>(texDesc.width), static_cast<float>(texDesc.height), angle, r, g, b, a,
 				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState);
+		}
+
+
+		std::unique_ptr<FullScreenQuad> FullScreenQuad::Create()
+		{
+			return std::make_unique<FullScreenQuad>();
+		}
+
+		bool FullScreenQuad::Initialize(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+
+			embeddedVertexShader = Graphics::IShader::Create();
+			embeddedVertexShader->LoadVS
+			(
+				device,
+				"FullScreenQuadVS.cso",
+				0,
+				0
+			);
+
+			embeddedPixelShader[0] = Graphics::IShader::Create();
+			embeddedPixelShader[0]->LoadPS
+			(
+				device,
+				"FullScreenQuadPS.cso"
+			);
+
+			embeddedPixelShader[1] = Graphics::IShader::Create();
+			embeddedPixelShader[1]->LoadPS
+			(
+				device,
+				"FullScreenQuadPSMS.cso"
+			);
+
+			embeddedRasterizerState = Graphics::IRasterizer::Create();
+			if (!embeddedRasterizerState->Initialize(device, Graphics::RasterizerState::SolidCullBack))
+			{
+				return false;
+			}
+
+			embeddedDepthStencilState = Graphics::IDepthStencil::Create();
+			if (!embeddedDepthStencilState->Initialize(device, Graphics::DepthState::NoTestNoWrite))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		void FullScreenQuad::Finalize()
+		{
+			embeddedDepthStencilState.reset();
+			embeddedRasterizerState.reset();
+			embeddedPixelShader[1].reset();
+			embeddedPixelShader[0].reset();
+			embeddedVertexShader.reset();
+		}
+
+		void FullScreenQuad::Draw
+		(
+			Graphics::IGraphicsDevice* graphicsDevice,
+			bool useEmbeddedRasterizerState,
+			bool useEmbeddedDepthStencilState,
+			bool useEmbeddedPixelShader,
+			bool enableMSAA
+		)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
+			ID3D11DeviceContext* d3dContext = static_cast<Graphics::DeviceDX11*>(device)->GetD3DContext();
+
+			std::unique_ptr<Graphics::IRasterizer> cachedRasterizerState = Graphics::IRasterizer::Create();
+			if (useEmbeddedRasterizerState)
+			{
+				context->GetRasterizer(cachedRasterizerState.get());
+				context->SetRasterizer(embeddedRasterizerState.get());
+			}
+
+			std::unique_ptr<Graphics::IDepthStencil> cachedDepthStencilState = Graphics::IDepthStencil::Create();
+			if (useEmbeddedDepthStencilState)
+			{
+				context->GetDepthStencil(cachedDepthStencilState.get(), 0);
+				context->SetDepthStencil(embeddedDepthStencilState.get(), 1);
+			}
+
+			if (useEmbeddedPixelShader)
+			{
+				u32 index = enableMSAA ? 1 : 0;
+				embeddedPixelShader[index]->Activate(device);
+			}
+
+			d3dContext->IASetVertexBuffers(0, 0, 0, 0, 0);
+			d3dContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+			d3dContext->IASetInputLayout(0);
+
+			embeddedVertexShader->Activate(device);
+			context->Draw(4, 0);
+			embeddedVertexShader->Deactivate(device);
+
+			if (useEmbeddedPixelShader)
+			{
+				u32 index = enableMSAA ? 1 : 0;
+				embeddedPixelShader[index]->Deactivate(device);
+			}
+
+			if (cachedRasterizerState.get())
+			{
+				context->SetRasterizer(cachedRasterizerState.get());
+			}
+			if (cachedDepthStencilState.get())
+			{
+				context->SetDepthStencil(cachedDepthStencilState.get(), 1);
+			}
+		}
+
+
+		std::unique_ptr<Bloom> Bloom::Create()
+		{
+			return std::make_unique<Bloom>();
+		}
+
+		bool Bloom::Initialize(Graphics::IGraphicsDevice* graphicsDevice, u32 width, u32 height)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+
+			FullScreenQuad::Initialize(graphicsDevice);
+
+			// 定数バッファ作成
+			{
+				Graphics::PhoenixBufferDesc bufferDesc = {};
+				Phoenix::FND::MemSet(&bufferDesc, 0, sizeof(bufferDesc));
+				bufferDesc.usage = Phoenix::Graphics::PhoenixUsage::Dynamic;
+				bufferDesc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
+				bufferDesc.cpuAccessFlags = static_cast<Phoenix::s32>(Graphics::PhoenixCPUAccessFlag::CPUAccessWrite);
+				bufferDesc.miscFlags = 0;
+				bufferDesc.byteWidth = sizeof(ShaderConstants);
+				bufferDesc.structureByteStride = 0;
+
+				constantBuffer = Graphics::IBuffer::Create();
+				if (!constantBuffer->Initialize(device, bufferDesc))
+				{
+					return false;
+				}
+			}
+
+			glowExtraction = Phoenix::FrameWork::FrameBuffer::Create();
+			if (!glowExtraction->Initialize
+			(
+				graphicsDevice,
+				width, height,
+				false, 1,
+				Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT,
+				Phoenix::Graphics::TextureFormatDx::UNKNOWN,
+				true,
+				false,
+				false
+			))
+			{
+				return false;
+			}
+
+			for (size_t indexOfDownsampled = 0; indexOfDownsampled < numberOfDownsampled; ++indexOfDownsampled)
+			{
+				gaussianBlur[indexOfDownsampled][0] = Phoenix::FrameWork::FrameBuffer::Create();
+				if (!gaussianBlur[indexOfDownsampled][0]->Initialize
+				(
+					graphicsDevice,
+					width >> indexOfDownsampled, height >> indexOfDownsampled,
+					false, 1,
+					Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT,
+					Phoenix::Graphics::TextureFormatDx::UNKNOWN,
+					true,
+					false,
+					false
+				))
+				{
+					return false;
+				}
+
+				gaussianBlur[indexOfDownsampled][1] = Phoenix::FrameWork::FrameBuffer::Create();
+				if (!gaussianBlur[indexOfDownsampled][1]->Initialize
+				(
+					graphicsDevice,
+					width >> indexOfDownsampled,
+					height >> indexOfDownsampled,
+					false, 1,
+					Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT,
+					Phoenix::Graphics::TextureFormatDx::UNKNOWN,
+					true,
+					false,
+					false
+				))
+				{
+					return false;
+				}
+			}
+
+			glowExtractionPS = Graphics::IShader::Create();
+			glowExtractionPS->LoadPS(device, "GlowExtractionPS.cso");
+
+			gaussianBlurHorizontalPS = Graphics::IShader::Create();
+			gaussianBlurHorizontalPS->LoadPS(device, "GaussianBlurHorizontalPS.cso");
+
+			gaussianBlurVerticalPS = Graphics::IShader::Create();
+			gaussianBlurVerticalPS->LoadPS(device, "GaussianBlurVerticalPS.cso");
+
+			gaussianBlurConvolutionPS = Graphics::IShader::Create();
+			gaussianBlurConvolutionPS->LoadPS(device, "GaussianBlurConvolutionPS.cso");
+
+			gaussianBlurDownsamplingPS = Graphics::IShader::Create();
+			gaussianBlurDownsamplingPS->LoadPS(device, "GaussianBlurDownsamplingPS.cso");
+
+			lensFlare = FrameBuffer::Create();
+			if (!lensFlare->Initialize
+			(
+				graphicsDevice,
+				width >> 2, height >> 2,
+				false, 1,
+				Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT,
+				Phoenix::Graphics::TextureFormatDx::UNKNOWN,
+				true,
+				false,
+				false
+			))
+			{
+				return false;
+			}
+
+			lensFlarePS = Graphics::IShader::Create();
+			lensFlarePS->LoadPS(device, "LensFlarePS.cso");
+
+			gradientMap = Graphics::ITexture::Create();
+			//gradientMap->Initialize(device, ".\\resources\\color_gradient.02.png", Graphics::MaterialType::Diffuse, Math::Color(1, 1, 1, 1));
+
+			noiseMap = Graphics::ITexture::Create();
+			//noiseMap->Initialize(device, ".\\resources\\noise.png", Graphics::MaterialType::Diffuse, Math::Color(1, 1, 1, 1));
+		
+			return true;
+		}
+
+		void Bloom::Finalize()
+		{
+
+		}
+
+		void Bloom::Generate(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* hdrTexture, bool enableLensFlare)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
+
+			// データセット
+			{
+				Graphics::ISampler* samplers[] =
+				{
+					context->GetSamplerState(Graphics::SamplerState::PointWrap),
+					context->GetSamplerState(Graphics::SamplerState::LinearWrap),
+					context->GetSamplerState(Graphics::SamplerState::AnisotropicWrap),
+				};
+				context->SetSamplers(Graphics::ShaderType::Pixel, 0, 3, samplers);
+
+				Graphics::PhoenixMap map = Graphics::PhoenixMap::WriteDiscard;
+				Graphics::PhoenixMappedSubresource mapedBuffer;
+				{
+					context->Map(constantBuffer.get(), 0, map, 0, &mapedBuffer);
+					FND::MemCpy(mapedBuffer.data, &shaderContants, sizeof(ShaderConstants));
+					context->Unmap(constantBuffer.get(), 0);
+				}
+
+				Graphics::IBuffer* buffers[] =
+				{
+					constantBuffer.get()
+				};
+				context->SetConstantBuffers(Graphics::ShaderType::Pixel, 0, 1, buffers);
+			}
+
+			// 輝き部分の抽出
+			{
+				Graphics::ITexture* texture[] = { hdrTexture };
+				Graphics::ITexture* nullTexture[] = { nullptr };
+
+				glowExtraction->Clear(graphicsDevice);
+				glowExtraction->Activate(graphicsDevice);
+				{
+					glowExtractionPS->Activate(device);
+					{
+						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+						FullScreenQuad::Draw(graphicsDevice, true);
+						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, nullTexture);
+					}
+					glowExtractionPS->Deactivate(device);
+				}
+				glowExtraction->Deactivate(graphicsDevice);
+			}
+
+			//Lens flare
+			//http://john-chapman-graphics.blogspot.com/2013/02/pseudo-lens-flare.html
+			if (enableLensFlare)
+			{
+				Graphics::ITexture* glowExtractionTex[] = { glowExtraction->GetRenderTargetSurface()->GetTexture(), gradientMap.get(), noiseMap.get() };
+				Graphics::ITexture* nullGlowExtractionTex[] = { nullptr, nullptr, nullptr };
+
+				lensFlare->Clear(graphicsDevice);
+				lensFlare->Activate(graphicsDevice);
+				{
+					lensFlarePS->Activate(device);
+					{
+						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 3, glowExtractionTex);
+						FullScreenQuad::Draw(graphicsDevice);
+						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 3, nullGlowExtractionTex);
+					}
+					lensFlarePS->Deactivate(device);
+				}
+				lensFlare->Deactivate(graphicsDevice);
+
+				Graphics::ITexture* lensFlareTex[] = { lensFlare->GetRenderTargetSurface()->GetTexture() };
+				Graphics::ITexture* nullLensFlareTex[] = { nullptr, nullptr, nullptr };
+
+				glowExtraction->Activate(graphicsDevice);
+				{
+					context->SetBlend(context->GetBlendState(Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
+					context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, lensFlareTex);
+					FullScreenQuad::Draw(graphicsDevice);
+					context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, nullLensFlareTex);
+					context->SetBlend(context->GetBlendState(Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
+				}
+				glowExtraction->Deactivate(graphicsDevice);
+			}
+
+			//Gaussian blur
+			//Efficient Gaussian blur with linear sampling
+			//http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
+			{
+				Graphics::ISampler* samplers[] =
+				{
+					context->GetSamplerState(Graphics::SamplerState::LinearBorder)
+				};
+				context->SetSamplers(Graphics::ShaderType::Pixel, 0, 1, samplers);
+
+				// downsampling
+				{
+					Graphics::ITexture* texture[] = { glowExtraction->GetRenderTargetSurface()->GetTexture() };
+					context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+
+					gaussianBlur[0][0]->Clear(graphicsDevice);
+					gaussianBlur[0][0]->Activate(graphicsDevice);
+					{
+						gaussianBlurDownsamplingPS->Activate(device);
+						{
+							FullScreenQuad::Draw(graphicsDevice);
+						}
+						gaussianBlurDownsamplingPS->Deactivate(device);
+					}
+					gaussianBlur[0][0]->Deactivate(graphicsDevice);
+				}
+
+				// ping-pong gaussian blur
+				{
+					// 横方向にブラー加工
+					{
+						Graphics::ITexture* texture[] = { gaussianBlur[0][0]->GetRenderTargetSurface()->GetTexture() };
+						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+
+						gaussianBlur[0][1]->Clear(graphicsDevice);
+						gaussianBlur[0][1]->Activate(graphicsDevice);
+						{
+							gaussianBlurHorizontalPS->Activate(device);
+							{
+								FullScreenQuad::Draw(graphicsDevice);
+							}
+							gaussianBlurHorizontalPS->Deactivate(device);
+						}
+						gaussianBlur[0][1]->Deactivate(graphicsDevice);
+					}
+
+					// 縦方向にブラー加工
+					{
+						Graphics::ITexture* texture[] = { gaussianBlur[0][1]->GetRenderTargetSurface()->GetTexture() };
+						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+
+						gaussianBlur[0][0]->Clear(graphicsDevice);
+						gaussianBlur[0][0]->Activate(graphicsDevice);
+						{
+							gaussianBlurVerticalPS->Activate(device);
+							{
+								FullScreenQuad::Draw(graphicsDevice);
+							}
+							gaussianBlurVerticalPS->Deactivate(device);
+						}
+						gaussianBlur[0][0]->Deactivate(graphicsDevice);
+					}
+				}
+
+				// 指定回数分だけダウンサンプリング＆ブラー加工
+				for (size_t indexOfDownsampled = 1; indexOfDownsampled < numberOfDownsampled; ++indexOfDownsampled)
+				{
+					// downsampling
+					{
+						Graphics::ITexture* texture[] = { gaussianBlur[indexOfDownsampled - 1][0]->GetRenderTargetSurface()->GetTexture() };
+						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+
+						gaussianBlur[indexOfDownsampled][0]->Clear(graphicsDevice);
+						gaussianBlur[indexOfDownsampled][0]->Activate(graphicsDevice);
+						{
+							gaussianBlurDownsamplingPS->Activate(device);
+							{
+								FullScreenQuad::Draw(graphicsDevice);
+							}
+							gaussianBlurDownsamplingPS->Deactivate(device);
+						}
+						gaussianBlur[indexOfDownsampled][0]->Deactivate(graphicsDevice);
+					}
+
+					// ping-pong gaussian blur
+					{
+						// 横方向にブラー加工
+						{
+							Graphics::ITexture* texture[] = { gaussianBlur[indexOfDownsampled][0]->GetRenderTargetSurface()->GetTexture() };
+							context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+
+							gaussianBlur[indexOfDownsampled][1]->Clear(graphicsDevice);
+							gaussianBlur[indexOfDownsampled][1]->Activate(graphicsDevice);
+							{
+								gaussianBlurHorizontalPS->Activate(device);
+								{
+									FullScreenQuad::Draw(graphicsDevice);
+								}
+								gaussianBlurHorizontalPS->Deactivate(device);
+							}
+							gaussianBlur[indexOfDownsampled][1]->Deactivate(graphicsDevice);
+						}
+
+						// 縦方向にブラー加工
+						{
+							Graphics::ITexture* texture[] = { gaussianBlur[indexOfDownsampled][1]->GetRenderTargetSurface()->GetTexture() };
+							context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+
+							gaussianBlur[indexOfDownsampled][0]->Clear(graphicsDevice);
+							gaussianBlur[indexOfDownsampled][0]->Activate(graphicsDevice);
+							{
+								gaussianBlurVerticalPS->Activate(device);
+								{
+									FullScreenQuad::Draw(graphicsDevice);
+								}
+								gaussianBlurVerticalPS->Deactivate(device);
+							}
+							gaussianBlur[indexOfDownsampled][0]->Deactivate(graphicsDevice);
+						}
+					}
+				}
+			}
+		}
+
+		void Bloom::Draw(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
+
+			// データセット
+			{
+				Graphics::ISampler* samplers[] =
+				{
+					context->GetSamplerState(Graphics::SamplerState::PointWrap),
+					context->GetSamplerState(Graphics::SamplerState::LinearWrap),
+					context->GetSamplerState(Graphics::SamplerState::AnisotropicWrap),
+				};
+				context->SetSamplers(Graphics::ShaderType::Pixel, 0, 3, samplers);
+
+				Graphics::PhoenixMap map = Graphics::PhoenixMap::WriteDiscard;
+				Graphics::PhoenixMappedSubresource mapedBuffer;
+				{
+					context->Map(constantBuffer.get(), 0, map, 0, &mapedBuffer);
+					FND::MemCpy(mapedBuffer.data, &shaderContants, sizeof(ShaderConstants));
+					context->Unmap(constantBuffer.get(), 0);
+				}
+
+				Graphics::IBuffer* buffers[] =
+				{
+					constantBuffer.get()
+				};
+				context->SetConstantBuffers(Graphics::ShaderType::Pixel, 0, 1, buffers);
+			}
+
+			// 描画
+			gaussianBlurConvolutionPS->Activate(device);
+			{
+				context->SetBlend(context->GetBlendState(Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
+
+				std::vector<Graphics::ITexture*> shaderResourceViews;
+				for (size_t indexOfDownsampled = 1; indexOfDownsampled < numberOfDownsampled; ++indexOfDownsampled)
+				{
+					shaderResourceViews.push_back(gaussianBlur[indexOfDownsampled][0]->GetRenderTargetSurface()->GetTexture());
+				}
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, &shaderResourceViews.at(0));
+
+				FullScreenQuad::Draw(graphicsDevice);
+
+				Phoenix::Graphics::ITexture* nullTexture[8] = { nullptr };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 8, nullTexture);
+
+				context->SetBlend(context->GetBlendState(Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
+			}
+			gaussianBlurConvolutionPS->Deactivate(device);
 		}
 	}
 }

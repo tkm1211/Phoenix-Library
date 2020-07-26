@@ -3,11 +3,15 @@
 #include "Phoenix/Graphics/Surface.h"
 #include "Phoenix/Graphics/Viewport.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
+#include "Phoenix/Graphics/Shader.h"
 #include "../Source/Graphics/Texture/Win/DirectX11/TextureDX11.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui_impl_win32.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui_impl_dx11.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui_internal.h"
+
+#include <d3d11.h>
+#include <wrl.h>
 
 
 namespace Phoenix
@@ -84,6 +88,31 @@ namespace Phoenix
 					ImGui::Image(static_cast<ID3D11ShaderResourceView*>(depthStencilSurface->GetTexture()->Handle()), ImVec2(256.0f, 256.0f));
 				}
 			}
+
+			Graphics::IRenderTargetSurface* GetRenderTargetSurface() { return renderTargerSurface.get(); }
+			Graphics::IDepthStencilSurface* GetDepthStencilSurface() { return depthStencilSurface.get(); }
+		};
+
+		class MSAAResolve
+		{
+		private:
+			std::unique_ptr<Graphics::IShader> embeddedShader;
+
+			std::unique_ptr<Graphics::IRasterizer> embeddedRasterizerState;
+			std::unique_ptr<Graphics::IDepthStencil> embeddedDepthStencilState;
+
+		public:
+			MSAAResolve() {}
+			~MSAAResolve() { Finalize(); }
+
+		public:
+			static std::unique_ptr<MSAAResolve> Create();
+
+			bool Initialize(Graphics::IGraphicsDevice* graphicsDevice);
+
+			void Finalize();
+
+			void Resolve(Graphics::IGraphicsDevice* graphicsDevice, const FrameBuffer* source, FrameBuffer* destination);
 		};
 	}
 }

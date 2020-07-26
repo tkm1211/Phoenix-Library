@@ -177,8 +177,14 @@ namespace Phoenix
 			Graphics::IContext* context = graphicsDevice->GetContext();
 
 			float color[4] = { r, g, b, a };
-			context->ClearRenderTargetView(renderTargerSurface.get(), color);
-			context->ClearDepthStencilView(depthStencilSurface.get(), 1.0f, 0);
+			if (renderTargerSurface.get())
+			{
+				context->ClearRenderTargetView(renderTargerSurface.get(), color);
+			}
+			if (depthStencilSurface.get())
+			{
+				context->ClearDepthStencilView(depthStencilSurface.get(), 1.0f, 0);
+			}
 		}
 
 		//clear only 'render_target_view'
@@ -259,6 +265,111 @@ namespace Phoenix
 
 			context->SetViewports(numberOfStoredViewports, *cachedViewports);
 			context->SetRenderTargets(1, &rts, dss);
+		}
+
+
+		std::unique_ptr<MSAAResolve> MSAAResolve::Create()
+		{
+			return std::make_unique<MSAAResolve>();
+		}
+
+		bool MSAAResolve::Initialize(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+
+			embeddedShader = Graphics::IShader::Create();
+			embeddedShader->LoadVS
+			(
+				device,
+				"MSAAResolveVS.cso",
+				0,
+				0
+			);
+			embeddedShader->LoadPS
+			(
+				device,
+				"MSAAResolvePS.cso"
+			);
+
+			embeddedRasterizerState = Graphics::IRasterizer::Create();
+			if (!embeddedRasterizerState->Initialize(device, Graphics::RasterizerState::SolidCullNone))
+			{
+				return false;
+			}
+
+			embeddedDepthStencilState = Graphics::IDepthStencil::Create();
+			if (!embeddedDepthStencilState->Initialize(device, Graphics::DepthState::NoTestNoWrite))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		void MSAAResolve::Finalize()
+		{
+			embeddedDepthStencilState.reset();
+			embeddedRasterizerState.reset();
+			embeddedShader.reset();
+		}
+
+		void MSAAResolve::Resolve(Graphics::IGraphicsDevice* graphicsDevice, const FrameBuffer* source, FrameBuffer* destination)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
+			ID3D11DeviceContext* d3dContext = static_cast<Graphics::DeviceDX11*>(device)->GetD3DContext();
+
+			if (destination->renderTargerSurface.get()->GetTexture()->Handle() && source->renderTargerSurface.get()->GetTexture()->Handle())
+			{
+				Microsoft::WRL::ComPtr<ID3D11Resource> sourceResource;
+				Microsoft::WRL::ComPtr<ID3D11Resource> destinationResource;
+
+				static_cast<ID3D11ShaderResourceView*>(source->renderTargerSurface->GetTexture()->Handle())->GetResource(sourceResource.GetAddressOf());
+				static_cast<ID3D11ShaderResourceView*>(destination->renderTargerSurface->GetTexture()->Handle())->GetResource(destinationResource.GetAddressOf());
+
+				Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;
+				HRESULT hr = sourceResource.Get()->QueryInterface<ID3D11Texture2D>(texture2d.GetAddressOf());
+				//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+				D3D11_TEXTURE2D_DESC texture2dDesc;
+				texture2d->GetDesc(&texture2dDesc);
+				//_ASSERT_EXPR(texture2d_desc.SampleDesc.Count > 1, L"source texture must be multisample texture");
+
+				d3dContext->ResolveSubresource(destinationResource.Get(), D3D11CalcSubresource(0, 0, 1), sourceResource.Get(), D3D11CalcSubresource(0, 0, 1), texture2dDesc.Format);
+			}
+			if (destination->depthStencilSurface.get()->GetTexture()->Handle() && source->depthStencilSurface.get()->GetTexture()->Handle())
+			{
+				destination->ClearDepthStencilView(graphicsDevice);
+				destination->ActivateDepthStencilView(graphicsDevice);
+
+				std::unique_ptr<Graphics::IRasterizer> cachedRasterizerState = Graphics::IRasterizer::Create();
+				context->GetRasterizer(cachedRasterizerState.get());
+				context->SetRasterizer(embeddedRasterizerState.get());
+
+				std::unique_ptr<Graphics::IDepthStencil> cachedDepthStencilState = Graphics::IDepthStencil::Create();
+				context->GetDepthStencil(cachedDepthStencilState.get(), 0);
+				context->SetDepthStencil(embeddedDepthStencilState.get(), 1);
+
+				d3dContext->IASetVertexBuffers(0, 0, 0, 0, 0);
+				d3dContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+				d3dContext->IASetInputLayout(0);
+
+				embeddedShader->Activate(device);
+
+				Graphics::ITexture* texture[] = { source->depthStencilSurface->GetTexture() };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+				context->Draw(4, 0);
+
+				context->SetRasterizer(cachedRasterizerState.get());
+				context->SetDepthStencil(cachedDepthStencilState.get(), 1);
+
+				embeddedShader->Deactivate(device);
+
+				Graphics::ITexture* nullTexture[] = { nullptr };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, nullTexture);
+
+				destination->Deactivate(graphicsDevice);
+			}
 		}
 	}
 }
