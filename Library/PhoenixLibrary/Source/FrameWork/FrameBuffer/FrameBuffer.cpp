@@ -313,6 +313,22 @@ namespace Phoenix
 			embeddedShader.reset();
 		}
 
+#if defined( DEBUG ) || defined( _DEBUG )
+#define _ASSERT_EXPR_A(expr, msg) \
+	(void)((!!(expr)) || \
+	(1 != _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, "%s", msg)) || \
+	(_CrtDbgBreak(), 0))
+#else
+#define  _ASSERT_EXPR_A(expr, expr_str) ((void)0)
+#endif
+
+		inline LPWSTR hr_trace(HRESULT hr)
+		{
+			LPWSTR msg;
+			FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER, NULL, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&msg), 0, NULL);
+			return msg;
+		}
+
 		void MSAAResolve::Resolve(Graphics::IGraphicsDevice* graphicsDevice, const FrameBuffer* source, FrameBuffer* destination)
 		{
 			Graphics::IDevice* device = graphicsDevice->GetDevice();
@@ -329,11 +345,11 @@ namespace Phoenix
 
 				Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;
 				HRESULT hr = sourceResource.Get()->QueryInterface<ID3D11Texture2D>(texture2d.GetAddressOf());
-				//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+				_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 				D3D11_TEXTURE2D_DESC texture2dDesc;
 				texture2d->GetDesc(&texture2dDesc);
-				//_ASSERT_EXPR(texture2d_desc.SampleDesc.Count > 1, L"source texture must be multisample texture");
+				_ASSERT_EXPR(texture2dDesc.SampleDesc.Count > 1, L"source texture must be multisample texture");
 
 				d3dContext->ResolveSubresource(destinationResource.Get(), D3D11CalcSubresource(0, 0, 1), sourceResource.Get(), D3D11CalcSubresource(0, 0, 1), texture2dDesc.Format);
 			}

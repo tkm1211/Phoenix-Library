@@ -21,7 +21,7 @@ namespace Phoenix
 		}
 
 		// ‰Šú‰»
-		bool RasterizerDX11::Initialize(IDevice* device, RasterizerState state)
+		bool RasterizerDX11::Initialize(IDevice* device, RasterizerState state, bool enableCull, bool enableDepth, bool enableMultisample, bool enableScissor)
 		{
 			HRESULT hr;
 
@@ -29,7 +29,7 @@ namespace Phoenix
 
 			D3D11_RASTERIZER_DESC desc = {};
 			FND::MemSet(&desc, 0, sizeof(desc));
-			RenderStateUtillityDX11::MakeD3DRasterizerDesc(state, desc);
+			RenderStateUtillityDX11::MakeD3DRasterizerDesc(state, desc, enableCull, enableDepth, enableMultisample, enableScissor);
 
 			hr = d3dDevice->CreateRasterizerState(&desc, &rasterizerState);
 			if (FAILED(hr))

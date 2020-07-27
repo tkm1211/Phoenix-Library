@@ -24,7 +24,7 @@ namespace Phoenix
 			void Finalize() override;
 
 			// D3Dブレンドステート取得
-			ID3D11BlendState* GetD3DBlendState() const { return blendState; }
+			ID3D11BlendState* GetD3DBlendState() { return blendState; }
 		};
 	} // namespace Graphics
 } // namespace Phoenix

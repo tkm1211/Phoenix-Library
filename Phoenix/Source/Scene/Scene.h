@@ -92,13 +92,15 @@ private:
 	std::shared_ptr<GeometricPrimitive> skyBox;
 	std::shared_ptr<Phoenix::FrameWork::IShader> skyMapShader;
 
-	bool enableMSAA = true;
+	bool enableMSAA = false;
 
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[3];
 
 	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
 	std::unique_ptr<Phoenix::FrameWork::MSAAResolve> msaaResolve;
 	std::unique_ptr<Phoenix::FrameWork::Bloom> bloom;
+
+	bool bloomBlend = false;
 
 public:
 	SceneGame() {}

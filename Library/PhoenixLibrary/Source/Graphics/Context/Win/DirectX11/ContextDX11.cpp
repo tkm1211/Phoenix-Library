@@ -371,8 +371,9 @@ namespace Phoenix
 		// 深度ステンシルステート取得
 		void ContextDX11::GetDepthStencil(IDepthStencil* depthStencil, u32 stencilRef)
 		{
-			ID3D11DepthStencilState* d3dDepthStencil = static_cast<DepthStencilDX11*>(depthStencil)->GetD3DDepthStencilState();
+			ID3D11DepthStencilState* d3dDepthStencil;
 			deviceContext->OMGetDepthStencilState(&d3dDepthStencil, &stencilRef);
+			static_cast<DepthStencilDX11*>(depthStencil)->SetD3DDepthStencilState(d3dDepthStencil);
 		}
 
 		// ラスタライザーステート設定
@@ -385,8 +386,9 @@ namespace Phoenix
 		// ラスタライザーステート取得
 		void ContextDX11::GetRasterizer(IRasterizer* rasterizer)
 		{
-			ID3D11RasterizerState* d3dRasterizer = static_cast<RasterizerDX11*>(rasterizer)->GetD3DRasterizerState();
+			ID3D11RasterizerState* d3dRasterizer;
 			deviceContext->RSGetState(&d3dRasterizer);
+			static_cast<RasterizerDX11*>(rasterizer)->SetD3DRasterizerState(d3dRasterizer);
 		}
 
 		// サンプラーステート設定

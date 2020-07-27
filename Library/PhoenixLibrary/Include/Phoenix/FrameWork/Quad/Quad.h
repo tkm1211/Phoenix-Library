@@ -113,7 +113,9 @@ namespace Phoenix
 			);
 		};
 
-		class Bloom : FullScreenQuad
+		class Bloom : public FullScreenQuad
+		//class Bloom : public Quad
+		//class Bloom
 		{
 		private:
 			enum { LINEAR_BORDER, POINT, LINEAR, ANISOTROPIC };
@@ -146,6 +148,7 @@ namespace Phoenix
 			std::unique_ptr<Graphics::IShader> gaussianBlurVerticalPS;
 			std::unique_ptr<Graphics::IShader> gaussianBlurConvolutionPS;
 			std::unique_ptr<Graphics::IShader> gaussianBlurDownsamplingPS;
+			std::unique_ptr<Graphics::IShader> bloomBlendPS;
 
 			std::unique_ptr<Graphics::IShader> lensFlarePS;
 			std::unique_ptr<Graphics::ITexture> gradientMap;
@@ -157,8 +160,12 @@ namespace Phoenix
 			std::unique_ptr<FrameBuffer> gaussianBlur[numberOfDownsampled][2];
 			std::unique_ptr<FrameBuffer> lensFlare;
 
+			std::unique_ptr<FullScreenQuad> fullScreenQuad;
+
 		public:
 			Bloom() : FullScreenQuad() {}
+			//Bloom() : Quad() {}
+			//Bloom() {}
 			~Bloom() {}
 
 		public:
@@ -171,6 +178,8 @@ namespace Phoenix
 			void Generate(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* hdrTexture, bool enableLensFlare);
 
 			void Draw(Graphics::IGraphicsDevice* graphicsDevice);
+
+			void Blend(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* originTexture, Graphics::ITexture* bloomTexture);
 		};
 	}
 }

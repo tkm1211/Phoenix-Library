@@ -70,7 +70,7 @@ namespace Phoenix
 			d3dDesc.Height = desc.height;
 			d3dDesc.MipLevels = 1;
 			d3dDesc.ArraySize = 1;
-			d3dDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			d3dDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 			d3dDesc.SampleDesc.Count = 1;
 			d3dDesc.SampleDesc.Quality = 0;
 			d3dDesc.Usage = D3D11_USAGE_DEFAULT;

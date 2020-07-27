@@ -10,6 +10,12 @@
     <Filter Include="Source\Bloom">
       <UniqueIdentifier>{dffa6037-9e32-425e-b3e8-4045720701be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Quad">
+      <UniqueIdentifier>{8d778b12-83da-4c51-b388-72246437b07b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MSAAResolve">
+      <UniqueIdentifier>{31a69afa-aeea-493b-9a01-e75dee7c2249}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\..\Source\HLSL\BasicVS.hlsl">
@@ -48,30 +54,6 @@
     <FxCompile Include="..\..\..\Source\HLSL\SkyMapPS.hlsl">
       <Filter>Source</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\QuadVS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\QuadPS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\QuadPSMS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\MSAAResolveVS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\MSAAResolvePS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\FullScreenQuadVS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\FullScreenQuadPS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\FullScreenQuadPSMS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\GlowExtractionPS.hlsl">
       <Filter>Source\Bloom</Filter>
     </FxCompile>
@@ -88,6 +70,33 @@
       <Filter>Source\Bloom</Filter>
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\LensFlarePS.hlsl">
+      <Filter>Source\Bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\FullScreenQuadPS.hlsl">
+      <Filter>Source\Quad</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\FullScreenQuadPSMS.hlsl">
+      <Filter>Source\Quad</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\FullScreenQuadVS.hlsl">
+      <Filter>Source\Quad</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\QuadPS.hlsl">
+      <Filter>Source\Quad</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\QuadPSMS.hlsl">
+      <Filter>Source\Quad</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\QuadVS.hlsl">
+      <Filter>Source\Quad</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\MSAAResolvePS.hlsl">
+      <Filter>Source\MSAAResolve</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\MSAAResolveVS.hlsl">
+      <Filter>Source\MSAAResolve</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\BloomBlendPS.hlsl">
       <Filter>Source\Bloom</Filter>
     </FxCompile>
   </ItemGroup>

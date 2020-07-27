@@ -52,7 +52,7 @@ namespace Phoenix
 			static std::unique_ptr<IRasterizer> Create();
 
 			// ‰Šú‰»
-			virtual bool Initialize(IDevice* device, RasterizerState state) = 0;
+			virtual bool Initialize(IDevice* device, RasterizerState state, bool enableCull = true, bool enableDepth = true, bool enableMultisample = false, bool enableScissor = false) = 0;
 
 			// I—¹‰»
 			virtual void Finalize() = 0;

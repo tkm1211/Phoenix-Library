@@ -398,7 +398,7 @@ namespace Phoenix
 			);
 
 			embeddedRasterizerState = Graphics::IRasterizer::Create();
-			if (!embeddedRasterizerState->Initialize(device, Graphics::RasterizerState::SolidCullBack))
+			if (!embeddedRasterizerState->Initialize(device, Graphics::RasterizerState::SolidCullBack, false, false, false, false))
 			{
 				return false;
 			}
@@ -489,6 +489,10 @@ namespace Phoenix
 			Graphics::IDevice* device = graphicsDevice->GetDevice();
 
 			FullScreenQuad::Initialize(graphicsDevice);
+			//Quad::Initialize(graphicsDevice);
+
+			//fullScreenQuad = FullScreenQuad::FullScreenQuad::Create();
+			//fullScreenQuad->Initialize(graphicsDevice);
 
 			// 定数バッファ作成
 			{
@@ -575,6 +579,9 @@ namespace Phoenix
 			gaussianBlurDownsamplingPS = Graphics::IShader::Create();
 			gaussianBlurDownsamplingPS->LoadPS(device, "GaussianBlurDownsamplingPS.cso");
 
+			bloomBlendPS = Graphics::IShader::Create();
+			bloomBlendPS->LoadPS(device, "BloomBlendPS.cso");
+
 			lensFlare = FrameBuffer::Create();
 			if (!lensFlare->Initialize
 			(
@@ -649,7 +656,9 @@ namespace Phoenix
 					glowExtractionPS->Activate(device);
 					{
 						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
-						FullScreenQuad::Draw(graphicsDevice, true);
+						FullScreenQuad::Draw(graphicsDevice);
+						/*Quad::Draw(graphicsDevice, hdrTexture, 1280.0f * 0, 0.0f, 1280.0f, 720.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, false, false, true, true, false);*/
+						//fullScreenQuad->Draw(graphicsDevice);
 						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, nullTexture);
 					}
 					glowExtractionPS->Deactivate(device);
@@ -657,39 +666,39 @@ namespace Phoenix
 				glowExtraction->Deactivate(graphicsDevice);
 			}
 
-			//Lens flare
-			//http://john-chapman-graphics.blogspot.com/2013/02/pseudo-lens-flare.html
-			if (enableLensFlare)
-			{
-				Graphics::ITexture* glowExtractionTex[] = { glowExtraction->GetRenderTargetSurface()->GetTexture(), gradientMap.get(), noiseMap.get() };
-				Graphics::ITexture* nullGlowExtractionTex[] = { nullptr, nullptr, nullptr };
+			////Lens flare
+			////http://john-chapman-graphics.blogspot.com/2013/02/pseudo-lens-flare.html
+			//if (enableLensFlare)
+			//{
+			//	Graphics::ITexture* glowExtractionTex[] = { glowExtraction->GetRenderTargetSurface()->GetTexture(), gradientMap.get(), noiseMap.get() };
+			//	Graphics::ITexture* nullGlowExtractionTex[] = { nullptr, nullptr, nullptr };
 
-				lensFlare->Clear(graphicsDevice);
-				lensFlare->Activate(graphicsDevice);
-				{
-					lensFlarePS->Activate(device);
-					{
-						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 3, glowExtractionTex);
-						FullScreenQuad::Draw(graphicsDevice);
-						context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 3, nullGlowExtractionTex);
-					}
-					lensFlarePS->Deactivate(device);
-				}
-				lensFlare->Deactivate(graphicsDevice);
+			//	lensFlare->Clear(graphicsDevice);
+			//	lensFlare->Activate(graphicsDevice);
+			//	{
+			//		lensFlarePS->Activate(device);
+			//		{
+			//			context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 3, glowExtractionTex);
+			//			FullScreenQuad::Draw(graphicsDevice);
+			//			context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 3, nullGlowExtractionTex);
+			//		}
+			//		lensFlarePS->Deactivate(device);
+			//	}
+			//	lensFlare->Deactivate(graphicsDevice);
 
-				Graphics::ITexture* lensFlareTex[] = { lensFlare->GetRenderTargetSurface()->GetTexture() };
-				Graphics::ITexture* nullLensFlareTex[] = { nullptr, nullptr, nullptr };
+			//	Graphics::ITexture* lensFlareTex[] = { lensFlare->GetRenderTargetSurface()->GetTexture() };
+			//	Graphics::ITexture* nullLensFlareTex[] = { nullptr, nullptr, nullptr };
 
-				glowExtraction->Activate(graphicsDevice);
-				{
-					context->SetBlend(context->GetBlendState(Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
-					context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, lensFlareTex);
-					FullScreenQuad::Draw(graphicsDevice);
-					context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, nullLensFlareTex);
-					context->SetBlend(context->GetBlendState(Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
-				}
-				glowExtraction->Deactivate(graphicsDevice);
-			}
+			//	glowExtraction->Activate(graphicsDevice);
+			//	{
+			//		context->SetBlend(context->GetBlendState(Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
+			//		context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, lensFlareTex);
+			//		FullScreenQuad::Draw(graphicsDevice);
+			//		context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, nullLensFlareTex);
+			//		context->SetBlend(context->GetBlendState(Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
+			//	}
+			//	glowExtraction->Deactivate(graphicsDevice);
+			//}
 
 			//Gaussian blur
 			//Efficient Gaussian blur with linear sampling
@@ -851,13 +860,14 @@ namespace Phoenix
 				context->SetBlend(context->GetBlendState(Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
 
 				std::vector<Graphics::ITexture*> shaderResourceViews;
-				for (size_t indexOfDownsampled = 1; indexOfDownsampled < numberOfDownsampled; ++indexOfDownsampled)
+				for (size_t indexOfDownsampled = 0; indexOfDownsampled < numberOfDownsampled; ++indexOfDownsampled)
 				{
-					shaderResourceViews.push_back(gaussianBlur[indexOfDownsampled][0]->GetRenderTargetSurface()->GetTexture());
+					shaderResourceViews.emplace_back(gaussianBlur[indexOfDownsampled][0]->GetRenderTargetSurface()->GetTexture());
 				}
-				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, &shaderResourceViews.at(0));
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, numberOfDownsampled, &shaderResourceViews.at(0));
 
 				FullScreenQuad::Draw(graphicsDevice);
+				//Quad::Draw(graphicsDevice, gaussianBlur[0][0]->GetRenderTargetSurface()->GetTexture(), 1280.0f * 0, 0.0f, 1280.0f, 720.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, false, false, false, false, false);
 
 				Phoenix::Graphics::ITexture* nullTexture[8] = { nullptr };
 				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 8, nullTexture);
@@ -865,6 +875,54 @@ namespace Phoenix
 				context->SetBlend(context->GetBlendState(Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 			}
 			gaussianBlurConvolutionPS->Deactivate(device);
+		}
+
+		void Bloom::Blend(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* originTexture, Graphics::ITexture* bloomTexture)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
+
+			// データセット
+			{
+				Graphics::ISampler* samplers[] =
+				{
+					context->GetSamplerState(Graphics::SamplerState::PointWrap),
+					context->GetSamplerState(Graphics::SamplerState::LinearWrap),
+					context->GetSamplerState(Graphics::SamplerState::AnisotropicWrap),
+				};
+				context->SetSamplers(Graphics::ShaderType::Pixel, 0, 3, samplers);
+
+				Graphics::PhoenixMap map = Graphics::PhoenixMap::WriteDiscard;
+				Graphics::PhoenixMappedSubresource mapedBuffer;
+				{
+					context->Map(constantBuffer.get(), 0, map, 0, &mapedBuffer);
+					FND::MemCpy(mapedBuffer.data, &shaderContants, sizeof(ShaderConstants));
+					context->Unmap(constantBuffer.get(), 0);
+				}
+
+				Graphics::IBuffer* buffers[] =
+				{
+					constantBuffer.get()
+				};
+				context->SetConstantBuffers(Graphics::ShaderType::Pixel, 0, 1, buffers);
+			}
+
+			// 描画
+			bloomBlendPS->Activate(device);
+			{
+				//context->SetBlend(context->GetBlendState(Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
+
+				Graphics::ITexture* texture[] = { originTexture, bloomTexture };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 2, texture);
+
+				FullScreenQuad::Draw(graphicsDevice);
+
+				Phoenix::Graphics::ITexture* nullTexture[8] = { nullptr };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 8, nullTexture);
+
+				//context->SetBlend(context->GetBlendState(Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
+			}
+			bloomBlendPS->Deactivate(device);
 		}
 	}
 }

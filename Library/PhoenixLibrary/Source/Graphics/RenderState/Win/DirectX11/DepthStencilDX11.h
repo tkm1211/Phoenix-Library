@@ -23,6 +23,9 @@ namespace Phoenix
 			// 終了化
 			void Finalize() override;
 
+			// D3Dブレンドステート設定
+			void SetD3DDepthStencilState(ID3D11DepthStencilState* depthStencilState) { this->depthStencilState = depthStencilState; }
+
 			// D3Dブレンドステート取得
 			ID3D11DepthStencilState* GetD3DDepthStencilState() const { return depthStencilState; }
 		};

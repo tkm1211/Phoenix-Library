@@ -73,6 +73,8 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 
 	bloom = Phoenix::FrameWork::Bloom::Create();
 	bloom->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight());
+
+	bloomBlend = true;
 }
 
 void SceneGame::Update()
@@ -308,10 +310,24 @@ void SceneGame::Draw()
 	bloom->Draw(graphicsDevice);
 	frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 
-	quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface->GetTexture(), 1280.0f * 0, 0.0f, 1280.0f, 720.0f);
+	if (bloomBlend)
+	{
+		resolvedFramebuffer = 2;
+		frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
+		bloom->Blend(graphicsDevice, frameBuffer[0]->GetRenderTargetSurface()->GetTexture(), frameBuffer[1]->GetRenderTargetSurface()->GetTexture());
+		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
+
+		//quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface->GetTexture(), 1280.0f * 0, 0.0f, 1280.0f, 720.0f);
+		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface->GetTexture(), 1280.0f * 0, 0.0f, 1280.0f, 720.0f);
+	}
+	else
+	{
+		quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface->GetTexture(), 1280.0f * 0, 0.0f, 1280.0f, 720.0f);
+	}
 	
 	quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface->GetTexture(), 256 * 0, 0, 256, 256);
 	quad->Draw(graphicsDevice, frameBuffer[1]->renderTargerSurface->GetTexture(), 256 * 1, 0, 256, 256);
+	//quad->Draw(graphicsDevice, frameBuffer[2]->renderTargerSurface->GetTexture(), 256 * 2, 0, 256, 256);
 	
 
 	// スカイボックス描画
@@ -427,8 +443,9 @@ void SceneGame::GUI()
 		}
 		if (ImGui::TreeNode("Bloom"))
 		{
-			ImGui::DragFloat("glowExtractionThreshold", &bloom->shaderContants.glowExtractionThreshold);
-			ImGui::DragFloat("blurConvolutionIntensity", &bloom->shaderContants.blurConvolutionIntensity);
+			ImGui::Checkbox("On", &bloomBlend);
+			ImGui::DragFloat("glowExtractionThreshold", &bloom->shaderContants.glowExtractionThreshold, 0.01f, 0.0f, 5.0f);
+			ImGui::DragFloat("blurConvolutionIntensity", &bloom->shaderContants.blurConvolutionIntensity, 0.01f, 0.0f, 5.0f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("FrameBuffer"))

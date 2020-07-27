@@ -213,7 +213,7 @@ float4 main(PS_INPUT input) : SV_Target
     reflectedLight.indirectSpecular = float3(0.0f, 0.0f, 0.0f);
     
     //float3 emissive = float3(0.0f, 0.0f, 0.0f);
-    float3 emissive = emissiveTex.Sample(sampler0, input.texcoord0).xyz;
+    float3 emissive = emissiveTex.Sample(sampler0, input.texcoord0).xyz * float3(10.0f, 10.0f, 10.0f);
     float opacity = 1.0;
 
     IncidentLight directLight;

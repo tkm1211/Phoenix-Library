@@ -104,7 +104,7 @@ namespace Phoenix
 				break;
 
 			case DepthState::NoTestNoWrite:
-				desc.DepthEnable = true;
+				desc.DepthEnable = false;
 				desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 				desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 				break;
@@ -114,15 +114,15 @@ namespace Phoenix
 		}
 
 		// D3Dラスタライザ記述作成
-		void RenderStateUtillityDX11::MakeD3DRasterizerDesc(RasterizerState rasterizerState, D3D11_RASTERIZER_DESC& desc)
+		void RenderStateUtillityDX11::MakeD3DRasterizerDesc(RasterizerState rasterizerState, D3D11_RASTERIZER_DESC& desc, bool enableCull, bool enableDepth, bool enableMultisample, bool enableScissor)
 		{
-			desc.FrontCounterClockwise = true;
+			desc.FrontCounterClockwise = enableCull;
 			desc.DepthBias = 0;
 			desc.DepthClipEnable = 0;
 			desc.SlopeScaledDepthBias = 0;
-			desc.DepthClipEnable = true;
-			desc.ScissorEnable = false;
-			desc.MultisampleEnable = true;
+			desc.DepthClipEnable = enableDepth;
+			desc.MultisampleEnable = enableMultisample;
+			desc.ScissorEnable = enableScissor;
 
 			switch (rasterizerState)
 			{
@@ -170,14 +170,18 @@ namespace Phoenix
 		void RenderStateUtillityDX11::MakeD3DSamplerDesc(SamplerState samplerState, D3D11_SAMPLER_DESC& desc)
 		{
 			desc.MipLODBias = 0.0f;
-			desc.MaxAnisotropy = 1;
-			desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-			desc.MinLOD = -FLT_MAX;
-			desc.MaxLOD = FLT_MAX;
-			desc.BorderColor[0] = 1.0f;
-			desc.BorderColor[1] = 1.0f;
-			desc.BorderColor[2] = 1.0f;
-			desc.BorderColor[3] = 1.0f;
+			//desc.MaxAnisotropy = 1;
+			//desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+			//desc.MinLOD = -FLT_MAX;
+			//desc.MaxLOD = FLT_MAX;
+			desc.MaxAnisotropy = 16;
+			desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+			desc.MinLOD = 0;
+			desc.MaxLOD = D3D11_FLOAT32_MAX;
+			desc.BorderColor[0] = 0.0f;
+			desc.BorderColor[1] = 0.0f;
+			desc.BorderColor[2] = 0.0f;
+			desc.BorderColor[3] = 0.0f;
 
 			switch (samplerState)
 			{
