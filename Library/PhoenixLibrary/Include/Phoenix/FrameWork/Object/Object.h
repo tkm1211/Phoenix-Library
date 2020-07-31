@@ -126,6 +126,9 @@ namespace Phoenix
 			~ModelObject() {}
 
 		public:
+			// ¶¬
+			static std::unique_ptr<ModelObject> Create();
+
 			// ‰Šú‰»
 			void Initialize(Graphics::IGraphicsDevice* graphicsDevice);
 

@@ -10,9 +10,14 @@ typedef VS_OUTPUT PS_INPUT;
 TextureCube Sky : register(t0);
 SamplerState basicSampler : register(s0);
 
+cbuffer CbScene : register(b0)
+{
+    float4 cbColor;
+};
+
 
 // Entry point for this pixel shader
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    return Sky.Sample(basicSampler, input.uvw);
+    return float4(Sky.Sample(basicSampler, input.uvw).rgb * 2.0f/* * directional_light.colour.w*/, 1.0f);
 }

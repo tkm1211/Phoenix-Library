@@ -40,6 +40,12 @@
     <Filter Include="Source\Quad">
       <UniqueIdentifier>{216d0e40-0de1-49ae-8af3-b1fe3b9be554}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\IBL">
+      <UniqueIdentifier>{df50ebd4-f2e1-4f3c-83fd-b0dc11607248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IBL">
+      <UniqueIdentifier>{6ae95d14-913c-4aa3-8154-d6fa30740a38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -78,6 +84,9 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Quad\Quad.h">
       <Filter>Include\Quad</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\IBL\IBL.h">
+      <Filter>Include\IBL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -112,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Quad\Quad.cpp">
       <Filter>Source\Quad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\IBL\IBL.cpp">
+      <Filter>Source\IBL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

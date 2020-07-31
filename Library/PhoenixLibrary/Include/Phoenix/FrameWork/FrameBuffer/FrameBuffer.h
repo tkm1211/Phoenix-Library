@@ -12,6 +12,7 @@
 
 #include <d3d11.h>
 #include <wrl.h>
+#include <vector>
 
 
 namespace Phoenix
@@ -22,18 +23,21 @@ namespace Phoenix
 		{
 		private:
 			static const s32 ViewportCount = 16;
+			static const u32 RenderTargetCount = 6;
 
 		public:
-			std::unique_ptr<Graphics::IRenderTargetSurface> renderTargerSurface;
+			std::unique_ptr<Graphics::IRenderTargetSurface> renderTargerSurface[RenderTargetCount]; // キューブマップ用に6枚用意
 			std::unique_ptr<Graphics::IDepthStencilSurface> depthStencilSurface;
 
-			std::unique_ptr<Graphics::IRenderTargetSurface> cachedRenderTargerSurface;
+			std::unique_ptr<Graphics::IRenderTargetSurface> cachedRenderTargerSurface[RenderTargetCount]; // キューブマップ保存用に6枚用意
 			std::unique_ptr<Graphics::IDepthStencilSurface> cachedDepthStencilSurface;
 
 			u32 numberOfStoredViewports;
 			
 			Graphics::Viewport viewport = {};
 			Graphics::Viewport* cachedViewports[ViewportCount];
+
+			u32 arraySize = 0;
 
 		public:
 			FrameBuffer() {}
@@ -53,44 +57,46 @@ namespace Phoenix
 				Graphics::TextureFormatDx depthStencilTexture2dFormat = Graphics::TextureFormatDx::R24G8_TYPELESS,
 				bool needRenderTargetShaderResourceView = true,
 				bool needDepthStencilShaderResourceView = true,
-				bool generateMips = false
+				bool generateMips = false,
+				bool textureCube = false,
+				u32 arraySize = 1
 			);
 
 			void Finalize();
 
-			void Clear(Graphics::IGraphicsDevice* graphicsDevice, float r = 0, float g = 0, float b = 0, float a = 1, float depth = 1, u8 stencil = 0);
+			void Clear(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0, float r = 0, float g = 0, float b = 0, float a = 1, float depth = 1, u8 stencil = 0);
 
 			//clear only 'render_target_view'
-			void ClearRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice, float r = 0, float g = 0, float b = 0, float a = 1);
+			void ClearRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0, float r = 0, float g = 0, float b = 0, float a = 1);
 
 			//clear only 'depth_stencil_view'
 			void ClearDepthStencilView(Graphics::IGraphicsDevice* graphicsDevice, FLOAT depth = 1, UINT8 stencil = 0);
 
-			void Activate(Graphics::IGraphicsDevice* graphicsDevice);
+			void Activate(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0);
 
 			//activate only 'render_target_view'
-			void ActivateRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice);
+			void ActivateRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0);
 
 			//activate only 'depth_stencil_view'
 			void ActivateDepthStencilView(Graphics::IGraphicsDevice* graphicsDevice);
 
-			void Deactivate(Graphics::IGraphicsDevice* graphicsDevice);
+			void Deactivate(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0);
 
-			void DrawSRV(bool isDrawRTV, bool isDrawDSV)
+			Graphics::IRenderTargetSurface* GetRenderTargetSurface(u32 index = 0) { return renderTargerSurface[index].get(); }
+			Graphics::IDepthStencilSurface* GetDepthStencilSurface() { return depthStencilSurface.get(); }
+
+			Graphics::IRenderTargetSurface** GetAllRenderTargetSurface()
 			{
-				if (isDrawRTV)
+				std::vector<Graphics::IRenderTargetSurface*> rts;
+				for (u32 i = 0; i < arraySize; ++i)
 				{
-					ID3D11ShaderResourceView* srv = static_cast<Graphics::TextureDX11*>(renderTargerSurface->GetTexture())->GetD3DShaderResourceView();
-					ImGui::Image(srv, ImVec2(100.0f, 100.0f));
+					rts.emplace_back(renderTargerSurface[i].get());
 				}
-				if (isDrawDSV)
-				{
-					ImGui::Image(static_cast<ID3D11ShaderResourceView*>(depthStencilSurface->GetTexture()->Handle()), ImVec2(256.0f, 256.0f));
-				}
+
+				return rts.data();
 			}
 
-			Graphics::IRenderTargetSurface* GetRenderTargetSurface() { return renderTargerSurface.get(); }
-			Graphics::IDepthStencilSurface* GetDepthStencilSurface() { return depthStencilSurface.get(); }
+			u32 GetRenderTargetSurfaceArraySize() { return arraySize; }
 		};
 
 		class MSAAResolve

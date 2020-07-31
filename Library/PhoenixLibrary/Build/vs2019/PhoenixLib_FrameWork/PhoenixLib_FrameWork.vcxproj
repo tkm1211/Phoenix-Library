@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\FrameBuffer\FrameBuffer.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\IBL\IBL.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Input\InputDevice.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Main.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\Object.h" />
@@ -35,6 +36,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\FrameBuffer\FrameBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\IBL\IBL.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Input\InputDevice.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Main\Main.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Object\Object.cpp" />

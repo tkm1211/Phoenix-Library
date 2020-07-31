@@ -123,6 +123,9 @@ namespace Phoenix
 
 			f32 GetRotateY() const { return rotateY; }
 
+			void SetRotateX(f32 rotate) { rotateX = rotate; }
+			void SetRotateY(f32 rotate) { rotateY = rotate; }
+
 			// •½s“Š‰e‚©”»’è
 			bool IsOrtho() const { return projection.m[2][3] == 0.0f; }
 

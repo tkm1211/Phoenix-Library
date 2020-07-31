@@ -6,6 +6,12 @@ namespace Phoenix
 {
 	namespace FrameWork
 	{
+		// ê∂ê¨
+		std::unique_ptr<ModelObject> ModelObject::Create()
+		{
+			return std::make_unique<ModelObject>();
+		}
+
 		// èâä˙âª
 		void ModelObject::Initialize(Graphics::IGraphicsDevice* graphicsDevice)
 		{

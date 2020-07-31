@@ -21,6 +21,7 @@
 //#include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
 #include "Phoenix/FrameWork/FrameBuffer/FrameBuffer.h"
 #include "Phoenix/FrameWork/Quad/Quad.h"
+#include "Phoenix/FrameWork/IBL/IBL.h"
 
 
 class SceneSystem;
@@ -76,6 +77,7 @@ private:
 	Phoenix::FrameWork::IShader* basicSkinShader = nullptr;
 	Phoenix::FrameWork::IShader* standardShader = nullptr;
 	Phoenix::FrameWork::IShader* pbrShader = nullptr;
+	Phoenix::FrameWork::IShader* currentShader = nullptr;
 	Phoenix::Graphics::Camera* camera = nullptr;
 	bool cameraFlg = false;
 
@@ -88,9 +90,9 @@ private:
 
 	bool isUpdate = false;
 
-	std::unique_ptr<Phoenix::Graphics::ITexture> skyMap;
-	std::shared_ptr<GeometricPrimitive> skyBox;
-	std::shared_ptr<Phoenix::FrameWork::IShader> skyMapShader;
+	//std::unique_ptr<Phoenix::Graphics::ITexture> skyMap;
+	//std::shared_ptr<GeometricPrimitive> skyBox;
+	//std::shared_ptr<Phoenix::FrameWork::IShader> skyMapShader;
 
 	bool enableMSAA = false;
 
@@ -101,6 +103,12 @@ private:
 	std::unique_ptr<Phoenix::FrameWork::Bloom> bloom;
 
 	bool bloomBlend = false;
+
+	bool isPBR = false;
+
+	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> skyFrameBuffer[6];
+
+	std::unique_ptr<Phoenix::FrameWork::SkyMap> skyMap;
 
 public:
 	SceneGame() {}

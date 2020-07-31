@@ -28,13 +28,17 @@ namespace Phoenix
 			Graphics::TextureFormatDx depthStencilTexture2dFormat,
 			bool needRenderTargetShaderResourceView,
 			bool needDepthStencilShaderResourceView,
-			bool generateMips
+			bool generateMips,
+			bool textureCube,
+			u32 arraySize
 		)
 		{
 			Graphics::IDevice* device = graphicsDevice->GetDevice();
 			Graphics::DeviceDX11* d3dDevice = static_cast<Graphics::DeviceDX11*>(device);
 
 			HRESULT hr = S_OK;
+
+			this->arraySize = arraySize;
 
 			UINT msaaQualityLevel;
 			UINT sampleCount = subsamples;
@@ -52,33 +56,38 @@ namespace Phoenix
 				texture2dDesc.Width = width;
 				texture2dDesc.Height = height;
 				texture2dDesc.MipLevels = generateMips ? 0 : 1;
-				texture2dDesc.ArraySize = 1;
+				texture2dDesc.ArraySize = arraySize;
 				texture2dDesc.Format = dxgiFormat;
 				texture2dDesc.SampleDesc.Count = enableMSAA ? sampleCount : 1;
 				texture2dDesc.SampleDesc.Quality = enableMSAA ? msaaQualityLevel - 1 : 0;
 				texture2dDesc.Usage = D3D11_USAGE_DEFAULT;
 				texture2dDesc.BindFlags = needRenderTargetShaderResourceView ? D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE : D3D11_BIND_RENDER_TARGET;
 				texture2dDesc.CPUAccessFlags = 0;
-				texture2dDesc.MiscFlags = generateMips ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
+				texture2dDesc.MiscFlags = generateMips ? (textureCube ? D3D11_RESOURCE_MISC_TEXTURECUBE | D3D11_RESOURCE_MISC_GENERATE_MIPS : D3D11_RESOURCE_MISC_GENERATE_MIPS) : 0;
 
 				D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 				rtvDesc.Format = texture2dDesc.Format;
-				rtvDesc.ViewDimension = enableMSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
+				rtvDesc.ViewDimension = enableMSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : (1 < arraySize ? D3D11_RTV_DIMENSION_TEXTURE2DARRAY : D3D11_RTV_DIMENSION_TEXTURE2D);
 
 				D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 				if (needRenderTargetShaderResourceView)
 				{
 					srvDesc.Format = texture2dDesc.Format;
-					srvDesc.ViewDimension = enableMSAA ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+					srvDesc.ViewDimension = enableMSAA ? D3D11_SRV_DIMENSION_TEXTURE2DMS : (textureCube ? D3D11_SRV_DIMENSION_TEXTURECUBE : D3D11_SRV_DIMENSION_TEXTURE2D);
 					srvDesc.Texture2D.MipLevels = generateMips ? -1 : 1;
 				}
 
-				renderTargerSurface = Graphics::IRenderTargetSurface::Create();
-				Graphics::RenderTargetSurfaceDX11* rtsDX11 = static_cast<Graphics::RenderTargetSurfaceDX11*>(renderTargerSurface.get());
-				if (!rtsDX11->Initialize(d3dDevice->GetD3DDevice(), texture2dDesc, &rtvDesc, &srvDesc))
+				for (u32 i = 0; i < arraySize; ++i)
 				{
-					PHOENIX_LOG_GRP_ERROR("Phoenix::Graphics::RenderTargetSurfaceDX11::Initialize() : Failed!!\n");
-					return false;
+					renderTargerSurface[i] = Graphics::IRenderTargetSurface::Create();
+					Graphics::RenderTargetSurfaceDX11* rtsDX11 = static_cast<Graphics::RenderTargetSurfaceDX11*>(renderTargerSurface[i].get());
+
+					if (1 < arraySize) rtvDesc.Texture2DArray.FirstArraySlice = i;
+					if (!rtsDX11->Initialize(d3dDevice->GetD3DDevice(), texture2dDesc, &rtvDesc, &srvDesc))
+					{
+						PHOENIX_LOG_GRP_ERROR("Phoenix::Graphics::RenderTargetSurfaceDX11::Initialize() : Failed!!\n");
+						return false;
+					}
 				}
 			}
 
@@ -147,7 +156,10 @@ namespace Phoenix
 			viewport.x = 0.0f;
 			viewport.y = 0.0f;
 
-			cachedRenderTargerSurface = Graphics::IRenderTargetSurface::Create();
+			for (u32 i = 0; i < RenderTargetCount; ++i)
+			{
+				cachedRenderTargerSurface[i] = Graphics::IRenderTargetSurface::Create();
+			}
 			cachedDepthStencilSurface = Graphics::IDepthStencilSurface::Create();
 
 			for (u32 i = 0; i < ViewportCount; ++i)
@@ -166,20 +178,27 @@ namespace Phoenix
 			}
 
 			cachedDepthStencilSurface.reset();
-			cachedRenderTargerSurface.reset();
+			for (u32 i = 0; i < RenderTargetCount; ++i)
+			{
+				cachedRenderTargerSurface[i].reset();
+			}
 
 			depthStencilSurface.reset();
-			renderTargerSurface.reset();
+
+			for (u32 i = 0; i < arraySize; ++i)
+			{
+				renderTargerSurface[i].reset();
+			}
 		}
 
-		void FrameBuffer::Clear(Graphics::IGraphicsDevice* graphicsDevice, float r, float g, float b, float a, float depth, u8 stencil)
+		void FrameBuffer::Clear(Graphics::IGraphicsDevice* graphicsDevice, u32 index, float r, float g, float b, float a, float depth, u8 stencil)
 		{
 			Graphics::IContext* context = graphicsDevice->GetContext();
 
 			float color[4] = { r, g, b, a };
-			if (renderTargerSurface.get())
+			if (renderTargerSurface[0].get())
 			{
-				context->ClearRenderTargetView(renderTargerSurface.get(), color);
+				context->ClearRenderTargetView(renderTargerSurface[index].get(), color);
 			}
 			if (depthStencilSurface.get())
 			{
@@ -188,12 +207,12 @@ namespace Phoenix
 		}
 
 		//clear only 'render_target_view'
-		void FrameBuffer::ClearRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice, float r, float g, float b, float a)
+		void FrameBuffer::ClearRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice, u32 index, float r, float g, float b, float a)
 		{
 			Graphics::IContext* context = graphicsDevice->GetContext();
 
 			float color[4] = { r, g, b, a };
-			context->ClearRenderTargetView(renderTargerSurface.get(), color);
+			context->ClearRenderTargetView(renderTargerSurface[index].get(), color);
 		}
 
 		//clear only 'depth_stencil_view'
@@ -203,15 +222,15 @@ namespace Phoenix
 			context->ClearDepthStencilView(depthStencilSurface.get(), depth, stencil);
 		}
 
-		void FrameBuffer::Activate(Graphics::IGraphicsDevice* graphicsDevice)
+		void FrameBuffer::Activate(Graphics::IGraphicsDevice* graphicsDevice, u32 index)
 		{
 			numberOfStoredViewports = ViewportCount;
 
 			Graphics::IContext* context = graphicsDevice->GetContext();
 			Graphics::Viewport* v = { &viewport };
-			Graphics::IRenderTargetSurface* rts = renderTargerSurface.get();
+			Graphics::IRenderTargetSurface* rts = renderTargerSurface[index].get();
 			Graphics::IDepthStencilSurface* dss = depthStencilSurface.get();
-			Graphics::IRenderTargetSurface* cachedRTS[] = { cachedRenderTargerSurface.get() };
+			Graphics::IRenderTargetSurface* cachedRTS[] = { cachedRenderTargerSurface[index].get() };
 			Graphics::IDepthStencilSurface* cachedDSS = { cachedDepthStencilSurface.get() };
 
 			context->GetViewports(numberOfStoredViewports, cachedViewports);
@@ -222,14 +241,14 @@ namespace Phoenix
 		}
 
 		//activate only 'render_target_view'
-		void FrameBuffer::ActivateRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice)
+		void FrameBuffer::ActivateRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice, u32 index)
 		{
 			numberOfStoredViewports = ViewportCount;
 
 			Graphics::IContext* context = graphicsDevice->GetContext();
 			Graphics::Viewport* v = { &viewport };
-			Graphics::IRenderTargetSurface* rts = renderTargerSurface.get();
-			Graphics::IRenderTargetSurface* cachedRTS[] = { cachedRenderTargerSurface.get() };
+			Graphics::IRenderTargetSurface* rts = renderTargerSurface[index].get();
+			Graphics::IRenderTargetSurface* cachedRTS[] = { cachedRenderTargerSurface[index].get() };
 			Graphics::IDepthStencilSurface* cachedDSS = { cachedDepthStencilSurface.get() };
 
 			context->GetViewports(numberOfStoredViewports, cachedViewports);
@@ -247,7 +266,7 @@ namespace Phoenix
 			Graphics::IContext* context = graphicsDevice->GetContext();
 			Graphics::Viewport* v = { &viewport };
 			Graphics::IRenderTargetSurface* nullRenderTargetSurface = 0;
-			Graphics::IRenderTargetSurface* cachedRTS = { cachedRenderTargerSurface.get() };
+			Graphics::IRenderTargetSurface* cachedRTS = { cachedRenderTargerSurface[0].get() };
 			Graphics::IDepthStencilSurface* cachedDSS = { cachedDepthStencilSurface.get() };
 
 			context->GetViewports(numberOfStoredViewports, cachedViewports);
@@ -257,10 +276,10 @@ namespace Phoenix
 			context->SetRenderTargets(1, &nullRenderTargetSurface, depthStencilSurface.get());
 		}
 
-		void FrameBuffer::Deactivate(Graphics::IGraphicsDevice* graphicsDevice)
+		void FrameBuffer::Deactivate(Graphics::IGraphicsDevice* graphicsDevice, u32 index)
 		{
 			Graphics::IContext* context = graphicsDevice->GetContext();
-			Graphics::IRenderTargetSurface* rts = cachedRenderTargerSurface.get();
+			Graphics::IRenderTargetSurface* rts = cachedRenderTargerSurface[index].get();
 			Graphics::IDepthStencilSurface* dss = cachedDepthStencilSurface.get();
 
 			context->SetViewports(numberOfStoredViewports, *cachedViewports);
@@ -335,13 +354,13 @@ namespace Phoenix
 			Graphics::IContext* context = graphicsDevice->GetContext();
 			ID3D11DeviceContext* d3dContext = static_cast<Graphics::DeviceDX11*>(device)->GetD3DContext();
 
-			if (destination->renderTargerSurface.get()->GetTexture()->Handle() && source->renderTargerSurface.get()->GetTexture()->Handle())
+			if (destination->renderTargerSurface[0].get()->GetTexture()->Handle() && source->renderTargerSurface[0].get()->GetTexture()->Handle())
 			{
 				Microsoft::WRL::ComPtr<ID3D11Resource> sourceResource;
 				Microsoft::WRL::ComPtr<ID3D11Resource> destinationResource;
 
-				static_cast<ID3D11ShaderResourceView*>(source->renderTargerSurface->GetTexture()->Handle())->GetResource(sourceResource.GetAddressOf());
-				static_cast<ID3D11ShaderResourceView*>(destination->renderTargerSurface->GetTexture()->Handle())->GetResource(destinationResource.GetAddressOf());
+				static_cast<ID3D11ShaderResourceView*>(source->renderTargerSurface[0]->GetTexture()->Handle())->GetResource(sourceResource.GetAddressOf());
+				static_cast<ID3D11ShaderResourceView*>(destination->renderTargerSurface[0]->GetTexture()->Handle())->GetResource(destinationResource.GetAddressOf());
 
 				Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;
 				HRESULT hr = sourceResource.Get()->QueryInterface<ID3D11Texture2D>(texture2d.GetAddressOf());

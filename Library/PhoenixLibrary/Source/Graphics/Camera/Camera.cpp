@@ -21,7 +21,7 @@ namespace Phoenix
 			Update();
 
 			rotateX = 0.5f;
-			rotateY = 0.0f;
+			rotateY = -3.14f;
 			distance = 500.0f;
 		}
 
@@ -537,7 +537,7 @@ namespace Phoenix
 			f32 ySin = sinf(rotateY);
 			f32 yCos = cosf(rotateY);
 
-			Math::Vector3 front = { -xCos * ySin, -xSin, -xCos * yCos };
+			Math::Vector3 front = { xCos * -ySin, xSin, xCos * -yCos };
 			Math::Vector3 _right = { yCos, 0.0f, -ySin };
 			Math::Vector3 _up = Math::Vector3Cross(_right, front);
 
