@@ -156,10 +156,7 @@ namespace Phoenix
 			viewport.x = 0.0f;
 			viewport.y = 0.0f;
 
-			for (u32 i = 0; i < RenderTargetCount; ++i)
-			{
-				cachedRenderTargerSurface[i] = Graphics::IRenderTargetSurface::Create();
-			}
+			cachedRenderTargerSurface = Graphics::IRenderTargetSurface::Create();
 			cachedDepthStencilSurface = Graphics::IDepthStencilSurface::Create();
 
 			for (u32 i = 0; i < ViewportCount; ++i)
@@ -178,10 +175,7 @@ namespace Phoenix
 			}
 
 			cachedDepthStencilSurface.reset();
-			for (u32 i = 0; i < RenderTargetCount; ++i)
-			{
-				cachedRenderTargerSurface[i].reset();
-			}
+			cachedRenderTargerSurface.reset();
 
 			depthStencilSurface.reset();
 
@@ -230,7 +224,7 @@ namespace Phoenix
 			Graphics::Viewport* v = { &viewport };
 			Graphics::IRenderTargetSurface* rts = renderTargerSurface[index].get();
 			Graphics::IDepthStencilSurface* dss = depthStencilSurface.get();
-			Graphics::IRenderTargetSurface* cachedRTS[] = { cachedRenderTargerSurface[index].get() };
+			Graphics::IRenderTargetSurface* cachedRTS[] = { cachedRenderTargerSurface.get() };
 			Graphics::IDepthStencilSurface* cachedDSS = { cachedDepthStencilSurface.get() };
 
 			context->GetViewports(numberOfStoredViewports, cachedViewports);
@@ -248,7 +242,7 @@ namespace Phoenix
 			Graphics::IContext* context = graphicsDevice->GetContext();
 			Graphics::Viewport* v = { &viewport };
 			Graphics::IRenderTargetSurface* rts = renderTargerSurface[index].get();
-			Graphics::IRenderTargetSurface* cachedRTS[] = { cachedRenderTargerSurface[index].get() };
+			Graphics::IRenderTargetSurface* cachedRTS[] = { cachedRenderTargerSurface.get() };
 			Graphics::IDepthStencilSurface* cachedDSS = { cachedDepthStencilSurface.get() };
 
 			context->GetViewports(numberOfStoredViewports, cachedViewports);
@@ -256,6 +250,31 @@ namespace Phoenix
 
 			context->GetRenderTargets(1, cachedRTS, cachedDSS);
 			context->SetRenderTargets(1, &rts, 0);
+		}
+
+		void FrameBuffer::ActivateAllRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			numberOfStoredViewports = ViewportCount;
+
+			Graphics::IContext* context = graphicsDevice->GetContext();
+			Graphics::Viewport* v = { &viewport };
+			Graphics::IRenderTargetSurface* rts[] =
+			{
+				renderTargerSurface[0].get(),
+				renderTargerSurface[1].get(),
+				renderTargerSurface[2].get(),
+				renderTargerSurface[3].get(),
+				renderTargerSurface[4].get(),
+				renderTargerSurface[5].get(),
+			};
+			Graphics::IRenderTargetSurface* cachedRTS = { cachedRenderTargerSurface.get() };
+			Graphics::IDepthStencilSurface* cachedDSS = { cachedDepthStencilSurface.get() };
+
+			context->GetViewports(numberOfStoredViewports, cachedViewports);
+			context->SetViewports(1, v);
+
+			context->GetRenderTargets(1, &cachedRTS, cachedDSS);
+			context->SetRenderTargets(RenderTargetCount, rts, 0);
 		}
 
 		//activate only 'depth_stencil_view'
@@ -266,7 +285,7 @@ namespace Phoenix
 			Graphics::IContext* context = graphicsDevice->GetContext();
 			Graphics::Viewport* v = { &viewport };
 			Graphics::IRenderTargetSurface* nullRenderTargetSurface = 0;
-			Graphics::IRenderTargetSurface* cachedRTS = { cachedRenderTargerSurface[0].get() };
+			Graphics::IRenderTargetSurface* cachedRTS = { cachedRenderTargerSurface.get() };
 			Graphics::IDepthStencilSurface* cachedDSS = { cachedDepthStencilSurface.get() };
 
 			context->GetViewports(numberOfStoredViewports, cachedViewports);
@@ -276,10 +295,10 @@ namespace Phoenix
 			context->SetRenderTargets(1, &nullRenderTargetSurface, depthStencilSurface.get());
 		}
 
-		void FrameBuffer::Deactivate(Graphics::IGraphicsDevice* graphicsDevice, u32 index)
+		void FrameBuffer::Deactivate(Graphics::IGraphicsDevice* graphicsDevice)
 		{
 			Graphics::IContext* context = graphicsDevice->GetContext();
-			Graphics::IRenderTargetSurface* rts = cachedRenderTargerSurface[index].get();
+			Graphics::IRenderTargetSurface* rts = cachedRenderTargerSurface.get();
 			Graphics::IDepthStencilSurface* dss = cachedDepthStencilSurface.get();
 
 			context->SetViewports(numberOfStoredViewports, *cachedViewports);

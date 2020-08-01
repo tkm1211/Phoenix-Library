@@ -42,7 +42,7 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		pos = { 0,0,-1000.0f };
 		//rotate = { 0,0,0 };
 		rotate = { 0,0,0,1 };
-		scale = { 1.25f,1.25f,1.25f };
+		scale = { 1.5f,1.5f,1.5f };
 		//scale = { 1.0f,1.0f,1.0f };
 		radius = 75.0f;
 		life = 1000;

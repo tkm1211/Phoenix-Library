@@ -16,7 +16,7 @@ namespace Phoenix
 		//****************************************************************************
 		Camera::Camera()
 		{
-			SetPerspective(Math::PI_Q, 16.0f / 9.0f, 0.1f, 1000000.0f);
+			SetPerspective(30.0f * 0.01745f, 16.0f / 9.0f, 0.1f, 1000000.0f);
 			SetLookAt(Math::Vector3::OneAll, Math::Vector3::Zero, Math::Vector3::OneY);
 			Update();
 
@@ -555,7 +555,7 @@ namespace Phoenix
 			Math::Vector3 dir = pos - center;
 			dir.y = 0.0f;
 
-			f32 len = Math::Vector3Length(dir) + 300.0f;
+			f32 len = Math::Vector3Length(dir) + 400.0f;
 			Math::Vector3 dirN = Math::Vector3Normalize(dir);
 
 			rotateY = atan2f(dirN.x, dirN.z);

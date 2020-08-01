@@ -27,8 +27,6 @@ namespace Phoenix
 				true,
 				6
 			);
-
-
 		}
 
 		void IBL::Finalize()
@@ -36,19 +34,22 @@ namespace Phoenix
 			skyIBL.reset();
 		}
 
-		void IBL::Clear(Graphics::IGraphicsDevice* graphicsDevice, u32 index, float r, float g, float b, float a)
+		void IBL::Clear(Graphics::IGraphicsDevice* graphicsDevice, float r, float g, float b, float a)
 		{
-			skyIBL->ClearRenderTargetView(graphicsDevice, index, r, g, b, a);
+			for (int i = 0; i < 6; ++i)
+			{
+				skyIBL->ClearRenderTargetView(graphicsDevice, i, r, g, b, a);
+			}
 		}
 
-		void IBL::Activate(Graphics::IGraphicsDevice* graphicsDevice, u32 index)
+		void IBL::Activate(Graphics::IGraphicsDevice* graphicsDevice)
 		{
-			skyIBL->ActivateRenderTargetView(graphicsDevice, index);
+			skyIBL->ActivateAllRenderTargetView(graphicsDevice);
 		}
 
-		void IBL::Deactivate(Graphics::IGraphicsDevice* graphicsDevice, u32 index)
+		void IBL::Deactivate(Graphics::IGraphicsDevice* graphicsDevice)
 		{
-			skyIBL->Deactivate(graphicsDevice, index);
+			skyIBL->Deactivate(graphicsDevice);
 		}
 
 
@@ -106,19 +107,41 @@ namespace Phoenix
 
 		}
 
-		void SkyMap::Draw(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& world, const Math::Color& color)
+		void SkyMap::Draw(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& world, const Graphics::Camera& camera, const Math::Vector4& lightDirection, const Math::Color& color)
 		{
 			Graphics::IDevice* device = graphicsDevice->GetDevice();
 			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
 			shader->Activate(device);
 			{
-				ShaderConstants cb = {};
-				cb.color = color;
-				context->UpdateSubresource(constantBuffer.get(), 0, 0, &cb, 0, 0);
+				Phoenix::Graphics::IBuffer* vsCBuffer[] =
+				{
+					context->GetConstantBufferScene(),
+					context->GetConstantBufferMesh()
+				};
+				Phoenix::Graphics::IBuffer* psCBuffer[] =
+				{
+					constantBuffer.get()
+				};
+				context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Vertex, 0, Phoenix::FND::ArraySize(vsCBuffer), vsCBuffer);
+				context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+
+				Phoenix::Graphics::ISampler* sampler[] =
+				{
+					context->GetSamplerState(Phoenix::Graphics::SamplerState::PointClamp)
+				};
+				context->SetSamplers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(sampler), sampler);
+
+				// シーン定数バッファ更新
+				context->UpdateConstantBufferScene(camera.GetView(), camera.GetProjection());
 
 				// メッシュ定数バッファ更新
 				context->UpdateConstantBufferMesh(world);
+
+				ShaderConstants cb = {};
+				cb.lightDirection = lightDirection;
+				cb.color = color;
+				context->UpdateSubresource(constantBuffer.get(), 0, 0, &cb, 0, 0);
 
 				Graphics::ITexture* textures[] = { texture.get() };
 				graphicsDevice->GetContext()->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, textures);

@@ -29,7 +29,7 @@ namespace Phoenix
 			std::unique_ptr<Graphics::IRenderTargetSurface> renderTargerSurface[RenderTargetCount]; // キューブマップ用に6枚用意
 			std::unique_ptr<Graphics::IDepthStencilSurface> depthStencilSurface;
 
-			std::unique_ptr<Graphics::IRenderTargetSurface> cachedRenderTargerSurface[RenderTargetCount]; // キューブマップ保存用に6枚用意
+			std::unique_ptr<Graphics::IRenderTargetSurface> cachedRenderTargerSurface;
 			std::unique_ptr<Graphics::IDepthStencilSurface> cachedDepthStencilSurface;
 
 			u32 numberOfStoredViewports;
@@ -77,10 +77,12 @@ namespace Phoenix
 			//activate only 'render_target_view'
 			void ActivateRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0);
 
+			void ActivateAllRenderTargetView(Graphics::IGraphicsDevice* graphicsDevice);
+
 			//activate only 'depth_stencil_view'
 			void ActivateDepthStencilView(Graphics::IGraphicsDevice* graphicsDevice);
 
-			void Deactivate(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0);
+			void Deactivate(Graphics::IGraphicsDevice* graphicsDevice);
 
 			Graphics::IRenderTargetSurface* GetRenderTargetSurface(u32 index = 0) { return renderTargerSurface[index].get(); }
 			Graphics::IDepthStencilSurface* GetDepthStencilSurface() { return depthStencilSurface.get(); }

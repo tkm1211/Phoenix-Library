@@ -3,6 +3,7 @@
 #include <memory>
 #include "Phoenix/FrameWork/FrameBuffer/FrameBuffer.h"
 #include "Phoenix/FrameWork/Object/Object.h"
+#include "Phoenix/Graphics/Camera.h"
 
 
 namespace Phoenix
@@ -13,6 +14,7 @@ namespace Phoenix
 		{
 		private:
 			std::unique_ptr<FrameBuffer> skyIBL;
+			std::unique_ptr<Graphics::IShader> shader;
 
 		public:
 			IBL() {}
@@ -25,11 +27,13 @@ namespace Phoenix
 
 			void Finalize();
 
-			void Clear(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0, float r = 0, float g = 0, float b = 0, float a = 1);
+			void Clear(Graphics::IGraphicsDevice* graphicsDevice, float r = 0, float g = 0, float b = 0, float a = 1);
 
-			void Activate(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0);
+			void Activate(Graphics::IGraphicsDevice* graphicsDevice);
 
-			void Deactivate(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0);
+			void Deactivate(Graphics::IGraphicsDevice* graphicsDevice);
+
+			FrameBuffer* GetFrameBuffer() { return skyIBL.get(); }
 		};
 
 		class SkyMap
@@ -37,6 +41,7 @@ namespace Phoenix
 		private:
 			struct ShaderConstants
 			{
+				Math::Vector4 lightDirection;
 				Math::Color color;
 			};
 
@@ -58,7 +63,7 @@ namespace Phoenix
 
 			void Finalize();
 
-			void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& world, const Math::Color& color);
+			void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Math::Matrix& world, const Graphics::Camera& camera, const Math::Vector4& lightDirection, const Math::Color& color);
 		};
 	}
 }

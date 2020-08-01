@@ -110,6 +110,12 @@ private:
 
 	std::unique_ptr<Phoenix::FrameWork::SkyMap> skyMap;
 
+	std::unique_ptr<Phoenix::FrameWork::IBL> ibl;
+
+private: // Debug
+	Phoenix::Math::Vector2 texSize;
+	bool active[10];
+
 public:
 	SceneGame() {}
 	~SceneGame()

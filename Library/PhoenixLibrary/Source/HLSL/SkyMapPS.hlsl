@@ -19,5 +19,5 @@ cbuffer CbScene : register(b0)
 // Entry point for this pixel shader
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    return float4(Sky.Sample(basicSampler, input.uvw).rgb * 2.0f/* * directional_light.colour.w*/, 1.0f);
+    return float4(Sky.Sample(basicSampler, input.uvw).rgb * 1.5f/* * directional_light.colour.w*/, 1.0f);
 }

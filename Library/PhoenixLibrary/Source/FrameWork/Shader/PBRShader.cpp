@@ -134,8 +134,10 @@ namespace Phoenix
 			// ピクセルシェーダー用シーンバッファ更新
 			{
 				CbScene cb = {};
-				cb.dirLight.direction = light->direction;
-				cb.dirLight.color = light->color;
+				cb.dirLight[0].direction = light->direction;
+				cb.dirLight[1].direction = Math::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+				cb.dirLight[0].color = light->color;
+				cb.dirLight[1].color = Math::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 				cb.viewPos = Math::Vector4(camera.GetEye(), 0.0f);
 				context->UpdateSubresource(cbScene.get(), 0, 0, &cb, 0, 0);
 			}

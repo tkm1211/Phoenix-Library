@@ -50,7 +50,7 @@ namespace Phoenix
 
 			struct CbScene
 			{
-				DirectionalLight dirLight;
+				DirectionalLight dirLight[2];
 				Math::Vector4 viewPos;
 			};
 

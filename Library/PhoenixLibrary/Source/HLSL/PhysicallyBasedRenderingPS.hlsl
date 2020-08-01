@@ -88,7 +88,7 @@ cbuffer CbMaterial : register(b0)
 
 cbuffer CbScene : register(b1)
 {
-    DirectionalLight dirLight;
+    DirectionalLight dirLight[2];
     float4 cbEye;
 };
 
@@ -253,7 +253,10 @@ float4 main(PS_INPUT input) : SV_Target
 #endif
   
     // directional light
-    getDirectionalDirectLightIrradiance(dirLight, geometry, directLight);
+    getDirectionalDirectLightIrradiance(dirLight[0], geometry, directLight);
+    RE_Direct(directLight, geometry, material, reflectedLight);
+    
+    getDirectionalDirectLightIrradiance(dirLight[1], geometry, directLight);
     RE_Direct(directLight, geometry, material, reflectedLight);
 
     float3 outgoingLight = emissive + reflectedLight.directDiffuse + reflectedLight.directSpecular + reflectedLight.indirectDiffuse + reflectedLight.indirectSpecular + float3(0.05f, 0.05f, 0.05f);
