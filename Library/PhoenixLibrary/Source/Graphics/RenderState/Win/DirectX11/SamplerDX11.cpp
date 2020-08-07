@@ -20,7 +20,7 @@ namespace Phoenix
 		}
 		
 		// ‰Šú‰»
-		bool SamplerDX11::Initialize(IDevice* device, SamplerState state)
+		bool SamplerDX11::Initialize(IDevice* device, SamplerState state, bool enableAlways, bool enableComparison)
 		{
 			HRESULT hr;
 
@@ -28,7 +28,7 @@ namespace Phoenix
 
 			D3D11_SAMPLER_DESC desc = {};
 			FND::MemSet(&desc, 0, sizeof(desc));
-			RenderStateUtillityDX11::MakeD3DSamplerDesc(state, desc);
+			RenderStateUtillityDX11::MakeD3DSamplerDesc(state, desc, enableAlways, enableComparison);
 
 			hr = d3dDevice->CreateSamplerState(&desc, &samplerState);
 			if (FAILED(hr))

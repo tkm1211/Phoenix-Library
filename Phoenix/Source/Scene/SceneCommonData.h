@@ -27,6 +27,7 @@ public:
 	std::shared_ptr<Phoenix::FrameWork::IShader> basicSkinShader;
 	std::shared_ptr<Phoenix::FrameWork::IShader> standardShader;
 	std::shared_ptr<Phoenix::FrameWork::IShader> pbrShader;
+	std::shared_ptr<Phoenix::FrameWork::IShader> pbrSkinShader;
 	std::shared_ptr<Phoenix::Graphics::Camera> camera;
 
 	//::EffekseerRenderer::Renderer* renderer = nullptr;

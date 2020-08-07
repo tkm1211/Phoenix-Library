@@ -83,7 +83,7 @@ namespace Phoenix
 			static void MakeD3DRasterizerDesc(RasterizerState rasterizerState, D3D11_RASTERIZER_DESC& desc, bool enableCull = true, bool enableDepth = true, bool enableMultisample = false, bool enableScissor = false);
 
 			// D3Dサンプラ記述作成
-			static void MakeD3DSamplerDesc(SamplerState samplerState, D3D11_SAMPLER_DESC& desc);
+			static void MakeD3DSamplerDesc(SamplerState samplerState, D3D11_SAMPLER_DESC& desc, bool enableAlways = true, bool enableComparison = false);
 		};
 	} // namespace Graphics
 } // namespace Phoenix

@@ -49,7 +49,7 @@ void ResourceManager::CreateVertexShaderAndInputLayout
 		*vertexShader = it->second._vertexShader.Get();
 		( *vertexShader )->AddRef();
 		*inputLayout = it->second._inputLayout.Get();
-		( *inputLayout )->AddRef();
+		if ((*inputLayout)) ( *inputLayout )->AddRef();
 		return;
 	}
 

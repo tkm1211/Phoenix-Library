@@ -924,5 +924,119 @@ namespace Phoenix
 			}
 			bloomBlendPS->Deactivate(device);
 		}
+
+
+		std::unique_ptr<PostProcessingEffects> PostProcessingEffects::Create()
+		{
+			return std::make_unique<PostProcessingEffects>();
+		}
+
+		bool PostProcessingEffects::Initialize(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+
+			FullScreenQuad::Initialize(graphicsDevice);
+
+			postProcessingEffectsPS = Graphics::IShader::Create();
+			postProcessingEffectsPS->LoadPS(device, "PostProcessingEffectsPS.cso");
+
+			// 定数バッファ作成
+			{
+				Graphics::PhoenixBufferDesc bufferDesc = {};
+				Phoenix::FND::MemSet(&bufferDesc, 0, sizeof(bufferDesc));
+				bufferDesc.usage = Phoenix::Graphics::PhoenixUsage::Dynamic;
+				bufferDesc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
+				bufferDesc.cpuAccessFlags = static_cast<Phoenix::s32>(Graphics::PhoenixCPUAccessFlag::CPUAccessWrite);
+				bufferDesc.miscFlags = 0;
+				bufferDesc.byteWidth = sizeof(ShaderConstants);
+				bufferDesc.structureByteStride = 0;
+
+				shaderConstantsBuffer = Graphics::IBuffer::Create();
+				if (!shaderConstantsBuffer->Initialize(device, bufferDesc))
+				{
+					return false;
+				}
+			}
+
+			// サンプラー作成
+			{
+				comparisonSamplerState = Graphics::ISampler::Create();
+				comparisonSamplerState->Initialize(device, Graphics::SamplerState::LinearBorder, false, true);
+			}
+
+			return true;
+		}
+
+		void PostProcessingEffects::Finalize()
+		{
+
+		}
+
+		void PostProcessingEffects::Draw(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* colorTexture, Graphics::ITexture* depthTexture, Graphics::ITexture* shadowTexture, const Math::Matrix& lightViewProjection, const Math::Matrix& inverseViewProjection)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
+
+			//Math::Matrix t = Math::MatrixTranspose(lightViewProjection);
+
+			// データセット
+			{
+				Graphics::ISampler* samplers[] =
+				{
+					context->GetSamplerState(Graphics::SamplerState::PointWrap),
+					context->GetSamplerState(Graphics::SamplerState::LinearWrap),
+					context->GetSamplerState(Graphics::SamplerState::AnisotropicWrap),
+					comparisonSamplerState.get()
+				};
+				context->SetSamplers(Graphics::ShaderType::Pixel, 0, 4, samplers);
+
+				shaderContexts.lightViewProjection = lightViewProjection;
+				shaderContexts.inverseViewProjection = inverseViewProjection;
+				Graphics::PhoenixMap map = Graphics::PhoenixMap::WriteDiscard;
+				Graphics::PhoenixMappedSubresource mapedBuffer;
+				{
+					context->Map(shaderConstantsBuffer.get(), 0, map, 0, &mapedBuffer);
+					FND::MemCpy(mapedBuffer.data, &shaderContexts, sizeof(ShaderConstants));
+					context->Unmap(shaderConstantsBuffer.get(), 0);
+				}
+
+				Graphics::IBuffer* buffers[] =
+				{
+					shaderConstantsBuffer.get()
+				};
+				context->SetConstantBuffers(Graphics::ShaderType::Pixel, 0, 1, buffers);
+			}
+
+			// 描画
+			postProcessingEffectsPS->Activate(device);
+			{
+				/*{
+					Graphics::ITexture* texture[] = { colorTexture };
+					context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+
+					FullScreenQuad::Draw(graphicsDevice, true, true, true);
+				}
+
+				{
+					context->SetBlend(context->GetBlendState(Graphics::BlendState::Multiply), 0, 0xFFFFFFFF);
+
+					Graphics::ITexture* texture[] = { shadowTexture };
+					context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+
+					FullScreenQuad::Draw(graphicsDevice, true, true, true);
+
+					context->SetBlend(context->GetBlendState(Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
+				}*/
+
+				Graphics::ITexture* texture[] = { colorTexture, depthTexture, shadowTexture };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 3, texture);
+
+				FullScreenQuad::Draw(graphicsDevice);
+
+				Phoenix::Graphics::ITexture* nullTexture[8] = { nullptr };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 8, nullTexture);
+			}
+			postProcessingEffectsPS->Deactivate(device);
+		}
 	}
 }

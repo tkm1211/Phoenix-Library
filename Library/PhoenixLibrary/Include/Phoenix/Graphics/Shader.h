@@ -193,9 +193,15 @@ namespace Phoenix
 
 			// シェーダー開始
 			virtual void Activate(IDevice* device) = 0;
+            virtual void ActivateVS(IDevice* device) = 0;
+            virtual void ActivateGS(IDevice* device) = 0;
+            virtual void ActivatePS(IDevice* device) = 0;
 
 			// シェーダー終了
 			virtual void Deactivate(IDevice* device) = 0;
+            virtual void DeactivateVS(IDevice* device) = 0;
+            virtual void DeactivateGS(IDevice* device) = 0;
+            virtual void DeactivatePS(IDevice* device) = 0;
 		};
     } // namespace Graphics
 } // namespace Phoenix

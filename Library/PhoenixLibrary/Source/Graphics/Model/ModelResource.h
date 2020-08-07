@@ -24,7 +24,7 @@ namespace Phoenix
 			const ModelData& GetModelData() override { return data; }
 
 			// メッシュ取得
-			IMesh* GetMesh(s32 index) override { return meshes.at(index).get(); }
+			IMesh* GetMesh(sizeT index) override { return meshes.at(index).get(); }
 
 			// メッシュサイズ取得
 			sizeT GetMeshSize() override { return meshes.size(); }

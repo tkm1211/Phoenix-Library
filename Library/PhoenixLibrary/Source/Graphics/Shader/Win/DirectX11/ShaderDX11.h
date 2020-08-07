@@ -46,9 +46,15 @@ namespace Phoenix
 
 			// シェーダー開始
 			void Activate(IDevice* device) override;
+			void ActivateVS(IDevice* device) override;
+			void ActivateGS(IDevice* device) override;
+			void ActivatePS(IDevice* device) override;
 
 			// シェーダー終了
 			void Deactivate(IDevice* device) override;
+			void DeactivateVS(IDevice* device) override;
+			void DeactivateGS(IDevice* device) override;
+			void DeactivatePS(IDevice* device) override;
 		};
 	} // namespace Graphics
 } // namespace Phoenix

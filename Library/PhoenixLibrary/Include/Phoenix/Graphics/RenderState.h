@@ -68,7 +68,7 @@ namespace Phoenix
 			static std::unique_ptr<ISampler> Create();
 
 			// ‰Šú‰»
-			virtual bool Initialize(IDevice* device, SamplerState state) = 0;
+			virtual bool Initialize(IDevice* device, SamplerState state, bool enableAlways = true, bool enableComparison = false) = 0;
 
 			// I—¹‰»
 			virtual void Finalize() = 0;

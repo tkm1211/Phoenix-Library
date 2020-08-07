@@ -19,6 +19,12 @@
     <Filter Include="Source\SkyMap">
       <UniqueIdentifier>{47249337-5b88-473e-977a-e6b7e3dea682}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\PostProcessingEffects">
+      <UniqueIdentifier>{1e538936-2ad5-40a1-8cdb-d58a071f9649}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ShadowMap">
+      <UniqueIdentifier>{f5397ef4-4072-47c3-9fe1-6fc56a318d2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\..\Source\HLSL\BasicVS.hlsl">
@@ -102,6 +108,15 @@
     <FxCompile Include="..\..\..\Source\HLSL\SkyMapVS.hlsl">
       <Filter>Source\SkyMap</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\PostProcessingEffectsPS.hlsl">
+      <Filter>Source\PostProcessingEffects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\ShadowMapPS.hlsl">
+      <Filter>Source\ShadowMap</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingSkinVS.hlsl">
+      <Filter>Source\PBR</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\CommonVS.hlsli">
@@ -124,6 +139,9 @@
     </None>
     <None Include="..\..\..\Source\HLSL\Bloom.hlsli">
       <Filter>Source\Bloom</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\ShadowMap.hlsli">
+      <Filter>Source\ShadowMap</Filter>
     </None>
   </ItemGroup>
 </Project>

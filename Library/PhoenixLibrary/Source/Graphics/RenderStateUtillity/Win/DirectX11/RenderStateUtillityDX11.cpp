@@ -167,7 +167,7 @@ namespace Phoenix
 		}
 
 		// D3Dサンプラ記述作成
-		void RenderStateUtillityDX11::MakeD3DSamplerDesc(SamplerState samplerState, D3D11_SAMPLER_DESC& desc)
+		void RenderStateUtillityDX11::MakeD3DSamplerDesc(SamplerState samplerState, D3D11_SAMPLER_DESC& desc, bool enableAlways, bool enableComparison)
 		{
 			desc.MipLODBias = 0.0f;
 			//desc.MaxAnisotropy = 1;
@@ -175,13 +175,13 @@ namespace Phoenix
 			//desc.MinLOD = -FLT_MAX;
 			//desc.MaxLOD = FLT_MAX;
 			desc.MaxAnisotropy = 16;
-			desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+			desc.ComparisonFunc = enableAlways ? D3D11_COMPARISON_ALWAYS : D3D11_COMPARISON_LESS_EQUAL;
 			desc.MinLOD = 0;
 			desc.MaxLOD = D3D11_FLOAT32_MAX;
-			desc.BorderColor[0] = 0.0f;
-			desc.BorderColor[1] = 0.0f;
-			desc.BorderColor[2] = 0.0f;
-			desc.BorderColor[3] = 0.0f;
+			desc.BorderColor[0] = 1.0f;
+			desc.BorderColor[1] = 1.0f;
+			desc.BorderColor[2] = 1.0f;
+			desc.BorderColor[3] = 1.0f;
 
 			switch (samplerState)
 			{
@@ -223,7 +223,7 @@ namespace Phoenix
 			case SamplerState::LinearWrap:
 			case SamplerState::LinearClamp:
 			case SamplerState::LinearBorder:
-				desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+				desc.Filter = enableComparison ? D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 				break;
 
 			case SamplerState::AnisotropicWrap:

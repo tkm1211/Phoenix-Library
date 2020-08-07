@@ -541,6 +541,9 @@ namespace Phoenix
 			rM.m[3][3] = 0.0f;
 
 			return rM;
+
+			/*DirectX::XMMATRIX m = DirectX::XMMatrixPerspectiveFovLH(fovY, aspect, zn, zf);
+			return ConvertToVector4x4FromMatrix(m);*/
 		}
 
 		// カスタマイズした右手座標系正射影行列を作成する。
@@ -590,6 +593,13 @@ namespace Phoenix
 			rM.m[3][3] = 1.0f;
 
 			return rM;
+
+			/*DirectX::XMVECTOR E = DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(eye.x, eye.y, eye.z, 1.0f));
+			DirectX::XMVECTOR F = DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(at.x, at.y, at.z, 1.0f));
+			DirectX::XMVECTOR U = DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(up.x, up.y, up.z, 1.0f));
+
+			DirectX::XMMATRIX m = DirectX::XMMatrixLookAtLH(E, F, U);
+			return ConvertToVector4x4FromMatrix(m);*/
 		}
 
 		// 右手座標系正射影行列を作成する。
@@ -604,6 +614,9 @@ namespace Phoenix
 			rM.m[3][2] = zn / (zn - zf);
 
 			return rM;
+
+			/*DirectX::XMMATRIX m = DirectX::XMMatrixOrthographicLH(w, h, zn, zf);
+			return ConvertToVector4x4FromMatrix(m);*/
 		}
 #pragma endregion
 

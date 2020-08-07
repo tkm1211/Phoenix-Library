@@ -15,7 +15,7 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	boss = Boss::Create();
 	boss->Init(graphicsDevice, player.get());
 
-	const char* filename = "..\\Data\\Assets\\Model\\stage\\stage01.fbx";
+	const char* filename = "..\\Data\\Assets\\Model\\stage\\stage01.fbx"; // stage01 Floor01
 	stageModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	stageModel->Initialize(graphicsDevice);
 	stageModel->Load(graphicsDevice, Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), filename));
@@ -31,6 +31,9 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 
 	pbrShader = Phoenix::FrameWork::PBRShader::Create();
 	pbrShader->Initialize(graphicsDevice);
+
+	pbrSkinShader = Phoenix::FrameWork::PBRSkinShader::Create();
+	pbrSkinShader->Initialize(graphicsDevice);
 
 	camera = std::make_shared<Phoenix::Graphics::Camera>();
 

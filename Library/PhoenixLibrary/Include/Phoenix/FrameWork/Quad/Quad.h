@@ -181,5 +181,43 @@ namespace Phoenix
 
 			void Blend(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* originTexture, Graphics::ITexture* bloomTexture);
 		};
+
+		class PostProcessingEffects : public FullScreenQuad
+		{
+		private:
+			struct ShadowMapConstants
+			{
+				Math::Vector3 color = Math::Vector3(0.65f, 0.65f, 0.65f);
+				f32 bias = 0.0008f;
+			};
+
+			struct ShaderConstants
+			{
+				Math::Matrix lightViewProjection;
+				Math::Matrix inverseViewProjection;
+				ShadowMapConstants shadowMap;
+			};
+
+		private:
+			std::unique_ptr<Graphics::IShader> postProcessingEffectsPS;
+			std::unique_ptr<Graphics::IBuffer> shaderConstantsBuffer;
+			std::unique_ptr<Graphics::ISampler> comparisonSamplerState;
+
+		public:
+			ShaderConstants shaderContexts;
+
+		public:
+			PostProcessingEffects() : FullScreenQuad() {}
+			~PostProcessingEffects() {}
+
+		public:
+			static std::unique_ptr<PostProcessingEffects> Create();
+
+			bool Initialize(Graphics::IGraphicsDevice* graphicsDevice);
+
+			void Finalize();
+
+			void Draw(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* colorTexture, Graphics::ITexture* depthTexture, Graphics::ITexture* shadowTexture, const Math::Matrix& lightViewProjection, const Math::Matrix& inverseViewProjection);
+		};
 	}
 }

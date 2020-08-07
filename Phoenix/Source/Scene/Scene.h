@@ -70,6 +70,15 @@ public:
 class SceneGame : public Scene
 {
 private:
+	struct ShaderConstants
+	{
+		Phoenix::Math::Matrix lightViewProjection;
+		Phoenix::Math::Vector3 color = Phoenix::Math::Vector3(0.65f, 0.65f, 0.65f);
+		Phoenix::f32 bias = 0.0008f;
+	};
+
+private:
+	// 共通データのアドレス
 	Player* player = nullptr;
 	Boss* boss = nullptr;
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
@@ -77,43 +86,53 @@ private:
 	Phoenix::FrameWork::IShader* basicSkinShader = nullptr;
 	Phoenix::FrameWork::IShader* standardShader = nullptr;
 	Phoenix::FrameWork::IShader* pbrShader = nullptr;
+	Phoenix::FrameWork::IShader* pbrSkinShader = nullptr;
 	Phoenix::FrameWork::IShader* currentShader = nullptr;
 	Phoenix::Graphics::Camera* camera = nullptr;
-	bool cameraFlg = false;
 
-	std::shared_ptr<GeometricPrimitive> primitive;
-
-	bool isHitCollision = false;
-
-	//::Effekseer::Effect* hitEffect = nullptr;
-	//::Effekseer::Handle hitEffectHandle = 0;
-
-	bool isUpdate = false;
-
-	//std::unique_ptr<Phoenix::Graphics::ITexture> skyMap;
-	//std::shared_ptr<GeometricPrimitive> skyBox;
-	//std::shared_ptr<Phoenix::FrameWork::IShader> skyMapShader;
-
-	bool enableMSAA = false;
-
+	// フレームバッファ
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[3];
 
+	// ポストプロセス
+	std::unique_ptr<Phoenix::FrameWork::PostProcessingEffects> postProcessingEffects;
+
+	// シャドウマップ
+	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> shadowMap;
+	std::unique_ptr<Phoenix::Graphics::IShader> voidPS;
+	std::unique_ptr<Phoenix::Graphics::Camera> lightSpaceCamera;
+	std::unique_ptr<Phoenix::Graphics::IBuffer> shaderConstantsBuffer;
+	std::unique_ptr<Phoenix::Graphics::ISampler> comparisonSamplerState;
+	ShaderConstants shaderContexts;
+
+	// ブルーム
 	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
 	std::unique_ptr<Phoenix::FrameWork::MSAAResolve> msaaResolve;
 	std::unique_ptr<Phoenix::FrameWork::Bloom> bloom;
 
-	bool bloomBlend = false;
-
-	bool isPBR = false;
-
-	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> skyFrameBuffer[6];
-
+	// スカイマップ
 	std::unique_ptr<Phoenix::FrameWork::SkyMap> skyMap;
 
+	// IBL
+	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> skyFrameBuffer[6];
 	std::unique_ptr<Phoenix::FrameWork::IBL> ibl;
 
 private: // Debug
+	std::shared_ptr<GeometricPrimitive> primitive;
 	Phoenix::Math::Vector2 texSize;
+
+	Phoenix::f32 dis = 1000.0f;
+	Phoenix::f32 width = 3000.0f;
+	Phoenix::f32 height = 3000.0f;
+	Phoenix::f32 nearZ = 1.0f;
+	Phoenix::f32 farZ = 3000.0f;
+
+	bool cameraFlg = false;
+	bool isHitCollision = false;
+	bool isUpdate = false;
+	bool enableMSAA = false;
+	bool shadowBlend = false;
+	bool bloomBlend = false;
+	bool isPBR = false;
 	bool active[10];
 
 public:

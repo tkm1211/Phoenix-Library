@@ -18,7 +18,7 @@ namespace Phoenix
 
 		public:
 			// ‰Šú‰»
-			bool Initialize(IDevice* device, SamplerState state) override;
+			bool Initialize(IDevice* device, SamplerState state, bool enableAlways = true, bool enableComparison = false) override;
 
 			// I—¹‰»
 			void Finalize() override;

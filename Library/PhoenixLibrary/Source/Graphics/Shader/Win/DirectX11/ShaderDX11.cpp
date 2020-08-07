@@ -112,6 +112,33 @@ namespace Phoenix
 			}
 		}
 
+		void ShaderDX11::ActivateVS(IDevice* device)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
+
+			d3dDeviceContext->IAGetInputLayout(&cachedInputLayout);
+			d3dDeviceContext->VSGetShader(&cachedVertexShader, 0, 0);
+
+			d3dDeviceContext->IASetInputLayout(inputLayout);
+			d3dDeviceContext->VSSetShader(vertexShader, 0, 0);
+		}
+
+		void ShaderDX11::ActivateGS(IDevice* device)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
+
+			d3dDeviceContext->GSGetShader(&cachedGeometryShader, 0, 0);
+			d3dDeviceContext->GSSetShader(geometryShader, 0, 0);
+		}
+
+		void ShaderDX11::ActivatePS(IDevice* device)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
+
+			d3dDeviceContext->PSGetShader(&cachedPixelShader, 0, 0);
+			d3dDeviceContext->PSSetShader(pixelShader, 0, 0);
+		}
+
 		// シェーダー終了
 		void ShaderDX11::Deactivate(IDevice* device)
 		{
@@ -120,6 +147,25 @@ namespace Phoenix
 			d3dDeviceContext->IASetInputLayout(cachedInputLayout);
 			d3dDeviceContext->VSSetShader(cachedVertexShader, 0, 0);
 			d3dDeviceContext->GSSetShader(cachedGeometryShader, 0, 0);
+			d3dDeviceContext->PSSetShader(cachedPixelShader, 0, 0);
+		}
+
+		void ShaderDX11::DeactivateVS(IDevice* device)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
+			d3dDeviceContext->IASetInputLayout(cachedInputLayout);
+			d3dDeviceContext->VSSetShader(cachedVertexShader, 0, 0);
+		}
+
+		void ShaderDX11::DeactivateGS(IDevice* device)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
+			d3dDeviceContext->GSSetShader(cachedGeometryShader, 0, 0);
+		}
+
+		void ShaderDX11::DeactivatePS(IDevice* device)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
 			d3dDeviceContext->PSSetShader(cachedPixelShader, 0, 0);
 		}
 	} // namespace Graphics

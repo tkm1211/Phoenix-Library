@@ -1,5 +1,7 @@
+#define USE_POSITION
 #define USE_TEXCOORD0
 #define USE_BONE
+#define USE_SHADOW
 #include "CommonVS.hlsli"
 
 //--------------------------------------------------------------------------------------

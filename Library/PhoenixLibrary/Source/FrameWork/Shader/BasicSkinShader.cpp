@@ -120,7 +120,7 @@ namespace Phoenix
 			// メッシュ定数バッファ更新
 			context->UpdateConstantBufferMesh(worldTransform);
 
-			for (s32 i = 0; i < modelResource->GetMeshSize(); ++i)
+			for (u32 i = 0; i < modelResource->GetMeshSize(); ++i)
 			{
 				if (0 < model->GetMeshNodes())
 				{

@@ -123,6 +123,12 @@ namespace Phoenix
 
 			f32 GetRotateY() const { return rotateY; }
 
+			// 視点位置設定
+			void SetEye(Math::Vector3 eye) { this->eye = eye; }
+
+			// 注視点位置設定
+			void SetFocus(Math::Vector3 focus) { this->focus = focus; }
+
 			void SetRotateX(f32 rotate) { rotateX = rotate; }
 			void SetRotateY(f32 rotate) { rotateY = rotate; }
 

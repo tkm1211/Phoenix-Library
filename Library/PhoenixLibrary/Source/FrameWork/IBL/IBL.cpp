@@ -147,7 +147,7 @@ namespace Phoenix
 				graphicsDevice->GetContext()->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, textures);
 
 				Graphics::IModelResource* modelResource = model->GetModelResource();
-				for (s32 i = 0; i < modelResource->GetMeshSize(); ++i)
+				for (u32 i = 0; i < modelResource->GetMeshSize(); ++i)
 				{
 					if (0 < model->GetMeshNodes())
 					{

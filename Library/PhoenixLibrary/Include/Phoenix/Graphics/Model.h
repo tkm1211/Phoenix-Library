@@ -109,7 +109,7 @@ namespace Phoenix
 			virtual const ModelData& GetModelData() = 0;
 
 			// メッシュ取得
-			virtual IMesh* GetMesh(s32 index) = 0;
+			virtual IMesh* GetMesh(sizeT index) = 0;
 
 			// メッシュサイズ取得
 			virtual sizeT GetMeshSize() = 0;

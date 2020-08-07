@@ -1,15 +1,2 @@
-﻿  AvoidState.cpp
-  JumpAttackState.cpp
-  MoveState.cpp
-  SwingAttackState.cpp
-  WaitState.cpp
-  Boss.cpp
-  BossAI.cpp
-  Main.cpp
-  Player.cpp
-  SceneCommonData.cpp
-  SceneGame.cpp
-  SceneSystem.cpp
-  SceneTitle.cpp
-  コードを生成中...
+﻿  SceneGame.cpp
   Phoenix.vcxproj -> D:\Phoenix Project\Phoenix\Phoenix\.\bin\x86\Debug\Phoenix.exe

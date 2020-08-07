@@ -3,7 +3,7 @@
 #define USE_TANGENT
 #define USE_TEXCOORD0
 #define USE_BONE
-#define USE_PBR
+#define USE_SHADOW
 
 #include "CommonVS.hlsli"
 

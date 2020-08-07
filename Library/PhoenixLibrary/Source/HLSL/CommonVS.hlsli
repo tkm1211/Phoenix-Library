@@ -68,7 +68,7 @@ VS_OUTPUT VSCommon(VS_INPUT input)
 #endif
     
     float3 position = mul(input.position, cb_world).xyz;
-    output.sv_position = mul(float4(position, 1.0f), cb_view_projection); 
+    output.sv_position = mul(float4(position, 1.0f), cb_view_projection);
 	
 #if defined(USE_POSITION)
 	output.position = position;
@@ -100,7 +100,7 @@ VS_OUTPUT VSCommon(VS_INPUT input)
 #endif
 
 #if defined(USE_SHADOW)
-	//output.shadow = mul(input.position, mul(cb_world, cb_shadow));
+	output.shadow = output.sv_position.z / output.sv_position.w;
 #endif
     return output;
 }

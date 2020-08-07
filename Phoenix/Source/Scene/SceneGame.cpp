@@ -7,6 +7,7 @@
 #include "Phoenix/FrameWork/Input/InputDevice.h"
 #include "Phoenix/Math/PhoenixMath.h"
 #include "Phoenix/FrameWork/Shader/SkyMapShader.h"
+#include "Phoenix/FND/Util.h"
 #include "../Source/Graphics/Texture/Win/DirectX11/TextureDX11.h"
 #include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
 
@@ -18,84 +19,139 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	graphicsDevice = sceneSystem->GetGraphicsDevice();
 	commonData = sceneSystem->GetSceneCommonData();
 
-	player = commonData->player.get();
-	boss = commonData->boss.get();
-	stageModel = commonData->stageModel.get();
-	basicShader = commonData->basicShader.get();
-	basicSkinShader = commonData->basicSkinShader.get();
-	standardShader = commonData->standardShader.get();
-	pbrShader = commonData->pbrShader.get();
-	camera = commonData->camera.get();
-
-	cameraFlg = false;
-	isHitCollision = false;
-	isUpdate = false;
-
-	Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
-	primitive = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 1);
-
-	// エフェクトの読込
-	//auto effect = Effekseer::Effect::Create(manager, EFK_EXAMPLE_ASSETS_DIR_U16 "Laser01.efk");
-	//effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\Resources\\Laser01.efk");
-	//hitEffect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\MAGICALxSPIRAL\\HitEffect06.efk");
-
-	// エフェクトの再生
-	//hitEffectHandle = commonData->manager->Play(hitEffect, 0, 0, 0);
-	//commonData->manager->SetPaused(hitEffectHandle, false);
-
-	Phoenix::Graphics::TextureDesc desc = {};
-
-	//skyMap = Phoenix::Graphics::ITexture::Create();
-	//skyMap->Initialize(graphicsDevice->GetDevice(), "D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Texture\\SkyMap\\skybox1.dds", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
-	//skyMap->Initialize(graphicsDevice->GetDevice(), "D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Cold Sunset\\Cold Sunset Equirect.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
-
-	DirectX::XMFLOAT3 s = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	//skyBox = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 0, false, &s);
-
-	//skyMapShader = Phoenix::FrameWork::SkyMapShader::Create();
-	//skyMapShader->Initialize(graphicsDevice);
-
-	enableMSAA = true;
-
-	frameBuffer[0] = Phoenix::FrameWork::FrameBuffer::Create();
-	frameBuffer[1] = Phoenix::FrameWork::FrameBuffer::Create();
-	frameBuffer[2] = Phoenix::FrameWork::FrameBuffer::Create();
-
-	frameBuffer[0]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), enableMSAA, 8, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
-	frameBuffer[1]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
-	frameBuffer[2]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::UNKNOWN);
-
-	quad = Phoenix::FrameWork::Quad::Create();
-	quad->Initialize(graphicsDevice);
-
-	msaaResolve = Phoenix::FrameWork::MSAAResolve::Create();
-	msaaResolve->Initialize(graphicsDevice);
-
-	bloom = Phoenix::FrameWork::Bloom::Create();
-	bloom->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight());
-
-	bloomBlend = true;
-
-	isPBR = false;
-
-	for (int i = 0; i < 6; ++i)
+	// デバック用
 	{
-		skyFrameBuffer[i] = Phoenix::FrameWork::FrameBuffer::Create();
-		skyFrameBuffer[i]->Initialize(graphicsDevice, 64, 64, false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
+		Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
+		primitive = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 1);
+
+		texSize = Phoenix::Math::Vector2(256.0f, 256.0f);
+
+		cameraFlg = false;
+		isHitCollision = false;
+		isUpdate = false;
+		enableMSAA = true;
+		shadowBlend = false;
+		bloomBlend = true;
+		isPBR = true;
+
+		for (int i = 0; i < 10; ++i)
+		{
+			active[i] = false;
+		}
 	}
 
-	skyMap = Phoenix::FrameWork::SkyMap::Create();
-	//skyMap->Initialize(graphicsDevice, "..\\Data\\Assets\\Model\\SkyMap\\Skymaps\\envmap_miramar\\envmap_miramar.dds");
-	skyMap->Initialize(graphicsDevice, "..\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Epic_BlueSunset\\Epic_BlueSunset03.dds");
-
-	ibl = Phoenix::FrameWork::IBL::Create();
-	ibl->Initialize(graphicsDevice);
-
-	texSize = Phoenix::Math::Vector2(256.0f, 256.0f);
-
-	for (int i = 0; i < 10; ++i)
+	// 共通データのアドレス取得
 	{
-		active[i] = false;
+		player = commonData->player.get();
+		boss = commonData->boss.get();
+		stageModel = commonData->stageModel.get();
+		basicShader = commonData->basicShader.get();
+		basicSkinShader = commonData->basicSkinShader.get();
+		standardShader = commonData->standardShader.get();
+		pbrShader = commonData->pbrShader.get();
+		pbrSkinShader = commonData->pbrSkinShader.get();
+		camera = commonData->camera.get();
+	}
+
+	// フレームバッファ
+	{
+		frameBuffer[0] = Phoenix::FrameWork::FrameBuffer::Create();
+		frameBuffer[1] = Phoenix::FrameWork::FrameBuffer::Create();
+		frameBuffer[2] = Phoenix::FrameWork::FrameBuffer::Create();
+
+		frameBuffer[0]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), enableMSAA, 8, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
+		frameBuffer[1]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
+		frameBuffer[2]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::UNKNOWN);
+	}
+
+	// ポストプロセス
+	{
+		postProcessingEffects = Phoenix::FrameWork::PostProcessingEffects::Create();
+		postProcessingEffects->Initialize(graphicsDevice);
+	}
+
+	// シャドウマップ
+	{
+		shadowMap = Phoenix::FrameWork::FrameBuffer::Create();
+		shadowMap->Initialize(graphicsDevice, 1024 * 5, 1024 * 5, false, 1, Phoenix::Graphics::TextureFormatDx::UNKNOWN, Phoenix::Graphics::TextureFormatDx::R32_TYPELESS);
+	
+		voidPS = Phoenix::Graphics::IShader::Create();
+		//voidPS->LoadPS(graphicsDevice->GetDevice(), "ShadowMapPS.cso");
+		lightSpaceCamera = std::make_unique<Phoenix::Graphics::Camera>();
+
+		// 定数バッファ作成
+		{
+			Phoenix::Graphics::PhoenixBufferDesc bufferDesc = {};
+			Phoenix::FND::MemSet(&bufferDesc, 0, sizeof(bufferDesc));
+			bufferDesc.usage = Phoenix::Graphics::PhoenixUsage::Dynamic;
+			bufferDesc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
+			bufferDesc.cpuAccessFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixCPUAccessFlag::CPUAccessWrite);
+			bufferDesc.miscFlags = 0;
+			bufferDesc.byteWidth = sizeof(ShaderConstants);
+			bufferDesc.structureByteStride = 0;
+
+			shaderConstantsBuffer = Phoenix::Graphics::IBuffer::Create();
+			shaderConstantsBuffer->Initialize(graphicsDevice->GetDevice(), bufferDesc);
+		}
+
+		// サンプラー作成
+		{
+			comparisonSamplerState = Phoenix::Graphics::ISampler::Create();
+			comparisonSamplerState->Initialize(graphicsDevice->GetDevice(), Phoenix::Graphics::SamplerState::LinearBorder, false, true);
+		}
+	}
+
+	// ブルーム
+	{
+		quad = Phoenix::FrameWork::Quad::Create();
+		quad->Initialize(graphicsDevice);
+
+		msaaResolve = Phoenix::FrameWork::MSAAResolve::Create();
+		msaaResolve->Initialize(graphicsDevice);
+
+		bloom = Phoenix::FrameWork::Bloom::Create();
+		bloom->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight());
+	}
+
+	// スカイマップ
+	{
+		skyMap = Phoenix::FrameWork::SkyMap::Create();
+		skyMap->Initialize(graphicsDevice, "..\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Epic_BlueSunset\\Epic_BlueSunset03.dds");
+	}
+
+	// IBL
+	{
+		/*for (int i = 0; i < 6; ++i)
+		{
+			skyFrameBuffer[i] = Phoenix::FrameWork::FrameBuffer::Create();
+			skyFrameBuffer[i]->Initialize(graphicsDevice, 64, 64, false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
+		}
+
+		ibl = Phoenix::FrameWork::IBL::Create();
+		ibl->Initialize(graphicsDevice);*/
+	}
+
+	{
+		// エフェクトの読込
+		//auto effect = Effekseer::Effect::Create(manager, EFK_EXAMPLE_ASSETS_DIR_U16 "Laser01.efk");
+		//effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\Resources\\Laser01.efk");
+		//hitEffect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\MAGICALxSPIRAL\\HitEffect06.efk");
+
+		// エフェクトの再生
+		//hitEffectHandle = commonData->manager->Play(hitEffect, 0, 0, 0);
+		//commonData->manager->SetPaused(hitEffectHandle, false);
+
+		//Phoenix::Graphics::TextureDesc desc = {};
+
+		//skyMap = Phoenix::Graphics::ITexture::Create();
+		//skyMap->Initialize(graphicsDevice->GetDevice(), "D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Texture\\SkyMap\\skybox1.dds", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+		//skyMap->Initialize(graphicsDevice->GetDevice(), "D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Cold Sunset\\Cold Sunset Equirect.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+
+		//DirectX::XMFLOAT3 s = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+		//skyBox = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 0, false, &s);
+
+		//skyMapShader = Phoenix::FrameWork::SkyMapShader::Create();
+		//skyMapShader->Initialize(graphicsDevice);
 	}
 }
 
@@ -315,10 +371,113 @@ void SceneGame::Draw()
 //	}
 //	ibl->Deactivate(graphicsDevice);
 
+	Phoenix::Graphics::Viewport* v = new Phoenix::Graphics::Viewport();
+	context->GetViewports(1, &v);
+	float aspectRatio = v->width / v->height;
+	Phoenix::FND::SafeDelete(v);
+
+	// Generate ShadowMap
+	shadowMap->Clear(graphicsDevice, 0, 1.0f, 1.0f, 1.0f, 1.0f);
+	shadowMap->Activate(graphicsDevice);
+	{
+		float distance = dis;
+		Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetSunLight();
+		Phoenix::Math::Vector4 L = Phoenix::Math::Vector4Normalize(-light->direction); // TODO : 太陽からの方向を所得
+		Phoenix::Math::Vector4 P = Phoenix::Math::Vector4(player->GetPosition(), 1.0f);
+		Phoenix::Math::Vector4 Eye = P - distance * L;
+
+		lightSpaceCamera->SetEye(Phoenix::Math::Vector3(Eye.x, Eye.y, Eye.z));
+		lightSpaceCamera->SetFocus(Phoenix::Math::Vector3(P.x, P.y, P.z));
+
+		Phoenix::Math::Vector3 up, right;
+		{
+			right = Phoenix::Math::Vector3Cross(Phoenix::Math::Vector3(L.x, L.y, L.z), Phoenix::Math::Vector3::OneY);
+			right = Phoenix::Math::Vector3Normalize(right);
+
+			up = Phoenix::Math::Vector3Cross(right, Phoenix::Math::Vector3(L.x, L.y, L.z));
+			up = Phoenix::Math::Vector3Normalize(up);
+
+			right = Phoenix::Math::Vector3Cross(Phoenix::Math::Vector3(L.x, L.y, L.z), Phoenix::Math::Vector3::OneY);
+			up = Phoenix::Math::Vector3Cross(right, Phoenix::Math::Vector3(L.x, L.y, L.z));
+		}
+
+		Phoenix::Math::Matrix projection = Phoenix::Math::MatrixOrtho(width, height /*/ aspectRatio*/, nearZ, farZ);
+		lightSpaceCamera->SetProjection(projection);
+		lightSpaceCamera->SetLookAt(lightSpaceCamera->GetEye(), lightSpaceCamera->GetFocus(), up);
+
+		// Draw player and boss.
+		{
+			if (currentShader)
+			{
+				currentShader->Begin(graphicsDevice, *lightSpaceCamera);
+				voidPS->ActivatePS(graphicsDevice->GetDevice());
+				{
+					currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+					currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+				}
+				voidPS->DeactivatePS(graphicsDevice->GetDevice());
+				currentShader->End(graphicsDevice);
+			}
+		}
+
+		// Draw stage.
+		{
+			// ワールド行列を作成
+			Phoenix::Math::Matrix W;
+			{
+				Phoenix::Math::Vector3 scale = { 40.0f, 40.0f, 40.0f };
+				Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
+				Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
+
+				Phoenix::Math::Matrix S, R, T;
+				S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
+				R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
+				T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
+
+				W = S * R * T;
+			}
+
+			basicShader->Begin(graphicsDevice, *lightSpaceCamera);
+			voidPS->ActivatePS(graphicsDevice->GetDevice());
+			{
+				basicShader->Draw(graphicsDevice, W, stageModel);
+			}
+			voidPS->DeactivatePS(graphicsDevice->GetDevice());
+			basicShader->End(graphicsDevice);
+		}
+	}
+	shadowMap->Deactivate(graphicsDevice);
+
 	// Work No_0 framebuffer.
 	frameBuffer[0]->Clear(graphicsDevice, 0, 0.5f, 0.5f, 0.5f, 1.0f);
 	frameBuffer[0]->Activate(graphicsDevice);
 	{
+		// Set Shadow Data.
+		{
+			shaderContexts.lightViewProjection = Phoenix::Math::MatrixTranspose(/*Phoenix::Math::MatrixInverse*/(lightSpaceCamera->GetView() * lightSpaceCamera->GetProjection()));
+			Phoenix::Graphics::PhoenixMap map = Phoenix::Graphics::PhoenixMap::WriteDiscard;
+			Phoenix::Graphics::PhoenixMappedSubresource mapedBuffer;
+			{
+				context->Map(shaderConstantsBuffer.get(), 0, map, 0, &mapedBuffer);
+				Phoenix::FND::MemCpy(mapedBuffer.data, &shaderContexts, sizeof(ShaderConstants));
+				context->Unmap(shaderConstantsBuffer.get(), 0);
+			}
+			Phoenix::Graphics::IBuffer* psCBuffer[] =
+			{
+				shaderConstantsBuffer.get()
+			};
+			context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 3, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+
+			Phoenix::Graphics::ISampler* samplers[] =
+			{
+				comparisonSamplerState.get()
+			};
+			context->SetSamplers(Phoenix::Graphics::ShaderType::Pixel, 3, 1, samplers);
+
+			Phoenix::Graphics::ITexture* texture[] = { shadowMap->GetDepthStencilSurface()->GetTexture() };
+			graphicsDevice->GetContext()->SetShaderResources(Phoenix::Graphics::ShaderType::Pixel, 8, 1, texture);
+		}
+
 		// Draw skymap.
 		{
 			Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
@@ -361,10 +520,14 @@ void SceneGame::Draw()
 			basicShader->Begin(graphicsDevice, *camera);
 			basicShader->Draw(graphicsDevice, W, stageModel);
 			basicShader->End(graphicsDevice);
-#else
+#elif 0
 			standardShader->Begin(graphicsDevice, camera);
 			standardShader->Draw(graphicsDevice, W, stageModel);
 			standardShader->End(graphicsDevice);
+#else
+			pbrSkinShader->Begin(graphicsDevice, *camera);
+			pbrSkinShader->Draw(graphicsDevice, W, stageModel);
+			pbrSkinShader->End(graphicsDevice);
 #endif
 		}
 
@@ -441,6 +604,33 @@ void SceneGame::Draw()
 			msaaResolve->Resolve(graphicsDevice, frameBuffer[0].get(), frameBuffer[resolvedFramebuffer].get());
 		}
 
+		// Blend Shadow
+		if (shadowBlend)
+		{
+			/*Phoenix::Math::Matrix ndc_to_tex_space(
+				0.5f, 0.0f, 0.0f, 0.0f,
+				0.0f, -0.5f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.5f, 0.5f, 0.0f, 1.0f);*/
+
+			//frameBuffer[2]->Clear(graphicsDevice);
+			//frameBuffer[2]->Activate(graphicsDevice);
+			//postProcessingEffects->Draw
+			//(
+			//	graphicsDevice,
+			//	frameBuffer[resolvedFramebuffer]->GetRenderTargetSurface()->GetTexture(),
+			//	frameBuffer[resolvedFramebuffer]->GetDepthStencilSurface()->GetTexture(),
+			//	shadowMap->GetDepthStencilSurface()->GetTexture(),
+			//	Phoenix::Math::MatrixTranspose(/*Phoenix::Math::MatrixInverse*/(lightSpaceCamera->GetView() * lightSpaceCamera->GetProjection())),
+			//	/*Phoenix::Math::MatrixTranspose*/(Phoenix::Math::MatrixInverse((camera->GetView() * camera->GetProjection())))
+			//	//Phoenix::Math::MatrixInverse(Phoenix::Math::MatrixMultiply(camera->GetView(), camera->GetProjection()))
+			//	//Phoenix::Math::MatrixInverse(Phoenix::Math::MatrixTranspose(Phoenix::Math::MatrixMultiply(camera->GetView(), camera->GetProjection())))
+			//	//Phoenix::Math::MatrixInverse(Phoenix::Math::MatrixMultiply(camera->GetView(), camera->GetProjection()))
+			//	//Phoenix::Math::MatrixTranspose(Phoenix::Math::MatrixMultiply(Phoenix::Math::MatrixInverse(camera->GetView()), Phoenix::Math::MatrixInverse(camera->GetProjection())))
+			//);
+			//frameBuffer[2]->Deactivate(graphicsDevice);
+		}
+
 		bloom->Generate(graphicsDevice, frameBuffer[resolvedFramebuffer]->GetRenderTargetSurface()->GetTexture(), false);
 
 		frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
@@ -460,20 +650,23 @@ void SceneGame::Draw()
 	}
 	else
 	{
-		quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+		Phoenix::u32 index = shadowBlend ? 2 : 1;
+		//quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+		quad->Draw(graphicsDevice, frameBuffer[2]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 	}
 	
 	// Draw frameBuffer Texture.
 	{
-		if (active[0]) quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), texSize.x * 0, 0, texSize.x, texSize.y);
+		if (active[0]) quad->Draw(graphicsDevice, shadowMap->GetDepthStencilSurface()->GetTexture(), texSize.x * 0, 0, texSize.x, texSize.y);
+		//if (active[0]) quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), texSize.x * 0, 0, texSize.x, texSize.y);
 		if (active[1]) quad->Draw(graphicsDevice, frameBuffer[1]->renderTargerSurface[0]->GetTexture(), texSize.x * 1, 0, texSize.x, texSize.y);
-		if (active[2]) quad->Draw(graphicsDevice, frameBuffer[2]->renderTargerSurface[0]->GetTexture(), texSize.x * 2, 0, texSize.x, texSize.y);
-		if (active[3]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[0]->GetTexture(), texSize.x * 3, 0, texSize.x, texSize.y);
+		if (active[2]) quad->Draw(graphicsDevice, frameBuffer[1]->depthStencilSurface->GetTexture(), texSize.x * 2, 0, texSize.x, texSize.y);
+		/*if (active[3]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[0]->GetTexture(), texSize.x * 3, 0, texSize.x, texSize.y);
 		if (active[4]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[1]->GetTexture(), texSize.x * 4, 0, texSize.x, texSize.y);
 		if (active[5]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[2]->GetTexture(), texSize.x * 5, 0, texSize.x, texSize.y);
 		if (active[6]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[3]->GetTexture(), texSize.x * 6, 0, texSize.x, texSize.y);
 		if (active[7]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[4]->GetTexture(), texSize.x * 7, 0, texSize.x, texSize.y);
-		if (active[8]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[5]->GetTexture(), texSize.x * 8, 0, texSize.x, texSize.y);
+		if (active[8]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[5]->GetTexture(), texSize.x * 8, 0, texSize.x, texSize.y);*/
 	}
 }
 
@@ -522,17 +715,33 @@ void SceneGame::GUI()
 		if (ImGui::TreeNode("Shader"))
 		{
 			Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
+			Phoenix::FrameWork::LightState* sunLight = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetSunLight();
 			Phoenix::FrameWork::MaterialState* material = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetMaterial();
 			ImGuiColorEditFlags flag = ImGuiColorEditFlags_Float; // 0 ~ 255表記ではなく、0.0 ~ 1.0表記にします。
 
 			ImGui::Checkbox("OnPBR", &isPBR);
 			ImGui::DragFloat4("dir", &light->direction.x);
+			ImGui::DragFloat4("sunDir", &sunLight->direction.x, 0.01f);
 			ImGui::DragFloat4("color", &light->color.x);
 			ImGui::ColorEdit4("albedo", material->albedo, flag);
 			ImGui::DragFloat("metallic", &material->metallic, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
 			ImGui::TreePop();
 
+		}
+		if (ImGui::TreeNode("Shadow"))
+		{
+			ImGui::Checkbox("On", &shadowBlend);
+			ImGui::DragFloat3("color", &postProcessingEffects->shaderContexts.shadowMap.color.x, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("bias", &postProcessingEffects->shaderContexts.shadowMap.bias, 0.001f, 0.0f, 1.0f);
+
+			ImGui::DragFloat("dis", &dis, 0.1f);
+			ImGui::DragFloat("width", &width, 1.0f);
+			ImGui::DragFloat("height", &height, 1.0f);
+			ImGui::DragFloat("nearZ", &nearZ, 0.01f);
+			ImGui::DragFloat("farZ", &farZ, 0.1f);
+
+			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Bloom"))
 		{
@@ -543,12 +752,16 @@ void SceneGame::GUI()
 		}
 		if (ImGui::TreeNode("FrameBuffer"))
 		{
-			const Phoenix::s8* name[10] = 
-			{ "On FrameBuffer00", "On FrameBuffer01", "On FrameBuffer02", "On FrameBuffer03", "On FrameBuffer04",
-			  "On FrameBuffer05", "On FrameBuffer06", "On FrameBuffer07", "On FrameBuffer08", "On FrameBuffer09" };
-			for (int i = 0; i < 10; ++i)
+			if (ImGui::TreeNode("Flag"))
 			{
-				ImGui::Checkbox(name[i], &active[i]);
+				const Phoenix::s8* name[10] =
+				{ "On FrameBuffer00", "On FrameBuffer01", "On FrameBuffer02", "On FrameBuffer03", "On FrameBuffer04",
+				  "On FrameBuffer05", "On FrameBuffer06", "On FrameBuffer07", "On FrameBuffer08", "On FrameBuffer09" };
+				for (int i = 0; i < 10; ++i)
+				{
+					ImGui::Checkbox(name[i], &active[i]);
+				}
+				ImGui::TreePop();
 			}
 			ImGui::DragFloat2("textureSize", &texSize.x);
 
