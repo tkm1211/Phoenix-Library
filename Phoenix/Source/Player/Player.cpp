@@ -38,6 +38,7 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack01\\Elbow_Uppercut_Combo.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack02\\Uppercut_Jab.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack03\\Strike_Foward_Jog.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Receiving_An_Uppercut.fbx", -1);
 	}
 
 	// アニメーションパラメーターの設定
@@ -95,6 +96,11 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 void Player::Update(Phoenix::Graphics::Camera& camera)
 {
+	// 蓄積ダメージの確認
+	{
+		AccumulationDamege();
+	}
+
 	// コントローラー操作(位置更新)
 	{
 		Control(camera);
@@ -161,7 +167,38 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 	sX = GetKeyState('A') < 0 ? -1.0f : sX;
 	sX = GetKeyState('D') < 0 ? 1.0f : sX;
 
-	if (xInput[0].bXt && animationState != AnimationState::Roll)
+	if (animationState == AnimationState::Damage)
+	{
+		if (isChangeAnimation)
+		{
+			sX = 0.0f;
+			sY = -1.0f;
+
+			if (sX != 0.0f || sY != 0.0f)
+			{
+				float len = sqrtf(sX * sX + sY * sY);
+
+				if (len <= 0)
+				{
+					sX = 0;
+					sY = 0;
+				}
+
+				float mag = 1 / len;
+
+				sX *= mag;
+				sY *= mag;
+
+				Phoenix::Math::Vector3 oldAngle = rotate;
+				oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
+				rotate = oldAngle;
+			}
+		}
+
+		pos.x += sinf(rotate.y) * speed;
+		pos.z += cosf(rotate.y) * speed;
+	}
+	else if (xInput[0].bXt && animationState != AnimationState::Roll)
 	{
 		if (!isAttack && animationState != AnimationState::Attack && attackState == AttackAnimationState::End)
 		{
@@ -274,7 +311,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 		}
 	}
 
-	if (animationState != AnimationState::Roll && animationState != AnimationState::Attack)
+	if (animationState != AnimationState::Roll && animationState != AnimationState::Attack && animationState != AnimationState::Damage)
 	{
 		if (sX != 0.0f || sY != 0.0f)
 		{
@@ -356,6 +393,12 @@ void Player::ChangeAnimation()
 
 	case AnimationState::Attack:
 		ChangeAttackAnimation();
+		break;
+
+	case AnimationState::Damage:
+		model->PlayAnimation(7, 1, 0.2f);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
 		break;
 	
 	default: break;
@@ -477,6 +520,42 @@ void Player::AttackJudgment()
 	}
 }
 
+void Player::Damage(int damage)
+{
+	life -= damage;
+	accumulationDamege += damage;
+}
+
+void Player::AccumulationDamege()
+{
+	if (animationState == AnimationState::Damage && !model->IsPlaying())
+	{
+		if (animationState != AnimationState::Idle)
+		{
+			isChangeAnimation = true;
+			speed = 0.0f;
+			animationState = AnimationState::Idle;
+		}
+	}
+
+	if (accumulationDamege == 0) return;
+
+	if (AccumulationMaxDamege <= accumulationDamege)
+	{
+		isChangeAnimation = true;
+		speed = KnockBackSpeed;
+		animationState = AnimationState::Damage;
+
+		accumulationDamege = 0;
+		accumulationTimeCnt = 0;
+	}
+	else if (AccumulationTime <= accumulationTimeCnt)
+	{
+		accumulationDamege = 0;
+		accumulationTimeCnt = 0;
+	}
+}
+
 void Player::GUI()
 {
 	static Phoenix::s32 animClip = 0;
@@ -501,6 +580,7 @@ void Player::GUI()
 			ImGui::DragFloat("WalkSpeed", &WalkSpeed, 0.1f);
 			ImGui::DragFloat("RunSpeed", &RunSpeed, 0.1f);
 			ImGui::DragFloat("RollSpeed", &RollSpeed, 0.1f);
+			ImGui::DragFloat("KnockBackSpeed", &KnockBackSpeed, 0.1f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Bone"))

@@ -37,6 +37,7 @@ public:
 		Run,
 		Roll,
 		Attack,
+		Damage
 		//BackWalk,
 		//BackRun,
 	};
@@ -53,12 +54,15 @@ private:
 	/*static constexpr*/ float WalkSpeed = 2.1f;
 	/*static constexpr*/ float RunSpeed = 18.0f;
 	/*static constexpr*/ float RollSpeed = 15.0f;
+	/*static constexpr*/ float KnockBackSpeed = -1.5f;
 	/*static constexpr*/ float Attack03Speed = 10.0f;
 	/*static constexpr*/ float AnimationSpeed30 = 0.03333333f;
 	/*static constexpr*/ float AnimationSpeed45 = 0.02222222f;
 	/*static constexpr*/ float AnimationSpeed60 = 0.01666667f;
 	/*static constexpr*/ float Attack01ReceptionStartTime = 1.3333332f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
 	/*static constexpr*/ float Attack02ReceptionStartTime = 2.2f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
+	/*static constexpr*/ Phoenix::s32 AccumulationMaxDamege = 20; // TODO : 調整必須
+	/*static constexpr*/ Phoenix::s32 AccumulationTime = 60;
 
 private:
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
@@ -93,6 +97,10 @@ private:
 	// コリジョンデータの要素数
 	Phoenix::u32 attackCollisionIndex = 0;
 
+	// 蓄積ダメージ
+	Phoenix::s32 accumulationDamege = 0;
+	Phoenix::s32 accumulationTimeCnt = 0;
+
 public:
 	Player() :
 		worldMatrix(Phoenix::Math::MatrixIdentity()), 
@@ -117,7 +125,8 @@ public:
 	void ChangeAttackAnimation();
 	void AttackJudgment();
 	void GUI();
-	void Damage(int damage) { life -= damage; }
+	void Damage(int damage);
+	void AccumulationDamege();
 
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }

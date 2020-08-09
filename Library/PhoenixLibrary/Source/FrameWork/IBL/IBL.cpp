@@ -27,6 +27,22 @@ namespace Phoenix
 				true,
 				6
 			);
+
+			// Camera
+			{
+				Math::Vector3 pos = Math::Vector3(0.0f, 0.0f, 0.0f);
+				Math::Vector4 tar[] = { Math::Vector4(1, 0, 0, 0), Math::Vector4(-1, 0, 0, 0), Math::Vector4(0, 1, 0, 0), Math::Vector4(0, -1, 0, 0), Math::Vector4(0, 0, 1, 0), Math::Vector4(0, 0, -1, 0) };
+				Math::Vector4 up[] = { Math::Vector4(0, 1, 0, 0), Math::Vector4(0, 1, 0, 0), Math::Vector4(0, 0, -1, 0), Math::Vector4(0, 0, 1, 0), Math::Vector4(0, 1, 0, 0), Math::Vector4(0, 1, 0, 0) };
+
+				for (int i = 0; i < cameraSize; ++i)
+				{
+					Math::Vector4 dir = Math::Vector4Rotate(tar[i], Math::QuaternionIdentity());
+
+					captureCamera[i] = std::make_unique<Phoenix::Graphics::Camera>();
+					captureCamera[i]->SetLookAt(pos, Math::Vector3(dir), Math::Vector3(up[i]));
+					captureCamera[i]->SetPerspective(0.5f * 3.141592f, 1.0f, 0.1f, 100.0f);
+				}
+			}
 		}
 
 		void IBL::Finalize()

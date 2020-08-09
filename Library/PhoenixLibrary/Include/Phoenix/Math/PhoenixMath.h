@@ -59,6 +59,8 @@ namespace Phoenix
 
 		// 2つの4Dベクトルの内積を計算する。
 		f32 Vector4Dot(const Vector4 v1, const Vector4 v2);
+
+		Vector4 Vector4Rotate(const Vector4 v, const Quaternion q);
 #pragma endregion
 
 #pragma region Functions for Matrix
@@ -117,6 +119,8 @@ namespace Phoenix
 
 		extern Quaternion ConvertToQuaternionFromRotationMatrix(const Matrix m);
 		extern Matrix ConvertToRotationMatrixFromQuaternion(const Quaternion q);
+
+		Quaternion QuaternionIdentity();
 
 		//extern Quaternion QuaternionMultiply(const Quaternion q1, const Quaternion q2);
 		//extern Quaternion QuaternionRotationAxis(Vector4 axis, float angle);

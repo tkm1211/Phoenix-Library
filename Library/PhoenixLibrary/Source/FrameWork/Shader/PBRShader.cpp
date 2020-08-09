@@ -139,7 +139,7 @@ namespace Phoenix
 			{
 				CbScene cb = {};
 				cb.dirLight[0].direction = light->direction;
-				cb.dirLight[1].direction = sunLight->direction; // ‘¾—z‚©‚ç‚Ì•ûŒü
+				cb.dirLight[1].direction = Math::Vector4(1.0f, 0.0f, 0.0f, 1.0f); // sunLight->direction Math::Vector4(1.0f, 0.0f, 0.0f, 1.0f) // ‘¾—z‚©‚ç‚Ì•ûŒü
 				cb.dirLight[0].color = light->color;
 				cb.dirLight[1].color = sunLight->color;
 				cb.viewPos = Math::Vector4(camera.GetEye(), 0.0f);

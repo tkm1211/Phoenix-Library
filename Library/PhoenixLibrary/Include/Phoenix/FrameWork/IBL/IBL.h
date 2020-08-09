@@ -13,8 +13,12 @@ namespace Phoenix
 		class IBL
 		{
 		private:
+			static const int cameraSize = 6;
+
+		private:
 			std::unique_ptr<FrameBuffer> skyIBL;
 			std::unique_ptr<Graphics::IShader> shader;
+			std::unique_ptr<Graphics::Camera> captureCamera[cameraSize];
 
 		public:
 			IBL() {}

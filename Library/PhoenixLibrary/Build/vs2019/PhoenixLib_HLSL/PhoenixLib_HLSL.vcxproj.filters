@@ -25,32 +25,20 @@
     <Filter Include="Source\ShadowMap">
       <UniqueIdentifier>{f5397ef4-4072-47c3-9fe1-6fc56a318d2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Basic">
+      <UniqueIdentifier>{56ac692a-161c-460f-a1bd-f145a5338275}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common">
+      <UniqueIdentifier>{08e3af92-bdc5-4cd3-b053-37833257a5eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Geometric">
+      <UniqueIdentifier>{f2984999-b24b-4339-81de-e977bae0df51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Standard">
+      <UniqueIdentifier>{305ac8d7-361a-4af0-8e05-b2113ff392f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\..\Source\HLSL\BasicVS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\BasicPS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\BasicVSSkin.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\StandardVS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\StandardVSSkin.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\StandardPS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\GeometricPrimitivePS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\GeometricPrimitiveVS.hlsl">
-      <Filter>Source</Filter>
-    </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingVS.hlsl">
       <Filter>Source\PBR</Filter>
     </FxCompile>
@@ -117,31 +105,55 @@
     <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingSkinVS.hlsl">
       <Filter>Source\PBR</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\BasicPS.hlsl">
+      <Filter>Source\Basic</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\BasicVS.hlsl">
+      <Filter>Source\Basic</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\BasicVSSkin.hlsl">
+      <Filter>Source\Basic</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\GeometricPrimitivePS.hlsl">
+      <Filter>Source\Geometric</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\GeometricPrimitiveVS.hlsl">
+      <Filter>Source\Geometric</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\StandardPS.hlsl">
+      <Filter>Source\Standard</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\StandardVS.hlsl">
+      <Filter>Source\Standard</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\StandardVSSkin.hlsl">
+      <Filter>Source\Standard</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Source\HLSL\CommonVS.hlsli">
-      <Filter>Source</Filter>
-    </None>
-    <None Include="..\..\..\Source\HLSL\CommonCB.hlsli">
-      <Filter>Source</Filter>
-    </None>
-    <None Include="..\..\..\Source\HLSL\CommonLayout.hlsli">
-      <Filter>Source</Filter>
-    </None>
-    <None Include="..\..\..\Source\HLSL\Skinning.hlsli">
-      <Filter>Source</Filter>
-    </None>
-    <None Include="..\..\..\Source\HLSL\CommonPS.hlsli">
-      <Filter>Source</Filter>
-    </None>
-    <None Include="..\..\..\Source\HLSL\GeometricPrimitive.hlsli">
-      <Filter>Source</Filter>
-    </None>
     <None Include="..\..\..\Source\HLSL\Bloom.hlsli">
       <Filter>Source\Bloom</Filter>
     </None>
     <None Include="..\..\..\Source\HLSL\ShadowMap.hlsli">
       <Filter>Source\ShadowMap</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\CommonCB.hlsli">
+      <Filter>Source\Common</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\CommonLayout.hlsli">
+      <Filter>Source\Common</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\CommonPS.hlsli">
+      <Filter>Source\Common</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\CommonVS.hlsli">
+      <Filter>Source\Common</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\GeometricPrimitive.hlsli">
+      <Filter>Source\Geometric</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\Skinning.hlsli">
+      <Filter>Source\Common</Filter>
     </None>
   </ItemGroup>
 </Project>

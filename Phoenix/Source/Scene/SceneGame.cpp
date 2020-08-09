@@ -376,224 +376,238 @@ void SceneGame::Draw()
 	float aspectRatio = v->width / v->height;
 	Phoenix::FND::SafeDelete(v);
 
-	// Generate ShadowMap
-	shadowMap->Clear(graphicsDevice, 0, 1.0f, 1.0f, 1.0f, 1.0f);
-	shadowMap->Activate(graphicsDevice);
-	{
-		float distance = dis;
-		Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetSunLight();
-		Phoenix::Math::Vector4 L = Phoenix::Math::Vector4Normalize(-light->direction); // TODO : 太陽からの方向を所得
-		Phoenix::Math::Vector4 P = Phoenix::Math::Vector4(player->GetPosition(), 1.0f);
-		Phoenix::Math::Vector4 Eye = P - distance * L;
-
-		lightSpaceCamera->SetEye(Phoenix::Math::Vector3(Eye.x, Eye.y, Eye.z));
-		lightSpaceCamera->SetFocus(Phoenix::Math::Vector3(P.x, P.y, P.z));
-
-		Phoenix::Math::Vector3 up, right;
+	// Generate IBL
+	/*{
+		ibl->Clear(graphicsDevice);
+		ibl->Activate(graphicsDevice);
 		{
-			right = Phoenix::Math::Vector3Cross(Phoenix::Math::Vector3(L.x, L.y, L.z), Phoenix::Math::Vector3::OneY);
-			right = Phoenix::Math::Vector3Normalize(right);
 
-			up = Phoenix::Math::Vector3Cross(right, Phoenix::Math::Vector3(L.x, L.y, L.z));
-			up = Phoenix::Math::Vector3Normalize(up);
-
-			right = Phoenix::Math::Vector3Cross(Phoenix::Math::Vector3(L.x, L.y, L.z), Phoenix::Math::Vector3::OneY);
-			up = Phoenix::Math::Vector3Cross(right, Phoenix::Math::Vector3(L.x, L.y, L.z));
 		}
+		ibl->Deactivate(graphicsDevice);
+	}*/
 
-		Phoenix::Math::Matrix projection = Phoenix::Math::MatrixOrtho(width, height /*/ aspectRatio*/, nearZ, farZ);
-		lightSpaceCamera->SetProjection(projection);
-		lightSpaceCamera->SetLookAt(lightSpaceCamera->GetEye(), lightSpaceCamera->GetFocus(), up);
-
-		// Draw player and boss.
+	// Generate ShadowMap
+	{
+		shadowMap->Clear(graphicsDevice, 0, 1.0f, 1.0f, 1.0f, 1.0f);
+		shadowMap->Activate(graphicsDevice);
 		{
-			if (currentShader)
+			float distance = dis;
+			Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetSunLight();
+			Phoenix::Math::Vector4 L = Phoenix::Math::Vector4Normalize(-light->direction);
+			Phoenix::Math::Vector4 P = Phoenix::Math::Vector4(player->GetPosition(), 1.0f);
+			Phoenix::Math::Vector4 Eye = P - distance * L;
+
+			lightSpaceCamera->SetEye(Phoenix::Math::Vector3(Eye.x, Eye.y, Eye.z));
+			lightSpaceCamera->SetFocus(Phoenix::Math::Vector3(P.x, P.y, P.z));
+
+			Phoenix::Math::Vector3 up, right;
 			{
-				currentShader->Begin(graphicsDevice, *lightSpaceCamera);
+				right = Phoenix::Math::Vector3Cross(Phoenix::Math::Vector3(L.x, L.y, L.z), Phoenix::Math::Vector3::OneY);
+				right = Phoenix::Math::Vector3Normalize(right);
+
+				up = Phoenix::Math::Vector3Cross(right, Phoenix::Math::Vector3(L.x, L.y, L.z));
+				up = Phoenix::Math::Vector3Normalize(up);
+
+				right = Phoenix::Math::Vector3Cross(Phoenix::Math::Vector3(L.x, L.y, L.z), Phoenix::Math::Vector3::OneY);
+				up = Phoenix::Math::Vector3Cross(right, Phoenix::Math::Vector3(L.x, L.y, L.z));
+			}
+
+			Phoenix::Math::Matrix projection = Phoenix::Math::MatrixOrtho(width, height /*/ aspectRatio*/, nearZ, farZ);
+			lightSpaceCamera->SetProjection(projection);
+			lightSpaceCamera->SetLookAt(lightSpaceCamera->GetEye(), lightSpaceCamera->GetFocus(), up);
+
+			// Draw player and boss.
+			{
+				if (currentShader)
+				{
+					currentShader->Begin(graphicsDevice, *lightSpaceCamera);
+					voidPS->ActivatePS(graphicsDevice->GetDevice());
+					{
+						currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+						currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+					}
+					voidPS->DeactivatePS(graphicsDevice->GetDevice());
+					currentShader->End(graphicsDevice);
+				}
+			}
+
+			// Draw stage.
+			{
+				// ワールド行列を作成
+				Phoenix::Math::Matrix W;
+				{
+					Phoenix::Math::Vector3 scale = { 40.0f, 40.0f, 40.0f };
+					Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
+					Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
+
+					Phoenix::Math::Matrix S, R, T;
+					S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
+					R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
+					T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
+
+					W = S * R * T;
+				}
+
+				basicShader->Begin(graphicsDevice, *lightSpaceCamera);
 				voidPS->ActivatePS(graphicsDevice->GetDevice());
 				{
-					currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
-					currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+					basicShader->Draw(graphicsDevice, W, stageModel);
 				}
 				voidPS->DeactivatePS(graphicsDevice->GetDevice());
-				currentShader->End(graphicsDevice);
+				basicShader->End(graphicsDevice);
 			}
 		}
-
-		// Draw stage.
-		{
-			// ワールド行列を作成
-			Phoenix::Math::Matrix W;
-			{
-				Phoenix::Math::Vector3 scale = { 40.0f, 40.0f, 40.0f };
-				Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
-				Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
-
-				Phoenix::Math::Matrix S, R, T;
-				S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
-				R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
-				T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
-
-				W = S * R * T;
-			}
-
-			basicShader->Begin(graphicsDevice, *lightSpaceCamera);
-			voidPS->ActivatePS(graphicsDevice->GetDevice());
-			{
-				basicShader->Draw(graphicsDevice, W, stageModel);
-			}
-			voidPS->DeactivatePS(graphicsDevice->GetDevice());
-			basicShader->End(graphicsDevice);
-		}
+		shadowMap->Deactivate(graphicsDevice);
 	}
-	shadowMap->Deactivate(graphicsDevice);
 
 	// Work No_0 framebuffer.
-	frameBuffer[0]->Clear(graphicsDevice, 0, 0.5f, 0.5f, 0.5f, 1.0f);
-	frameBuffer[0]->Activate(graphicsDevice);
 	{
-		// Set Shadow Data.
+		frameBuffer[0]->Clear(graphicsDevice, 0, 0.5f, 0.5f, 0.5f, 1.0f);
+		frameBuffer[0]->Activate(graphicsDevice);
 		{
-			shaderContexts.lightViewProjection = Phoenix::Math::MatrixTranspose(/*Phoenix::Math::MatrixInverse*/(lightSpaceCamera->GetView() * lightSpaceCamera->GetProjection()));
-			Phoenix::Graphics::PhoenixMap map = Phoenix::Graphics::PhoenixMap::WriteDiscard;
-			Phoenix::Graphics::PhoenixMappedSubresource mapedBuffer;
+			// Set Shadow Data.
 			{
-				context->Map(shaderConstantsBuffer.get(), 0, map, 0, &mapedBuffer);
-				Phoenix::FND::MemCpy(mapedBuffer.data, &shaderContexts, sizeof(ShaderConstants));
-				context->Unmap(shaderConstantsBuffer.get(), 0);
+				shaderContexts.lightViewProjection = Phoenix::Math::MatrixTranspose(/*Phoenix::Math::MatrixInverse*/(lightSpaceCamera->GetView() * lightSpaceCamera->GetProjection()));
+				Phoenix::Graphics::PhoenixMap map = Phoenix::Graphics::PhoenixMap::WriteDiscard;
+				Phoenix::Graphics::PhoenixMappedSubresource mapedBuffer;
+				{
+					context->Map(shaderConstantsBuffer.get(), 0, map, 0, &mapedBuffer);
+					Phoenix::FND::MemCpy(mapedBuffer.data, &shaderContexts, sizeof(ShaderConstants));
+					context->Unmap(shaderConstantsBuffer.get(), 0);
+				}
+				Phoenix::Graphics::IBuffer* psCBuffer[] =
+				{
+					shaderConstantsBuffer.get()
+				};
+				context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 3, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+
+				Phoenix::Graphics::ISampler* samplers[] =
+				{
+					comparisonSamplerState.get()
+				};
+				context->SetSamplers(Phoenix::Graphics::ShaderType::Pixel, 3, 1, samplers);
+
+				Phoenix::Graphics::ITexture* texture[] = { shadowMap->GetDepthStencilSurface()->GetTexture() };
+				graphicsDevice->GetContext()->SetShaderResources(Phoenix::Graphics::ShaderType::Pixel, 8, 1, texture);
 			}
-			Phoenix::Graphics::IBuffer* psCBuffer[] =
+
+			// Draw skymap.
 			{
-				shaderConstantsBuffer.get()
-			};
-			context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 3, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+				Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
+				Phoenix::Math::Color color = { 1.0f, 1.0f, 1.0f, 1.0f };
+				float skyDimension = 50000;
+				// ワールド行列を作成
+				Phoenix::Math::Matrix skyWorldM;
+				{
+					Phoenix::Math::Vector3 scale = { skyDimension, skyDimension, skyDimension };
+					Phoenix::Math::Vector3 rotate = { 0.0f, 90.0f * 0.01745f, 0.0f };
+					Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
 
-			Phoenix::Graphics::ISampler* samplers[] =
-			{
-				comparisonSamplerState.get()
-			};
-			context->SetSamplers(Phoenix::Graphics::ShaderType::Pixel, 3, 1, samplers);
+					Phoenix::Math::Matrix S, R, T;
+					S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
+					R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
+					T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
 
-			Phoenix::Graphics::ITexture* texture[] = { shadowMap->GetDepthStencilSurface()->GetTexture() };
-			graphicsDevice->GetContext()->SetShaderResources(Phoenix::Graphics::ShaderType::Pixel, 8, 1, texture);
-		}
-
-		// Draw skymap.
-		{
-			Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
-			Phoenix::Math::Color color = { 1.0f, 1.0f, 1.0f, 1.0f };
-			float skyDimension = 50000;
-			// ワールド行列を作成
-			Phoenix::Math::Matrix skyWorldM;
-			{
-				Phoenix::Math::Vector3 scale = { skyDimension, skyDimension, skyDimension };
-				Phoenix::Math::Vector3 rotate = { 0.0f, 90.0f * 0.01745f, 0.0f };
-				Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
-
-				Phoenix::Math::Matrix S, R, T;
-				S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
-				R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
-				T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
-
-				skyWorldM = S * R * T;
+					skyWorldM = S * R * T;
+				}
+				skyMap->Draw(graphicsDevice, skyWorldM, *camera, light->direction, color);
 			}
-			skyMap->Draw(graphicsDevice, skyWorldM, *camera, light->direction, color);
-		}
 
-		// Draw stage.
-		{
-			// ワールド行列を作成
-			Phoenix::Math::Matrix W;
+			// Draw stage.
 			{
-				Phoenix::Math::Vector3 scale = { 40.0f, 40.0f, 40.0f };
-				Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
-				Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
+				// ワールド行列を作成
+				Phoenix::Math::Matrix W;
+				{
+					Phoenix::Math::Vector3 scale = { 40.0f, 40.0f, 40.0f };
+					Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
+					Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
 
-				Phoenix::Math::Matrix S, R, T;
-				S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
-				R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
-				T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
+					Phoenix::Math::Matrix S, R, T;
+					S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
+					R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
+					T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
 
-				W = S * R * T;
-			}
+					W = S * R * T;
+				}
 #if 1
-			basicShader->Begin(graphicsDevice, *camera);
-			basicShader->Draw(graphicsDevice, W, stageModel);
-			basicShader->End(graphicsDevice);
+				basicShader->Begin(graphicsDevice, *camera);
+				basicShader->Draw(graphicsDevice, W, stageModel);
+				basicShader->End(graphicsDevice);
 #elif 0
-			standardShader->Begin(graphicsDevice, camera);
-			standardShader->Draw(graphicsDevice, W, stageModel);
-			standardShader->End(graphicsDevice);
+				standardShader->Begin(graphicsDevice, camera);
+				standardShader->Draw(graphicsDevice, W, stageModel);
+				standardShader->End(graphicsDevice);
 #else
-			pbrSkinShader->Begin(graphicsDevice, *camera);
-			pbrSkinShader->Draw(graphicsDevice, W, stageModel);
-			pbrSkinShader->End(graphicsDevice);
+				pbrSkinShader->Begin(graphicsDevice, *camera);
+				pbrSkinShader->Draw(graphicsDevice, W, stageModel);
+				pbrSkinShader->End(graphicsDevice);
 #endif
-		}
+			}
 
-		// Draw player and boss.
-		{
+			// Draw player and boss.
+			{
 #if 0
-			// メッシュ描画
+				// メッシュ描画
 #if 1
-			basicSkinShader->Begin(graphicsDevice, *camera);
-			//basicSkinShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
-			// エフェクト描画
-			{
-				//commonData->renderer->BeginRendering();
-				//commonData->manager->Draw();
-				//commonData->renderer->EndRendering();
-			}
-			//basicSkinShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
-			basicSkinShader->End(graphicsDevice);
+				basicSkinShader->Begin(graphicsDevice, *camera);
+				//basicSkinShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+				// エフェクト描画
+				{
+					//commonData->renderer->BeginRendering();
+					//commonData->manager->Draw();
+					//commonData->renderer->EndRendering();
+				}
+				//basicSkinShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+				basicSkinShader->End(graphicsDevice);
 #else
-			standardShader->Begin(graphicsDevice, camera);
-			standardShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
-			standardShader->End(graphicsDevice);
+				standardShader->Begin(graphicsDevice, camera);
+				standardShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+				standardShader->End(graphicsDevice);
 #endif
 
 #if 1
-			//basicSkinShader->Begin(graphicsDevice, camera);
-			//basicSkinShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
-			//basicSkinShader->End(graphicsDevice);
+				//basicSkinShader->Begin(graphicsDevice, camera);
+				//basicSkinShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+				//basicSkinShader->End(graphicsDevice);
 #else
-			standardShader->Begin(graphicsDevice, camera);
-			standardShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
-			standardShader->End(graphicsDevice);
+				standardShader->Begin(graphicsDevice, camera);
+				standardShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+				standardShader->End(graphicsDevice);
 #endif
 
-			pbrShader->Begin(graphicsDevice, *camera);
-			pbrShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
-			pbrShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
-			pbrShader->End(graphicsDevice);
+				pbrShader->Begin(graphicsDevice, *camera);
+				pbrShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+				pbrShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+				pbrShader->End(graphicsDevice);
 #else
-			if (currentShader)
-			{
-				currentShader->Begin(graphicsDevice, *camera);
-				currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
-				currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
-				currentShader->End(graphicsDevice);
-			}
+				if (currentShader)
+				{
+					currentShader->Begin(graphicsDevice, *camera);
+					currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+					currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+					currentShader->End(graphicsDevice);
+				}
 #endif
-		}
-
-		// Draw collision primitive.
-		if (isHitCollision)
-		{
-			Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
-
-			for (auto data : *player->GetCollisionDatas())
-			{
-				PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 			}
 
-			for (auto data : *boss->GetCollisionDatas())
+			// Draw collision primitive.
+			if (isHitCollision)
 			{
-				PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
+				Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
+
+				for (auto data : *player->GetCollisionDatas())
+				{
+					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
+				}
+
+				for (auto data : *boss->GetCollisionDatas())
+				{
+					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
+				}
 			}
 		}
+		frameBuffer[0]->Deactivate(graphicsDevice);
 	}
-	frameBuffer[0]->Deactivate(graphicsDevice);
 
 	// Generate Bloom Texture.
 	Phoenix::u32 resolvedFramebuffer = 0;
@@ -604,37 +618,12 @@ void SceneGame::Draw()
 			msaaResolve->Resolve(graphicsDevice, frameBuffer[0].get(), frameBuffer[resolvedFramebuffer].get());
 		}
 
-		// Blend Shadow
-		if (shadowBlend)
-		{
-			/*Phoenix::Math::Matrix ndc_to_tex_space(
-				0.5f, 0.0f, 0.0f, 0.0f,
-				0.0f, -0.5f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f,
-				0.5f, 0.5f, 0.0f, 1.0f);*/
-
-			//frameBuffer[2]->Clear(graphicsDevice);
-			//frameBuffer[2]->Activate(graphicsDevice);
-			//postProcessingEffects->Draw
-			//(
-			//	graphicsDevice,
-			//	frameBuffer[resolvedFramebuffer]->GetRenderTargetSurface()->GetTexture(),
-			//	frameBuffer[resolvedFramebuffer]->GetDepthStencilSurface()->GetTexture(),
-			//	shadowMap->GetDepthStencilSurface()->GetTexture(),
-			//	Phoenix::Math::MatrixTranspose(/*Phoenix::Math::MatrixInverse*/(lightSpaceCamera->GetView() * lightSpaceCamera->GetProjection())),
-			//	/*Phoenix::Math::MatrixTranspose*/(Phoenix::Math::MatrixInverse((camera->GetView() * camera->GetProjection())))
-			//	//Phoenix::Math::MatrixInverse(Phoenix::Math::MatrixMultiply(camera->GetView(), camera->GetProjection()))
-			//	//Phoenix::Math::MatrixInverse(Phoenix::Math::MatrixTranspose(Phoenix::Math::MatrixMultiply(camera->GetView(), camera->GetProjection())))
-			//	//Phoenix::Math::MatrixInverse(Phoenix::Math::MatrixMultiply(camera->GetView(), camera->GetProjection()))
-			//	//Phoenix::Math::MatrixTranspose(Phoenix::Math::MatrixMultiply(Phoenix::Math::MatrixInverse(camera->GetView()), Phoenix::Math::MatrixInverse(camera->GetProjection())))
-			//);
-			//frameBuffer[2]->Deactivate(graphicsDevice);
-		}
-
 		bloom->Generate(graphicsDevice, frameBuffer[resolvedFramebuffer]->GetRenderTargetSurface()->GetTexture(), false);
 
 		frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
-		bloom->Draw(graphicsDevice);
+		{
+			bloom->Draw(graphicsDevice);
+		}
 		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 	}
 
@@ -643,16 +632,16 @@ void SceneGame::Draw()
 	{
 		resolvedFramebuffer = 2;
 		frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
-		bloom->Blend(graphicsDevice, frameBuffer[0]->GetRenderTargetSurface()->GetTexture(), frameBuffer[1]->GetRenderTargetSurface()->GetTexture());
+		{
+			bloom->Blend(graphicsDevice, frameBuffer[0]->GetRenderTargetSurface()->GetTexture(), frameBuffer[1]->GetRenderTargetSurface()->GetTexture());
+		}
 		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 
 		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 	}
 	else
 	{
-		Phoenix::u32 index = shadowBlend ? 2 : 1;
-		//quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
-		quad->Draw(graphicsDevice, frameBuffer[2]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+		quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 	}
 	
 	// Draw frameBuffer Texture.

@@ -114,8 +114,6 @@ namespace Phoenix
 		};
 
 		class Bloom : public FullScreenQuad
-		//class Bloom : public Quad
-		//class Bloom
 		{
 		private:
 			enum { LINEAR_BORDER, POINT, LINEAR, ANISOTROPIC };
@@ -164,8 +162,6 @@ namespace Phoenix
 
 		public:
 			Bloom() : FullScreenQuad() {}
-			//Bloom() : Quad() {}
-			//Bloom() {}
 			~Bloom() {}
 
 		public:

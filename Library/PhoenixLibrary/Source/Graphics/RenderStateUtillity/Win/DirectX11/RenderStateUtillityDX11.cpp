@@ -178,10 +178,10 @@ namespace Phoenix
 			desc.ComparisonFunc = enableAlways ? D3D11_COMPARISON_ALWAYS : D3D11_COMPARISON_LESS_EQUAL;
 			desc.MinLOD = 0;
 			desc.MaxLOD = D3D11_FLOAT32_MAX;
-			desc.BorderColor[0] = 1.0f;
-			desc.BorderColor[1] = 1.0f;
-			desc.BorderColor[2] = 1.0f;
-			desc.BorderColor[3] = 1.0f;
+			desc.BorderColor[0] = 0.0f;
+			desc.BorderColor[1] = 0.0f;
+			desc.BorderColor[2] = 0.0f;
+			desc.BorderColor[3] = 0.0f;
 
 			switch (samplerState)
 			{

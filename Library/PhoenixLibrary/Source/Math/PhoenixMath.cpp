@@ -170,6 +170,8 @@ namespace Phoenix
 		{
 			return SqrtF32((v.x) * (v.x) + (v.y) * (v.y) + (v.z) * (v.z));
 		}
+
+
 #pragma endregion
 
 #pragma region Functions for Vector4
@@ -196,6 +198,21 @@ namespace Phoenix
 			f4.w = v.w;
 
 			v4 = DirectX::XMLoadFloat4(&f4);
+
+			return v4;
+		}
+
+		Vector4 ConvertToVector4FromVector(const DirectX::XMVECTOR& v)
+		{
+			Vector4 v4;
+
+			DirectX::XMFLOAT4 f4;
+			DirectX::XMStoreFloat4(&f4, v);
+
+			v4.x = f4.x;
+			v4.y = f4.y;
+			v4.z = f4.z;
+			v4.w = f4.w;
 
 			return v4;
 		}
@@ -236,6 +253,11 @@ namespace Phoenix
 			return (v1.x) * (v2.x) + (v1.y) * (v2.y) + (v1.z) * (v2.z) + (v1.w) * (v2.w);
 		}
 
+		Vector4 Vector4Rotate(const Vector4 v, const Quaternion q)
+		{
+			DirectX::XMVECTOR r = DirectX::XMVector3Rotate(ConvertToVectorFromVector4(v), ConvertToVectorFromQuaternion(q));
+			return ConvertToVector4FromVector(r);
+		}
 #pragma endregion
 
 #pragma region Functions for Vector4x4
@@ -755,6 +777,11 @@ namespace Phoenix
 		//			return Vector4(rM._11, rM._12, rM._13, 1.0f);
 		//#endif
 		//		}
+
+		Quaternion QuaternionIdentity()
+		{
+			return ConvertToQuaternionFromVector(DirectX::XMQuaternionIdentity());
+		}
 
 		f32 QuaternionDot(const Quaternion q1, const Quaternion q2)
 		{
