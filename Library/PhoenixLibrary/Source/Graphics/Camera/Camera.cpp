@@ -520,15 +520,15 @@ namespace Phoenix
 			}
 			else*/
 			{
-				rotateY -= (static_cast<float>(xInput[0].sRX) / 1000.0f) * 3 * 0.01745f;
-				rotateX += (static_cast<float>(xInput[0].sRY) / 1000.0f) * 3 * 0.01745f;
-				if (0.6f < rotateX)
+				rotateY -= (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2.0f * 0.01745f;
+				rotateX += (static_cast<float>(xInput[0].sRY) / 1000.0f) * 2.0f * 0.01745f;
+				if (0.0f < rotateX)
 				{
-					rotateX = 0.6f;
+					rotateX = 0.0f;
 				}
-				if (rotateX < 0.05f)
+				if (rotateX < -1.0f)
 				{
-					rotateX = 0.05f;
+					rotateX = -1.0f;
 				}
 			}
 
@@ -542,7 +542,7 @@ namespace Phoenix
 			Math::Vector3 _up = Math::Vector3Cross(_right, front);
 
 			Math::Vector3 _target = center + adjust;
-			Math::Vector3 _distance = { distance, distance, distance };
+			Math::Vector3 _distance = { 750.0f, 750.0f, 750.0f };
 			Math::Vector3 _pos = _target - (front * _distance);
 
 			SetLookAt(_pos, _target, _up);

@@ -54,7 +54,8 @@ private:
 	/*static constexpr*/ float WalkSpeed = 2.1f;
 	/*static constexpr*/ float RunSpeed = 18.0f;
 	/*static constexpr*/ float RollSpeed = 15.0f;
-	/*static constexpr*/ float KnockBackSpeed = -1.5f;
+	/*static constexpr*/ float KnockBackSpeed = -3.0f;
+	/*static constexpr*/ float KnockBackDownSpeed = 0.03f;
 	/*static constexpr*/ float Attack03Speed = 10.0f;
 	/*static constexpr*/ float AnimationSpeed30 = 0.03333333f;
 	/*static constexpr*/ float AnimationSpeed45 = 0.02222222f;

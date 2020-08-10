@@ -30,6 +30,9 @@ public:
 	std::shared_ptr<Phoenix::FrameWork::IShader> pbrSkinShader;
 	std::shared_ptr<Phoenix::Graphics::Camera> camera;
 
+	// エフェクト
+	std::shared_ptr<Phoenix::Graphics::ITexture> targetMark;
+
 	//::EffekseerRenderer::Renderer* renderer = nullptr;
 	//::Effekseer::Manager* manager = nullptr;
 

@@ -27,6 +27,7 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		texSize = Phoenix::Math::Vector2(256.0f, 256.0f);
 
 		cameraFlg = false;
+		lockOnCamera = false;
 		isHitCollision = false;
 		isUpdate = false;
 		enableMSAA = true;
@@ -51,6 +52,7 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		pbrShader = commonData->pbrShader.get();
 		pbrSkinShader = commonData->pbrSkinShader.get();
 		camera = commonData->camera.get();
+		targetMark = commonData->targetMark.get();
 	}
 
 	// フレームバッファ
@@ -244,6 +246,11 @@ void SceneGame::Update()
 
 	// カメラ更新
 	{
+		if (xInput[0].bLBt)
+		{
+			lockOnCamera = !lockOnCamera;
+		}
+
 		if (cameraFlg)
 		{
 			static bool isInit = false;
@@ -264,7 +271,8 @@ void SceneGame::Update()
 
 			bossPos.y += 150.0f;
 			playerPos.y += 150.0f;
-			camera->LockOnCamera(bossPos, playerPos);
+			if (lockOnCamera) camera->LockOnCamera(bossPos, playerPos);
+			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 10.0f, 0.0f));
 		}
 		camera->Update();
 	}
@@ -595,15 +603,22 @@ void SceneGame::Draw()
 			{
 				Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
 
-				for (auto data : *player->GetCollisionDatas())
+				Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Opaque), 0, 0xFFFFFFFF);
+
+				std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
+				for (Phoenix::FrameWork::CollisionData data : *playerDatas)
 				{
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 				}
 
-				for (auto data : *boss->GetCollisionDatas())
+				std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
+				for (Phoenix::FrameWork::CollisionData data : *bossDatas)
 				{
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 				}
+
+				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 			}
 		}
 		frameBuffer[0]->Deactivate(graphicsDevice);
@@ -643,6 +658,25 @@ void SceneGame::Draw()
 	{
 		quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 	}
+
+	// Draw UI and Effect.
+	{
+		if (lockOnCamera)
+		{
+			/*Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+			context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);*/
+
+			Phoenix::f32 size = 128.0f / 4.0f;
+
+			Phoenix::Math::Vector3 bossPos = boss->GetPosition();
+			bossPos.y += 150.0f;
+
+			Phoenix::Math::Vector3 screenPos = WorldToScreen(bossPos);
+			screenPos.x -= size / 2.0f;
+
+			quad->Draw(graphicsDevice, targetMark, screenPos.x, screenPos.y, size, size);
+		}
+	}
 	
 	// Draw frameBuffer Texture.
 	{
@@ -681,6 +715,42 @@ void SceneGame::PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::
 		DirectX::XMFLOAT4(0.0f, 0.6f, 0.0f, 0.5f),
 		false
 	);
+}
+
+Phoenix::Math::Vector3 SceneGame::WorldToScreen(const Phoenix::Math::Vector3& worldPosition)
+{
+	Phoenix::Math::Vector3 screenPosition;
+
+	// ビューポート
+	Phoenix::Graphics::Viewport* v = new Phoenix::Graphics::Viewport();
+	graphicsDevice->GetContext()->GetViewports(1, &v);
+	float viewportX = 0.0f;
+	float viewportY = 0.0f;
+	float viewportW = static_cast<Phoenix::f32>(v->width);
+	float viewportH = static_cast<Phoenix::f32>(v->height);
+	float viewportMinZ = 0.0f;
+	float viewportMaxZ = 1.0f;
+	Phoenix::FND::SafeDelete(v);
+
+	// ビュー行列
+	Phoenix::Math::Matrix V = camera->GetView();
+
+	// プロジェクション行列
+	Phoenix::Math::Matrix P = camera->GetProjection();
+
+	// ワールド行列
+	Phoenix::Math::Matrix W = Phoenix::Math::MatrixIdentity(); //移動成分はいらないので単位行列を入れておく。
+
+	// ワールド座標からNDC座標へ変換
+	Phoenix::Math::Matrix WVP = W * V * P;
+	Phoenix::Math::Vector3 ndcPosition = Phoenix::Math::Vector3TransformCoord(worldPosition, WVP); // Vector3TransformCoordで1.0fで[x,y,z,w]が割られている。
+
+	// NDC座標からスクリーン座標へ変換
+	screenPosition.x = ((ndcPosition.x + 1.0f) / 2.0f) * viewportW;
+	screenPosition.y = viewportH - (((ndcPosition.y + 1.0f) / 2.0f) * viewportH);
+	screenPosition.z = viewportMinZ + ndcPosition.z * (viewportMaxZ - viewportMinZ);
+
+	return screenPosition;
 }
 
 void SceneGame::GUI()

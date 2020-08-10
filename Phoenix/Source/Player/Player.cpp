@@ -38,7 +38,7 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack01\\Elbow_Uppercut_Combo.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack02\\Uppercut_Jab.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack03\\Strike_Foward_Jog.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Receiving_An_Uppercut.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Damage.fbx", -1);
 	}
 
 	// アニメーションパラメーターの設定
@@ -197,6 +197,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 
 		pos.x += sinf(rotate.y) * speed;
 		pos.z += cosf(rotate.y) * speed;
+
+		speed += KnockBackDownSpeed;
 	}
 	else if (xInput[0].bXt && animationState != AnimationState::Roll)
 	{
@@ -396,7 +398,7 @@ void Player::ChangeAnimation()
 		break;
 
 	case AnimationState::Damage:
-		model->PlayAnimation(7, 1, 0.2f);
+		model->PlayAnimation(7, 0, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		break;
@@ -532,6 +534,8 @@ void Player::AccumulationDamege()
 	{
 		if (animationState != AnimationState::Idle)
 		{
+			attackReceptionTimeCnt = 0;
+			isAttack = false;
 			isChangeAnimation = true;
 			speed = 0.0f;
 			animationState = AnimationState::Idle;
@@ -549,7 +553,7 @@ void Player::AccumulationDamege()
 		accumulationDamege = 0;
 		accumulationTimeCnt = 0;
 	}
-	else if (AccumulationTime <= accumulationTimeCnt)
+	else if (AccumulationTime <= accumulationTimeCnt++)
 	{
 		accumulationDamege = 0;
 		accumulationTimeCnt = 0;

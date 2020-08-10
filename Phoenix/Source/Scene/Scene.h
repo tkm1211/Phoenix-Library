@@ -72,7 +72,7 @@ class SceneGame : public Scene
 private:
 	struct ShaderConstants
 	{
-		Phoenix::Math::Matrix lightViewProjection;
+		Phoenix::Math::Matrix lightViewProjection = { 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 };
 		Phoenix::Math::Vector3 color = Phoenix::Math::Vector3(0.65f, 0.65f, 0.65f);
 		Phoenix::f32 bias = 0.0008f;
 	};
@@ -89,6 +89,7 @@ private:
 	Phoenix::FrameWork::IShader* pbrSkinShader = nullptr;
 	Phoenix::FrameWork::IShader* currentShader = nullptr;
 	Phoenix::Graphics::Camera* camera = nullptr;
+	Phoenix::Graphics::ITexture* targetMark = nullptr;
 
 	// フレームバッファ
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[3];
@@ -127,13 +128,14 @@ private: // Debug
 	Phoenix::f32 farZ = 3000.0f;
 
 	bool cameraFlg = false;
+	bool lockOnCamera = false;
 	bool isHitCollision = false;
 	bool isUpdate = false;
 	bool enableMSAA = false;
 	bool shadowBlend = false;
 	bool bloomBlend = false;
 	bool isPBR = false;
-	bool active[10];
+	bool active[10] = { false };
 
 public:
 	SceneGame() {}
@@ -151,4 +153,5 @@ public:
 
 private:
 	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale);
+	Phoenix::Math::Vector3 WorldToScreen(const Phoenix::Math::Vector3& worldPosition);
 };

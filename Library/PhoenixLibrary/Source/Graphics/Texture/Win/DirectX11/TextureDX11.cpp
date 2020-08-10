@@ -304,8 +304,23 @@ namespace Phoenix
 		// テクスチャ設定の取得
 		void TextureDX11::GetTextureDesc(TextureDesc* desc)
 		{
-			D3D11_TEXTURE2D_DESC texture2dDesc;
-			texture2d->GetDesc(&texture2dDesc);
+			D3D11_TEXTURE2D_DESC texture2dDesc = {};
+			if (texture2d)
+			{
+				texture2d->GetDesc(&texture2dDesc);
+			}
+			else
+			{
+				HRESULT hr = S_OK;
+				shaderResourceView->GetResource(&resource);
+				hr = resource->QueryInterface<ID3D11Texture2D>(&texture2d);
+				if (FAILED(hr))
+				{
+					PHOENIX_LOG_GRP_ERROR("QueryInterface() : Failed!!\n");
+					return;
+				}
+				texture2d->GetDesc(&texture2dDesc);
+			}
 
 			desc->width = texture2dDesc.Width;
 			desc->height = texture2dDesc.Height;
