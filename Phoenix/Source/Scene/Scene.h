@@ -3,6 +3,7 @@
 #include <memory>
 #include "../Player/Player.h"
 #include "../Boss/Boss.h"
+#include "../UI/UISystem.h"
 #include "../Primitive/GeometricPrimitive.h"
 #include "Phoenix/Types.h"
 #include "Phoenix/OS/Display.h"
@@ -81,6 +82,7 @@ private:
 	// 共通データのアドレス
 	Player* player = nullptr;
 	Boss* boss = nullptr;
+	UISystem* uiSystem = nullptr;
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
 	Phoenix::FrameWork::IShader* basicShader = nullptr;
 	Phoenix::FrameWork::IShader* basicSkinShader = nullptr;

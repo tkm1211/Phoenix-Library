@@ -520,7 +520,7 @@ namespace Phoenix
 			}
 			else*/
 			{
-				rotateY -= (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2.0f * 0.01745f;
+				rotateY += (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2.0f * 0.01745f;
 				rotateX += (static_cast<float>(xInput[0].sRY) / 1000.0f) * 2.0f * 0.01745f;
 				if (0.0f < rotateX)
 				{
@@ -537,19 +537,31 @@ namespace Phoenix
 			f32 ySin = sinf(rotateY);
 			f32 yCos = cosf(rotateY);
 
-			Math::Vector3 front = { xCos * -ySin, xSin, xCos * -yCos };
+			Math::Vector3 _front = { xCos * -ySin, xSin, xCos * -yCos };
 			Math::Vector3 _right = { yCos, 0.0f, -ySin };
-			Math::Vector3 _up = Math::Vector3Cross(_right, front);
+			Math::Vector3 _up = Math::Vector3Cross(_right, _front);
 
-			Math::Vector3 _target = center + adjust;
+#if 0
+			focus.y = center.y;
+			focus = Phoenix::Math::Vector3Lerp(focus, center, 0.075f);
+
+			Math::Vector3 _target = focus + adjust;
 			Math::Vector3 _distance = { 750.0f, 750.0f, 750.0f };
 			Math::Vector3 _pos = _target - (front * _distance);
+#else
+			eye = Phoenix::Math::Vector3Lerp(eye, (center + adjust), 0.1f);
+			front = _front /*Phoenix::Math::Vector3Lerp(front, _front, 0.05f)*/;
 
+			Math::Vector3 _pos = eye - (front * 650.0f);
+			Math::Vector3 _target = eye - (front * -750.0f);
+			focus = _target;
+#endif
 			SetLookAt(_pos, _target, _up);
 		}
 
-		void Camera::LockOnCamera(const Math::Vector3& center, const Math::Vector3& pos)
+		void Camera::LockOnCamera(const Math::Vector3& center, const Math::Vector3& target, const Math::Vector3& centerAdjust, const Math::Vector3& targetAdjust)
 		{
+#if 0
 			Math::Vector3 cameraPos;
 
 			Math::Vector3 dir = pos - center;
@@ -566,6 +578,25 @@ namespace Phoenix
 			cameraPos.y = pos.y;
 
 			SetLookAt(cameraPos, center, Math::Vector3::OneY);
+#else
+			Math::Vector3 dir = (center + centerAdjust) - (target + targetAdjust);
+			dir.y = center.y - target.y /*0.0f*/;
+			dir = Math::Vector3Normalize(dir);
+
+			rotateX = 0.0f;
+			rotateY = atan2f(dir.x, dir.z);
+
+			eye = (center + centerAdjust) /*Phoenix::Math::Vector3Lerp(eye, center, 0.6f)*/;
+			focus = Phoenix::Math::Vector3Lerp(focus, (target + targetAdjust), 0.05f);
+			front = Phoenix::Math::Vector3Lerp(front, -dir, 0.05f);
+
+			Math::Vector3 _pos = eye - (front * 650.0f);
+			Math::Vector3 _target = focus;
+
+			_pos.y = _pos.y <= 5.0f ? 5.0f : _pos.y;
+
+			SetLookAt(_pos, _target, Math::Vector3::OneY);
+#endif
 		}
 	} // namespace Graphics
 } // namespace Phoenix

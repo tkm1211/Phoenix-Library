@@ -364,6 +364,28 @@ namespace Phoenix
 				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState);
 		}
 
+		void Quad::Draw
+		(
+			Graphics::IGraphicsDevice* graphicsDevice,
+			Graphics::ITexture* shaderResourceView,
+			Phoenix::Math::Vector2 pos, Phoenix::Math::Vector2 size,
+			Phoenix::Math::Vector2 texPos, Phoenix::Math::Vector2 texSize,
+			float angle/*degree*/,
+			float r, float g, float b, float a,
+			bool useEmbeddedVertexShader,
+			bool useEmbeddedPixelShader,
+			bool useEmbeddedRasterizerState,
+			bool useEmbeddedDepthStencilState,
+			bool useEmbeddedSamplerState
+		) const
+		{
+			Graphics::TextureDesc texDesc = {};
+			shaderResourceView->GetTextureDesc(&texDesc);
+
+			Draw(graphicsDevice, shaderResourceView, pos.x, pos.y, size.x, size.y, texPos.x, texPos.y, texSize.x, texSize.y, angle, r, g, b, a,
+				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState);
+		}
+
 
 		std::unique_ptr<FullScreenQuad> FullScreenQuad::Create()
 		{

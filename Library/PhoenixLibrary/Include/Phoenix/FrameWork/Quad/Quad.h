@@ -81,6 +81,21 @@ namespace Phoenix
 				bool useEmbeddedDepthStencilState = true,
 				bool useEmbeddedSamplerState = true
 			) const;
+
+			void Draw
+			(
+				Graphics::IGraphicsDevice* graphicsDevice,
+				Graphics::ITexture* shaderResourceView,
+				Phoenix::Math::Vector2 pos, Phoenix::Math::Vector2 size,
+				Phoenix::Math::Vector2 texPos, Phoenix::Math::Vector2 texSize,
+				float angle = 0/*degree*/,
+				float r = 1, float g = 1, float b = 1, float a = 1,
+				bool useEmbeddedVertexShader = true,
+				bool useEmbeddedPixelShader = true,
+				bool useEmbeddedRasterizerState = true,
+				bool useEmbeddedDepthStencilState = true,
+				bool useEmbeddedSamplerState = true
+			) const;
 		};
 
 		class FullScreenQuad

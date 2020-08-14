@@ -45,6 +45,7 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	{
 		player = commonData->player.get();
 		boss = commonData->boss.get();
+		uiSystem = commonData->uiSystem.get();
 		stageModel = commonData->stageModel.get();
 		basicShader = commonData->basicShader.get();
 		basicSkinShader = commonData->basicSkinShader.get();
@@ -53,6 +54,11 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		pbrSkinShader = commonData->pbrSkinShader.get();
 		camera = commonData->camera.get();
 		targetMark = commonData->targetMark.get();
+	}
+
+	// 共通データの初期化
+	{
+		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
 	}
 
 	// フレームバッファ
@@ -215,8 +221,8 @@ void SceneGame::Update()
 
 		if (player->IsAttackJudgment())
 		{
-			std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
-			std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
+			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
+			const std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
 			if (SphereVsSphere(playerDatas->at(player->GetAttackCollisionIndex()).pos, bossDatas->at(0).pos, playerDatas->at(player->GetAttackCollisionIndex()).radius, bossDatas->at(0).radius))
 			{
 				Phoenix::Math::Vector3 pos;
@@ -232,16 +238,22 @@ void SceneGame::Update()
 			}
 		}
 
-		if (boss->IsAttackJudgment())
+		if (boss->IsAttackJudgment() && !player->Invincible())
 		{
-			std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
-			std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
+			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
+			const std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
 			if (SphereVsSphere(playerDatas->at(0).pos, bossDatas->at(boss->GetAttackCollisionIndex()).pos, playerDatas->at(0).radius, bossDatas->at(boss->GetAttackCollisionIndex()).radius))
 			{
 				boss->SetIsHit(true);
 				player->Damage(10);
 			}
 		}
+	}
+
+	// UI更新
+	{
+		player->UpdateUI();
+		boss->UpdateUI();
 	}
 
 	// カメラ更新
@@ -269,12 +281,10 @@ void SceneGame::Update()
 			Phoenix::Math::Vector3 bossPos = boss->GetPosition();
 			Phoenix::Math::Vector3 playerPos = player->GetPosition();
 
-			bossPos.y += 150.0f;
-			playerPos.y += 150.0f;
-			if (lockOnCamera) camera->LockOnCamera(bossPos, playerPos);
-			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 10.0f, 0.0f));
+			if (lockOnCamera) camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 125.0f, 0.0f), Phoenix::Math::Vector3(0.0f, 185.0f, 0.0f));
+			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 125.0f, 0.0f));
 		}
-		camera->Update();
+		//camera->Update();
 	}
 
 	Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
@@ -606,14 +616,12 @@ void SceneGame::Draw()
 				Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
 				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Opaque), 0, 0xFFFFFFFF);
 
-				std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
-				for (Phoenix::FrameWork::CollisionData data : *playerDatas)
+				for(const auto data : *player->GetCollisionDatas())
 				{
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 				}
 
-				std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
-				for (Phoenix::FrameWork::CollisionData data : *bossDatas)
+				for(const auto data : *boss->GetCollisionDatas())
 				{
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 				}
@@ -676,6 +684,8 @@ void SceneGame::Draw()
 
 			quad->Draw(graphicsDevice, targetMark, screenPos.x, screenPos.y, size, size);
 		}
+
+		uiSystem->Draw(graphicsDevice);
 	}
 	
 	// Draw frameBuffer Texture.

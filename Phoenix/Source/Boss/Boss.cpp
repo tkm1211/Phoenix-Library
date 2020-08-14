@@ -16,7 +16,7 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 	{
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		model->Initialize(graphicsDevice);
-		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Breathing_Idle.fbx");
+		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Idle02.fbx"); // Mutant_Idle02 Mutant_Breathing_Idle
 	}
 
 	// アニメーション読み込み
@@ -25,14 +25,14 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Avoid\\Sprinting_Forward_Roll.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Right\\Mutant_Swiping.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Left\\Mutant_Punch.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Jump\\Jump_Attack.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Jump\\Jump_Attack02.fbx", -1);
 	}
 
 	// 待機モーション開始
 	{
 		model->PlayAnimation(0, 1);
 		model->UpdateTransform(1 / 60.0f);
-		model->SetLoopAnimation(true);
+		model->SetLoopAnimation(false);
 		//model->PauseAnimation(true);
 	}
 
@@ -42,10 +42,10 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		pos = { 0,0,-1000.0f };
 		//rotate = { 0,0,0 };
 		rotate = { 0,0,0,1 };
-		scale = { 1.5f,1.5f,1.5f };
+		scale = { 2.0f,2.0f,2.0f };
 		//scale = { 1.0f,1.0f,1.0f };
 		radius = 75.0f;
-		life = 1000;
+		life = MaxLife;
 	}
 
 	// プレイヤーアドレス取得
@@ -70,20 +70,25 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		boneIndex = model->GetBoneIndex("Mutant:Hips");
 	}
 
+	// UI生成
+	{
+		ui = BossUI::Create();
+	}
+
 	// コリジョン初期化
 	{
 		collisionDatas.resize(4);
 
 		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(0).radius = 125.0f;
+		collisionDatas.at(0).radius = 150.0f;
 		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Mutant:Hips");
 
 		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(1).radius = 25.0f;
+		collisionDatas.at(1).radius = 50.0f;
 		collisionDatas.at(1).boneIndex = model->GetBoneIndex("Mutant:RightHandIndex1");
 
 		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(2).radius = 65.0f;
+		collisionDatas.at(2).radius = 130.0f;
 		collisionDatas.at(2).boneIndex = model->GetBoneIndex("Mutant:LeftHand");
 
 		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
@@ -149,6 +154,14 @@ void Boss::Update()
 	}
 }
 
+void Boss::UpdateUI()
+{
+	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
+	hp = hp <= 0 ? 0 : hp;
+
+	ui->Update((hp / MaxLife) * 100.0f);
+}
+
 void Boss::ChangeAnimation(AIStateType type)
 {
 	switch (type)
@@ -156,7 +169,7 @@ void Boss::ChangeAnimation(AIStateType type)
 	case AIStateType::Wait:
 		model->PlayAnimation(0, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
-		model->SetLoopAnimation(true);
+		model->SetLoopAnimation(false);
 		break;
 
 	case AIStateType::Move:
@@ -250,7 +263,8 @@ void Boss::AttackJudgment()
 		BossAI* bossAI = static_cast<BossAI*>(ai.get());
 		float time = static_cast<JumpAttackState*>(bossAI->GetCurrentState())->GetAnimationCnt() * 60.0f;
 
-		if (37.0f <= time && time <= 50.0f)
+		//if (37.0f <= time && time <= 50.0f)
+		if (102.0f <= time && time <= 150.0f)
 		{
 			Judgment(3);
 		}

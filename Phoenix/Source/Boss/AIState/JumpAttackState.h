@@ -8,12 +8,15 @@ class JumpAttackState : public AIState
 {
 private:
 	/*static constexpr*/ float MoveSpeed = 5.0f;
+	/*static constexpr*/ float JumpSpeed = 15.0f;
+	/*static constexpr*/ float ForthSpeed = 0.4f;
 
 private:
 	bool beginTrun = false;
 	Phoenix::f32 oldPosY = 0.0f;
 	Phoenix::f32 oldAngleY = 0.0f;
 	Phoenix::f32 animationCnt = 0.0f;
+	Phoenix::f32 speedY = 0.0f;
 
 public:
 	JumpAttackState() {}

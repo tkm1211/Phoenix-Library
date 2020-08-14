@@ -38,7 +38,7 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack01\\Elbow_Uppercut_Combo.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack02\\Uppercut_Jab.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack03\\Strike_Foward_Jog.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Damage.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // Head_Hit Head_Hit02 Damage
 	}
 
 	// アニメーションパラメーターの設定
@@ -68,8 +68,22 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		//rotate = { 0,0,0,1 };
 		scale = { 1,1,1 };
 		radius = 50.0f;
-		life = 100;
+	}
+
+	// パラメーターの初期化
+	{
+		life = MaxLife;
+		isHit = false;
+		invincible = false;
+		isAttackJudgment = false;
 		attackCollisionIndex = -1;
+		accumulationDamege = 0;
+		accumulationTimeCnt = 0;
+	}
+
+	// UI生成
+	{
+		ui = PlayerUI::Create();
 	}
 
 	// コリジョン初期化
@@ -154,6 +168,14 @@ void Player::UpdateTrasform()
 	worldMatrix = S * R * T;
 }
 
+void Player::UpdateUI()
+{
+	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
+	hp = hp <= 0 ? 0 : hp;
+
+	ui->Update((hp / MaxLife) * 100.0f);
+}
+
 void Player::Control(Phoenix::Graphics::Camera& camera)
 {
 	Phoenix::f32 sX = 0.0f;
@@ -195,10 +217,10 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 			}
 		}
 
-		pos.x += sinf(rotate.y) * speed;
+		/*pos.x += sinf(rotate.y) * speed;
 		pos.z += cosf(rotate.y) * speed;
 
-		speed += KnockBackDownSpeed;
+		speed += KnockBackDownSpeed;*/
 	}
 	else if (xInput[0].bXt && animationState != AnimationState::Roll)
 	{
@@ -254,7 +276,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 		}
 		if (xInput[0].bAt
 			&& ((1.5f <= attackReceptionTimeCnt && attackState == AttackAnimationState::Attack01)
-			|| (1.75f <= attackReceptionTimeCnt && attackState == AttackAnimationState::Attack02)))
+			|| (3.0f <= attackReceptionTimeCnt && attackState == AttackAnimationState::Attack02)))
 		{
 			speed = RollSpeed;
 			attackReceptionTimeCnt = 0;
@@ -296,18 +318,33 @@ void Player::Control(Phoenix::Graphics::Camera& camera)
 	{
 		if (xInput[0].bAt && animationState != AnimationState::Roll)
 		{
+			attackReceptionTimeCnt = 0;
 			isChangeAnimation = true;
+			invincible = false;
 			speed = RollSpeed;
 			animationState = AnimationState::Roll;
 		}
 		else if (animationState == AnimationState::Roll && model->IsPlaying())
 		{
+			if (0.34f <= attackReceptionTimeCnt && attackReceptionTimeCnt <= 0.92f)
+			{
+				invincible = true;
+			}
+			else
+			{
+				invincible = false;
+			}
+			
 			pos.x += sinf(rotate.y) * speed;
 			pos.z += cosf(rotate.y) * speed;
+
+			attackReceptionTimeCnt += animationSpeed;
 		}
 		else if (animationState == AnimationState::Roll && !model->IsPlaying())
 		{
+			attackReceptionTimeCnt = 0;
 			isChangeAnimation = true;
+			invincible = false;
 			speed = 0.0f;
 			animationState = AnimationState::Idle;
 		}
@@ -398,7 +435,7 @@ void Player::ChangeAnimation()
 		break;
 
 	case AnimationState::Damage:
-		model->PlayAnimation(7, 0, 0.2f);
+		model->PlayAnimation(7, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		break;
@@ -539,6 +576,7 @@ void Player::AccumulationDamege()
 			isChangeAnimation = true;
 			speed = 0.0f;
 			animationState = AnimationState::Idle;
+			attackState = AttackAnimationState::End;
 		}
 	}
 

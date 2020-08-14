@@ -15,6 +15,13 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	boss = Boss::Create();
 	boss->Init(graphicsDevice, player.get());
 
+	uiSystem = UISystem::Create();
+	{
+		uiSystem->AddUI(player->GetUI());
+		uiSystem->AddUI(boss->GetUI());
+	}
+	uiSystem->Initialize(graphicsDevice);
+
 	const char* filename = "..\\Data\\Assets\\Model\\stage\\stage01.fbx"; // stage01 Floor01
 	stageModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	stageModel->Initialize(graphicsDevice);
@@ -40,7 +47,7 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	Phoenix::Graphics::DeviceDX11* deviceDX11 = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
 
 	targetMark = Phoenix::Graphics::ITexture::Create();
-	targetMark->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\Effect\\target.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+	targetMark->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\TargetMark\\target.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 
 	{
 		//// 描画管理インスタンスの生成

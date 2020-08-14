@@ -8,13 +8,19 @@
 #include "BossAI.h"
 #include "AIState/AIState.h"
 #include "../Player/Player.h"
+#include "../UI/BossUI.h"
 
 
 class Boss
 {
 private:
+	/*static constexpr*/ Phoenix::s32 MaxLife = 1000; // TODO : í≤êÆïKê{
+
+private:
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
 	std::unique_ptr<AI> ai;
+	std::shared_ptr<BossUI> ui;
+
 	BossAI* bossAI = nullptr;
 	Player* player = nullptr;
 
@@ -59,6 +65,7 @@ public:
 	static std::unique_ptr<Boss> Create();
 	void Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* player);
 	void Update();
+	void UpdateUI();
 	void ChangeAnimation(AIStateType type);
 	void AttackJudgment();
 	void GUI();
@@ -74,6 +81,7 @@ public:
 	std::vector<Phoenix::FrameWork::CollisionData>* GetCollisionDatas() { return &collisionDatas; }
 	bool IsAttackJudgment() { return isAttackJudgment; }
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
+	BossUI* GetUI() { return ui.get(); }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 	//void SetRotate(Phoenix::Math::Vector3 rotate) { this->rotate = rotate; }

@@ -13,10 +13,15 @@ void WaitState::Init()
 
 void WaitState::Update(Boss* boss, Player* player)
 {
-	if (WaitMaxTime <= waitTimer++)
+	//if (WaitMaxTime <= waitTimer)
+	if (!boss->GetModel()->IsPlaying())
 	{
 		waitTimer = 0;
 		isChangeState = true;
 		nextStateType = AIStateType::Move;
+	}
+	else
+	{
+		waitTimer++;
 	}
 }

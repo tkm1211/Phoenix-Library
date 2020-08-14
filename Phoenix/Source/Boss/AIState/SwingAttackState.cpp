@@ -19,9 +19,10 @@ void SwingAttackState01::Update(Boss* boss, Player* player)
 		Phoenix::Math::Vector3 dir = player->GetPosition() - boss->GetPosition();
 		Phoenix::f32 len = Phoenix::Math::Vector3Length(Phoenix::Math::Vector3(dir.x, 0.0f, dir.z));
 
+		isChangeState = true;
+
 		if (player->GetAnimationState() == Player::AnimationState::Attack)
 		{
-			isChangeState = true;
 			nextStateType = AIStateType::Avoid;
 		}
 		/*else if ((boss->GetRadius() + player->GetRadius() + 100.0f) <= len
@@ -35,9 +36,9 @@ void SwingAttackState01::Update(Boss* boss, Player* player)
 		}*/
 		else
 		{
-			isChangeState = true;
 			nextStateType = AIStateType::SwingAttack02;
 		}
+
 		return;
 	}
 	if (animationCnt <= 0.0f)
@@ -83,10 +84,20 @@ void SwingAttackState02::Init()
 
 void SwingAttackState02::Update(Boss* boss, Player* player)
 {
-	if (2.0f <= animationCnt)
+	//if (2.0f <= animationCnt)
+	if (!boss->GetModel()->IsPlaying())
 	{
 		isChangeState = true;
-		nextStateType = AIStateType::Wait;
+
+		if (player->GetAnimationState() == Player::AnimationState::Attack)
+		{
+			nextStateType = AIStateType::Avoid;
+		}
+		else
+		{
+			nextStateType = AIStateType::Wait;
+		}
+
 		return;
 	}
 	animationCnt += 1 / 60.0f;

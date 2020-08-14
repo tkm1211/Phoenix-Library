@@ -225,6 +225,9 @@
     <ClCompile Include="Source\Scene\SceneGame.cpp" />
     <ClCompile Include="Source\Scene\SceneSystem.cpp" />
     <ClCompile Include="Source\Scene\SceneTitle.cpp" />
+    <ClCompile Include="Source\UI\BossUI.cpp" />
+    <ClCompile Include="Source\UI\PlayerUI.cpp" />
+    <ClCompile Include="Source\UI\UISystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Boss\AI.h" />
@@ -242,6 +245,10 @@
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Scene\SceneCommonData.h" />
     <ClInclude Include="Source\Scene\SceneSystem.h" />
+    <ClInclude Include="Source\UI\BossUI.h" />
+    <ClInclude Include="Source\UI\PlayerUI.h" />
+    <ClInclude Include="Source\UI\UI.h" />
+    <ClInclude Include="Source\UI\UISystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -59,6 +59,8 @@ void JumpAttackState::Update(Boss* boss, Player* player)
 			Phoenix::Math::Quaternion rotateT = rotate;
 			rotateT *= q;
 			rotate = Phoenix::Math::QuaternionSlerp(rotate, rotateT, 0.17f);
+
+			speedY = JumpSpeed;
 		}
 		else
 		{
@@ -74,11 +76,17 @@ void JumpAttackState::Update(Boss* boss, Player* player)
 		angle = atan2f(forward.x, forward.z);
 
 		bossPos.x += sinf(angle) * MoveSpeed;
-		bossPos.y += boneM._42 - oldPosY;
+		//bossPos.y += boneM._42 - oldPosY;
+		bossPos.y += speedY; // TODO : Add PosY
 		bossPos.z += cosf(angle) * MoveSpeed;
+		if (bossPos.y <= 0.0f)
+		{
+			bossPos.y = 0.0f;
+		}
 		boss->SetPosition(bossPos);
 
 		oldPosY = boneM._42;
+		speedY -= ForthSpeed; // TODO : Add PosY
 	}
 	animationCnt += 1 / 60.0f;
 }

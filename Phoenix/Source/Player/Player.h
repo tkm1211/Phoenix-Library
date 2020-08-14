@@ -4,6 +4,7 @@
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/Object/Object.h"
+#include "../UI/PlayerUI.h"
 
 
 //******************************************************
@@ -62,11 +63,13 @@ private:
 	/*static constexpr*/ float AnimationSpeed60 = 0.01666667f;
 	/*static constexpr*/ float Attack01ReceptionStartTime = 1.3333332f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
 	/*static constexpr*/ float Attack02ReceptionStartTime = 2.2f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
-	/*static constexpr*/ Phoenix::s32 AccumulationMaxDamege = 20; // TODO : 調整必須
+	/*static constexpr*/ Phoenix::s32 MaxLife = 100; // TODO : 調整必須
+	/*static constexpr*/ Phoenix::s32 AccumulationMaxDamege = 10; // TODO : 調整必須
 	/*static constexpr*/ Phoenix::s32 AccumulationTime = 60;
 
 private:
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
+	std::shared_ptr<PlayerUI> ui;
 
 	Phoenix::Math::Matrix worldMatrix;
 	Phoenix::Math::Vector3 pos;
@@ -95,6 +98,9 @@ private:
 	// アタックの判定中か？
 	bool isAttackJudgment = false;
 
+	// 回避の無敵中か？
+	bool invincible = false;
+
 	// コリジョンデータの要素数
 	Phoenix::u32 attackCollisionIndex = 0;
 
@@ -121,6 +127,7 @@ public:
 	void Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 	void Update(Phoenix::Graphics::Camera& camera);
 	void UpdateTrasform();
+	void UpdateUI();
 	void Control(Phoenix::Graphics::Camera& camera);
 	void ChangeAnimation();
 	void ChangeAttackAnimation();
@@ -135,9 +142,11 @@ public:
 	Phoenix::Math::Vector3 GetRotate() { return rotate; }
 	Phoenix::f32 GetRadius() { return radius; }
 	AnimationState GetAnimationState() { return animationState; }
-	std::vector<Phoenix::FrameWork::CollisionData>* GetCollisionDatas() { return &collisionDatas; }
+	const std::vector<Phoenix::FrameWork::CollisionData>* GetCollisionDatas() { return &collisionDatas; }
 	bool IsAttackJudgment() { return isAttackJudgment; }
+	bool Invincible() { return invincible; }
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
+	PlayerUI* GetUI() { return ui.get(); }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 	void SetIsHit(bool isHit) { this->isHit = isHit; }
