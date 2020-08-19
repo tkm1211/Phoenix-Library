@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\ComputeShader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\TestComputeShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\FrameBuffer\FrameBuffer.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\IBL\IBL.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Input\InputDevice.h" />
@@ -35,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.cpp" />
+    <ClCompile Include="..\..\..\Source\ComputeShader\TestComputeShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\FrameBuffer\FrameBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\IBL\IBL.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Input\InputDevice.cpp" />

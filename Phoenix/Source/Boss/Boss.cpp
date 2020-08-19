@@ -17,6 +17,10 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		model->Initialize(graphicsDevice);
 		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Idle02.fbx"); // Mutant_Idle02 Mutant_Breathing_Idle
+
+		effectModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
+		effectModel->Initialize(graphicsDevice);
+		effectModel->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Effect\\BossEffect\\JumpAttackEffect01.fbx");
 	}
 
 	// アニメーション読み込み
@@ -26,6 +30,7 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Right\\Mutant_Swiping.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Left\\Mutant_Punch.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Jump\\Jump_Attack02.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Damage\\Head_Hit.fbx", -1);
 	}
 
 	// 待機モーション開始
@@ -46,6 +51,9 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		//scale = { 1.0f,1.0f,1.0f };
 		radius = 75.0f;
 		life = MaxLife;
+		accumulationDamege = 0;
+		accumulationTimeCnt = 0;
+		isChangeAccumulationDamege = false;
 	}
 
 	// プレイヤーアドレス取得
@@ -99,6 +107,11 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 
 void Boss::Update()
 {
+	// 蓄積ダメージの確認
+	{
+		AccumulationDamege();
+	}
+
 	// ステートタイプ変更 (アニメーション変更)
 	if (nextType != AIStateType::None)
 	{
@@ -120,6 +133,7 @@ void Boss::Update()
 	// アニメーション更新
 	{
 		model->UpdateTransform(1 / 60.0f);
+		if(IsJumpAttack()) effectModel->UpdateTransform(1 / 60.0f);
 	}
 
 	// ワールド行列を作成
@@ -151,6 +165,25 @@ void Boss::Update()
 	// アタック判定中
 	{
 		AttackJudgment();
+	}
+}
+
+void Boss::AccumulationDamege()
+{
+	if (accumulationDamege == 0) return;
+
+	if (AccumulationMaxDamege <= accumulationDamege)
+	{
+		isChangeAccumulationDamege = true;
+		nextType = AIStateType::Damage;
+
+		accumulationDamege = 0;
+		accumulationTimeCnt = 0;
+	}
+	else if (AccumulationTime <= accumulationTimeCnt++)
+	{
+		accumulationDamege = 0;
+		accumulationTimeCnt = 0;
 	}
 }
 
@@ -199,6 +232,16 @@ void Boss::ChangeAnimation(AIStateType type)
 
 	case AIStateType::JumpAttack:
 		model->PlayAnimation(5, 0, 0.2f);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+
+		effectModel->PlayAnimation(0, 0, 0.2f);
+		effectModel->UpdateTransform(1 / 60.0f);
+		effectModel->SetLoopAnimation(false);
+		break;
+
+	case AIStateType::Damage:
+		model->PlayAnimation(6, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		break;

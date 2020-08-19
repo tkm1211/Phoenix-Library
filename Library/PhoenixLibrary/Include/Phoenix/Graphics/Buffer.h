@@ -38,6 +38,28 @@ namespace Phoenix
 		} 	PhoenixBindFlag;
 
 		typedef
+		enum class PhoenixResouceMiscFlag
+		{
+			ResouceMiscGenerateMips = 0x1L,
+			ResouceMiscShader = 0x2L,
+			ResouceMiscTextureCube = 0x4L,
+			ResouceMiscDrawindIrectArgs = 0x10L,
+			ResouceMiscBufferAllowsRAWViews = 0x20L,
+			ResouceMiscBufferStructured = 0x40L,
+			ResouceMiscResouceClamp = 0x80L,
+			ResouceMiscShaderKeyesMutex = 0x100L,
+			ResouceMiscGDICompatible = 0x200L,
+			ResouceMiscShaderNthandle = 0x800L,
+			ResouceMiscRestrictedContext = 0x1000L,
+			ResouceMiscRestrictShaderResouce = 0x2000L,
+			ResouceMiscRestrictShaderResouceDrive = 0x4000L,
+			ResouceMiscGuarded = 0x8000L,
+			ResouceMiscTilePool = 0x20000L,
+			ResouceMiscTiled = 0x40000L,
+			ResouceMiscHWProtected = 0x80000L
+		} 	PhoenixResouceMiscFlag;
+
+		typedef
 		enum class PhoenixCPUAccessFlag
 		{
 			CPUAccessWrite = 0x10000L,

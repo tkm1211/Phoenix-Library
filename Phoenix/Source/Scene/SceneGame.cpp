@@ -608,6 +608,16 @@ void SceneGame::Draw()
 #endif
 			}
 
+			// Draw Effect Model.
+			{
+				if (boss->IsJumpAttack())
+				{
+					basicSkinShader->Begin(graphicsDevice, *camera);
+					basicSkinShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetEffectModel());
+					basicSkinShader->End(graphicsDevice);
+				}
+			}
+
 			// Draw collision primitive.
 			if (isHitCollision)
 			{

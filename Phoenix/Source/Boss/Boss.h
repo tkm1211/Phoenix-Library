@@ -15,9 +15,12 @@ class Boss
 {
 private:
 	/*static constexpr*/ Phoenix::s32 MaxLife = 1000; // TODO : 調整必須
+	/*static constexpr*/ Phoenix::s32 AccumulationMaxDamege = 90; // TODO : 調整必須
+	/*static constexpr*/ Phoenix::s32 AccumulationTime = 5 * 60;
 
 private:
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
+	std::unique_ptr<Phoenix::FrameWork::ModelObject> effectModel;
 	std::unique_ptr<AI> ai;
 	std::shared_ptr<BossUI> ui;
 
@@ -53,6 +56,11 @@ private:
 	// コリジョンデータの要素数
 	Phoenix::u32 attackCollisionIndex = 0;
 
+	// 蓄積ダメージ
+	Phoenix::s32 accumulationDamege = 0;
+	Phoenix::s32 accumulationTimeCnt = 0;
+	bool isChangeAccumulationDamege = false;
+
 public:
 	Boss() :
 		worldMatrix(Phoenix::Math::MatrixIdentity()),
@@ -69,9 +77,11 @@ public:
 	void ChangeAnimation(AIStateType type);
 	void AttackJudgment();
 	void GUI();
-	void Damage(int damage) { life -= damage; }
+	void Damage(int damage) { life -= damage; accumulationDamege += damage; }
+	void AccumulationDamege();
 
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
+	Phoenix::FrameWork::ModelObject* GetEffectModel() { return effectModel.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
 	Phoenix::Math::Vector3 GetPosition() { return pos; }
 	//Phoenix::Math::Vector3 GetRotate() { return rotate; }
@@ -82,6 +92,14 @@ public:
 	bool IsAttackJudgment() { return isAttackJudgment; }
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
 	BossUI* GetUI() { return ui.get(); }
+	bool IsJumpAttack() { return (currentType == AIStateType::JumpAttack) ? true : false; }
+	bool IsChangeAccumulationDamege()
+	{
+		if (!isChangeAccumulationDamege) return false;
+
+		isChangeAccumulationDamege = false;
+		return true;
+	}
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 	//void SetRotate(Phoenix::Math::Vector3 rotate) { this->rotate = rotate; }

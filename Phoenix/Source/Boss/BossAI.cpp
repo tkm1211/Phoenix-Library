@@ -4,6 +4,7 @@
 #include "AIState/AvoidState.h"
 #include "AIState/SwingAttackState.h"
 #include "AIState/JumpAttackState.h"
+#include "AIState/DamageState.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
 #include "Boss.h"
 #include "../Player/Player.h"
@@ -24,6 +25,7 @@ void BossAI::Init()
 		AddState<SwingAttackState01>();
 		AddState<SwingAttackState02>();
 		AddState<JumpAttackState>();
+		AddState<DamageState>();
 	}
 
 	// 全ステートの初期化
@@ -43,6 +45,12 @@ void BossAI::Init()
 void BossAI::Update()
 {
 	if (!isAI) return;
+
+	// 蓄積ダメージステートに変更していないか確認
+	if (boss->IsChangeAccumulationDamege())
+	{
+		nextState = GetState(AIStateType::Damage);
+	}
 
 	// ステート移行
 	if (nextState)

@@ -212,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Boss\AIState\AvoidState.cpp" />
+    <ClCompile Include="Source\Boss\AIState\DamageState.cpp" />
     <ClCompile Include="Source\Boss\AIState\JumpAttackState.cpp" />
     <ClCompile Include="Source\Boss\AIState\MoveState.cpp" />
     <ClCompile Include="Source\Boss\AIState\SwingAttackState.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="Source\Boss\AI.h" />
     <ClInclude Include="Source\Boss\AIState\AIState.h" />
     <ClInclude Include="Source\Boss\AIState\AvoidState.h" />
+    <ClInclude Include="Source\Boss\AIState\DamageState.h" />
     <ClInclude Include="Source\Boss\AIState\JumpAttackState.h" />
     <ClInclude Include="Source\Boss\AIState\MoveState.h" />
     <ClInclude Include="Source\Boss\AIState\SwingAttackState.h" />

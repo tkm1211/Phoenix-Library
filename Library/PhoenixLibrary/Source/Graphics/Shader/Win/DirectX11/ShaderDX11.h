@@ -56,5 +56,40 @@ namespace Phoenix
 			void DeactivateGS(IDevice* device) override;
 			void DeactivatePS(IDevice* device) override;
 		};
+
+		//****************************************************************************
+		// DirectX11版コンピュートシェーダー操作オブジェクト
+		//****************************************************************************
+		class ComputeShaderDX11 : public IComputeShader
+		{
+		private:
+			ID3D11ComputeShader* computeShader = nullptr;
+
+		private:
+			ID3D11ComputeShader* cachedcomputeShader = nullptr;
+
+		public:
+			ComputeShaderDX11() {}
+			~ComputeShaderDX11() { Finalize(); }
+
+		public:
+			// 初期化
+			bool Initialize() override { return true; }
+
+			// 終了化
+			void Finalize() override;
+
+			// コンピュートシェーダー読み込み
+			void Load(IDevice* device, const char* csoNameOfComputeShader) override;
+
+			// シェーダー開始
+			void Activate(IDevice* device) override;
+
+			// シェーダー終了
+			void Deactivate(IDevice* device) override;
+
+			// コンピュートシェーダー実行
+			void Dispatch(IDevice* device, u32 x, u32 y, u32 z) override;
+		};
 	} // namespace Graphics
 } // namespace Phoenix

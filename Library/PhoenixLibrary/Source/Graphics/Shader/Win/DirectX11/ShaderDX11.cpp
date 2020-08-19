@@ -168,5 +168,56 @@ namespace Phoenix
 			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
 			d3dDeviceContext->PSSetShader(cachedPixelShader, 0, 0);
 		}
+
+		//****************************************************************************
+		// DirectX11版コンピュートシェーダー操作オブジェクト
+		//****************************************************************************
+		// 生成
+		std::unique_ptr<IComputeShader> IComputeShader::Create()
+		{
+			return std::make_unique<ComputeShaderDX11>();
+		}
+
+		// 終了化
+		void ComputeShaderDX11::Finalize()
+		{
+			FND::SafeRelease(computeShader);
+		}
+
+		// コンピュートシェーダー読み込み
+		void ComputeShaderDX11::Load(IDevice* device, const char* csoNameOfComputeShader)
+		{
+#ifdef _WIN64
+			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x64\\Debug\\", csoNameOfComputeShader);
+#else
+			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\", csoNameOfComputeShader);
+#endif
+
+			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
+			if (filename) ResourceManager::CreateComputeShader(d3dDevice, filename, &computeShader);
+		}
+
+		// シェーダー開始
+		void ComputeShaderDX11::Activate(IDevice* device)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
+
+			d3dDeviceContext->CSGetShader(&cachedcomputeShader, 0, 0);
+			d3dDeviceContext->CSSetShader(computeShader, 0, 0);
+		}
+
+		// シェーダー終了
+		void ComputeShaderDX11::Deactivate(IDevice* device)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
+			d3dDeviceContext->CSSetShader(cachedcomputeShader, 0, 0);
+		}
+
+		// コンピュートシェーダー実行
+		void ComputeShaderDX11::Dispatch(IDevice* device, u32 x, u32 y, u32 z)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
+			d3dDeviceContext->Dispatch(x, y, z);
+		}
 	} // namespace Graphics
 } // namespace Phoenix

@@ -78,6 +78,9 @@
     <ClCompile Include="Source\UI\BossUI.cpp">
       <Filter>Source\UI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Boss\AIState\DamageState.cpp">
+      <Filter>Source\Boss\AIState</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -136,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="Source\UI\BossUI.h">
       <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss\AIState\DamageState.h">
+      <Filter>Source\Boss\AIState</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

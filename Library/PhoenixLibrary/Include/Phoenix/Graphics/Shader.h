@@ -203,5 +203,33 @@ namespace Phoenix
             virtual void DeactivateGS(IDevice* device) = 0;
             virtual void DeactivatePS(IDevice* device) = 0;
 		};
+
+        //****************************************************************************
+        // コンピュートシェーダー操作インターフェース
+        //****************************************************************************
+        class IComputeShader : public FND::Base
+        {
+        public:
+            // 生成
+            static std::unique_ptr<IComputeShader> Create();
+
+            // 初期化
+            virtual bool Initialize() = 0;
+
+            // 終了化
+            virtual void Finalize() = 0;
+
+            // コンピュートシェーダー読み込み
+            virtual void Load(IDevice* device, const char* csoNameOfComputeShader) = 0;
+
+            // シェーダー開始
+            virtual void Activate(IDevice* device) = 0;
+
+            // シェーダー終了
+            virtual void Deactivate(IDevice* device) = 0;
+
+            // コンピュートシェーダー実行
+            virtual void Dispatch(IDevice* device, u32 x, u32 y, u32 z) = 0;
+        };
     } // namespace Graphics
 } // namespace Phoenix

@@ -46,6 +46,12 @@
     <Filter Include="Source\IBL">
       <UniqueIdentifier>{6ae95d14-913c-4aa3-8154-d6fa30740a38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\ComputeShader">
+      <UniqueIdentifier>{bb6d9b9a-229c-4758-abe1-4d84d1b3730a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ComputeShader">
+      <UniqueIdentifier>{f3bfe96e-281c-41cc-90b5-2cb52b2fc992}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -87,6 +93,12 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\IBL\IBL.h">
       <Filter>Include\IBL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\TestComputeShader.h">
+      <Filter>Include\ComputeShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\ComputeShader.h">
+      <Filter>Include\ComputeShader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -124,6 +136,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\IBL\IBL.cpp">
       <Filter>Source\IBL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ComputeShader\TestComputeShader.cpp">
+      <Filter>Source\ComputeShader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
