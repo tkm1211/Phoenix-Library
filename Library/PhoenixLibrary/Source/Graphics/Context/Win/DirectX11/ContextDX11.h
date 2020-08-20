@@ -107,6 +107,9 @@ namespace Phoenix
 			// シェーダーリソースビュー設定
 			void SetShaderResources(ShaderType shadowType, u32 startSlot, u32 numViews, ITexture* texture[]) override;
 
+			// アンオーダーアクセスビュー設定
+			void SetUnorderedAccess(u32 startSlot, u32 numViews, ITexture* texture[], u32* uavInitialCounts) override;
+
 			// ブレンドステート設定
 			void SetBlend(IBlend* blend, const f32* blendFactor, u32 samplerMask) override;
 
@@ -169,6 +172,9 @@ namespace Phoenix
 
 			// サンプラステート取得
 			ISampler* GetSamplerState(SamplerState type) override { return samplerState[static_cast<int>(type)].get(); }
+		
+			// バッファコピー
+			void CopyResource(IBuffer* destinationBuffer, IBuffer* sourceBuffer) override;
 		};
 	} // namespace Graphics
 } // namespace Phoenix

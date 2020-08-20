@@ -26,15 +26,9 @@ namespace Phoenix
 		
 			// 終了化
 			virtual void Finalize() = 0;
-		
-			// シェーダー開始
-			virtual void Begin(Graphics::IGraphicsDevice* graphicsDevice) = 0;
-		
-			// シェーダー終了
-			virtual void End(Graphics::IGraphicsDevice* graphicsDevice) = 0;
-		
-			// 描画
-			virtual void Dispatch(Graphics::IGraphicsDevice* graphicsDevice, u32 x, u32 y, u32 z) = 0;
+
+			// 実行
+			virtual void Run(Graphics::IGraphicsDevice* graphicsDevice) = 0;
 		};
 	} // namespace FrameWork
 } // namespace Phoenix

@@ -22,6 +22,7 @@ namespace Phoenix
 		{
 			Vertex, // 頂点シェーダー
 			Pixel,  // ピクセルシェーダー
+			Compute,  // コンピュートシェーダー
 
 			TypeNum
 		} ShaderType;
@@ -73,6 +74,9 @@ namespace Phoenix
 
 			// シェーダーリソースビュー設定
 			virtual void SetShaderResources(ShaderType shadowType, u32 startSlot, u32 numViews, ITexture* texture[]) = 0;
+
+			// アンオーダーアクセスビュー設定
+			virtual void SetUnorderedAccess(u32 startSlot, u32 numViews, ITexture* texture[], u32* uavInitialCounts) = 0;
 
 			// ブレンドステート設定
 			virtual void SetBlend(IBlend* blend, const f32* blendFactor, u32 samplerMask) = 0;
@@ -136,6 +140,9 @@ namespace Phoenix
 
 			// サンプラステート取得
 			virtual ISampler* GetSamplerState(SamplerState type) = 0;
+
+			// バッファコピー
+			virtual void CopyResource(IBuffer* destinationBuffer, IBuffer* sourceBuffer) = 0;
 		};
 	} // namespace Graphics
 } // namespace Phoenix

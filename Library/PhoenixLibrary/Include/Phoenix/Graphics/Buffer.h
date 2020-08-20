@@ -38,7 +38,7 @@ namespace Phoenix
 		} 	PhoenixBindFlag;
 
 		typedef
-		enum class PhoenixResouceMiscFlag
+		enum PhoenixResouceMiscFlag
 		{
 			ResouceMiscGenerateMips = 0x1L,
 			ResouceMiscShader = 0x2L,
@@ -60,7 +60,7 @@ namespace Phoenix
 		} 	PhoenixResouceMiscFlag;
 
 		typedef
-		enum class PhoenixCPUAccessFlag
+		enum PhoenixCPUAccessFlag
 		{
 			CPUAccessWrite = 0x10000L,
 			CPUAccessRead = 0x20000L
@@ -129,6 +129,9 @@ namespace Phoenix
 
 			// èIóπâª
 			virtual void Finalize() = 0;
+
+			// èÓïÒéÊìæ
+			virtual void GetDesc(PhoenixBufferDesc* desc) = 0;
 		};
 	} // namespace Graphics
 } // namespace Phoenix

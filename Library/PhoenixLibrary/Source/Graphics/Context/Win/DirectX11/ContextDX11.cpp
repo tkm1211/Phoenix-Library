@@ -350,8 +350,31 @@ namespace Phoenix
 				deviceContext->PSSetShaderResources(startSlot, numViews, d3dShaderResourceViews);
 				break;
 
+			case ShaderType::Compute:
+				deviceContext->CSSetShaderResources(startSlot, numViews, d3dShaderResourceViews);
+				break;
+
 			default: break;
 			}
+		}
+
+		// アンオーダーアクセスビュー設定
+		void ContextDX11::SetUnorderedAccess(u32 startSlot, u32 numViews, ITexture* texture[], u32* uavInitialCounts)
+		{
+			ID3D11UnorderedAccessView* d3dUnorderedAccessViews[8] = { nullptr };
+			u32 size = static_cast<u32>(sizeof(texture));
+			numViews = numViews < size ? numViews : size;
+
+			for (u32 i = 0; i < numViews; i++)
+			{
+				TextureDX11* textureDX11 = static_cast<TextureDX11*>(texture[i]);
+				if (textureDX11 != nullptr)
+				{
+					d3dUnorderedAccessViews[i] = textureDX11->GetD3DUnorderedAccessView();
+				}
+			}
+
+			deviceContext->CSSetUnorderedAccessViews(startSlot, numViews, d3dUnorderedAccessViews, uavInitialCounts);
 		}
 
 		// ブレンドステート設定
@@ -607,6 +630,15 @@ namespace Phoenix
 			//}
 
 			//UpdateSubresource(cbBone.get(), 0, 0, &cb, 0, 0);
+		}
+
+		// バッファコピー
+		void ContextDX11::CopyResource(IBuffer* destinationBuffer, IBuffer* sourceBuffer)
+		{
+			ID3D11Buffer* d3dDestinationBuffer = static_cast<BufferDX11*>(destinationBuffer)->GetD3DBuffer();
+			ID3D11Buffer* d3dSourceBuffer = static_cast<BufferDX11*>(sourceBuffer)->GetD3DBuffer();
+
+			deviceContext->CopyResource(d3dDestinationBuffer, d3dSourceBuffer);
 		}
 	} // namespace Graphics
 } // namespace Phoenix

@@ -7,6 +7,7 @@
 #include "Phoenix/Graphics/Device.h"
 #include "Phoenix/OS/Resource.h"
 #include "Phoenix/Math/Color.h"
+#include "Phoenix/Graphics/Buffer.h"
 
 
 namespace Phoenix
@@ -189,6 +190,29 @@ namespace Phoenix
 			//FORCE_UINT = 0xffffffff
 		};
 
+		enum BufferExSRVFlag
+		{
+			BufferExSRVFlagRAW = 0x1
+		};
+
+		enum BufferUAVFlag
+		{
+			BufferUAVFlagRAW = 0x1,
+			BufferUAVFlagAppEnd = 0x2,
+			BufferUAVFlagCounter = 0x4
+		};
+
+		enum UAVDimension
+		{
+			UNKNOWN = 0,
+			BUFFER = 1,
+			TEXTURE1D = 2,
+			TEXTURE1DARRAY = 3,
+			TEXTURE2D = 4,
+			TEXTURE2DARRAY = 5,
+			TEXTURE3D = 8
+		};
+
 		//****************************************************************************
 		// テクスチャ設定記述
 		//****************************************************************************
@@ -218,6 +242,159 @@ namespace Phoenix
 			u32	 sysMemSize;				// 初期化データサイズ
 		};
 
+		struct BufferSRV
+		{
+			union
+			{
+				u32 firstElement;
+				u32 elementOffset;
+			};
+			union
+			{
+				u32 numElements;
+				u32 elementWidth;
+			};
+		};
+
+		struct BufferExSRV
+		{
+			u32 firstElement;
+			u32 numElements;
+			u32 flags;
+		};
+
+		struct Tex1DSRV
+		{
+			u32 mostDetailedMip;
+			u32 mipLevels;
+		};
+
+		struct Tex1DArraySRV
+		{
+			u32 mostDetailedMip;
+			u32 mipLevels;
+			u32 firstArraySlice;
+			u32 arraySize;
+		};
+
+		struct Tex2DSRV
+		{
+			u32 mostDetailedMip;
+			u32 mipLevels;
+		};
+
+		struct Tex2DArraySRV
+		{
+			u32 mostDetailedMip;
+			u32 mipLevels;
+			u32 firstArraySlice;
+			u32 arraySize;
+		};
+
+		struct Tex3DSRV
+		{
+			u32 mostDetailedMip;
+			u32 mipLevels;
+		};
+
+		struct TexCubeSRV
+		{
+			u32 mostDetailedMip;
+			u32 mipLevels;
+		};
+
+		struct TexCubeArraySRV
+		{
+			u32 mostDetailedMip;
+			u32 mipLevels;
+			u32 first2DArrayFace;
+			u32 numCubes;
+		};
+
+		struct Tex2DMSSRV
+		{
+			u32 unusedFieldNothingToDefine;
+		};
+
+		struct Tex2DMSArraySRV
+		{
+			u32 firstArraySlice;
+			u32 arraySize;
+		};
+
+		struct ShaderResouceDesc
+		{
+			TextureFormatDx format;
+			TextureDimensionDx viewDimension;
+			union
+			{
+				BufferSRV buffer;
+				Tex1DSRV texture1D;
+				Tex1DArraySRV texture1DArray;
+				Tex2DSRV texture2D;
+				Tex2DArraySRV texture2DArray;
+				Tex2DMSSRV texture2DMS;
+				Tex2DMSArraySRV texture2DMSArray;
+				Tex3DSRV texture3D;
+				TexCubeSRV textureCube;
+				TexCubeArraySRV textureCubeArray;
+				BufferExSRV bufferEx;
+			};
+		};
+
+		struct BufferUAV
+		{
+			u32 firstElement;
+			u32 numElements;
+			u32 flags;
+		};
+
+		struct Tex1DUAV
+		{
+			u32 mipSlice;
+		};
+
+		struct Tex1DArrayUAV
+		{
+			u32 mipSlice;
+			u32 firstArraySlice;
+			u32 arraySize;
+		};
+
+		struct Tex2DUAV
+		{
+			u32 mipSlice;
+		};
+
+		struct Tex2DArrayUAV
+		{
+			u32 mipSlice;
+			u32 firstArraySlice;
+			u32 arraySize;
+		};
+
+		struct Tex3DUAV
+		{
+			u32 mipSlice;
+			u32 firstWSlice;
+			u32 wSize;
+		};
+
+		struct UnorderedAccessViewDesc
+		{
+			TextureFormatDx format;
+			UAVDimension viewDimension;
+			union
+			{
+				BufferUAV buffer;
+				Tex1DUAV texture1D;
+				Tex1DArrayUAV texture1DArray;
+				Tex2DUAV texture2D;
+				Tex2DArrayUAV texture2DArray;
+				Tex3DUAV texture3D;
+			};
+		};
+
 		//****************************************************************************
 		// マテリアル種類
 		//****************************************************************************
@@ -242,6 +419,12 @@ namespace Phoenix
 
 			// 初期化
 			virtual bool Initialize(IDevice* device, const TextureDesc& desc) = 0;
+
+			// 初期化
+			virtual bool Initialize(IDevice* device, const ShaderResouceDesc& desc, IBuffer* buffer) = 0;
+
+			// 初期化
+			virtual bool Initialize(IDevice* device, const UnorderedAccessViewDesc& desc, IBuffer* buffer) = 0;
 
 			// 初期化
 			virtual bool Initialize(IDevice* device, const char* filename, MaterialType materialType, const Math::Color& color) = 0;

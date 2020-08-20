@@ -28,6 +28,9 @@ namespace Phoenix
 			// 終了化
 			void Finalize() override;
 
+			// 情報取得
+			void GetDesc(PhoenixBufferDesc* desc) override;
+
 			// D3Dバッファー取得
 			ID3D11Buffer* GetD3DBuffer() { return buffer; }
 		};

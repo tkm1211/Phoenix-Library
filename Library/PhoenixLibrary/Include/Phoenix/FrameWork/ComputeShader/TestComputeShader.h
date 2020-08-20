@@ -16,16 +16,24 @@ namespace Phoenix
 
 		class TestComputeShader : public IComputeShader
 		{
-		private:
-			static const u32 particleMaxSize = 10;
+		public:
+			static const u32 particleMaxSize = 32;
 
 		private:
 			std::unique_ptr<Graphics::IComputeShader> shader;
-			std::unique_ptr<Graphics::IBuffer> srv;
-			std::unique_ptr<Graphics::IBuffer> uav;
+
+			std::unique_ptr<Graphics::IBuffer> particleBuffer01;
+			std::unique_ptr<Graphics::IBuffer> particleBuffer02;
+			std::unique_ptr<Graphics::IBuffer> particleBufferResult;
+
+			std::unique_ptr<Graphics::ITexture> particleBufferSRV01;
+			std::unique_ptr<Graphics::ITexture> particleBufferSRV02;
+			std::unique_ptr<Graphics::ITexture> particleBufferUAV;
 
 			ParticleParameter particle[particleMaxSize];
-			ParticleParameter resultParticle;
+
+		public:
+			ParticleParameter resultParticle[particleMaxSize];
 
 		public:
 			TestComputeShader() {}
@@ -41,14 +49,8 @@ namespace Phoenix
 			// 終了化
 			void Finalize() override;
 
-			// シェーダー開始
-			void Begin(Graphics::IGraphicsDevice* graphicsDevice) override;
-
-			// シェーダー終了
-			void End(Graphics::IGraphicsDevice* graphicsDevice) override;
-
 			// 実行
-			void Dispatch(Graphics::IGraphicsDevice* graphicsDevice, u32 x, u32 y, u32 z) override;
+			void Run(Graphics::IGraphicsDevice* graphicsDevice) override;
 		};
 	}
 }

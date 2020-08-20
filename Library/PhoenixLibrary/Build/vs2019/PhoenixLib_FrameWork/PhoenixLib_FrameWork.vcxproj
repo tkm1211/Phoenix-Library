@@ -37,7 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.cpp" />
-    <ClCompile Include="..\..\..\Source\ComputeShader\TestComputeShader.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\TestComputeShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\FrameBuffer\FrameBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\IBL\IBL.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Input\InputDevice.cpp" />
@@ -46,6 +46,8 @@
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Quad\Quad.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicShader.cpp" />
@@ -160,6 +162,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -195,6 +199,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

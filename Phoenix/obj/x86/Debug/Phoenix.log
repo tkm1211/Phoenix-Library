@@ -1,2 +1,21 @@
-﻿  SceneGame.cpp
+﻿  AvoidState.cpp
+  DamageState.cpp
+  JumpAttackState.cpp
+  MoveState.cpp
+  SwingAttackState.cpp
+  WaitState.cpp
+  Boss.cpp
+  BossAI.cpp
+  Main.cpp
+  Player.cpp
+  GeometricPrimitive.cpp
+  SceneCommonData.cpp
+  SceneGame.cpp
+  SceneSystem.cpp
+  SceneTitle.cpp
+  BossUI.cpp
+  PlayerUI.cpp
+  UISystem.cpp
+  コードを生成中...
+     ライブラリ D:\Phoenix Project\Phoenix\Phoenix\.\bin\x86\Debug\Phoenix.lib とオブジェクト D:\Phoenix Project\Phoenix\Phoenix\.\bin\x86\Debug\Phoenix.exp を作成中
   Phoenix.vcxproj -> D:\Phoenix Project\Phoenix\Phoenix\.\bin\x86\Debug\Phoenix.exe

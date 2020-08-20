@@ -5,9 +5,11 @@
 #include <algorithm>
 #include "TextureDX11.h"
 #include "Device/Win/DirectX11/DeviceDX11.h"
+#include "Buffer/Win/DirectX11/BufferDX11.h"
 #include "Phoenix/FND/Assert.h"
 #include "Phoenix/FND/Logger.h"
 #include "Phoenix/FND/Util.h"
+#include "Phoenix/FND/STD.h"
 #include "../../DirectXTex-master/WICTextureLoader/WICTextureLoader.h"
 #include "../../DirectXTex-master/DirectXTex/DirectXTex.h"
 
@@ -229,6 +231,56 @@ namespace Phoenix
 					}
 				}
 			}
+
+			return true;
+		}
+
+		// èâä˙âª
+		bool TextureDX11::Initialize(IDevice* device, const ShaderResouceDesc& desc, IBuffer* buffer)
+		{
+			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
+			ID3D11Buffer* d3dBuffer = static_cast<BufferDX11*>(buffer)->GetD3DBuffer();
+
+			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+			Phoenix::FND::MemSet(&srvDesc, 0, sizeof(srvDesc));
+			{
+				srvDesc.Format = static_cast<DXGI_FORMAT>(desc.format);
+				srvDesc.ViewDimension = static_cast<D3D11_SRV_DIMENSION>(desc.viewDimension);
+				{
+					srvDesc.Buffer.FirstElement = desc.buffer.firstElement;
+					srvDesc.Buffer.ElementOffset = desc.buffer.elementOffset;
+					srvDesc.Buffer.NumElements = desc.buffer.numElements;
+					srvDesc.Buffer.ElementWidth = desc.buffer.elementWidth;
+
+					srvDesc.BufferEx.FirstElement = desc.bufferEx.firstElement;
+					srvDesc.BufferEx.NumElements = desc.bufferEx.numElements;
+					srvDesc.BufferEx.Flags = desc.bufferEx.flags;
+				}
+			}
+
+			d3dDevice->CreateShaderResourceView(d3dBuffer, &srvDesc, &shaderResourceView);
+
+			return true;
+		}
+
+		bool TextureDX11::Initialize(IDevice* device, const UnorderedAccessViewDesc& desc, IBuffer* buffer)
+		{
+			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
+			ID3D11Buffer* d3dBuffer = static_cast<BufferDX11*>(buffer)->GetD3DBuffer();
+
+			D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+			Phoenix::FND::MemSet(&uavDesc, 0, sizeof(uavDesc));
+			{
+				uavDesc.Format = static_cast<DXGI_FORMAT>(desc.format);
+				uavDesc.ViewDimension = static_cast<D3D11_UAV_DIMENSION>(desc.viewDimension);
+				{
+					uavDesc.Buffer.FirstElement = desc.buffer.firstElement;
+					uavDesc.Buffer.NumElements = desc.buffer.numElements;
+					uavDesc.Buffer.Flags = desc.buffer.flags;
+				}
+			}
+
+			d3dDevice->CreateUnorderedAccessView(d3dBuffer, &uavDesc, &unorderedAccessView);
 
 			return true;
 		}

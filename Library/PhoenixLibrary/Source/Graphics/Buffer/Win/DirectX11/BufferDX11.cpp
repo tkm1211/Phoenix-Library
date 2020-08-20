@@ -76,5 +76,20 @@ namespace Phoenix
 		{
 			FND::SafeRelease(buffer);
 		}
+
+		// î•ñŽæ“¾
+		void BufferDX11::GetDesc(PhoenixBufferDesc* desc)
+		{
+			D3D11_BUFFER_DESC d3dDesc = {};
+			FND::MemSet(&d3dDesc, 0, sizeof(d3dDesc));
+			buffer->GetDesc(&d3dDesc);
+
+			desc->usage = static_cast<PhoenixUsage>(d3dDesc.Usage);
+			desc->bindFlags = d3dDesc.BindFlags;
+			desc->cpuAccessFlags = d3dDesc.CPUAccessFlags;
+			desc->miscFlags = d3dDesc.MiscFlags;
+			desc->byteWidth = d3dDesc.ByteWidth;
+			desc->structureByteStride = d3dDesc.StructureByteStride;
+		}
 	} // namespace Graphics
 } // namespace Phoenix

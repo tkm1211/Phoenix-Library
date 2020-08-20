@@ -137,7 +137,7 @@
     <ClCompile Include="..\..\..\Source\FrameWork\IBL\IBL.cpp">
       <Filter>Source\IBL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\ComputeShader\TestComputeShader.cpp">
+    <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\TestComputeShader.cpp">
       <Filter>Source\ComputeShader</Filter>
     </ClCompile>
   </ItemGroup>

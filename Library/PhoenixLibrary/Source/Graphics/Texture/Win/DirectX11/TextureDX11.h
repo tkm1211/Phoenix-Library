@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 #include "Phoenix/Graphics/Texture.h"
+#include "Phoenix/Graphics/Buffer.h"
 
 
 namespace Phoenix
@@ -22,6 +23,7 @@ namespace Phoenix
 				ID3D11Texture3D* texture3d;
 			};
 			ID3D11ShaderResourceView* shaderResourceView = nullptr;
+			ID3D11UnorderedAccessView* unorderedAccessView = nullptr;
 
 		public:
 			TextureDX11() {}
@@ -32,6 +34,12 @@ namespace Phoenix
 
 			// 初期化
 			bool Initialize(IDevice* device, const TextureDesc& desc) override;
+
+			// 初期化
+			bool Initialize(IDevice* device, const ShaderResouceDesc& desc, IBuffer* buffer) override;
+
+			// 初期化
+			bool Initialize(IDevice* device, const UnorderedAccessViewDesc& desc, IBuffer* buffer) override;
 
 			// 初期化
 			bool Initialize(IDevice* device, const char* filename, MaterialType materialType, const Math::Color& color) override;
@@ -53,6 +61,9 @@ namespace Phoenix
 
 			// D3Dシェーダーリソースビュー取得
 			ID3D11ShaderResourceView* GetD3DShaderResourceView() const { return shaderResourceView; }
+
+			// D3Dアンオーダーアクセスビュー取得
+			ID3D11UnorderedAccessView* GetD3DUnorderedAccessView() const { return unorderedAccessView; }
 
 			// D3Dシェーダーリソースビュー設定
 			void SetD3DShaderResourceView(ID3D11ShaderResourceView* d3dShaderResourceView) { shaderResourceView = d3dShaderResourceView; }

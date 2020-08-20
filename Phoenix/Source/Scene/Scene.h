@@ -23,6 +23,7 @@
 #include "Phoenix/FrameWork/FrameBuffer/FrameBuffer.h"
 #include "Phoenix/FrameWork/Quad/Quad.h"
 #include "Phoenix/FrameWork/IBL/IBL.h"
+#include "Phoenix/FrameWork/ComputeShader/TestComputeShader.h"
 
 
 class SceneSystem;
@@ -118,6 +119,8 @@ private:
 	// IBL
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> skyFrameBuffer[6];
 	std::unique_ptr<Phoenix::FrameWork::IBL> ibl;
+
+	std::unique_ptr<Phoenix::FrameWork::IComputeShader> testComputeShader;
 
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;

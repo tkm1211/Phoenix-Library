@@ -37,6 +37,9 @@
     <Filter Include="Source\Standard">
       <UniqueIdentifier>{305ac8d7-361a-4af0-8e05-b2113ff392f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\ComputeShader">
+      <UniqueIdentifier>{ea9aa170-fa90-41ec-aad5-6e8e40f6962d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingVS.hlsl">
@@ -128,6 +131,9 @@
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\StandardVSSkin.hlsl">
       <Filter>Source\Standard</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\ComputeShader\TestComputeShader.hlsl">
+      <Filter>Source\ComputeShader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

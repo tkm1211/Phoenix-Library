@@ -140,6 +140,11 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	}
 
 	{
+		testComputeShader = Phoenix::FrameWork::TestComputeShader::Create();
+		testComputeShader->Initialize(graphicsDevice);
+	}
+
+	{
 		// エフェクトの読込
 		//auto effect = Effekseer::Effect::Create(manager, EFK_EXAMPLE_ASSETS_DIR_U16 "Laser01.efk");
 		//effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\Resources\\Laser01.efk");
@@ -843,6 +848,23 @@ void SceneGame::GUI()
 				ImGui::TreePop();
 			}
 			ImGui::DragFloat2("textureSize", &texSize.x);
+
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("ComputeShader"))
+		{
+			static bool isRun = false;
+			ImGui::Checkbox("On", &isRun);
+			if (isRun)
+			{
+				testComputeShader->Run(graphicsDevice);
+			}
+
+			Phoenix::FrameWork::TestComputeShader* test = static_cast<Phoenix::FrameWork::TestComputeShader*>(testComputeShader.get());
+			for (int i = 0; i < test->particleMaxSize; i++)
+			{
+				ImGui::Text("resutl : %f, %f, %f", test->resultParticle[i].pos.x, test->resultParticle[i].pos.y, test->resultParticle[i].pos.z);
+			}
 
 			ImGui::TreePop();
 		}
