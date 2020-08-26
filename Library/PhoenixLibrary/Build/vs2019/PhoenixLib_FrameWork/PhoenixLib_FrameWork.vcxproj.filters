@@ -99,6 +99,9 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\ComputeShader.h">
       <Filter>Include\ComputeShader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\BitonicSort.h">
+      <Filter>Include\ComputeShader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -138,6 +141,12 @@
       <Filter>Source\IBL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\TestComputeShader.cpp">
+      <Filter>Source\ComputeShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\BitonicSort.cpp">
+      <Filter>Source\ComputeShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\ComputeShader.cpp">
       <Filter>Source\ComputeShader</Filter>
     </ClCompile>
   </ItemGroup>

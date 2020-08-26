@@ -125,7 +125,7 @@ namespace Phoenix
 				const VertexBuffer& vb = vertexBuffers[(int)vbKind[i]];
 				if (!vb.buffer)
 				{
-					PHOENIX_LOG_FWK_WARNING("WARNING : シェーダーとの互換性がありません。それにより描画をスキップしました。\n");
+					PHOENIX_LOG_FRAMEWORK_WARNING("WARNING : シェーダーとの互換性がありません。それにより描画をスキップしました。\n");
 					return;
 				}
 				d3dVbs[i] = static_cast<BufferDX11*>(vb.buffer.get())->GetD3DBuffer();

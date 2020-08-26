@@ -550,6 +550,10 @@ namespace Phoenix
 				deviceContext->PSSetConstantBuffers(startSlot, numViews, d3dBuffer);
 				break;
 
+			case ShaderType::Compute:
+				deviceContext->CSSetConstantBuffers(startSlot, numViews, d3dBuffer);
+				break;
+
 			default: break;
 			}
 		}

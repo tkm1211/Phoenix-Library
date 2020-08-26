@@ -114,6 +114,12 @@ namespace Phoenix
 			return fabsf(x);
 		}
 
+		// logf
+		f32 Log(f32 x, f32 y)
+		{
+			return logf(x) / logf(y);
+		}
+
 		// log10f
 		f32 Log10(f32 x)
 		{

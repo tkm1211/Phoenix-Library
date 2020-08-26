@@ -142,6 +142,9 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	{
 		testComputeShader = Phoenix::FrameWork::TestComputeShader::Create();
 		testComputeShader->Initialize(graphicsDevice);
+
+		bitonicSort = Phoenix::FrameWork::BitonicSort::Create();
+		bitonicSort->Initialize(graphicsDevice);
 	}
 
 	{
@@ -864,6 +867,40 @@ void SceneGame::GUI()
 			for (int i = 0; i < test->particleMaxSize; i++)
 			{
 				ImGui::Text("resutl : %f, %f, %f", test->resultParticle[i].pos.x, test->resultParticle[i].pos.y, test->resultParticle[i].pos.z);
+			}
+
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("BitonicSort"))
+		{
+			static Phoenix::u32 size = 512;
+			static bool isInit = false;
+			static Phoenix::FrameWork::SortData datas[512];
+
+			if (!isInit)
+			{
+				for (Phoenix::u32 i = 0; i < size; i++)
+				{
+					datas[i].key = 0.0f;
+					datas[i].index = i;
+				}
+				isInit = true;
+			}
+
+			if (ImGui::Button("Run"))
+			{
+				for (Phoenix::u32 i = 0; i < size; i++)
+				{
+					datas[i].key = static_cast<Phoenix::f32>(rand() % size);
+					datas[i].index = i;
+				}
+
+				bitonicSort->Run(graphicsDevice, &datas[0], size);
+			}
+
+			for (Phoenix::u32 i = 0; i < size; i++)
+			{
+				ImGui::Text("resutl : %f, %d", datas[i].key, datas[i].index);
 			}
 
 			ImGui::TreePop();

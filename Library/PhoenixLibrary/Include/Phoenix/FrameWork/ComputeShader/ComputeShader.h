@@ -9,6 +9,23 @@ namespace Phoenix
 	namespace FrameWork
 	{
 		//****************************************************************************
+		// コンピュートシェーダー用バッファ作成関数
+		//****************************************************************************
+		bool CreateStructuredBuffer(Graphics::IDevice* device, u32 elementSize, u32 count, void* initData, Graphics::IBuffer* buffer);
+
+		//****************************************************************************
+		// コンピュートシェーダー用テクスチャ作成関数
+		//****************************************************************************
+		bool CreateBufferSRV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView);
+
+		bool CreateBufferUAV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView);
+
+		//****************************************************************************
+		// コンピュートシェーダー用データ抽出関数
+		//****************************************************************************
+		void CreateAndCopyToBuffer(Graphics::IDevice* device, Graphics::IContext* context, Graphics::IBuffer* buffer, Graphics::IBuffer* copyBuffer);
+
+		//****************************************************************************
 		// コンピュートシェーダー基底クラス
 		//****************************************************************************
 		class IComputeShader

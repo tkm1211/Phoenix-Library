@@ -24,6 +24,7 @@
 #include "Phoenix/FrameWork/Quad/Quad.h"
 #include "Phoenix/FrameWork/IBL/IBL.h"
 #include "Phoenix/FrameWork/ComputeShader/TestComputeShader.h"
+#include "Phoenix/FrameWork/ComputeShader/BitonicSort.h"
 
 
 class SceneSystem;
@@ -120,11 +121,12 @@ private:
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> skyFrameBuffer[6];
 	std::unique_ptr<Phoenix::FrameWork::IBL> ibl;
 
-	std::unique_ptr<Phoenix::FrameWork::IComputeShader> testComputeShader;
-
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
 	Phoenix::Math::Vector2 texSize;
+
+	std::unique_ptr<Phoenix::FrameWork::IComputeShader> testComputeShader;
+	std::unique_ptr<Phoenix::FrameWork::BitonicSort> bitonicSort;
 
 	Phoenix::f32 dis = 1000.0f;
 	Phoenix::f32 width = 3000.0f;

@@ -57,6 +57,9 @@ namespace Phoenix
 		// fabsf
 		extern f32 FAbs(f32 x);
 
+		// logf
+		extern f32 Log(f32 x, f32 y);
+
 		// log10f
 		extern f32 Log10(f32 x);
 

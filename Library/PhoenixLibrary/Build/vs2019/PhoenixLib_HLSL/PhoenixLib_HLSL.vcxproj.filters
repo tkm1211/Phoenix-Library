@@ -135,6 +135,9 @@
     <FxCompile Include="..\..\..\Source\HLSL\ComputeShader\TestComputeShader.hlsl">
       <Filter>Source\ComputeShader</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\ComputeShader\BitonicSort.hlsl">
+      <Filter>Source\ComputeShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\Bloom.hlsli">
