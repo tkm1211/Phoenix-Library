@@ -145,6 +145,9 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 
 		bitonicSort = Phoenix::FrameWork::BitonicSort::Create();
 		bitonicSort->Initialize(graphicsDevice);
+
+		gpuParticle = Phoenix::FrameWork::GPUParticle::Create();
+		gpuParticle->Initialize(graphicsDevice);
 	}
 
 	{
@@ -215,7 +218,7 @@ void SceneGame::Update()
 			player->SetPosition(pos);
 			player->UpdateTrasform();
 		}*/
-		if (SphereVsSphere(Phoenix::Math::Vector3(playerPos.x, playerPos.y + 50.0f, playerPos.z), Phoenix::Math::Vector3(bossPos.x, bossPos.y + 50.0f, bossPos.z), player->GetRadius(), boss->GetRadius()))
+		if (SphereVsSphere(Phoenix::Math::Vector3(playerPos.x, playerPos.y + 0.5f, playerPos.z), Phoenix::Math::Vector3(bossPos.x, bossPos.y + 0.5f, bossPos.z), player->GetRadius(), boss->GetRadius()))
 		{
 			Phoenix::Math::Vector3 pos;
 			Phoenix::Math::Vector3 dir = player->GetPosition() - boss->GetPosition();
@@ -289,8 +292,8 @@ void SceneGame::Update()
 			Phoenix::Math::Vector3 bossPos = boss->GetPosition();
 			Phoenix::Math::Vector3 playerPos = player->GetPosition();
 
-			if (lockOnCamera) camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 125.0f, 0.0f), Phoenix::Math::Vector3(0.0f, 185.0f, 0.0f));
-			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 125.0f, 0.0f));
+			if (lockOnCamera) camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
 		}
 		//camera->Update();
 	}
@@ -306,6 +309,12 @@ void SceneGame::Update()
 	{
 		currentShader = basicSkinShader;
 	}
+
+	/*{
+		gpuParticle->Burst(100);
+		gpuParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
+		gpuParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+	}*/
 
 	// エフェクト更新
 	/*{
@@ -412,6 +421,7 @@ void SceneGame::Draw()
 		ibl->Deactivate(graphicsDevice);
 	}*/
 
+#if 1
 	// Generate ShadowMap
 	{
 		shadowMap->Clear(graphicsDevice, 0, 1.0f, 1.0f, 1.0f, 1.0f);
@@ -462,7 +472,7 @@ void SceneGame::Draw()
 				// ワールド行列を作成
 				Phoenix::Math::Matrix W;
 				{
-					Phoenix::Math::Vector3 scale = { 40.0f, 40.0f, 40.0f };
+					Phoenix::Math::Vector3 scale = { 40.0f, 40.0f, 40.0f }; // TODO : 修正
 					Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
 					Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
 
@@ -544,9 +554,9 @@ void SceneGame::Draw()
 				// ワールド行列を作成
 				Phoenix::Math::Matrix W;
 				{
-					Phoenix::Math::Vector3 scale = { 40.0f, 40.0f, 40.0f };
+					Phoenix::Math::Vector3 scale = { 1.0f, 1.0f, 1.0f };
 					Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
-					Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
+					Phoenix::Math::Vector3 translate = { 0.0f, -22.05f, 0.0f };
 
 					Phoenix::Math::Matrix S, R, T;
 					S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
@@ -684,9 +694,10 @@ void SceneGame::Draw()
 	{
 		quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 	}
-
+#endif
 	// Draw UI and Effect.
 	{
+#if 1
 		if (lockOnCamera)
 		{
 			/*Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
@@ -695,15 +706,20 @@ void SceneGame::Draw()
 			Phoenix::f32 size = 128.0f / 4.0f;
 
 			Phoenix::Math::Vector3 bossPos = boss->GetPosition();
-			bossPos.y += 150.0f;
+			bossPos.y += 1.5f;
 
 			Phoenix::Math::Vector3 screenPos = WorldToScreen(bossPos);
 			screenPos.x -= size / 2.0f;
 
 			quad->Draw(graphicsDevice, targetMark, screenPos.x, screenPos.y, size, size);
 		}
-
+#endif
+		/*{
+			gpuParticle->Draw(graphicsDevice, *camera);
+		}*/
+#if 1
 		uiSystem->Draw(graphicsDevice);
+#endif
 	}
 	
 	// Draw frameBuffer Texture.
@@ -902,6 +918,17 @@ void SceneGame::GUI()
 			{
 				ImGui::Text("resutl : %f, %d", datas[i].key, datas[i].index);
 			}
+
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("GPUParticle"))
+		{
+			if (ImGui::Button("Burst"))
+			{
+				gpuParticle->Burst(100);
+			}
+
+			ImGui::DragFloat3("Pos", &particlePos.x, 0.1f);
 
 			ImGui::TreePop();
 		}

@@ -27,6 +27,9 @@ namespace Phoenix
 				Math::Matrix view;
 				Math::Matrix projection;
 				Math::Matrix viewProjection;
+				Math::Matrix viewInv;
+				Math::Matrix projectionInv;
+				Math::Matrix viewProjectionInv;
 				Math::Vector4 viewport;
 			};
 
@@ -76,6 +79,7 @@ namespace Phoenix
 
 			// •`‰æ
 			void Draw(u32 vertexCount, u32 startVertexLocation) override;
+			void DrawInstancedIndirect(IBuffer* buffer, u32 offset) override;
 
 			// •`‰æŠJŽn
 			void Begin() override;

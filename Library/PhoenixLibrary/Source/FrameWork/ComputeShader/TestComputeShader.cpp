@@ -29,25 +29,25 @@ namespace Phoenix
 			}
 
 			particleBuffer01 = Phoenix::Graphics::IBuffer::Create();
-			if (!CreateStructuredBuffer(device, sizeof(ParticleParameter), particleMaxSize, &particle[0], particleBuffer01.get()))
+			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, sizeof(ParticleParameter) * particleMaxSize, particleMaxSize, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), &particle[0], particleBuffer01.get()))
 			{
 				return false;
 			}
 
 			particleBufferResult = Phoenix::Graphics::IBuffer::Create();
-			if (!CreateStructuredBuffer(device, sizeof(ParticleParameter), particleMaxSize, nullptr, particleBufferResult.get()))
+			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, sizeof(ParticleParameter) * particleMaxSize, particleMaxSize, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr, particleBufferResult.get()))
 			{
 				return false;
 			}
 
 			particleBufferSRV01 = Phoenix::Graphics::ITexture::Create();
-			if (!CreateBufferSRV(device, particleBuffer01.get(), particleBufferSRV01.get()))
+			if (!ComputeShaderBufferFactor::CreateBufferSRV(device, particleBuffer01.get(), particleBufferSRV01.get()))
 			{
 				return false;
 			}
 
 			particleBufferUAV = Phoenix::Graphics::ITexture::Create();
-			if (!CreateBufferUAV(device, particleBufferResult.get(), particleBufferUAV.get()))
+			if (!ComputeShaderBufferFactor::CreateBufferUAV(device, particleBufferResult.get(), particleBufferUAV.get()))
 			{
 				return false;
 			}
@@ -86,7 +86,7 @@ namespace Phoenix
 			shader->Deactivate(device);
 
 			std::unique_ptr<Graphics::IBuffer> copyBuffer = Graphics::IBuffer::Create();
-			CreateAndCopyToBuffer(device, context, particleBufferResult.get(), copyBuffer.get());
+			ComputeShaderBufferFactor::CreateAndCopyToBuffer(device, context, particleBufferResult.get(), copyBuffer.get());
 
 			Graphics::PhoenixMap map = Graphics::PhoenixMap::Read;
 			Graphics::PhoenixMappedSubresource mapedBuffer;

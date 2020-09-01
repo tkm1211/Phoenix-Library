@@ -7,9 +7,9 @@
 class JumpAttackState : public AIState
 {
 private:
-	/*static constexpr*/ float MoveSpeed = 5.0f;
-	/*static constexpr*/ float JumpSpeed = 15.0f;
-	/*static constexpr*/ float ForthSpeed = 0.4f;
+	/*static constexpr*/ float MoveSpeed = 0.05f;
+	/*static constexpr*/ float JumpSpeed = 0.15f;
+	/*static constexpr*/ float ForthSpeed = 0.004f;
 
 private:
 	bool beginTrun = false;

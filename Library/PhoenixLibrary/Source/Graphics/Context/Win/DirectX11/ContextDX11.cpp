@@ -181,6 +181,11 @@ namespace Phoenix
 		{
 			deviceContext->Draw(vertexCount, startVertexLocation);
 		}
+		void ContextDX11::DrawInstancedIndirect(IBuffer* buffer, u32 offset)
+		{
+			ID3D11Buffer* d3dBuffer = static_cast<BufferDX11*>(buffer)->GetD3DBuffer();
+			deviceContext->DrawInstancedIndirect(d3dBuffer, offset);
+		}
 
 		// •`‰æŠJŽn
 		void ContextDX11::Begin()
@@ -562,9 +567,13 @@ namespace Phoenix
 		void ContextDX11::UpdateConstantBufferScene(const Math::Matrix& viewTransform, const Math::Matrix& projectionTransform)
 		{
 			CbScene constantBufferScene;
-			constantBufferScene.view = viewTransform;
-			constantBufferScene.projection = projectionTransform;
+			constantBufferScene.view = (viewTransform);
+			constantBufferScene.projection = (projectionTransform);
 			constantBufferScene.viewProjection = Math::MatrixMultiplyTranspose(viewTransform, projectionTransform);
+
+			constantBufferScene.viewInv = Math::MatrixTranspose(Math::MatrixInverse(viewTransform));
+			constantBufferScene.projectionInv = Math::MatrixTranspose(Math::MatrixInverse(projectionTransform));
+			constantBufferScene.viewProjectionInv = Math::MatrixTranspose(Math::MatrixInverse(Math::MatrixMultiply(viewTransform, projectionTransform)));
 			
 			u32 viewportCount = 1;
 			Viewport* viewports[] = { new Viewport() };
@@ -583,9 +592,12 @@ namespace Phoenix
 		void ContextDX11::UpdateConstantBufferMesh(const Math::Matrix& worldTransform)
 		{
 			CbMesh constantBufferMesh;
-			//constantBufferMesh.world = worldTransform;
-			constantBufferMesh.world = Math::MatrixTranspose(worldTransform);
-			constantBufferMesh.worldInverse = Math::MatrixInverse(worldTransform);
+
+			Math::Matrix systemUnitTransform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+			systemUnitTransform._11 = systemUnitTransform._22 = systemUnitTransform._33 = 0.01f;
+
+			constantBufferMesh.world = Math::MatrixTranspose(systemUnitTransform * worldTransform);
+			constantBufferMesh.worldInverse = Math::MatrixInverse(systemUnitTransform * worldTransform);
 			constantBufferMesh.texture = Math::MatrixIdentity();
 
 			UpdateSubresource(cbMesh.get(), 0, 0, &constantBufferMesh, 0, 0);

@@ -6,6 +6,7 @@
 #include "../Graphics/Device/Win/DirectX11/DeviceDX11.h"
 #include "../Graphics/Context/Win/DirectX11/ContextDX11.h"
 #include "../Source/Loader/ResourceManager.h"
+#include "../Source/Graphics/Buffer/Win/DirectX11/BufferDX11.h"
 
 
 namespace Phoenix
@@ -218,6 +219,15 @@ namespace Phoenix
 		{
 			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
 			d3dDeviceContext->Dispatch(x, y, z);
+		}
+
+		// コンピュートシェーダー実行
+		void ComputeShaderDX11::DispatchIndirect(IDevice* device, IBuffer* buffer, u32 offset)
+		{
+			ID3D11DeviceContext* d3dDeviceContext = static_cast<DeviceDX11*>(device)->GetD3DContext();
+			ID3D11Buffer* d3dBuffer = static_cast<BufferDX11*>(buffer)->GetD3DBuffer();
+
+			d3dDeviceContext->DispatchIndirect(d3dBuffer, offset);
 		}
 	} // namespace Graphics
 } // namespace Phoenix

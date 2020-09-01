@@ -105,7 +105,7 @@ namespace Phoenix
 			shader->Deactivate(device);
 
 			std::unique_ptr<Graphics::IBuffer> copyBuffer = Graphics::IBuffer::Create();
-			CreateAndCopyToBuffer(device, context, buffer.get(), copyBuffer.get());
+			ComputeShaderBufferFactor::CreateAndCopyToBuffer(device, context, buffer.get(), copyBuffer.get());
 
 			Graphics::PhoenixMap map = Graphics::PhoenixMap::Read;
 			Graphics::PhoenixMappedSubresource mapedBuffer;
@@ -125,12 +125,12 @@ namespace Phoenix
 
 		bool BitonicSort::Set(Graphics::IDevice* device, SortData* data, u32 dataMaxSize)
 		{
-			if (!CreateStructuredBuffer(device, sizeof(SortData), dataMaxSize, data, buffer.get()))
+			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, sizeof(SortData) * dataMaxSize, dataMaxSize, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), data, buffer.get()))
 			{
 				return false;
 			}
 
-			if (!CreateBufferUAV(device, buffer.get(), bufferUAV.get()))
+			if (!ComputeShaderBufferFactor::CreateBufferUAV(device, buffer.get(), bufferUAV.get()))
 			{
 				return false;
 			}

@@ -44,12 +44,12 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 	// トランスフォームの初期化
 	{
 		worldMatrix = Phoenix::Math::MatrixIdentity();
-		pos = { 0,0,-1000.0f };
+		pos = { 0,0,-10.0f };
 		//rotate = { 0,0,0 };
 		rotate = { 0,0,0,1 };
 		scale = { 2.0f,2.0f,2.0f };
 		//scale = { 1.0f,1.0f,1.0f };
-		radius = 75.0f;
+		radius = 0.75f;
 		life = MaxLife;
 		accumulationDamege = 0;
 		accumulationTimeCnt = 0;
@@ -88,19 +88,19 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		collisionDatas.resize(4);
 
 		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(0).radius = 150.0f;
+		collisionDatas.at(0).radius = 1.5f;
 		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Mutant:Hips");
 
 		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(1).radius = 50.0f;
+		collisionDatas.at(1).radius = 0.5f;
 		collisionDatas.at(1).boneIndex = model->GetBoneIndex("Mutant:RightHandIndex1");
 
 		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(2).radius = 130.0f;
+		collisionDatas.at(2).radius = 1.3f;
 		collisionDatas.at(2).boneIndex = model->GetBoneIndex("Mutant:LeftHand");
 
 		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(3).radius = 265.0f;
+		collisionDatas.at(3).radius = 2.65f;
 		collisionDatas.at(3).boneIndex = -1;
 	}
 }

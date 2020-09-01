@@ -16,13 +16,13 @@ namespace Phoenix
 		//****************************************************************************
 		Camera::Camera()
 		{
-			SetPerspective(30.0f * 0.01745f, 16.0f / 9.0f, 0.1f, 1000000.0f);
+			SetPerspective(30.0f * 0.01745f, 16.0f / 9.0f, 0.1f, 100000.0f);
 			SetLookAt(Math::Vector3::OneAll, Math::Vector3::Zero, Math::Vector3::OneY);
 			Update();
 
 			rotateX = 0.5f;
-			rotateY = -3.14f;
-			distance = 500.0f;
+			rotateY = 0.0f; //-3.14f
+			distance = 5.0f;
 		}
 
 		// ビュータイプ設定
@@ -552,8 +552,8 @@ namespace Phoenix
 			eye = Phoenix::Math::Vector3Lerp(eye, (center + adjust), 0.1f);
 			front = _front /*Phoenix::Math::Vector3Lerp(front, _front, 0.05f)*/;
 
-			Math::Vector3 _pos = eye - (front * 650.0f);
-			Math::Vector3 _target = eye - (front * -750.0f);
+			Math::Vector3 _pos = eye - (front * 6.5f);
+			Math::Vector3 _target = eye - (front * -7.5f);
 			focus = _target;
 #endif
 			SetLookAt(_pos, _target, _up);
@@ -590,10 +590,10 @@ namespace Phoenix
 			focus = Phoenix::Math::Vector3Lerp(focus, (target + targetAdjust), 0.05f);
 			front = Phoenix::Math::Vector3Lerp(front, -dir, 0.05f);
 
-			Math::Vector3 _pos = eye - (front * 650.0f);
+			Math::Vector3 _pos = eye - (front * 6.5f);
 			Math::Vector3 _target = focus;
 
-			_pos.y = _pos.y <= 5.0f ? 5.0f : _pos.y;
+			_pos.y = _pos.y <= 0.05f ? 0.05f : _pos.y;
 
 			SetLookAt(_pos, _target, Math::Vector3::OneY);
 #endif

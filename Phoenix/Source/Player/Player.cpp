@@ -63,11 +63,11 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	// トランスフォームの初期化
 	{
 		worldMatrix = Phoenix::Math::MatrixIdentity();
-		pos = { 0,0,0 };
+		pos = { 0,0,135.0f };
 		rotate = { 0,0,0 };
 		//rotate = { 0,0,0,1 };
 		scale = { 1,1,1 };
-		radius = 50.0f;
+		radius = 0.5f;
 	}
 
 	// パラメーターの初期化
@@ -91,19 +91,19 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		collisionDatas.resize(4);
 
 		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(0).radius = 50.0f;
+		collisionDatas.at(0).radius = 0.5f;
 		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Hips");
 
 		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(1).radius = 25.0f;
+		collisionDatas.at(1).radius = 0.25f;
 		collisionDatas.at(1).boneIndex = model->GetBoneIndex("RightHandIndex1");
 
 		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(2).radius = 25.0f;
+		collisionDatas.at(2).radius = 0.25f;
 		collisionDatas.at(2).boneIndex = model->GetBoneIndex("LeftHandIndex1");
 
 		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(3).radius = 25.0f;
+		collisionDatas.at(3).radius = 0.25f;
 		collisionDatas.at(3).boneIndex = model->GetBoneIndex("RightFoot");
 	}
 }

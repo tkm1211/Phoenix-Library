@@ -6,6 +6,7 @@
 #include "Quaternion.h"
 #include "AABB.h"
 #include "Color.h"
+#include "Arithmetic.h"
 
 
 namespace Phoenix

@@ -44,6 +44,7 @@ namespace Phoenix
 
 			// •`‰æ
 			virtual void Draw(u32 vertexCount, u32 startVertexLocation) = 0;
+			virtual void DrawInstancedIndirect(IBuffer* buffer, u32 offset) = 0;
 
 			// •`‰æŠJŽn
 			virtual void Begin() = 0;

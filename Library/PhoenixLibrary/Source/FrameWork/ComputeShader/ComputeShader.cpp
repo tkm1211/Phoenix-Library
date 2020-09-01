@@ -11,15 +11,15 @@ namespace Phoenix
 		//****************************************************************************
 		// コンピュートシェーダー用バッファ作成関数
 		//****************************************************************************
-		bool CreateStructuredBuffer(Graphics::IDevice* device, u32 elementSize, u32 count, void* initData, Graphics::IBuffer* buffer)
+		bool ComputeShaderBufferFactor::CreateStructuredBuffer(Graphics::IDevice* device, u32 byteWidth, u32 structureByteStride, s32 miscFlags, void* initData, Graphics::IBuffer* buffer)
 		{
 			Phoenix::Graphics::PhoenixBufferDesc desc = {};
 			Phoenix::FND::MemSet(&desc, 0, sizeof(desc));
 			desc.usage = Phoenix::Graphics::PhoenixUsage::Default;
 			desc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ShadowResource);
-			desc.byteWidth = elementSize * count;
-			desc.miscFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured);
-			desc.structureByteStride = elementSize;
+			desc.byteWidth = byteWidth;
+			desc.miscFlags = miscFlags;
+			desc.structureByteStride = structureByteStride;
 
 			if (initData)
 			{
@@ -40,12 +40,12 @@ namespace Phoenix
 			}
 
 			return true;
-		};
+		}
 
 		//****************************************************************************
 		// コンピュートシェーダー用テクスチャ作成関数
 		//****************************************************************************
-		bool CreateBufferSRV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView)
+		bool ComputeShaderBufferFactor::CreateBufferSRV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView)
 		{
 			Phoenix::Graphics::PhoenixBufferDesc bufferDesc = {};
 			Phoenix::FND::MemSet(&bufferDesc, 0, sizeof(bufferDesc));
@@ -83,7 +83,7 @@ namespace Phoenix
 			return true;
 		};
 
-		bool CreateBufferUAV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView)
+		bool ComputeShaderBufferFactor::CreateBufferUAV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView)
 		{
 			Phoenix::Graphics::PhoenixBufferDesc bufferDesc = {};
 			Phoenix::FND::MemSet(&bufferDesc, 0, sizeof(bufferDesc));
@@ -121,7 +121,7 @@ namespace Phoenix
 			return true;
 		};
 
-		void CreateAndCopyToBuffer(Graphics::IDevice* device, Graphics::IContext* context, Graphics::IBuffer* buffer, Graphics::IBuffer* copyBuffer)
+		void ComputeShaderBufferFactor::CreateAndCopyToBuffer(Graphics::IDevice* device, Graphics::IContext* context, Graphics::IBuffer* buffer, Graphics::IBuffer* copyBuffer)
 		{
 			std::unique_ptr<Graphics::IBuffer> cloneBuffer = Graphics::IBuffer::Create();
 

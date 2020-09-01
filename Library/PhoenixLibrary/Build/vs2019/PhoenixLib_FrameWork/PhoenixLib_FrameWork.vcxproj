@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\BitonicSort.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\ComputeShader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\GPUParticle.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\TestComputeShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\FrameBuffer\FrameBuffer.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\IBL\IBL.h" />
@@ -40,6 +41,7 @@
     <ClCompile Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\BitonicSort.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\ComputeShader.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\GPUParticle.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\TestComputeShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\FrameBuffer\FrameBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\IBL\IBL.cpp" />

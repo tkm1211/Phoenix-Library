@@ -90,6 +90,9 @@ namespace Phoenix
 
 			// コンピュートシェーダー実行
 			void Dispatch(IDevice* device, u32 x, u32 y, u32 z) override;
+
+			// コンピュートシェーダー実行
+			void DispatchIndirect(IDevice* device, IBuffer* buffer, u32 offset) override;
 		};
 	} // namespace Graphics
 } // namespace Phoenix

@@ -40,6 +40,12 @@
     <Filter Include="Source\ComputeShader">
       <UniqueIdentifier>{ea9aa170-fa90-41ec-aad5-6e8e40f6962d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\EmittedParticle">
+      <UniqueIdentifier>{491ba4b8-35e9-47b1-a235-31aad93cd904}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\EmittedParticle\Draw">
+      <UniqueIdentifier>{f796b143-44a3-4629-8517-a9f01b9e31dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingVS.hlsl">
@@ -138,6 +144,24 @@
     <FxCompile Include="..\..\..\Source\HLSL\ComputeShader\BitonicSort.hlsl">
       <Filter>Source\ComputeShader</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\KickoffUpdateCS.hlsl">
+      <Filter>Source\EmittedParticle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmitCS.hlsl">
+      <Filter>Source\EmittedParticle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticleVS.hlsl">
+      <Filter>Source\EmittedParticle\Draw</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticlePS.hlsl">
+      <Filter>Source\EmittedParticle\Draw</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\FinishUpdateCS.hlsl">
+      <Filter>Source\EmittedParticle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\SimulateCS.hlsl">
+      <Filter>Source\EmittedParticle</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\Bloom.hlsli">
@@ -163,6 +187,9 @@
     </None>
     <None Include="..\..\..\Source\HLSL\Skinning.hlsli">
       <Filter>Source\Common</Filter>
+    </None>
+    <None Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticle.hlsli">
+      <Filter>Source\EmittedParticle</Filter>
     </None>
   </ItemGroup>
 </Project>

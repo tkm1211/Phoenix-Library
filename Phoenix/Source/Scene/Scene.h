@@ -25,6 +25,7 @@
 #include "Phoenix/FrameWork/IBL/IBL.h"
 #include "Phoenix/FrameWork/ComputeShader/TestComputeShader.h"
 #include "Phoenix/FrameWork/ComputeShader/BitonicSort.h"
+#include "Phoenix/FrameWork/ComputeShader/GPUParticle.h"
 
 
 class SceneSystem;
@@ -125,8 +126,11 @@ private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
 	Phoenix::Math::Vector2 texSize;
 
+	Phoenix::Math::Vector3 particlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+
 	std::unique_ptr<Phoenix::FrameWork::IComputeShader> testComputeShader;
 	std::unique_ptr<Phoenix::FrameWork::BitonicSort> bitonicSort;
+	std::unique_ptr<Phoenix::FrameWork::GPUParticle> gpuParticle;
 
 	Phoenix::f32 dis = 1000.0f;
 	Phoenix::f32 width = 3000.0f;

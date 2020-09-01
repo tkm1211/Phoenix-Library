@@ -7,7 +7,7 @@
 class MoveState : public AIState
 {
 private:
-	/*static constexpr*/ float MoveSpeed = 5.0f;
+	/*static constexpr*/ float MoveSpeed = 0.05f;
 	/*static constexpr*/ int MoveMaxCnt = 5 * 60;
 
 private:

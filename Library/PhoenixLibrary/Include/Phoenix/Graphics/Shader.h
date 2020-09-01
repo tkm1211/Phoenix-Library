@@ -230,6 +230,9 @@ namespace Phoenix
 
             // コンピュートシェーダー実行
             virtual void Dispatch(IDevice* device, u32 x, u32 y, u32 z) = 0;
+
+            // コンピュートシェーダー実行
+            virtual void DispatchIndirect(IDevice* device, IBuffer* buffer, u32 offset) = 0;
         };
     } // namespace Graphics
 } // namespace Phoenix

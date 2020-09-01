@@ -7,7 +7,7 @@
 class SwingAttackState01 : public AIState
 {
 private:
-	/*static constexpr*/ float MoveSpeed = 5.0f;
+	/*static constexpr*/ float MoveSpeed = 0.05f;
 
 private:
 	Phoenix::f32 animationCnt = 0.0f;
@@ -25,7 +25,7 @@ public:
 class SwingAttackState02 : public AIState
 {
 private:
-	/*static constexpr*/ float MoveSpeed = 5.0f;
+	/*static constexpr*/ float MoveSpeed = 0.05f;
 
 private:
 	Phoenix::f32 animationCnt = 0.0f;
