@@ -137,11 +137,14 @@ void Player::Update(Phoenix::Graphics::Camera& camera)
 
 	// コリジョン更新
 	{
+		Phoenix::Math::Matrix systemUnitTransform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+		systemUnitTransform._11 = systemUnitTransform._22 = systemUnitTransform._33 = 0.01f;
+
 		auto nodes = model->GetNodes();
 		for (auto& data : collisionDatas)
 		{
 			Phoenix::Math::Matrix bone = nodes->at(data.boneIndex).worldTransform;
-			bone *= worldMatrix;
+			bone *= systemUnitTransform * worldMatrix;
 			data.pos = Phoenix::Math::Vector3(bone._41, bone._42, bone._43);
 		}
 	}

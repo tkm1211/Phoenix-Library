@@ -162,6 +162,9 @@
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\SimulateCS.hlsl">
       <Filter>Source\EmittedParticle</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingSkinPS.hlsl">
+      <Filter>Source\PBR</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\Bloom.hlsli">

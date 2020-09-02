@@ -254,38 +254,47 @@ float4 main(PS_INPUT input) : SV_Target
 #endif
   
     // directional light
-    getDirectionalDirectLightIrradiance(dirLight[0], geometry, directLight);
-    RE_Direct(directLight, geometry, material, reflectedLight);
+    //getDirectionalDirectLightIrradiance(dirLight[0], geometry, directLight);
+    //RE_Direct(directLight, geometry, material, reflectedLight);
     
     getDirectionalDirectLightIrradiance(dirLight[1], geometry, directLight);
     RE_Direct(directLight, geometry, material, reflectedLight);
     
-    //float shadow = Shadow(mul(float4(input.position, 1.0f), light_view_projection));
-    
- //   float4 ShadowPos = float4(input.position, 1.0);
-    
-	////シャドー空間座標
- //   ShadowPos = mul(ShadowPos, lightViewProjection);
- //   ShadowPos.xyz /= ShadowPos.w;
- //   ShadowPos.y = -ShadowPos.y;
-    
-	////シャドーマップ空間
- //   ShadowPos.xy = ShadowPos.xy * 0.5 + 0.5;
-    
- //   float3 shadow = (float3) 1.0;
- //   if (0.0f < ShadowPos.x && ShadowPos.x < 1.0f && 0.0f < ShadowPos.y && ShadowPos.y < 1.0f)
- //   {
- //       //シャードーマップの深度
- //       float depth = shadowMap.Sample(sampler0, ShadowPos.xy).r;
+    getDirectionalDirectLightIrradiance(dirLight[0], geometry, directLight);
+    {
+        float dotNL = saturate(dot(geometry.normal, directLight.direction));
+        float3 irradiance = dotNL * directLight.color;
 
- //       if (ShadowPos.z > depth + 0.0005)
- //       {
- //           shadow = /*1.0 - (ShadowPos.z - depth) / ShadowPos.z*/0.5f;
- //       }
- //   }
+        // punctual light
+        irradiance *= PI;
+
+        reflectedLight.directDiffuse += (irradiance * DiffuseBRDF(material.diffuseColor)) * 1.50f;
+    }
+    
+    float4 ShadowPos = float4(input.position, 1.0);
+    
+	//シャドー空間座標
+    ShadowPos = mul(ShadowPos, lightViewProjection);
+    ShadowPos.xyz /= ShadowPos.w;
+    ShadowPos.y = -ShadowPos.y;
+    
+	//シャドーマップ空間
+    ShadowPos.xy = ShadowPos.xy * 0.5 + 0.5;
+    
+    float3 shadow = (float3) 1.0;
+    if (0.0f < ShadowPos.x && ShadowPos.x < 1.0f && 0.0f < ShadowPos.y && ShadowPos.y < 1.0f)
+    {
+        //シャードーマップの深度
+        float depth = shadowMap.Sample(sampler0, ShadowPos.xy).r;
+
+        if (ShadowPos.z > depth + 0.0005)
+        {
+            shadow = /*1.0 - (ShadowPos.z - depth) / ShadowPos.z*/0.5f;
+        }
+    }
 	
- //   reflectedLight.directDiffuse *= shadow;
- //   reflectedLight.indirectDiffuse *= shadow;
+    reflectedLight.directDiffuse *= shadow;
+    reflectedLight.indirectDiffuse *= shadow;
 
     float3 outgoingLight = emissive + reflectedLight.directDiffuse + reflectedLight.directSpecular + reflectedLight.indirectDiffuse + reflectedLight.indirectSpecular /*+ float3(0.15f, 0.15f, 0.015f)*/;
 

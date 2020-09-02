@@ -89,8 +89,8 @@ namespace Phoenix
 			sunLight->color = Math::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
 			material->albedo = Math::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-			material->metallic = 0.0f;
-			material->roughness = 0.47f;
+			material->metallic = 0.35f; //0.0f
+			material->roughness = 0.73f; //0.47f
 
 			return true;
 		}
@@ -225,7 +225,7 @@ namespace Phoenix
 			shader->LoadPS
 			(
 				graphicsDevice->GetDevice(),
-				"PhysicallyBasedRenderingPS.cso"
+				"PhysicallyBasedRenderingSkinPS.cso"
 			);
 
 			cbMaterial = Phoenix::Graphics::IBuffer::Create();
@@ -263,9 +263,9 @@ namespace Phoenix
 			light->direction = Math::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
 			light->color = Math::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
-			material->albedo = Math::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-			material->metallic = 0.0f;
-			material->roughness = 0.47f;
+			material->albedo = Math::Vector4(0.875f, 0.875f, 0.875f, 1.0f);
+			material->metallic = 0.6f;
+			material->roughness = 1.0f;
 
 			return true;
 		}

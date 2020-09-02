@@ -467,19 +467,19 @@ namespace Phoenix
 				}
 				if (GetKeyState('A') < 0)
 				{
-					eye += -right * speed;
+					eye += _right * speed;
 				}
 				if (GetKeyState('D') < 0)
 				{
-					eye += right * speed;
+					eye += -_right * speed;
 				}
 				if (GetKeyState('Q') < 0)
 				{
-					eye += -up * speed;
+					eye += -_up * speed;
 				}
 				if (GetKeyState('E') < 0)
 				{
-					eye += up * speed;
+					eye += _up * speed;
 				}
 
 				xSin = sinf(rotateX);

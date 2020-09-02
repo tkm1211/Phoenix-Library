@@ -30,6 +30,8 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		lockOnCamera = false;
 		isHitCollision = false;
 		isUpdate = false;
+		isPlayerUpdate = false;
+		isBossUpdate = false;
 		enableMSAA = true;
 		shadowBlend = false;
 		bloomBlend = true;
@@ -177,13 +179,13 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 void SceneGame::Update()
 {
 	// プレイヤー更新
-	if (isUpdate)
+	if (isUpdate && isPlayerUpdate)
 	{
 		player->Update(*camera);
 	}
 
 	// ボス更新
-	if (isUpdate)
+	if (isUpdate && isBossUpdate)
 	{
 		boss->Update();
 	}
@@ -565,7 +567,7 @@ void SceneGame::Draw()
 
 					W = S * R * T;
 				}
-#if 1
+#if 0
 				basicShader->Begin(graphicsDevice, *camera);
 				basicShader->Draw(graphicsDevice, W, stageModel);
 				basicShader->End(graphicsDevice);
@@ -802,6 +804,8 @@ void SceneGame::GUI()
 	ImGui::Begin("Game");
 	{
 		ImGui::Checkbox("Update", &isUpdate);
+		ImGui::Checkbox("PlayerUpdate", &isPlayerUpdate);
+		ImGui::Checkbox("BossUpdate", &isBossUpdate);
 		player->GUI();
 		boss->GUI();
 		if (ImGui::TreeNode("Camera"))
@@ -820,6 +824,7 @@ void SceneGame::GUI()
 			Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
 			Phoenix::FrameWork::LightState* sunLight = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetSunLight();
 			Phoenix::FrameWork::MaterialState* material = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetMaterial();
+			Phoenix::FrameWork::MaterialState* materialSkin = static_cast<Phoenix::FrameWork::PBRSkinShader*>(pbrSkinShader)->GetMaterial();
 			ImGuiColorEditFlags flag = ImGuiColorEditFlags_Float; // 0 ~ 255表記ではなく、0.0 ~ 1.0表記にします。
 
 			ImGui::Checkbox("OnPBR", &isPBR);
@@ -829,6 +834,13 @@ void SceneGame::GUI()
 			ImGui::ColorEdit4("albedo", material->albedo, flag);
 			ImGui::DragFloat("metallic", &material->metallic, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
+			if (ImGui::TreeNode("Stage"))
+			{
+				ImGui::ColorEdit4("albedo", materialSkin->albedo, flag);
+				ImGui::DragFloat("metallic", &materialSkin->metallic, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("roughness", &materialSkin->roughness, 0.01f, 0.0f, 1.0f);
+				ImGui::TreePop();
+			}
 			ImGui::TreePop();
 
 		}

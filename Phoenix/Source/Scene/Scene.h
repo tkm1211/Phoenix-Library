@@ -132,16 +132,18 @@ private: // Debug
 	std::unique_ptr<Phoenix::FrameWork::BitonicSort> bitonicSort;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> gpuParticle;
 
-	Phoenix::f32 dis = 1000.0f;
-	Phoenix::f32 width = 3000.0f;
-	Phoenix::f32 height = 3000.0f;
+	Phoenix::f32 dis = 10.0f;
+	Phoenix::f32 width = 30.0f;
+	Phoenix::f32 height = 30.0f;
 	Phoenix::f32 nearZ = 1.0f;
-	Phoenix::f32 farZ = 3000.0f;
+	Phoenix::f32 farZ = 30.0f;
 
 	bool cameraFlg = false;
 	bool lockOnCamera = false;
 	bool isHitCollision = false;
 	bool isUpdate = false;
+	bool isPlayerUpdate = false;
+	bool isBossUpdate = false;
 	bool enableMSAA = false;
 	bool shadowBlend = false;
 	bool bloomBlend = false;
