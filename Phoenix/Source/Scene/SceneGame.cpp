@@ -126,7 +126,7 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	// スカイマップ
 	{
 		skyMap = Phoenix::FrameWork::SkyMap::Create();
-		skyMap->Initialize(graphicsDevice, "..\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Epic_BlueSunset\\Epic_BlueSunset03.dds");
+		skyMap->Initialize(graphicsDevice, "..\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Night MoonBurst\\NightMoonBurst.dds"); //Epic_BlueSunset\\Epic_BlueSunset03 //Night MoonBurst\\NightMoonBurst
 	}
 
 	// IBL
@@ -312,11 +312,11 @@ void SceneGame::Update()
 		currentShader = basicSkinShader;
 	}
 
-	/*{
+	{
 		gpuParticle->Burst(100);
 		gpuParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
 		gpuParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
-	}*/
+	}
 
 	// エフェクト更新
 	/*{
@@ -716,9 +716,9 @@ void SceneGame::Draw()
 			quad->Draw(graphicsDevice, targetMark, screenPos.x, screenPos.y, size, size);
 		}
 #endif
-		/*{
+		{
 			gpuParticle->Draw(graphicsDevice, *camera);
-		}*/
+		}
 #if 1
 		uiSystem->Draw(graphicsDevice);
 #endif

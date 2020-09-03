@@ -23,6 +23,7 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\ComputeShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\GPUParticle.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\TestComputeShader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Effect\EffectSystem.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\FrameBuffer\FrameBuffer.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\IBL\IBL.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Input\InputDevice.h" />

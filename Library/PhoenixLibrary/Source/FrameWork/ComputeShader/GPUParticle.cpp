@@ -277,7 +277,6 @@ namespace Phoenix
 		{
 			
 		}
-
 		bool GPUParticle::CreateBuffers(Graphics::IDevice* device)
 		{
 			particleBuffer = std::make_unique<GPUBuffer>();
@@ -333,7 +332,7 @@ namespace Phoenix
 			}
 
 			indirectBuffers = std::make_unique<GPUBuffer>();
-			if (!indirectBuffers->Initialize(device, sizeof(IndirectDispatchArgs) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDrawArgsInstanced), sizeof(counters), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews) | static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscDrawindIrectArgs), nullptr))
+			if (!indirectBuffers->Initialize(device, sizeof(IndirectDispatchArgs) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDrawArgsInstanced), 0, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews) | static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscDrawindIrectArgs), nullptr))
 			{
 				return false;
 			}
@@ -372,6 +371,7 @@ namespace Phoenix
 
 			return true;
 		}
+
 
 		void GPUParticle::LoadShaders(Graphics::IDevice* device)
 		{
@@ -419,6 +419,115 @@ namespace Phoenix
 			//simulateCSSorting->Load(device, "kickoffUpdateCS.cso");
 			//simulateCSDepthCollisions->Load(device, "kickoffUpdateCS.cso");
 			//simulateCSSortingDepthCollisions->Load(device, "kickoffUpdateCS.cso");
+		}
+
+
+		// 生成
+		std::unique_ptr<EmitParticle> EmitParticle::Create()
+		{
+			return std::make_unique<EmitParticle>();
+		}
+
+		// 初期化
+		bool EmitParticle::Initialize(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+
+			// バッファ作成
+			if (!CreateBuffers(device))
+			{
+				return false;
+			}
+
+			// シェーダー読み込み
+			LoadShaders(device);
+
+			// システムの初期化
+			InitializeSystem(graphicsDevice);
+
+			return true;
+		}
+		bool EmitParticle::InitializeSystem(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
+
+			Graphics::ITexture* uavTexture[] =
+			{
+				indirectArgs->uav.get(),
+				paticleHeaders->uav.get()
+			};
+			context->SetUnorderedAccess(0, Phoenix::FND::ArraySize(uavTexture), uavTexture, nullptr);
+
+			clearSystemCS->Activate(device);
+			{
+				clearSystemCS->Dispatch(device, 1, 1, 1);
+			}
+			clearSystemCS->Deactivate(device);
+
+			clearParticleCS->Activate(device);
+			{
+				clearParticleCS->Dispatch(device, ceil(TotalParticleMax / (float)PARTICLE_PER_THREAD), 1, 1);
+			}
+			clearParticleCS->Deactivate(device);
+		}
+
+		// 終了化
+		void EmitParticle::Finalize()
+		{
+
+		}
+
+		// 更新
+		void EmitParticle::UpdateCPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Vector3 transform, float dt)
+		{
+
+		}
+
+		void EmitParticle::UpdateGPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Matrix worldTransform, float dt)
+		{
+
+		}
+
+		void EmitParticle::Draw(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera)
+		{
+
+		}
+
+		void EmitParticle::Burst(int num)
+		{
+
+		}
+
+		void EmitParticle::Restart()
+		{
+
+		}
+
+		bool EmitParticle::CreateBuffers(Graphics::IDevice* device)
+		{
+			indirectArgs = std::make_unique<GPUBuffer>();
+			if (!indirectArgs->Initialize(device, sizeof(IndirectParticleNum) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDrawArgsInstanced), 0, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews) | static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscDrawindIrectArgs), nullptr))
+			{
+				return false;
+			}
+
+			emitterTable = std::make_unique<GPUBuffer>();
+			if (!emitterTable->Initialize(device, sizeof(u32) * 2, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		void EmitParticle::LoadShaders(Graphics::IDevice* device)
+		{
+			clearSystemCS = Graphics::IComputeShader::Create();
+			clearParticleCS = Graphics::IComputeShader::Create();
+
+			clearSystemCS->Load(device, "ClearSystemCS.cso");
+			clearParticleCS->Load(device, "ClearParticleCS.cso");
 		}
 	}
 }

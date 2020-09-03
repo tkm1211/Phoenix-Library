@@ -520,8 +520,8 @@ namespace Phoenix
 			}
 			else*/
 			{
-				rotateY += (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2.0f * 0.01745f;
-				rotateX += (static_cast<float>(xInput[0].sRY) / 1000.0f) * 2.0f * 0.01745f;
+				rotateY -= (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2.0f * 0.01745f;
+				rotateX -= (static_cast<float>(xInput[0].sRY) / 1000.0f) * 2.0f * 0.01745f;
 				if (0.0f < rotateX)
 				{
 					rotateX = 0.0f;

@@ -161,7 +161,7 @@ namespace Phoenix
 			s32 burst = 0;
 			Math::Vector3 center;
 
-			f32 size = 10.0f;
+			f32 size = 0.1f;
 			f32 randomFactor = 1.0f;
 			f32 normalFactor = 1.0f;
 			f32 count = 0.0f;
@@ -190,6 +190,98 @@ namespace Phoenix
 			// 更新
 			void UpdateCPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Vector3 transform, float dt);
 		
+			void UpdateGPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Matrix worldTransform, float dt);
+
+			void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera);
+
+			void Burst(int num);
+
+			void Restart();
+
+			bool CreateBuffers(Graphics::IDevice* device);
+
+			void LoadShaders(Graphics::IDevice* device);
+		};
+
+		class EmitParticle
+		{
+		private:
+			struct IndirectParticleNum
+			{
+				u32 particleNum;
+				u32 prevParticleNum;
+			};
+			struct IndirectDispatchArgs
+			{
+				u32 threadGroupCountX = 0;
+				u32 threadGroupCountY = 0;
+				u32 threadGroupCountZ = 0;
+			};
+			struct IndirectDrawArgsInstanced
+			{
+				u32 vertexCountPerInstance = 0;
+				u32 instanceCount = 0;
+				u32 startVertexLocation = 0;
+				u32 startInstanceLocation = 0;
+			};
+
+			struct emitterHeader
+			{
+				u32 emitHead;
+				u32 emitSize;
+				u32 particleHead;
+				u32 particleSize;
+			};
+			struct particleHeader
+			{
+				u32 tag; // alive + emitterID + index
+				f32 depth;
+			};
+
+		private:
+			static const u32 IA_PARTICLE_COUNTER = 0;
+			static const u32 IA_PREV_PARTICLE_COUNTER = IA_PARTICLE_COUNTER + 4;
+
+			static const u32 PARTICLE_PER_THREAD = 256; // Dispatch(ceil(TotalParticleMax / (float)PARTICLE_PER_THREAD), 1 ,1)
+
+			static const u32 INVALID_TAG = 0xffffffff;
+
+			static const u32 TotalEmitterMax = 256;
+			static const u32 TotalParticleMax = 1024;
+
+		private:
+			std::unique_ptr<GPUBuffer> indirectArgs;
+
+			std::unique_ptr<GPUBuffer> emitterTable;
+			std::unique_ptr<GPUBuffer> emitterHeaders;
+			std::unique_ptr<GPUBuffer> emitterBinary;
+
+			std::unique_ptr<GPUBuffer> paticleHeaders;
+
+			std::unique_ptr<Graphics::IComputeShader> clearSystemCS;
+			std::unique_ptr<Graphics::IComputeShader> clearParticleCS;
+
+		private:
+			u32 emitterTable[TotalEmitterMax];
+
+		public:
+			EmitParticle() {}
+			~EmitParticle() {}
+
+		public:
+			// 生成
+			static std::unique_ptr<EmitParticle> Create();
+
+			// 初期化
+			bool Initialize(Graphics::IGraphicsDevice* graphicsDevice);
+			bool InitializeSystem(Graphics::IGraphicsDevice* graphicsDevice);
+
+			// 終了化
+			void Finalize();
+
+			// 更新
+			void UpdateCPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Vector3 transform, float dt);
+
 			void UpdateGPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Matrix worldTransform, float dt);
 
 			void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera);

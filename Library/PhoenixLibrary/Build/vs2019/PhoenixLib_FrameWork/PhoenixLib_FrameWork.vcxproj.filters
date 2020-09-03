@@ -52,6 +52,9 @@
     <Filter Include="Source\ComputeShader">
       <UniqueIdentifier>{f3bfe96e-281c-41cc-90b5-2cb52b2fc992}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\Effect">
+      <UniqueIdentifier>{dd9f7100-fadf-4541-b563-502b81d700eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -104,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\GPUParticle.h">
       <Filter>Include\ComputeShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Effect\EffectSystem.h">
+      <Filter>Include\Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
