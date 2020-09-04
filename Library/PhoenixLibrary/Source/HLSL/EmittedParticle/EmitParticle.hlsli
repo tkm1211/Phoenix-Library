@@ -6,10 +6,6 @@ struct ParticleHeader
 };
 
 
-RWByteAddressBuffer indirectArgs : register(u0);
-RWStructuredBuffer<ParticleHeader> particleHeaders : register(u1);
-
-
 cbuffer ParticleCB : register(b0)
 {
     uint TotalSpawnCount;

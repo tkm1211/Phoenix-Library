@@ -203,6 +203,108 @@ namespace Phoenix
 			void LoadShaders(Graphics::IDevice* device);
 		};
 
+		class Item
+		{
+		public:
+			Item() {}
+			virtual ~Item() {}
+		};
+		class VelocityItem : public Item
+		{
+		public:
+			Math::Vector3 velocity = Math::Vector3(0.0f, 0.0f, 0.0f);
+
+		public:
+			VelocityItem() {}
+			~VelocityItem() {}
+		};
+		class RotateAnimItem : public Item
+		{
+		public:
+			f32 rotate = 0.0f;
+
+		public:
+			RotateAnimItem() {}
+			~RotateAnimItem() {}
+		};
+		class ScaleAnimItem : public Item
+		{
+		public:
+			f32 scale = 1.0f;
+
+		public:
+			ScaleAnimItem() {}
+			~ScaleAnimItem() {}
+		};
+		class SpawnItem : public Item
+		{
+		public:
+			u32 spawnCount = 0;
+			u32 spawninterval = 0;
+
+		private:
+			u32 timeCount = 0;
+
+		public:
+			SpawnItem() {}
+			~SpawnItem() {}
+
+		public:
+			u32 Update()
+			{
+				if (timeCount++ % spawninterval == 0)
+				{
+					return spawnCount;
+				}
+
+				return 0;
+			}
+		};
+
+		class ItemData
+		{
+		public:
+			std::list<std::shared_ptr<Item>> items;
+			u32 totalItemMax;
+
+		public:
+			ItemData() {}
+			~ItemData() {}
+
+		public:
+			template<class T>
+			T* GetItem()
+			{
+				for (auto item : items)
+				{
+					T* buff = dynamic_cast<T*>(item.get());
+					if (buff != nullptr) return buff;
+				}
+				return nullptr;
+			}
+
+			template<class T>
+			T* AddItem()
+			{
+				std::shared_ptr<T> buff = std::make_shared<T>();
+				items.push_back(buff);
+
+				return buff.get();
+			}
+		};
+		class EmitterData
+		{
+		public:
+			Math::Matrix transform;
+			ItemData itemData;
+			u32 spawnParticleNum;
+			u32 life = 0;
+
+		public:
+			EmitterData() {}
+			~EmitterData() {}
+		};
+
 		class EmitParticle
 		{
 		private:
@@ -225,17 +327,22 @@ namespace Phoenix
 				u32 startInstanceLocation = 0;
 			};
 
-			struct emitterHeader
+			struct EmitterHeader
 			{
 				u32 emitHead;
 				u32 emitSize;
 				u32 particleHead;
 				u32 particleSize;
 			};
-			struct particleHeader
+			struct ParticleHeader
 			{
 				u32 tag; // alive + emitterID + index
 				f32 depth;
+			};
+
+			struct ParticleCB
+			{
+				u32 totalSpawnCount;
 			};
 
 		private:
@@ -247,22 +354,42 @@ namespace Phoenix
 			static const u32 INVALID_TAG = 0xffffffff;
 
 			static const u32 TotalEmitterMax = 256;
+			static const u32 TotalEmitterBinaryMax = 1024;
 			static const u32 TotalParticleMax = 1024;
 
 		private:
-			std::unique_ptr<GPUBuffer> indirectArgs;
+			std::unique_ptr<GPUBuffer> indirectArgsBuffer;
 
-			std::unique_ptr<GPUBuffer> emitterTable;
-			std::unique_ptr<GPUBuffer> emitterHeaders;
-			std::unique_ptr<GPUBuffer> emitterBinary;
+			std::unique_ptr<GPUBuffer> emitterTableBuffer;
+			std::unique_ptr<GPUBuffer> emitterHeadersBuffer;
+			std::unique_ptr<GPUBuffer> emitterBinaryBuffer;
 
-			std::unique_ptr<GPUBuffer> paticleHeaders;
+			std::unique_ptr<GPUBuffer> paticleHeadersBuffer;
+			std::unique_ptr<GPUBuffer> paticleBinaryBuffer;
+			std::unique_ptr<GPUBuffer> paticleIndexListBuffer;
+
+			std::unique_ptr<Graphics::IBuffer> particleCB;
 
 			std::unique_ptr<Graphics::IComputeShader> clearSystemCS;
 			std::unique_ptr<Graphics::IComputeShader> clearParticleCS;
 
+			std::unique_ptr<Graphics::IComputeShader> beginUpdateCS;
+
 		private:
 			u32 emitterTable[TotalEmitterMax];
+			f32 emitterBinary[TotalEmitterBinaryMax];
+			EmitterHeader emitterHeader[TotalEmitterMax];
+			EmitterData emitterDatas[TotalEmitterMax];
+
+			ParticleHeader particleHeader[TotalEmitterMax];
+
+			u32 emitterRegisterCount = 0;
+			u32 emitterBinaryCount = 0;
+
+			u32 particleBinaryCount = 0;
+
+			u32 currentSpawnParticleCount = 0;
+			u32 currentStartUpEmitterCount = 0;
 
 		public:
 			EmitParticle() {}
@@ -285,6 +412,10 @@ namespace Phoenix
 			void UpdateGPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Matrix worldTransform, float dt);
 
 			void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera);
+
+			void RegisterEmitter(EmitterData emitterData);
+
+			void StartUpEmitter(u32 emitterNum);
 
 			void Burst(int num);
 

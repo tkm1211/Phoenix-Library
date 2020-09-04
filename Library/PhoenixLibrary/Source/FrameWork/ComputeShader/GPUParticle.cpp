@@ -454,8 +454,8 @@ namespace Phoenix
 
 			Graphics::ITexture* uavTexture[] =
 			{
-				indirectArgs->uav.get(),
-				paticleHeaders->uav.get()
+				indirectArgsBuffer->uav.get(),
+				paticleHeadersBuffer->uav.get()
 			};
 			context->SetUnorderedAccess(0, Phoenix::FND::ArraySize(uavTexture), uavTexture, nullptr);
 
@@ -470,6 +470,26 @@ namespace Phoenix
 				clearParticleCS->Dispatch(device, ceil(TotalParticleMax / (float)PARTICLE_PER_THREAD), 1, 1);
 			}
 			clearParticleCS->Deactivate(device);
+
+			// Initialize Emitter Data
+			{
+				EmitterData data;
+				{
+					Item item;
+					data.transform = Math::MatrixIdentity();
+					data.itemData.totalItemMax = 0;
+					data.spawnParticleNum = 0;
+					data.life = 0;
+				}
+
+				for (int i = 0; i < TotalEmitterMax; ++i)
+				{
+					emitterTable[i] = 0xffffffff;
+					emitterDatas[i] = data;
+				}
+			}
+
+			return true;
 		}
 
 		// 終了化
@@ -481,17 +501,265 @@ namespace Phoenix
 		// 更新
 		void EmitParticle::UpdateCPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Vector3 transform, float dt)
 		{
+			// Update Emitter
+			for (u32 i = 0; i < TotalEmitterMax; ++i)
+			{
+				if (emitterTable[i] == 0xffffffff) break;
+				emitterDatas[emitterTable[i]].transform; // TODO : 座標更新
+			}
 
+			// Update Item
+			{
+				for (u32 i = 0; i < TotalEmitterMax; ++i)
+				{
+					if (emitterTable[i] == 0xffffffff) break;
+
+					SpawnItem* spawn = emitterDatas[emitterTable[i]].itemData.GetItem<SpawnItem>();
+					if (spawn != nullptr)
+					{
+						currentSpawnParticleCount = spawn->Update();
+					}
+				}
+			}
+
+			// Update Emitter Binary Data
+			{
+				auto GetVelocityItem = [&](u32 emitterID, u32 head)
+				{
+					VelocityItem* velocity = emitterDatas[emitterID].itemData.GetItem<VelocityItem>();
+					if (velocity == nullptr) return 0;
+
+					emitterBinary[head+0] = velocity->velocity.x;
+					emitterBinary[head+1] = velocity->velocity.y;
+					emitterBinary[head+2] = velocity->velocity.z;
+
+					return 3;
+				};
+				auto GetRotateAnimItem = [&](u32 emitterID, u32 head)
+				{
+					RotateAnimItem* rotate = emitterDatas[emitterID].itemData.GetItem<RotateAnimItem>();
+					if (rotate == nullptr) return 0;
+
+					emitterBinary[head] = rotate->rotate;
+
+					return 1;
+				};
+				auto GetScaleAnimItem = [&](u32 emitterID, u32 head)
+				{
+					ScaleAnimItem* scale = emitterDatas[emitterID].itemData.GetItem<ScaleAnimItem>();
+					if (scale == nullptr) return 0;
+
+					emitterBinary[head] = scale->scale;
+
+					return 1;
+				};
+
+				for (u32 i = 0; i < TotalEmitterMax; ++i)
+				{
+					if (emitterTable[i] == 0xffffffff) break;
+					if (emitterHeader[emitterTable[i]].emitSize == 0) continue;
+
+					u32 size = 0;
+					size += GetVelocityItem(emitterTable[i], emitterHeader[emitterTable[i]].emitHead);
+					size += GetRotateAnimItem(emitterTable[i], emitterHeader[emitterTable[i]].emitHead + size);
+					GetScaleAnimItem(emitterTable[i], emitterHeader[emitterTable[i]].emitHead + size);
+				}
+			}
 		}
 
 		void EmitParticle::UpdateGPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Matrix worldTransform, float dt)
 		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
 
+			// Begin Update
+			{
+				ParticleCB cb = {};
+				{
+					cb.totalSpawnCount = currentSpawnParticleCount;
+				}
+				Phoenix::Graphics::IBuffer* cBuffer[] =
+				{
+					particleCB.get()
+				};
+				context->UpdateSubresource(particleCB.get(), 0, 0, &cb, 0, 0);
+				context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Compute, 0, Phoenix::FND::ArraySize(cBuffer), cBuffer);
+
+				currentSpawnParticleCount = 0;
+
+				Graphics::ITexture* uavTexture[] =
+				{
+					indirectArgsBuffer->uav.get()
+				};
+				context->SetUnorderedAccess(0, Phoenix::FND::ArraySize(uavTexture), uavTexture, nullptr);
+
+				beginUpdateCS->Activate(device);
+				{
+					beginUpdateCS->Dispatch(device, 1, 1, 1);
+				}
+				beginUpdateCS->Deactivate(device);
+			}
+
+			// Fill Unused Index
+			if (0 < currentStartUpEmitterCount)
+			{
+
+
+
+				currentStartUpEmitterCount = 0;
+			}
+
+			// Spawn Particles
+			{
+
+			}
+
+			// Initialize Particles
+			{
+
+			}
+
+			// Update Particle
+			{
+
+			}
+
+			// Bitonic Sort
+			{
+
+			}
+
+			// Range Particles
+			{
+
+			}
+
+			// Terminate Particles
+			{
+
+			}
+
+			// Build Emitter Draw Args
+			{
+
+			}
+
+			// Build Primtive
+			{
+
+			}
 		}
 
 		void EmitParticle::Draw(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera)
 		{
 
+		}
+
+		void EmitParticle::RegisterEmitter(EmitterData emitterData)
+		{
+			emitterDatas[emitterRegisterCount++] = emitterData;
+		}
+
+		void EmitParticle::StartUpEmitter(u32 emitterNum)
+		{
+			u32 hitIndex = 0xffffffff;
+			for (u32 i = 0; i < TotalEmitterMax; ++i)
+			{
+				if (emitterTable[i] != 0xffffffff) continue;
+				emitterTable[i] = emitterNum;
+				hitIndex = i;
+				break;
+			}
+
+			if (hitIndex == 0xffffffff) return;
+
+			// Get Emitter Binary Data
+			{
+				u32 totalItemMax = emitterDatas[hitIndex].itemData.totalItemMax;
+				if (totalItemMax == 0) return;
+
+				/*auto GetVelocityItem = [&]()
+				{
+					VelocityItem* velocity = static_cast<VelocityItem*>(emitterDatas[hitIndex].itemData.items[0].get());
+					emitterBinary[emitterBinaryCount++] = velocity->velocity.x;
+					emitterBinary[emitterBinaryCount++] = velocity->velocity.y;
+					emitterBinary[emitterBinaryCount++] = velocity->velocity.z;
+				};
+				auto GetRotateAnimItem = [&]()
+				{
+					RotateAnimItem* rotate = static_cast<RotateAnimItem*>(emitterDatas[hitIndex].itemData.items[1].get());
+					emitterBinary[emitterBinaryCount++] = rotate->rotate;
+				};
+				auto GetScaleAnimItem = [&]()
+				{
+					ScaleAnimItem* scale = static_cast<ScaleAnimItem*>(emitterDatas[hitIndex].itemData.items[2].get());
+					emitterBinary[emitterBinaryCount++] = scale->scale;
+				};
+
+				switch (totalItemMax)
+				{
+				case 1:
+					GetVelocityItem();
+					break;
+
+				case 2:
+					GetVelocityItem();
+					GetRotateAnimItem();
+					break;
+
+				case 3:
+					GetVelocityItem();
+					GetRotateAnimItem();
+					GetScaleAnimItem();
+					break;
+
+				default: break;
+				}*/
+
+				u32 head = emitterBinaryCount;
+				u32 size = 0;
+
+				auto GetVelocityItemSize = [&]()
+				{
+					VelocityItem* velocity = emitterDatas[hitIndex].itemData.GetItem<VelocityItem>();
+					if (velocity == nullptr) return;
+
+					size += sizeof(velocity->velocity) / 4;
+				};
+				auto GetRotateAnimItemSize = [&]()
+				{
+					RotateAnimItem* rotate = emitterDatas[hitIndex].itemData.GetItem<RotateAnimItem>();
+					if (rotate == nullptr) return;
+
+					size += sizeof(rotate->rotate) / 4;
+				};
+				auto GetScaleAnimItemSize = [&]()
+				{
+					ScaleAnimItem* scale = emitterDatas[hitIndex].itemData.GetItem<ScaleAnimItem>();
+					if (scale == nullptr) return;
+
+					size += sizeof(scale->scale) / 4;
+				};
+
+				GetVelocityItemSize();
+				GetRotateAnimItemSize();
+				GetScaleAnimItemSize();
+
+				emitterHeader[hitIndex].emitHead = head;
+				emitterHeader[hitIndex].emitSize = size;
+
+				emitterBinaryCount += size;
+			}
+
+			// Get Particle Binary Data
+			{
+				emitterHeader[hitIndex].particleHead = particleBinaryCount;
+				emitterHeader[hitIndex].particleSize = emitterDatas[hitIndex].spawnParticleNum;
+
+				particleBinaryCount += emitterDatas[hitIndex].spawnParticleNum;
+			}
+
+			currentStartUpEmitterCount++;
 		}
 
 		void EmitParticle::Burst(int num)
@@ -501,21 +769,43 @@ namespace Phoenix
 
 		void EmitParticle::Restart()
 		{
-
+			
 		}
 
 		bool EmitParticle::CreateBuffers(Graphics::IDevice* device)
 		{
-			indirectArgs = std::make_unique<GPUBuffer>();
-			if (!indirectArgs->Initialize(device, sizeof(IndirectParticleNum) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDrawArgsInstanced), 0, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews) | static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscDrawindIrectArgs), nullptr))
+			indirectArgsBuffer = std::make_unique<GPUBuffer>();
+			if (!indirectArgsBuffer->Initialize(device, sizeof(IndirectParticleNum) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDrawArgsInstanced), 0, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews) | static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscDrawindIrectArgs), nullptr))
 			{
 				return false;
 			}
 
-			emitterTable = std::make_unique<GPUBuffer>();
-			if (!emitterTable->Initialize(device, sizeof(u32) * 2, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
+			emitterTableBuffer = std::make_unique<GPUBuffer>();
+			if (!emitterTableBuffer->Initialize(device, sizeof(u32) * 2, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
 			{
 				return false;
+			}
+
+			paticleIndexListBuffer = std::make_unique<GPUBuffer>();
+			if (!paticleIndexListBuffer->Initialize(device, sizeof(u32) * TotalParticleMax, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
+			{
+				return false;
+			}
+
+			particleCB = Phoenix::Graphics::IBuffer::Create();
+			{
+				Phoenix::Graphics::PhoenixBufferDesc desc = {};
+				Phoenix::FND::MemSet(&desc, 0, sizeof(desc));
+				desc.usage = Phoenix::Graphics::PhoenixUsage::Default;
+				desc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
+				desc.cpuAccessFlags = 0;
+				desc.miscFlags = 0;
+				desc.byteWidth = sizeof(ParticleCB);
+				desc.structureByteStride = 0;
+				if (!particleCB->Initialize(device, desc))
+				{
+					return false;
+				}
 			}
 
 			return true;
@@ -525,9 +815,11 @@ namespace Phoenix
 		{
 			clearSystemCS = Graphics::IComputeShader::Create();
 			clearParticleCS = Graphics::IComputeShader::Create();
+			beginUpdateCS = Graphics::IComputeShader::Create();
 
 			clearSystemCS->Load(device, "ClearSystemCS.cso");
 			clearParticleCS->Load(device, "ClearParticleCS.cso");
+			beginUpdateCS->Load(device, "BeginUpdateCS.cso");
 		}
 	}
 }

@@ -1,6 +1,8 @@
 
 #include "EmitParticle.hlsli"
 
+RWStructuredBuffer<ParticleHeader> particleHeaders : register(u0);
+
 
 [numthreads(PARTICLE_PER_THREAD, 1, 1)]
 void main(uint3 id : SV_DispatchThreadID)
