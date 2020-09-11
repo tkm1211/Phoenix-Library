@@ -32,7 +32,7 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		isUpdate = false;
 		isPlayerUpdate = false;
 		isBossUpdate = false;
-		enableMSAA = true;
+		enableMSAA = false;
 		shadowBlend = false;
 		bloomBlend = true;
 		isPBR = true;
@@ -149,7 +149,10 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		bitonicSort->Initialize(graphicsDevice);
 
 		gpuParticle = Phoenix::FrameWork::GPUParticle::Create();
-		gpuParticle->Initialize(graphicsDevice);
+		gpuParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png"); // particle
+
+		playerHitParticle = Phoenix::FrameWork::GPUParticle::Create();
+		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png"); // PlayerHitEffectCS
 	}
 
 	{
@@ -239,8 +242,10 @@ void SceneGame::Update()
 			if (SphereVsSphere(playerDatas->at(player->GetAttackCollisionIndex()).pos, bossDatas->at(0).pos, playerDatas->at(player->GetAttackCollisionIndex()).radius, bossDatas->at(0).radius))
 			{
 				Phoenix::Math::Vector3 pos;
+				Phoenix::Math::Vector3 normal;
 				Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(playerDatas->at(player->GetAttackCollisionIndex()).pos - bossDatas->at(0).pos);
 				pos = bossDatas->at(0).pos + dir * bossDatas->at(0).radius / 2.0f;
+				normal = Phoenix::Math::Vector3Normalize(playerPos - bossPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
 
 				//hitEffectHandle = commonData->manager->Play(hitEffect, 0,0,0);
 				//hitEffectHandle = commonData->manager->Play(hitEffect, pos.x, pos.y, pos.z);
@@ -248,6 +253,18 @@ void SceneGame::Update()
 				//commonData->manager->SetScale(hitEffectHandle, 50.0f, 50.0f, 50.0f);
 				player->SetIsHit(true);
 				boss->Damage(10);
+
+				// Burst Particle.
+				{
+					playerHitParticle->Burst(100);
+					playerHitParticle->SetParticleLife(1.0f);
+					playerHitParticle->SetParticleSize(0.02f);
+					playerHitParticle->SetParticleScale(0.25f);
+					playerHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
+					playerHitParticle->SetParticleColor(particleMainColor);
+
+					particlePos = playerDatas->at(player->GetAttackCollisionIndex()).pos;
+				}
 			}
 		}
 
@@ -312,10 +329,14 @@ void SceneGame::Update()
 		currentShader = basicSkinShader;
 	}
 
+	if (isUpdate)
 	{
-		gpuParticle->Burst(100);
-		gpuParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
-		gpuParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+		//gpuParticle->Burst(10);
+		//gpuParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
+		//gpuParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+
+		playerHitParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
+		playerHitParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 	}
 
 	// エフェクト更新
@@ -622,6 +643,20 @@ void SceneGame::Draw()
 				{
 					currentShader->Begin(graphicsDevice, *camera);
 					currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+					currentShader->End(graphicsDevice);
+
+					// Draw Effect.
+					{
+						//Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+						//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
+						{
+							gpuParticle->Draw(graphicsDevice, *camera);
+							playerHitParticle->Draw(graphicsDevice, *camera);
+						}
+						//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
+					}
+
+					currentShader->Begin(graphicsDevice, *camera);
 					currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
 					currentShader->End(graphicsDevice);
 				}
@@ -668,16 +703,29 @@ void SceneGame::Draw()
 		if (enableMSAA)
 		{
 			resolvedFramebuffer = 1;
+
 			msaaResolve->Resolve(graphicsDevice, frameBuffer[0].get(), frameBuffer[resolvedFramebuffer].get());
+
+			bloom->Generate(graphicsDevice, frameBuffer[resolvedFramebuffer]->GetRenderTargetSurface()->GetTexture(), false);
+
+			frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
+			{
+				bloom->Draw(graphicsDevice);
+			}
+			frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 		}
-
-		bloom->Generate(graphicsDevice, frameBuffer[resolvedFramebuffer]->GetRenderTargetSurface()->GetTexture(), false);
-
-		frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
+		else
 		{
-			bloom->Draw(graphicsDevice);
+			bloom->Generate(graphicsDevice, frameBuffer[resolvedFramebuffer]->GetRenderTargetSurface()->GetTexture(), false);
+
+			resolvedFramebuffer = 1;
+
+			frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
+			{
+				bloom->Draw(graphicsDevice);
+			}
+			frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 		}
-		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 	}
 
 	// Blend Bloom.
@@ -715,10 +763,19 @@ void SceneGame::Draw()
 
 			quad->Draw(graphicsDevice, targetMark, screenPos.x, screenPos.y, size, size);
 		}
+
+		// Draw Effect.
+		//{
+		//	//Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+		//	//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
+		//	{
+		//		gpuParticle->Draw(graphicsDevice, *camera);
+		//		playerHitParticle->Draw(graphicsDevice, *camera);
+		//	}
+		//	//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
+		//}
 #endif
-		{
-			gpuParticle->Draw(graphicsDevice, *camera);
-		}
+
 #if 1
 		uiSystem->Draw(graphicsDevice);
 #endif
@@ -730,6 +787,7 @@ void SceneGame::Draw()
 		//if (active[0]) quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), texSize.x * 0, 0, texSize.x, texSize.y);
 		if (active[1]) quad->Draw(graphicsDevice, frameBuffer[1]->renderTargerSurface[0]->GetTexture(), texSize.x * 1, 0, texSize.x, texSize.y);
 		if (active[2]) quad->Draw(graphicsDevice, frameBuffer[1]->depthStencilSurface->GetTexture(), texSize.x * 2, 0, texSize.x, texSize.y);
+		if (active[3]) quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), texSize.x * 3, 0, texSize.x, texSize.y);
 		/*if (active[3]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[0]->GetTexture(), texSize.x * 3, 0, texSize.x, texSize.y);
 		if (active[4]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[1]->GetTexture(), texSize.x * 4, 0, texSize.x, texSize.y);
 		if (active[5]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[2]->GetTexture(), texSize.x * 5, 0, texSize.x, texSize.y);
@@ -938,9 +996,29 @@ void SceneGame::GUI()
 			if (ImGui::Button("Burst"))
 			{
 				gpuParticle->Burst(100);
+				gpuParticle->SetParticleLife(particleLife);
+				gpuParticle->SetParticleSize(particleSize);
+				gpuParticle->SetParticleScale(particleScale);
+				gpuParticle->SetParticleNormal(particleNormal);
+				gpuParticle->SetParticleColor(particleMainColor);
+			}
+
+			if (ImGui::Button("Hit Particle Burst"))
+			{
+				gpuParticle->Burst(100);
+				gpuParticle->SetParticleLife(1.0f);
+				gpuParticle->SetParticleSize(0.02f);
+				gpuParticle->SetParticleScale(0.25f);
+				gpuParticle->SetParticleNormal(particleNormal);
+				gpuParticle->SetParticleColor(particleMainColor);
 			}
 
 			ImGui::DragFloat3("Pos", &particlePos.x, 0.1f);
+			ImGui::DragFloat3("noemal", &particleNormal.x, 0.1f);
+			ImGui::DragFloat("life", &particleLife, 0.1f);
+			ImGui::DragFloat("size", &particleSize, 0.1f);
+			ImGui::DragFloat("scale", &particleScale, 0.1f);
+			ImGui::ColorEdit4("color", particleMainColor, 0.1f);
 
 			ImGui::TreePop();
 		}

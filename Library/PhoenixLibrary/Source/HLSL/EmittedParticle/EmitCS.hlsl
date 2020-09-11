@@ -82,7 +82,7 @@ void main( uint3 DTid : SV_DispatchThreadID )
         float3 pos = mul(xEmitterWorld, float4(0, 0, 0, 1)).xyz;
 #endif // EMITTER_VOLUME
 
-        float3 nor = 0;
+        float3 nor = xParticleNormal.xyz;
 
 #endif // EMIT_FROM_MESH
 

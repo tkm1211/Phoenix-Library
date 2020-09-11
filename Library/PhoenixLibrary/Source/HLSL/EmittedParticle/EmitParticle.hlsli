@@ -5,10 +5,27 @@ struct ParticleHeader
     float depth;
 };
 
+struct EmitterData
+{
+    uint spawnHead;
+    uint spawnNum;
+    uint particleNum;
+};
+
+struct EmitterRange
+{
+    uint aliveHead;
+    uint aliveEnd;
+    uint deadHead;
+    uint deadEnd;
+};
+
 
 cbuffer ParticleCB : register(b0)
 {
     uint TotalSpawnCount;
+    uint previousEmitterSpawnCount;
+    uint currentEmitterSpawnCount;
 };
 
 

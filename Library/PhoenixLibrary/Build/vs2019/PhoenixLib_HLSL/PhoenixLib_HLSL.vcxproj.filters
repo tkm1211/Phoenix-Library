@@ -46,14 +46,23 @@
     <Filter Include="Source\EmittedParticle\Test">
       <UniqueIdentifier>{d5175ed2-aa9d-4ed8-9640-81cba1736d04}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\EmittedParticle\Test\Draw">
+    <Filter Include="Source\EmittedParticle\Draw">
       <UniqueIdentifier>{f796b143-44a3-4629-8517-a9f01b9e31dd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\EmittedParticle\Initialize">
+    <Filter Include="Source\EmittedParticle\Test\Initialize">
       <UniqueIdentifier>{3fb8bc2c-518f-4117-a350-a49e2178982f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\EmittedParticle\Update">
+    <Filter Include="Source\EmittedParticle\Test\Update">
       <UniqueIdentifier>{83276ef8-1533-471c-81ca-5948880c6ee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\EmittedParticle\Initialize">
+      <UniqueIdentifier>{2070a71f-650e-4043-ae6d-da9be8b95a32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\EmittedParticle\Update">
+      <UniqueIdentifier>{e1c919ba-becf-4b1e-8548-dc8fc143fdc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\EmittedParticle\Simulate">
+      <UniqueIdentifier>{a26f783c-2864-4d41-afa6-5adcc25ea719}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -154,34 +163,46 @@
       <Filter>Source\ComputeShader</Filter>
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticleVS.hlsl">
-      <Filter>Source\EmittedParticle\Test\Draw</Filter>
+      <Filter>Source\EmittedParticle\Draw</Filter>
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticlePS.hlsl">
-      <Filter>Source\EmittedParticle\Test\Draw</Filter>
+      <Filter>Source\EmittedParticle\Draw</Filter>
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingSkinPS.hlsl">
       <Filter>Source\PBR</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmitCS.hlsl">
-      <Filter>Source\EmittedParticle\Test</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\FinishUpdateCS.hlsl">
-      <Filter>Source\EmittedParticle\Test</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\KickoffUpdateCS.hlsl">
-      <Filter>Source\EmittedParticle\Test</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\SimulateCS.hlsl">
-      <Filter>Source\EmittedParticle\Test</Filter>
-    </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\ClearParticlesCS.hlsl">
-      <Filter>Source\EmittedParticle\Initialize</Filter>
+      <Filter>Source\EmittedParticle\Test\Initialize</Filter>
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\ClearSystemCS.hlsl">
-      <Filter>Source\EmittedParticle\Initialize</Filter>
+      <Filter>Source\EmittedParticle\Test\Initialize</Filter>
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\BeginUpdateCS.hlsl">
+      <Filter>Source\EmittedParticle\Test\Update</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\FillUnusedIndexCS.hlsl">
+      <Filter>Source\EmittedParticle\Test\Update</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\SpawnParticlesCS.hlsl">
+      <Filter>Source\EmittedParticle\Test\Update</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\InitializeParticlesCS.hlsl">
+      <Filter>Source\EmittedParticle\Test\Update</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\KickoffUpdateCS.hlsl">
+      <Filter>Source\EmittedParticle\Initialize</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmitCS.hlsl">
+      <Filter>Source\EmittedParticle\Initialize</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\FinishUpdateCS.hlsl">
       <Filter>Source\EmittedParticle\Update</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\SimulateCS.hlsl">
+      <Filter>Source\EmittedParticle\Simulate</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\PlayerHitEffectCS.hlsl">
+      <Filter>Source\EmittedParticle\Simulate</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,11 +230,11 @@
     <None Include="..\..\..\Source\HLSL\Skinning.hlsli">
       <Filter>Source\Common</Filter>
     </None>
-    <None Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticle.hlsli">
+    <None Include="..\..\..\Source\HLSL\EmittedParticle\EmitParticle.hlsli">
       <Filter>Source\EmittedParticle\Test</Filter>
     </None>
-    <None Include="..\..\..\Source\HLSL\EmittedParticle\EmitParticle.hlsli">
-      <Filter>Source\EmittedParticle</Filter>
+    <None Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticle.hlsli">
+      <Filter>Source\EmittedParticle\Initialize</Filter>
     </None>
   </ItemGroup>
 </Project>

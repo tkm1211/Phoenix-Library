@@ -504,21 +504,20 @@ namespace Phoenix
 		void Camera::ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust)
 		{
 			// TODO : Winä÷êîÇï ÇÃä÷êîÇ…ç∑Çµë÷Ç¶
-			/*if (GetKeyState(VK_LBUTTON) < 0)
+			POINT cursor;
+			GetCursorPos(&cursor);
+			oldCursor = newCursor;
+			newCursor = Math::Vector2(static_cast<float>(cursor.x), static_cast<float>(cursor.y));
+
+			if (GetKeyState(VK_RBUTTON) < 0)
 			{
-				POINT cursor;
-				GetCursorPos(&cursor);
-
-				oldCursor = newCursor;
-				newCursor = Math::Vector2(static_cast<float>(cursor.x), static_cast<float>(cursor.y));
-
 				f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
 
 				f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
 				rotateY -= moveX * 0.5f;
 				rotateX += moveY * 0.5f;
 			}
-			else*/
+			else
 			{
 				rotateY -= (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2.0f * 0.01745f;
 				rotateX -= (static_cast<float>(xInput[0].sRY) / 1000.0f) * 2.0f * 0.01745f;

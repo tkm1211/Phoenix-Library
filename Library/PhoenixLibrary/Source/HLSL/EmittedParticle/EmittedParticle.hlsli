@@ -39,6 +39,9 @@ cbuffer EmittedParticleCB : register(b0)
     float xParticleRotation;
     uint xParticleColor;
     
+    float4 xParticleNormal;
+    float4 xParticleMainColor;
+    
     float xParticleRandomFactor;
     float xParticleNormalFactor;
     float xParticleLifeSpan;
@@ -63,6 +66,11 @@ cbuffer EmittedParticleCB : register(b0)
     uint xSPH_ENABLED; // is SPH enabled?
     float xEmitterFixedTimestep; // we can force a fixed timestep (>0) onto the simulation to avoid blowing up
     float xParticleEmissive;
+    
+    float xSeed;
+    float randU;
+    float randV;
+    float randW;
 };
 
 cbuffer FrameTimeCB : register(b1)

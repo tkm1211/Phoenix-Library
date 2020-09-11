@@ -84,6 +84,9 @@ namespace Phoenix
 				f32	particleScaling;
 				f32	particleRotation;
 				u32	particleColor;
+				
+				Math::Vector4 particleNormal;
+				Math::Color particleMainColor;
 
 				f32 particleRandomFactor;
 				f32 particleNormalFactor;
@@ -109,6 +112,11 @@ namespace Phoenix
 				u32 SPH_ENABLED;			// is SPH enabled?
 				f32 emitterFixedTimestep;	// we can force a fixed timestep (>0) onto the simulation to avoid blowing up
 				f32 particleEmissive;
+				
+				f32 seed;
+				f32 randU;
+				f32 randV;
+				f32 randW;
 			};
 
 			struct FrameTimeCB
@@ -154,6 +162,8 @@ namespace Phoenix
 			std::unique_ptr<Graphics::IBuffer> emittedParticleCB;
 			std::unique_ptr<Graphics::IBuffer> frameTimeCB;
 
+			std::unique_ptr<Graphics::ITexture> tex;
+
 		private:
 			float fixedTimeStep = 1.0f / 60.0f; // -1 : variable timestep; >=0 : fixed timestep
 
@@ -161,17 +171,20 @@ namespace Phoenix
 			s32 burst = 0;
 			Math::Vector3 center;
 
-			f32 size = 0.1f;
+			f32 size = 1.0f;
 			f32 randomFactor = 1.0f;
 			f32 normalFactor = 1.0f;
 			f32 count = 0.0f;
-			f32 life = 10.0f;
+			f32 life = 1.0f;
 			f32 randomLife = 1.0f;
 			f32 scaleX = 1.0f;
 			f32 scaleY = 1.0f;
 			f32 rotation = 0.0f;
 			f32 motionBlurAmount = 0.0f;
 			f32 mass = 1.0f;
+			Math::Vector4 normal = Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+			Math::Color mainColor = Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
+
 
 		public:
 			GPUParticle() {}
@@ -182,7 +195,7 @@ namespace Phoenix
 			static std::unique_ptr<GPUParticle> Create();
 
 			// èâä˙âª
-			bool Initialize(Graphics::IGraphicsDevice* graphicsDevice);
+			bool Initialize(Graphics::IGraphicsDevice* graphicsDevice, const char* simulateCSFileName, const char* textureFileName);
 
 			// èIóπâª
 			void Finalize();
@@ -200,9 +213,20 @@ namespace Phoenix
 
 			bool CreateBuffers(Graphics::IDevice* device);
 
-			void LoadShaders(Graphics::IDevice* device);
+			void LoadShaders(Graphics::IDevice* device, const char* simulateCSFileName);
+
+			void SetParticleSize(float particleSize) { size = particleSize; }
+
+			void SetParticleLife(float particleLife) { life = particleLife; }
+
+			void SetParticleScale(float particleScale) { scaleX = particleScale; }
+
+			void SetParticleNormal(Math::Vector4 particleNormal) { normal = particleNormal; }
+
+			void SetParticleColor(Math::Color particleColor) { mainColor = particleColor; }
 		};
 
+		/*
 		class Item
 		{
 		public:
@@ -240,10 +264,12 @@ namespace Phoenix
 		{
 		public:
 			u32 spawnCount = 0;
-			u32 spawninterval = 0;
+			u32 spawnMaxCount = 0;
+			u32 spawnInterval = 0;
 
 		private:
 			u32 timeCount = 0;
+			u32 totalSpawnCount = 0;
 
 		public:
 			SpawnItem() {}
@@ -252,13 +278,20 @@ namespace Phoenix
 		public:
 			u32 Update()
 			{
-				if (timeCount++ % spawninterval == 0)
+				if (timeCount++ % spawnInterval == 0)
 				{
+					totalSpawnCount += spawnCount;
+
+					u32 subCount = spawnMaxCount - totalSpawnCount;
+					if (subCount < spawnCount) return subCount;
+
 					return spawnCount;
 				}
 
 				return 0;
 			}
+
+			u32 GetTotalSpawnCount() { return totalSpawnCount; }
 		};
 
 		class ItemData
@@ -292,7 +325,7 @@ namespace Phoenix
 				return buff.get();
 			}
 		};
-		class EmitterData
+		class EmitterParameter
 		{
 		public:
 			Math::Matrix transform;
@@ -301,8 +334,8 @@ namespace Phoenix
 			u32 life = 0;
 
 		public:
-			EmitterData() {}
-			~EmitterData() {}
+			EmitterParameter() {}
+			~EmitterParameter() {}
 		};
 
 		class EmitParticle
@@ -340,9 +373,26 @@ namespace Phoenix
 				f32 depth;
 			};
 
+			struct EmitterData
+			{
+				u32 spawnHead;
+				u32 spawnNum;
+				u32 particleNum;
+			};
+
+			struct EmitterRange
+			{
+				u32 aliveHead;
+				u32 aliveEnd;
+				u32 deadHead;
+				u32 deadEnd;
+			};
+
 			struct ParticleCB
 			{
 				u32 totalSpawnCount;
+				u32 previousEmitterSpawnCount;
+				u32 currentEmitterSpawnCount;
 			};
 
 		private:
@@ -363,6 +413,8 @@ namespace Phoenix
 			std::unique_ptr<GPUBuffer> emitterTableBuffer;
 			std::unique_ptr<GPUBuffer> emitterHeadersBuffer;
 			std::unique_ptr<GPUBuffer> emitterBinaryBuffer;
+			std::unique_ptr<GPUBuffer> emitterDataBuffer;
+			std::unique_ptr<GPUBuffer> emitterRangeBuffer;
 
 			std::unique_ptr<GPUBuffer> paticleHeadersBuffer;
 			std::unique_ptr<GPUBuffer> paticleBinaryBuffer;
@@ -374,11 +426,14 @@ namespace Phoenix
 			std::unique_ptr<Graphics::IComputeShader> clearParticleCS;
 
 			std::unique_ptr<Graphics::IComputeShader> beginUpdateCS;
+			std::unique_ptr<Graphics::IComputeShader> fillUnusedIndexCS;
+			std::unique_ptr<Graphics::IComputeShader> spawnParticlesCS;
 
 		private:
 			u32 emitterTable[TotalEmitterMax];
 			f32 emitterBinary[TotalEmitterBinaryMax];
 			EmitterHeader emitterHeader[TotalEmitterMax];
+			EmitterParameter emitterParameters[TotalEmitterMax];
 			EmitterData emitterDatas[TotalEmitterMax];
 
 			ParticleHeader particleHeader[TotalEmitterMax];
@@ -390,6 +445,9 @@ namespace Phoenix
 
 			u32 currentSpawnParticleCount = 0;
 			u32 currentStartUpEmitterCount = 0;
+			u32 previousStartUpEmitterParticleCount = 0;
+			u32 currentStartUpEmitterParticleCount = 0;
+			u32 activeParticleCount = 0;
 
 		public:
 			EmitParticle() {}
@@ -413,7 +471,7 @@ namespace Phoenix
 
 			void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera);
 
-			void RegisterEmitter(EmitterData emitterData);
+			void RegisterEmitter(EmitterParameter emitterParameter);
 
 			void StartUpEmitter(u32 emitterNum);
 
@@ -425,5 +483,6 @@ namespace Phoenix
 
 			void LoadShaders(Graphics::IDevice* device);
 		};
+	*/
 	}
 }

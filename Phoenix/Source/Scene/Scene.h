@@ -127,10 +127,16 @@ private: // Debug
 	Phoenix::Math::Vector2 texSize;
 
 	Phoenix::Math::Vector3 particlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	Phoenix::Math::Vector4 particleNormal = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+	Phoenix::Math::Color particleMainColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
+	Phoenix::f32 particleLife = 1.0f;
+	Phoenix::f32 particleSize = 1.0f;
+	Phoenix::f32 particleScale = 1.0f;
 
 	std::unique_ptr<Phoenix::FrameWork::IComputeShader> testComputeShader;
 	std::unique_ptr<Phoenix::FrameWork::BitonicSort> bitonicSort;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> gpuParticle;
+	std::unique_ptr<Phoenix::FrameWork::GPUParticle> playerHitParticle;
 
 	Phoenix::f32 dis = 10.0f;
 	Phoenix::f32 width = 30.0f;

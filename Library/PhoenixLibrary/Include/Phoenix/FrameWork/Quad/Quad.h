@@ -135,8 +135,8 @@ namespace Phoenix
 
 			struct ShaderConstants
 			{
-				float glowExtractionThreshold = 0.85f;
-				float blurConvolutionIntensity = 0.06f;
+				float glowExtractionThreshold = 0.0f; // 0.85f
+				float blurConvolutionIntensity = 0.08f; // 0.06f
 				float lensFlareThreshold = 1.000f;
 				float lensFlareGhostDispersal = 0.300f; //dispersion factor
 				int numberOfGhosts = 6;

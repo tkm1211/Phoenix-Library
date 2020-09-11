@@ -44,7 +44,7 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 	// トランスフォームの初期化
 	{
 		worldMatrix = Phoenix::Math::MatrixIdentity();
-		pos = { 0,0,-10.0f };
+		pos = { 0,0,100.0f };
 		//rotate = { 0,0,0 };
 		rotate = { 0,0,0,1 };
 		scale = { 2.0f,2.0f,2.0f };
