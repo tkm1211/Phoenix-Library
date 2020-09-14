@@ -9,6 +9,17 @@ float4 main(VertextoPixel input) : SV_TARGET
 {
     float4 color = texture0.Sample(sampler_linear_clamp, input.tex);
     float alpha = color.a;
+    
+    color *= xParticleMainColor;
+    
+    return color;
+}
+
+/*
+float4 main(VertextoPixel input) : SV_TARGET
+{
+    float4 color = texture0.Sample(sampler_linear_clamp, input.tex);
+    float alpha = color.a;
     //clip(color.a - 1.0f / 255.0f);
 
     ////float2 pTex = input.pos2D.xy / input.pos2D.w * float2(0.5f, -0.5f) + 0.5f;
@@ -29,10 +40,11 @@ float4 main(VertextoPixel input) : SV_TARGET
 
     //return float4(1, 0, 0, 1.0f);
     color *= xParticleMainColor;
-    color.xyz *= alpha * 5.0f;
+    //color.xyz *= alpha * 5.0f;
     //color.xyz += 1.0f;
     return color;
     //color.a = color.r <= 0.0f ? 0.0f : 1.0f;
-    
+  
     //return max(color, 0);
 }
+*/

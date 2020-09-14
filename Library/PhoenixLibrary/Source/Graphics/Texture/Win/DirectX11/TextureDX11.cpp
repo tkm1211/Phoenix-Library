@@ -343,7 +343,7 @@ namespace Phoenix
 			default: break;
 			}
 
-			return false;
+			return true;
 		}
 
 		// I—¹‰»

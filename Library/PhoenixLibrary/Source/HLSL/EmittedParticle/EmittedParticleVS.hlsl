@@ -66,6 +66,8 @@ VertextoPixel main(uint fakeIndex : SV_VERTEXID)
     Out.size = size;
     Out.color = (particle.colorMirror & 0x00FFFFFF) | (uint(opacity * 255.0f) << 24);
     Out.pos2D = Out.pos;
+    
+    Out.life = particle.life;
 
     return Out;
 }

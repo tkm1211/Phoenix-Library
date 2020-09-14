@@ -162,7 +162,8 @@ namespace Phoenix
 			std::unique_ptr<Graphics::IBuffer> emittedParticleCB;
 			std::unique_ptr<Graphics::IBuffer> frameTimeCB;
 
-			std::unique_ptr<Graphics::ITexture> tex;
+			std::unique_ptr<Graphics::ITexture> mainTexTure;
+			std::unique_ptr<Graphics::ITexture> alphaTexture;
 
 		private:
 			float fixedTimeStep = 1.0f / 60.0f; // -1 : variable timestep; >=0 : fixed timestep
@@ -195,7 +196,7 @@ namespace Phoenix
 			static std::unique_ptr<GPUParticle> Create();
 
 			// èâä˙âª
-			bool Initialize(Graphics::IGraphicsDevice* graphicsDevice, const char* simulateCSFileName, const char* textureFileName);
+			bool Initialize(Graphics::IGraphicsDevice* graphicsDevice, const char* simulateCSFileName, const char* textureFileName, bool isEmissive = false, bool isAlpha = false);
 
 			// èIóπâª
 			void Finalize();
@@ -213,7 +214,7 @@ namespace Phoenix
 
 			bool CreateBuffers(Graphics::IDevice* device);
 
-			void LoadShaders(Graphics::IDevice* device, const char* simulateCSFileName);
+			void LoadShaders(Graphics::IDevice* device, const char* simulateCSFileName, bool isEmissive, bool isAlpha);
 
 			void SetParticleSize(float particleSize) { size = particleSize; }
 

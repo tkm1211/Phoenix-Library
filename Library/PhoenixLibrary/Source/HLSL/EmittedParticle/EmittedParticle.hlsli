@@ -93,6 +93,7 @@ struct VertextoPixel
     float2 tex : TEXCOORD1;
     nointerpolation float size : TEXCOORD2;
     nointerpolation uint color : TEXCOORD3;
+    float life : LIFE;
     float3 P : WORLDPOSITION;
 };
 

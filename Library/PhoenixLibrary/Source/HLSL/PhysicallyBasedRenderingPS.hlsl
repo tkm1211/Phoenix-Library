@@ -53,10 +53,11 @@ struct DirectionalLight
 
 struct PointLight
 {
-    float3 position;
-    float3 color;
+    float4 position;
+    float4 color;
     float distance;
     float decay;
+    float2 dummy;
 };
 
 struct SpotLight
@@ -90,6 +91,7 @@ cbuffer CbMaterial : register(b0)
 cbuffer CbScene : register(b1)
 {
     DirectionalLight dirLight[2];
+    PointLight pointLight;
     float4 cbEye;
 };
 
@@ -151,11 +153,67 @@ float3 SpecularBRDF(const in IncidentLight directLight, const in GeometricContex
     return (F * (G * D)) / (4.0 * dotNL * dotNV + EPSILON);
 }
 
+bool testLightInRange(const in float lightDistance, const in float cutoffDistance)
+{
+    return any(bool2(cutoffDistance == 0.0, lightDistance < cutoffDistance));
+}
+
+float punctualLightIntensityToIrradianceFactor(const in float lightDistance, const in float cutoffDistance, const in float decayExponent)
+{
+    if (decayExponent > 0.0f)
+    {
+        return pow(saturate(-lightDistance / cutoffDistance + 1.0f), decayExponent);
+    }
+
+    return 1.0f;
+}
+
 void getDirectionalDirectLightIrradiance(const in DirectionalLight directionalLight, const in GeometricContext geometry, out IncidentLight directLight)
 {
     directLight.color = directionalLight.color.xyz;
     directLight.direction = directionalLight.direction.xyz;
     directLight.visible = true;
+}
+
+void getPointDirectLightIrradiance(const in PointLight pointLight, const in GeometricContext geometry, out IncidentLight directLight)
+{
+    float3 L = pointLight.position.xyz - geometry.position;
+    directLight.direction = normalize(L);
+
+    float lightDistance = length(L);
+    if (testLightInRange(lightDistance, pointLight.distance))
+    {
+        directLight.color = pointLight.color.xyz;
+        directLight.color *= punctualLightIntensityToIrradianceFactor(lightDistance, pointLight.distance, pointLight.decay);
+        directLight.visible = true;
+    }
+    else
+    {
+        directLight.color = float3(0.0f, 0.0f, 0.0f);
+        directLight.visible = false;
+    }
+}
+
+void getSpotDirectLightIrradiance(const in SpotLight spotLight, const in GeometricContext geometry, out IncidentLight directLight)
+{
+    float3 L = spotLight.position - geometry.position;
+    directLight.direction = normalize(L);
+
+    float lightDistance = length(L);
+    float angleCos = dot(directLight.direction, spotLight.direction);
+
+    if (all(bool2(angleCos > spotLight.coneCos, testLightInRange(lightDistance, spotLight.distance))))
+    {
+        float spotEffect = smoothstep(spotLight.coneCos, spotLight.penumbraCos, angleCos);
+        directLight.color = spotLight.color;
+        directLight.color *= spotEffect * punctualLightIntensityToIrradianceFactor(lightDistance, spotLight.distance, spotLight.decay);
+        directLight.visible = true;
+    }
+    else
+    {
+        directLight.color = float3(0.0f, 0.0f, 0.0f);
+        directLight.visible = false;
+    }
 }
 
 // RenderEquations(RE)
@@ -192,7 +250,7 @@ float4 main(PS_INPUT input) : SV_Target
     N = normalize(mul(N, mat));
   
     GeometricContext geometry;
-    //geometry.position = -lighPos.xyz;
+    geometry.position = input.position;
     //geometry.normal = normalize(input.normal);
     geometry.normal = N;
     geometry.viewDir = normalize(cbEye.xyz - input.position);
@@ -252,6 +310,13 @@ float4 main(PS_INPUT input) : SV_Target
         RE_Direct(directLight, geometry, material, reflectedLight);
     }
 #endif
+    
+    // point light
+    getPointDirectLightIrradiance(pointLight, geometry, directLight);
+    if (directLight.visible)
+    {
+        RE_Direct(directLight, geometry, material, reflectedLight);
+    }
   
     // directional light
     getDirectionalDirectLightIrradiance(dirLight[0], geometry, directLight);

@@ -1,4 +1,3 @@
-
 #include "EmittedParticle.hlsli"
 
 
@@ -38,12 +37,13 @@ void main(uint3 DTid : SV_DispatchThreadID, uint Gid : SV_GroupIndex)
       //      particle.force *= sin((particle.maxLife * 0.5f) - particle.life) < 0.0f ? -1.0f : 1.0f;
             
             float seed = particle.life;
-            particle.position.x += particle.velocity.x * (particle.force.x * 1.25f) * dt;
-            particle.position.y += particle.velocity.y * (particle.force.y * 1.5f) * dt;
-            particle.position.z += particle.velocity.z * (particle.force.z * 1.25f) * dt;
+            particle.position.x += particle.velocity.x * dt;
+            particle.position.y += particle.velocity.y * dt;
+            particle.position.z += particle.velocity.z * dt;
 
-            float invLife = particle.maxLife - particle.life;
-            particle.position.y -= abs(particle.velocity.y) * (invLife * invLife * 0.25f);
+            //float invLife = particle.maxLife - particle.life;
+            //particle.position.y += abs(particle.velocity.y) * (invLife * invLife * 0.25f);
+            
 		    // reset force for next frame:
             particle.life -= dt * 2.0f;
             particle.force = particle.life * 5.0f;

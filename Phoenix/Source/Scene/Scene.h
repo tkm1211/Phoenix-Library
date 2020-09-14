@@ -52,9 +52,33 @@ public:
 class SceneTitle : public Scene
 {
 private:
+	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
+	Phoenix::FrameWork::IShader* pbrShader = nullptr;
+	Phoenix::FrameWork::IShader* pbrSkinShader = nullptr;
+	Phoenix::Graphics::Camera* camera = nullptr;
+
+	// フレームバッファ
+	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[3];
+
+	// ポストプロセス
+	std::unique_ptr<Phoenix::FrameWork::PostProcessingEffects> postProcessingEffects;
+
+	// ブルーム
+	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
+	std::unique_ptr<Phoenix::FrameWork::MSAAResolve> msaaResolve;
+	std::unique_ptr<Phoenix::FrameWork::Bloom> bloom;
+
+	// スカイマップ
+	std::unique_ptr<Phoenix::FrameWork::SkyMap> skyMap;
+
+	// タイトル
+	std::unique_ptr<Phoenix::Graphics::ITexture> logo;
+	std::unique_ptr<Phoenix::Graphics::ITexture> button;
+
+private: // Debug
+	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
 	//::Effekseer::Effect* effect = nullptr;
 	//::Effekseer::Handle handle = 0;
-	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
 
 public:
 	SceneTitle() {}
@@ -137,12 +161,18 @@ private: // Debug
 	std::unique_ptr<Phoenix::FrameWork::BitonicSort> bitonicSort;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> gpuParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> playerHitParticle;
+	std::unique_ptr<Phoenix::FrameWork::GPUParticle> dusterParticle;
 
 	Phoenix::f32 dis = 10.0f;
 	Phoenix::f32 width = 30.0f;
 	Phoenix::f32 height = 30.0f;
 	Phoenix::f32 nearZ = 1.0f;
 	Phoenix::f32 farZ = 30.0f;
+
+	Phoenix::f32 playerAttackEndCount;
+	Phoenix::f32 playerAttackEndMaxCount = 30;
+
+	Phoenix::f32 pointLightDistance = 0.95f;
 
 	bool cameraFlg = false;
 	bool lockOnCamera = false;
@@ -155,6 +185,8 @@ private: // Debug
 	bool bloomBlend = false;
 	bool isPBR = false;
 	bool active[10] = { false };
+
+	bool onPointLight = false;
 
 public:
 	SceneGame() {}

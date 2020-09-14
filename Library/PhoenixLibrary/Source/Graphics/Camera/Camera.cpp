@@ -501,6 +501,27 @@ namespace Phoenix
 			}
 		}
 
+		void Camera::SurveyCamera(f32 addRotateX, f32 addRotateY, f32 distance, Math::Vector3 target)
+		{
+			rotateX += addRotateX;
+			rotateY += addRotateY;
+
+			f32 xSin = sinf(rotateX);
+			f32 xCos = cosf(rotateX);
+			f32 ySin = sinf(rotateY);
+			f32 yCos = cosf(rotateY);
+
+			Math::Vector3 front = { -xCos * ySin, -xSin, -xCos * yCos };
+			Math::Vector3 _right = { yCos, 0.0f, -ySin };
+			Math::Vector3 _up = Math::Vector3Cross(_right, front);
+
+			Math::Vector3 _target = target;
+			Math::Vector3 _distance = { distance, distance, distance };
+			Math::Vector3 _pos = _target - (front * _distance);
+
+			SetLookAt(_pos, _target, _up);
+		}
+
 		void Camera::ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust)
 		{
 			// TODO : Winä÷êîÇï ÇÃä÷êîÇ…ç∑Çµë÷Ç¶
@@ -585,12 +606,18 @@ namespace Phoenix
 			rotateX = 0.0f;
 			rotateY = atan2f(dir.x, dir.z);
 
-			eye = (center + centerAdjust) /*Phoenix::Math::Vector3Lerp(eye, center, 0.6f)*/;
+			eye = (center + centerAdjust); /*Phoenix::Math::Vector3Lerp(eye, center, 0.6f)*/
 			focus = Phoenix::Math::Vector3Lerp(focus, (target + targetAdjust), 0.05f);
 			front = Phoenix::Math::Vector3Lerp(front, -dir, 0.05f);
 
 			Math::Vector3 _pos = eye - (front * 6.5f);
 			Math::Vector3 _target = focus;
+
+			dir = center - target;
+			dir.y = 0.0f;
+			Math::Vector3 dirN = Math::Vector3Normalize(dir);
+			Math::Vector3 right = Math::Vector3Cross(Math::Vector3::OneY, -dirN);
+			_pos += right * -0.75f;
 
 			_pos.y = _pos.y <= 0.05f ? 0.05f : _pos.y;
 

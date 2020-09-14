@@ -18,6 +18,20 @@ namespace Phoenix
 			~LightState() {}
 		};
 
+		class PointLightState
+		{
+		public:
+			Math::Vector4 position = { 0.0f, 0.0f, 0.0f, 0.0f };
+			Math::Vector4 color = { 0.0f, 0.0f, 0.0f, 0.0f };
+			f32 distance = 0.0f;
+			f32 decay = 0.0f;
+			Math::Vector2 dummy = { 0.0f, 0.0f };
+
+		public:
+			PointLightState() {}
+			~PointLightState() {}
+		};
+
 		class MaterialState
 		{
 		public:
@@ -39,6 +53,15 @@ namespace Phoenix
 				Math::Vector4 color;
 			};
 
+			struct PointLight
+			{
+				Math::Vector4 position;
+				Math::Vector4 color;
+				f32 distance;
+				f32 decay;
+				Math::Vector2 dummy;
+			};
+
 			struct CbMaterial
 			{
 				Math::Vector4 albedo;
@@ -51,6 +74,7 @@ namespace Phoenix
 			struct CbScene
 			{
 				DirectionalLight dirLight[2];
+				PointLight pointLight;
 				Math::Vector4 viewPos;
 			};
 
@@ -62,6 +86,7 @@ namespace Phoenix
 
 			std::unique_ptr<LightState> light;
 			std::unique_ptr<LightState> sunLight;
+			std::unique_ptr<PointLightState> pointLight;
 			std::unique_ptr<MaterialState> material;
 
 		public:
@@ -96,6 +121,7 @@ namespace Phoenix
 			// ライトの取得
 			LightState* GetLight() { return light.get(); }
 			LightState* GetSunLight() { return sunLight.get(); }
+			PointLightState* GetPointLight() { return pointLight.get(); }
 
 			// マテリアルの取得
 			MaterialState* GetMaterial() { return material.get(); }

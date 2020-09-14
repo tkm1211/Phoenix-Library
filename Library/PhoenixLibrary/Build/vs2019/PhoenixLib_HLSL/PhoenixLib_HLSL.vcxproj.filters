@@ -189,12 +189,6 @@
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\InitializeParticlesCS.hlsl">
       <Filter>Source\EmittedParticle\Test\Update</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\KickoffUpdateCS.hlsl">
-      <Filter>Source\EmittedParticle\Initialize</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmitCS.hlsl">
-      <Filter>Source\EmittedParticle\Initialize</Filter>
-    </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\FinishUpdateCS.hlsl">
       <Filter>Source\EmittedParticle\Update</Filter>
     </FxCompile>
@@ -203,6 +197,21 @@
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\PlayerHitEffectCS.hlsl">
       <Filter>Source\EmittedParticle\Simulate</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\DusterEffectCS.hlsl">
+      <Filter>Source\EmittedParticle\Simulate</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticleEmissivePS.hlsl">
+      <Filter>Source\EmittedParticle\Draw</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\KickoffUpdateCS.hlsl">
+      <Filter>Source\EmittedParticle\Update</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmitCS.hlsl">
+      <Filter>Source\EmittedParticle\Update</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticleAlphaPS.hlsl">
+      <Filter>Source\EmittedParticle\Draw</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

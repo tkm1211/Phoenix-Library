@@ -80,6 +80,7 @@ namespace Phoenix
 
 			light = std::make_unique<LightState>();
 			sunLight = std::make_unique<LightState>();
+			pointLight = std::make_unique<PointLightState>();
 			material = std::make_unique<MaterialState>();
 
 			light->direction = Math::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -87,6 +88,12 @@ namespace Phoenix
 
 			sunLight->direction = Math::Vector4(0.5f, 0.5f, 0.0f, 1.0f);
 			sunLight->color = Math::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
+			pointLight->position = Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+			pointLight->color = Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+			pointLight->distance = 0.0f;
+			pointLight->decay = 0.0f;
+			pointLight->dummy = Math::Vector2(0.0f, 0.0f);
 
 			material->albedo = Math::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 			material->metallic = 0.35f; //0.0f
@@ -142,6 +149,11 @@ namespace Phoenix
 				cb.dirLight[1].direction = Math::Vector4(1.0f, 0.0f, 0.0f, 1.0f); // sunLight->direction Math::Vector4(1.0f, 0.0f, 0.0f, 1.0f) // ‘¾—z‚©‚ç‚Ì•ûŒü
 				cb.dirLight[0].color = light->color;
 				cb.dirLight[1].color = sunLight->color;
+				cb.pointLight.position = pointLight->position;
+				cb.pointLight.color = pointLight->color;
+				cb.pointLight.distance = pointLight->distance;
+				cb.pointLight.decay = pointLight->decay;
+				cb.pointLight.dummy = pointLight->dummy;
 				cb.viewPos = Math::Vector4(camera.GetEye(), 0.0f);
 				context->UpdateSubresource(cbScene.get(), 0, 0, &cb, 0, 0);
 			}

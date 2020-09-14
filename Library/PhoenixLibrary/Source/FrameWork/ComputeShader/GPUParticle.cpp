@@ -67,7 +67,7 @@ namespace Phoenix
 		}
 
 		// ‰Šú‰»
-		bool GPUParticle::Initialize(Graphics::IGraphicsDevice* graphicsDevice, const char* simulateCSFileName, const char* textureFileName)
+		bool GPUParticle::Initialize(Graphics::IGraphicsDevice* graphicsDevice, const char* simulateCSFileName, const char* textureFileName, bool isEmissive, bool isAlpha)
 		{
 			Graphics::IDevice* device = graphicsDevice->GetDevice();
 
@@ -76,14 +76,14 @@ namespace Phoenix
 				return false;
 			}
 
-			LoadShaders(device, simulateCSFileName);
+			LoadShaders(device, simulateCSFileName, isEmissive, isAlpha);
 
-			tex = Phoenix::Graphics::ITexture::Create();
-			if (!tex->Initialize(device, textureFileName, Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White))
-			{
-				return false;
-			}
+			mainTexTure = Phoenix::Graphics::ITexture::Create();
+			mainTexTure->Initialize(device, textureFileName, Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
 
+			alphaTexture = Phoenix::Graphics::ITexture::Create();
+			alphaTexture->Initialize(device, "..\\Data\\Assets\\Texture\\Mask\\alpha.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+			
 			return true;
 		}
 
@@ -279,7 +279,8 @@ namespace Phoenix
 
 				Graphics::ITexture* srv[] =
 				{
-					tex.get()
+					mainTexTure.get(),
+					alphaTexture.get()
 				};
 				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, srv);
 
@@ -393,7 +394,7 @@ namespace Phoenix
 		}
 
 
-		void GPUParticle::LoadShaders(Graphics::IDevice* device, const char* simulateCSFileName)
+		void GPUParticle::LoadShaders(Graphics::IDevice* device, const char* simulateCSFileName, bool isEmissive, bool isAlpha)
 		{
 			drawShader = Graphics::IShader::Create();
 
@@ -413,7 +414,7 @@ namespace Phoenix
 			simulateCSSortingDepthCollisions = Graphics::IComputeShader::Create();
 
 			drawShader->LoadVS(device, "EmittedParticleVS.cso", nullptr, 0);
-			drawShader->LoadPS(device, "EmittedParticlePS.cso");
+			isEmissive ? drawShader->LoadPS(device, "EmittedParticleEmissivePS.cso") : (isAlpha ? drawShader->LoadPS(device, "EmittedParticleAlphaPS.cso") : drawShader->LoadPS(device, "EmittedParticlePS.cso"));
 
 			kickoffUpdateCS->Load(device, "KickoffUpdateCS.cso");
 			finishUpdateCS->Load(device, "FinishUpdateCS.cso");

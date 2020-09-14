@@ -182,6 +182,8 @@ namespace Phoenix
 			// ƒtƒŠ[ƒJƒƒ‰
 			void FreeCamera();
 
+			void SurveyCamera(f32 addRotateX, f32 addRotateY, f32 distance, Math::Vector3 target);
+
 			void ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust);
 
 			void LockOnCamera(const Math::Vector3& center, const Math::Vector3& target, const Math::Vector3& centerAdjust, const Math::Vector3& targetAdjust);

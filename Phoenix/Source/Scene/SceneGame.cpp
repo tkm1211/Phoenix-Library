@@ -152,7 +152,10 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		gpuParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png"); // particle
 
 		playerHitParticle = Phoenix::FrameWork::GPUParticle::Create();
-		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png"); // PlayerHitEffectCS
+		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
+
+		dusterParticle = Phoenix::FrameWork::GPUParticle::Create();
+		dusterParticle->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster02.png", false, true);
 	}
 
 	{
@@ -258,13 +261,49 @@ void SceneGame::Update()
 				{
 					playerHitParticle->Burst(100);
 					playerHitParticle->SetParticleLife(1.0f);
-					playerHitParticle->SetParticleSize(0.02f);
+					playerHitParticle->SetParticleSize(0.07f);
 					playerHitParticle->SetParticleScale(0.25f);
 					playerHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
-					playerHitParticle->SetParticleColor(particleMainColor);
+					playerHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor
+
+					dusterParticle->Burst(5);
+					dusterParticle->SetParticleLife(1.0f);
+					dusterParticle->SetParticleSize(0.25f);
+					dusterParticle->SetParticleScale(1.0f);
+					dusterParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+					dusterParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 
 					particlePos = playerDatas->at(player->GetAttackCollisionIndex()).pos;
 				}
+
+				// Set Point Light
+				{
+					Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
+					point->position = Phoenix::Math::Vector4(particlePos, 0.0f);
+					point->color = Phoenix::Math::Vector4(5.0f, 5.0f, 5.0f, 1.0f);
+					point->distance = pointLightDistance;
+					point->decay = 0.1f;
+					playerAttackEndCount = 0.0f;
+					onPointLight = true;
+				}
+			}
+		}
+		else if (onPointLight)
+		{
+			Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
+			
+			if (playerAttackEndMaxCount <= playerAttackEndCount++)
+			{
+				point->position = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+				point->color = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+				point->distance = 0.0f;
+				point->decay = 0.0f;
+				playerAttackEndCount = 0.0f;
+				onPointLight = false;
+			}
+			else
+			{
+				point->distance = pointLightDistance * ((playerAttackEndMaxCount - playerAttackEndCount) / playerAttackEndMaxCount);
 			}
 		}
 
@@ -337,6 +376,9 @@ void SceneGame::Update()
 
 		playerHitParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
 		playerHitParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+
+		dusterParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
+		dusterParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 	}
 
 	// エフェクト更新
@@ -652,6 +694,7 @@ void SceneGame::Draw()
 						{
 							gpuParticle->Draw(graphicsDevice, *camera);
 							playerHitParticle->Draw(graphicsDevice, *camera);
+							dusterParticle->Draw(graphicsDevice, *camera);
 						}
 						//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 					}
