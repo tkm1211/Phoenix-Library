@@ -97,7 +97,7 @@ namespace Phoenix
 
 			// メッシュ定数バッファ更新
 			CbMaterial cb = {};
-			cb.color = { 2.0f, 2.0f, 2.0f, 1.0f };
+			cb.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 			context->UpdateSubresource(cbMatrial.get(), 0, 0, &cb, 0, 0);
 
 			shader->Activate(graphicsDevice->GetDevice());
@@ -109,7 +109,6 @@ namespace Phoenix
 			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
 			Graphics::IModelResource* modelResource = model->GetModelResource();
-			Graphics::ModelData modelData = modelResource->GetModelData();
 
 			// メッシュ定数バッファ更新
 			context->UpdateConstantBufferMesh(worldTransform);
@@ -122,9 +121,8 @@ namespace Phoenix
 				}
 
 				Graphics::IMesh* mesh = modelResource->GetMesh(i);
-				Graphics::ModelData::Mesh meshData = modelData.meshes[i];
 
-				for (Graphics::ModelData::Subset& subset : meshData.subsets)
+				for (const Graphics::ModelData::Subset& subset : modelResource->GetModelData().meshes[i].subsets)
 				{
 					u32 size = static_cast<u32>(model->GetTextureSize(subset.materialIndex));
 					for (u32 j = 0; j < size; ++j)

@@ -288,6 +288,8 @@ namespace Phoenix
 		// èâä˙âª
 		bool TextureDX11::Initialize(IDevice* device, const char* filename, MaterialType materialType, const Math::Color& color)
 		{
+			bool check = false;
+
 			std::function<void(const Math::Color&, DWORD&)> convert = [&](const Math::Color& colour, DWORD& RGBA)
 			{
 				DWORD R = static_cast<BYTE>(colour.r * 255);
@@ -308,11 +310,11 @@ namespace Phoenix
 				{
 					DWORD RGBA = 0;
 					convert(color, RGBA);
-					CreateDummyTexture(d3dDevice, &shaderResourceView, RGBA, 1, true, true);
+					check = CreateDummyTexture(d3dDevice, &shaderResourceView, RGBA, 1, true, true);
 				}
 				else
 				{
-					LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
+					check = LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
 				}
 				break;
 			case Phoenix::Graphics::MaterialType::NormalMap:
@@ -321,11 +323,11 @@ namespace Phoenix
 				{
 					DWORD RGBA = 0;
 					convert(color, RGBA);
-					CreateDummyTexture(d3dDevice, &shaderResourceView, 0xFFFF7F7F, 1, false, true);
+					check = CreateDummyTexture(d3dDevice, &shaderResourceView, 0xFFFF7F7F, 1, false, true);
 				}
 				else
 				{
-					LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
+					check = LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
 				}
 				break;
 			case Phoenix::Graphics::MaterialType::Emissive:
@@ -333,17 +335,17 @@ namespace Phoenix
 				{
 					DWORD RGBA = 0;
 					convert(color, RGBA);
-					CreateDummyTexture(d3dDevice, &shaderResourceView, 0x00000000, 1, true, true);
+					check = CreateDummyTexture(d3dDevice, &shaderResourceView, 0x00000000, 1, true, true);
 				}
 				else
 				{
-					LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
+					check = LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
 				}
 				break;
 			default: break;
 			}
 
-			return true;
+			return check;
 		}
 
 		// èIóπâª

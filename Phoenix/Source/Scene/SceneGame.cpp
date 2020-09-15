@@ -29,9 +29,9 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		cameraFlg = false;
 		lockOnCamera = false;
 		isHitCollision = false;
-		isUpdate = false;
-		isPlayerUpdate = false;
-		isBossUpdate = false;
+		isUpdate = true;
+		isPlayerUpdate = true;
+		isBossUpdate = true;
 		enableMSAA = false;
 		shadowBlend = false;
 		bloomBlend = true;
@@ -49,6 +49,7 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		boss = commonData->boss.get();
 		uiSystem = commonData->uiSystem.get();
 		stageModel = commonData->stageModel.get();
+		bossStageModel = commonData->bossStageModel.get();
 		basicShader = commonData->basicShader.get();
 		basicSkinShader = commonData->basicSkinShader.get();
 		standardShader = commonData->standardShader.get();
@@ -61,6 +62,8 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	// 共通データの初期化
 	{
 		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
+		camera->SetRotateX(0.5f);
+		camera->SetRotateY(0.0f);
 	}
 
 	// フレームバッファ
@@ -154,46 +157,28 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		playerHitParticle = Phoenix::FrameWork::GPUParticle::Create();
 		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
 
-		dusterParticle = Phoenix::FrameWork::GPUParticle::Create();
-		dusterParticle->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster02.png", false, true);
-	}
+		bossHitParticle = Phoenix::FrameWork::GPUParticle::Create();
+		bossHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
 
-	{
-		// エフェクトの読込
-		//auto effect = Effekseer::Effect::Create(manager, EFK_EXAMPLE_ASSETS_DIR_U16 "Laser01.efk");
-		//effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\Resources\\Laser01.efk");
-		//hitEffect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\MAGICALxSPIRAL\\HitEffect06.efk");
-
-		// エフェクトの再生
-		//hitEffectHandle = commonData->manager->Play(hitEffect, 0, 0, 0);
-		//commonData->manager->SetPaused(hitEffectHandle, false);
-
-		//Phoenix::Graphics::TextureDesc desc = {};
-
-		//skyMap = Phoenix::Graphics::ITexture::Create();
-		//skyMap->Initialize(graphicsDevice->GetDevice(), "D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Texture\\SkyMap\\skybox1.dds", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
-		//skyMap->Initialize(graphicsDevice->GetDevice(), "D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Cold Sunset\\Cold Sunset Equirect.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
-
-		//DirectX::XMFLOAT3 s = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-		//skyBox = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 0, false, &s);
-
-		//skyMapShader = Phoenix::FrameWork::SkyMapShader::Create();
-		//skyMapShader->Initialize(graphicsDevice);
+		/*dusterParticle = Phoenix::FrameWork::GPUParticle::Create();
+		dusterParticle->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster02.png");*/
 	}
 }
 
 void SceneGame::Update()
 {
+	bool onFade = sceneSystem->GetOnFade();
+
 	// プレイヤー更新
 	if (isUpdate && isPlayerUpdate)
 	{
-		player->Update(*camera);
+		player->Update(*camera, !onFade);
 	}
 
 	// ボス更新
 	if (isUpdate && isBossUpdate)
 	{
-		boss->Update();
+		boss->Update(!onFade);
 	}
 
 	// 当たり判定
@@ -250,10 +235,6 @@ void SceneGame::Update()
 				pos = bossDatas->at(0).pos + dir * bossDatas->at(0).radius / 2.0f;
 				normal = Phoenix::Math::Vector3Normalize(playerPos - bossPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
 
-				//hitEffectHandle = commonData->manager->Play(hitEffect, 0,0,0);
-				//hitEffectHandle = commonData->manager->Play(hitEffect, pos.x, pos.y, pos.z);
-				//hitEffectHandle = commonData->manager->Play(hitEffect, { pos.x, pos.y, pos.z }, 20);
-				//commonData->manager->SetScale(hitEffectHandle, 50.0f, 50.0f, 50.0f);
 				player->SetIsHit(true);
 				boss->Damage(10);
 
@@ -266,12 +247,12 @@ void SceneGame::Update()
 					playerHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
 					playerHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor
 
-					dusterParticle->Burst(5);
-					dusterParticle->SetParticleLife(1.0f);
-					dusterParticle->SetParticleSize(0.25f);
-					dusterParticle->SetParticleScale(1.0f);
-					dusterParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-					dusterParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+					//dusterParticle->Burst(5);
+					//dusterParticle->SetParticleLife(1.0f);
+					//dusterParticle->SetParticleSize(0.25f);
+					//dusterParticle->SetParticleScale(1.0f);
+					//dusterParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+					//dusterParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 0.5f)); // Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)
 
 					particlePos = playerDatas->at(player->GetAttackCollisionIndex()).pos;
 				}
@@ -313,8 +294,25 @@ void SceneGame::Update()
 			const std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
 			if (SphereVsSphere(playerDatas->at(0).pos, bossDatas->at(boss->GetAttackCollisionIndex()).pos, playerDatas->at(0).radius, bossDatas->at(boss->GetAttackCollisionIndex()).radius))
 			{
+				Phoenix::Math::Vector3 normal;
+				normal = Phoenix::Math::Vector3Normalize(playerPos - bossPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
+
 				boss->SetIsHit(true);
 				player->Damage(10);
+
+				// Burst Particle.
+				if (!boss->IsJumpAttack())
+				{
+					bossHitParticle->Burst(100);
+					bossHitParticle->SetParticleLife(1.0f);
+					bossHitParticle->SetParticleSize(0.07f);
+					bossHitParticle->SetParticleScale(0.25f);
+					bossHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
+					bossHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor
+
+					bossHitParticlePos = bossPos + ((playerPos - bossPos) * 0.5f);
+					bossHitParticlePos.y = bossDatas->at(boss->GetAttackCollisionIndex()).pos.y;
+				}
 			}
 		}
 	}
@@ -377,40 +375,12 @@ void SceneGame::Update()
 		playerHitParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
 		playerHitParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 
-		dusterParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
-		dusterParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+		bossHitParticle->UpdateCPU(graphicsDevice, bossHitParticlePos, 1.0f / 60.0f);
+		bossHitParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+
+		//dusterParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
+		//dusterParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 	}
-
-	// エフェクト更新
-	/*{
-	//	// 投影行列の更新 + カメラ行列の更新
-	//	Phoenix::Math::Matrix projection = camera->GetProjection();
-	//	Phoenix::Math::Matrix view = camera->GetView();
-
-	//	::Effekseer::Matrix44 projectionMat;
-	//	::Effekseer::Matrix44 viewMat;
-
-	//	for (Phoenix::u32 i = 0; i < 4; ++i)
-	//	{
-	//		for (Phoenix::u32 j = 0; j < 4; ++j)
-	//		{
-	//			projectionMat.Values[i][j] = projection.m[i][j];
-	//			viewMat.Values[i][j] = view.m[i][j];
-	//		}
-	//	}
-	//	commonData->renderer->SetProjectionMatrix(projectionMat);
-	//	commonData->renderer->SetCameraMatrix(viewMat);
-
-	//	// 3Dサウンド用リスナー設定の更新
-	//	//sound->SetListener(リスナー位置, 注目点, 上方向ベクトル);
-
-	//	// 再生中のエフェクトの移動等(::Effekseer::Manager経由で様々なパラメーターが設定できます。)
-	//	//commonData->manager->AddLocation(handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
-
-	//	// 全てのエフェクトの更新
-	//	commonData->manager->Flip();
-	//	commonData->manager->Update();
-	//}*/
 }
 
 void SceneGame::Draw()
@@ -552,7 +522,7 @@ void SceneGame::Draw()
 				basicShader->Begin(graphicsDevice, *lightSpaceCamera);
 				voidPS->ActivatePS(graphicsDevice->GetDevice());
 				{
-					basicShader->Draw(graphicsDevice, W, stageModel);
+					basicShader->Draw(graphicsDevice, W, bossStageModel);
 				}
 				voidPS->DeactivatePS(graphicsDevice->GetDevice());
 				basicShader->End(graphicsDevice);
@@ -621,7 +591,7 @@ void SceneGame::Draw()
 				{
 					Phoenix::Math::Vector3 scale = { 1.0f, 1.0f, 1.0f };
 					Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
-					Phoenix::Math::Vector3 translate = { 0.0f, -22.05f, 0.0f };
+					Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
 
 					Phoenix::Math::Matrix S, R, T;
 					S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
@@ -630,17 +600,17 @@ void SceneGame::Draw()
 
 					W = S * R * T;
 				}
-#if 0
+#if 1
 				basicShader->Begin(graphicsDevice, *camera);
-				basicShader->Draw(graphicsDevice, W, stageModel);
+				basicShader->Draw(graphicsDevice, W, bossStageModel);
 				basicShader->End(graphicsDevice);
 #elif 0
 				standardShader->Begin(graphicsDevice, camera);
-				standardShader->Draw(graphicsDevice, W, stageModel);
+				standardShader->Draw(graphicsDevice, W, bossStageModel);
 				standardShader->End(graphicsDevice);
 #else
 				pbrSkinShader->Begin(graphicsDevice, *camera);
-				pbrSkinShader->Draw(graphicsDevice, W, stageModel);
+				pbrSkinShader->Draw(graphicsDevice, W, bossStageModel);
 				pbrSkinShader->End(graphicsDevice);
 #endif
 			}
@@ -689,14 +659,16 @@ void SceneGame::Draw()
 
 					// Draw Effect.
 					{
-						//Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
-						//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
+						Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+						Phoenix::f32 blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+						context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), blendFactor, 0xFFFFFFFF);
 						{
 							gpuParticle->Draw(graphicsDevice, *camera);
 							playerHitParticle->Draw(graphicsDevice, *camera);
-							dusterParticle->Draw(graphicsDevice, *camera);
+							bossHitParticle->Draw(graphicsDevice, *camera);
+							//dusterParticle->Draw(graphicsDevice, *camera);
 						}
-						//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
+						context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 					}
 
 					currentShader->Begin(graphicsDevice, *camera);

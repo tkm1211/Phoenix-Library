@@ -13,7 +13,7 @@ float4 main(VertextoPixel input) : SV_TARGET
     
     float mask = maskTexture.Sample(sampler_linear_clamp, input.tex).r;
     float thresold = 1.0f - input.life;
-    mask = step(mask, thresold);
+    mask = step(thresold, mask);
     
     color.a *= mask;
     

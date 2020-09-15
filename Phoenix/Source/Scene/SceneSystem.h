@@ -14,6 +14,7 @@ enum class SceneType
 	Game
 };
 
+class FadeSystem;
 class SceneSystem
 {
 private:
@@ -25,6 +26,7 @@ private:
 	Phoenix::OS::IDisplay* display = nullptr;
 	Phoenix::Graphics::IGraphicsDevice* graphicsDevice = nullptr;
 	std::shared_ptr<SceneCommonData> commonData;
+	std::shared_ptr<FadeSystem> fadeSystem;
 
 public:
 	SceneSystem() {}
@@ -36,12 +38,15 @@ public:
 	void Update();
 	void Draw();
 	void GUI();
-	void ChangeScene(SceneType sceneType, bool stack);
+	void ChangeScene(SceneType sceneType, bool stack, bool fade);
+	void SetScene(SceneType sceneType);
 	void ReSetStackScene();
 
 	Phoenix::OS::IDisplay* GetDisplay() { return display; }
 	Phoenix::Graphics::IGraphicsDevice* GetGraphicsDevice() { return graphicsDevice; }
 	SceneCommonData* GetSceneCommonData() { return commonData.get(); }
+
+	bool GetOnFade();
 
 public:
 	template<class T>

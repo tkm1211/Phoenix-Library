@@ -44,7 +44,7 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 	// トランスフォームの初期化
 	{
 		worldMatrix = Phoenix::Math::MatrixIdentity();
-		pos = { 0,0,100.0f };
+		pos = { 0,0,-12.0f }; // test : 100.0f
 		//rotate = { 0,0,0 };
 		rotate = { 0,0,0,1 };
 		scale = { 2.0f,2.0f,2.0f };
@@ -105,7 +105,7 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 	}
 }
 
-void Boss::Update()
+void Boss::Update(bool onControl)
 {
 	// 蓄積ダメージの確認
 	{
@@ -122,7 +122,7 @@ void Boss::Update()
 
 	// AI更新
 	{
-		ai->Update();
+		if (onControl) ai->Update();
 	}
 
 	// 次のステートタイプを取得

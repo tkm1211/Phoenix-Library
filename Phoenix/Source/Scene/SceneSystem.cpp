@@ -1,4 +1,5 @@
 #include "SceneSystem.h"
+#include "FadeSystem.h"
 #include "../Player/Player.h"
 #include "../Boss/Boss.h"
 #include "Phoenix/Types.h"
@@ -23,9 +24,12 @@ void SceneSystem::Init(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraph
 	commonData = SceneCommonData::Create();
 	commonData->Initialize(graphicsDevice);
 
+	fadeSystem = FadeSystem::Create();
+	fadeSystem->Initialize(graphicsDevice);
+
 	AddScene<SceneTitle>();
 	AddScene<SceneGame>();
-	ChangeScene(SceneType::Title, false);
+	ChangeScene(SceneType::Title, false, false);
 }
 
 void SceneSystem::Update()
@@ -41,6 +45,7 @@ void SceneSystem::Update()
 		nextScene = nullptr;
 		currentScene->Init(this);
 	}
+	fadeSystem->Update(this);
 	currentScene->Update();
 }
 
@@ -49,12 +54,25 @@ void SceneSystem::GUI()
 	currentScene->GUI();
 }
 
-void SceneSystem::ChangeScene(SceneType sceneType, bool stack)
+void SceneSystem::ChangeScene(SceneType sceneType, bool stack, bool fade)
 {
 	if (stack)
 	{
 		stackScene = currentScene;
 	}
+
+	if (fade)
+	{
+		fadeSystem->OnFade(sceneType);
+	}
+	else
+	{
+		SetScene(sceneType);
+	}
+}
+
+void SceneSystem::SetScene(SceneType sceneType)
+{
 	nextScene = GetScene(sceneType);
 }
 
@@ -71,4 +89,10 @@ void SceneSystem::Draw()
 		stackScene->Draw();
 	}
 	currentScene->Draw();
+	fadeSystem->Draw(graphicsDevice);
+}
+
+bool SceneSystem::GetOnFade()
+{
+	return fadeSystem->GetWorking();
 }

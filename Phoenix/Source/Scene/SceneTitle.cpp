@@ -68,6 +68,9 @@ void SceneTitle::Init(SceneSystem* sceneSystem)
 	{
 		quad = Phoenix::FrameWork::Quad::Create();
 		quad->Initialize(graphicsDevice);
+		quad->LoadDissolveTexture(graphicsDevice, "..\\Data\\Assets\\Texture\\Mask\\Dissolve\\dissolve_animation2.png");
+		quad->LoadDissolveTexture02(graphicsDevice, "..\\Data\\Assets\\Texture\\Mask\\Dissolve\\dissolve_animation1.png");
+		quad->LoadEmissiveTexture(graphicsDevice, "..\\Data\\Assets\\Texture\\Mask\\Dissolve\\dissolve_edgecolor.png");
 
 		msaaResolve = Phoenix::FrameWork::MSAAResolve::Create();
 		msaaResolve->Initialize(graphicsDevice);
@@ -85,46 +88,45 @@ void SceneTitle::Init(SceneSystem* sceneSystem)
 	// タイトル
 	{
 		logo = Phoenix::Graphics::ITexture::Create();
+		icon = Phoenix::Graphics::ITexture::Create();
 		button = Phoenix::Graphics::ITexture::Create();
 
 		logo->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Title\\TitleLogo.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+		icon->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Title\\TitleIcon.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 		button->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Title\\TitleButton.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+
+		dissolveThreshold = 1.05f;
+		dissolveEmissiveWidth = 0.027f;
 	}
 
-	// エフェクトの読込
-	//auto effect = Effekseer::Effect::Create(manager, EFK_EXAMPLE_ASSETS_DIR_U16 "Laser01.efk");
-	//effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\Resources\\Laser01.efk");
-	//effect = Effekseer::Effect::Create(commonData->manager, u"D:\\Phoenix Project\\Phoenix\\Data\\Assets\\Effect\\Examples\\MAGICALxSPIRAL\\HitEffect.efk");
-
-	// エフェクトの再生
-	//handle = commonData->manager->Play(effect, 0, 0, 0);
+	// フラグ
+	{
+		isChangeScene = false;
+	}
 }
 
 void SceneTitle::Update()
 {
-	if (xInput[0].bAt || xInput[0].bBt || xInput[0].bXt || xInput[0].bYt || xInput[0].bRBt || xInput[0].bLBt || xInput[0].bRTt || xInput[0].bLTt || xInput[0].bSTARTt || xInput[0].bBACKt)
-	{
-		sceneSystem->ChangeScene(SceneType::Game, false);
-	}
-
-	// 投影行列の更新
-	//renderer->SetProjectionMatrix(::Effekseer::Matrix44);
-
-	// カメラ行列の更新
-	//renderer->SetCameraMatrix(::Effekseer::Matrix44);
-
-	// 3Dサウンド用リスナー設定の更新
-	//sound->SetListener(リスナー位置, 注目点, 上方向ベクトル);
-
-	// 再生中のエフェクトの移動等(::Effekseer::Manager経由で様々なパラメーターが設定できます。)
-	//commonData->manager->AddLocation(handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
-
-	// 全てのエフェクトの更新
-	//commonData->manager->Update();
-
 	camera->SurveyCamera(0.0f, -0.005f, 300.0f, Phoenix::Math::Vector3(0.0f, 25.0f, 0.0f));
 	//camera->FreeCamera();
 	camera->Update();
+
+	if (isChangeScene)
+	{
+		if (dissolveThreshold <= 1.2f) dissolveThreshold += dissolveSpeed;
+		else sceneSystem->ChangeScene(SceneType::Game, false, true);
+		return;
+	}
+
+	if (sceneSystem->GetOnFade()) return;
+
+	if (xInput[0].bAt || xInput[0].bBt || xInput[0].bXt || xInput[0].bYt || xInput[0].bRBt || xInput[0].bLBt || xInput[0].bRTt || xInput[0].bLTt || xInput[0].bSTARTt || xInput[0].bBACKt)
+	{
+		isChangeScene = true;
+		dissolveThreshold = 0.5f;
+	}
+
+	if (-0.1f < dissolveThreshold) dissolveThreshold -= dissolveSpeed;
 }
 
 void SceneTitle::Draw()
@@ -201,6 +203,15 @@ void SceneTitle::Draw()
 				pbrSkinShader->End(graphicsDevice);
 #endif
 			}
+
+			// Draw Title Logo.
+			{
+				quad->SetDissolveThreshold(dissolveThreshold);
+				quad->SetDissolveEmissiveWidth(dissolveEmissiveWidth);
+				quad->Draw(graphicsDevice, icon.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
+				quad->Draw(graphicsDevice, logo.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, true, true);
+				quad->Draw(graphicsDevice, button.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
+			}
 		}
 		frameBuffer[0]->Deactivate(graphicsDevice);
 	}
@@ -230,12 +241,6 @@ void SceneTitle::Draw()
 
 		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 	}
-
-	// Draw Title Logo.
-	{
-		quad->Draw(graphicsDevice, logo.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
-		quad->Draw(graphicsDevice, button.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
-	}
 }
 
 void SceneTitle::GUI()
@@ -255,20 +260,26 @@ void SceneTitle::GUI()
 	//}
 	//ImGui::End();
 
-	//ImGui::Begin("Game");
-	//{
-	//	if (ImGui::TreeNode("Shader"))
-	//	{
-	//		Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(commonData->pbrShader.get())->GetLight();
-	//		Phoenix::FrameWork::MaterialState* material = static_cast<Phoenix::FrameWork::PBRShader*>(commonData->pbrShader.get())->GetMaterial();
+	ImGui::Begin("Game");
+	{
+		/*if (ImGui::TreeNode("Shader"))
+		{
+			Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(commonData->pbrShader.get())->GetLight();
+			Phoenix::FrameWork::MaterialState* material = static_cast<Phoenix::FrameWork::PBRShader*>(commonData->pbrShader.get())->GetMaterial();
 
-	//		ImGui::DragFloat4("dir", &light->direction.x, 0.01f, -1.0f, 1.0f);
-	//		ImGui::DragFloat4("color", &light->color.x);
-	//		ImGui::DragFloat4("albedo", &material->albedo.x);
-	//		ImGui::DragFloat("metallic", &material->metallic, 0.01f, 0.0f, 1.0f);
-	//		ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
-	//		ImGui::TreePop();
-	//	}
-	//}
-	//ImGui::End();
+			ImGui::DragFloat4("dir", &light->direction.x, 0.01f, -1.0f, 1.0f);
+			ImGui::DragFloat4("color", &light->color.x);
+			ImGui::DragFloat4("albedo", &material->albedo.x);
+			ImGui::DragFloat("metallic", &material->metallic, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
+			ImGui::TreePop();
+		}*/
+		if (ImGui::TreeNode("Dissolve"))
+		{
+			ImGui::DragFloat("Threshold", &dissolveThreshold, 0.01f);
+			ImGui::DragFloat("EmissiveWidth", &dissolveEmissiveWidth, 0.01f);
+			ImGui::TreePop();
+		}
+	}
+	ImGui::End();
 }

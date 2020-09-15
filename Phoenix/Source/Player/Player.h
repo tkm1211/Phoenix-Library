@@ -125,7 +125,7 @@ public:
 public:
 	static std::unique_ptr<Player> Create();
 	void Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
-	void Update(Phoenix::Graphics::Camera& camera);
+	void Update(Phoenix::Graphics::Camera& camera, bool onControl);
 	void UpdateTrasform();
 	void UpdateUI();
 	void Control(Phoenix::Graphics::Camera& camera);

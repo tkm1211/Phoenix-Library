@@ -619,7 +619,7 @@ namespace Phoenix
 			Math::Vector3 right = Math::Vector3Cross(Math::Vector3::OneY, -dirN);
 			_pos += right * -0.75f;
 
-			_pos.y = _pos.y <= 0.05f ? 0.05f : _pos.y;
+			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y;
 
 			SetLookAt(_pos, _target, Math::Vector3::OneY);
 #endif

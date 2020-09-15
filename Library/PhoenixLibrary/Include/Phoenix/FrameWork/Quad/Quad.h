@@ -26,16 +26,34 @@ namespace Phoenix
 				Math::Vector4 color;
 			};
 
+			struct DissolveCB
+			{
+				f32 dissolveThreshold;        //透過閾値
+				f32 dissolveEmissiveWidth;    //発光閾値(ディゾルブ・エミッシブ)
+				f32 dummy[2];
+			};
+
 		private:
 			Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;
 			std::unique_ptr<Graphics::IBuffer> vertexBuffer;
 
 			std::unique_ptr<Graphics::IShader> embeddedVertexShader;
 			std::unique_ptr<Graphics::IShader> embeddedPixelShader[2];
+			std::unique_ptr<Graphics::IShader> embeddedAlphaCutOffPixelShader;
+			std::unique_ptr<Graphics::IShader> embeddedDissolvePixelShader;
 
 			std::unique_ptr<Graphics::IRasterizer> embeddedRasterizerState;
 			std::unique_ptr<Graphics::IDepthStencil> embeddedDepthStencilState;
 			std::unique_ptr<Graphics::ISampler> embeddedSamplerState;
+
+			std::unique_ptr<Graphics::IBuffer> dissolveCB;
+
+			std::unique_ptr<Graphics::ITexture> dissolveTexture;
+			std::unique_ptr<Graphics::ITexture> dissolveTexture02;
+			std::unique_ptr<Graphics::ITexture> emissiveTexture;
+
+			f32 dissolveThreshold;        //透過閾値
+			f32 dissolveEmissiveWidth;    //発光閾値(ディゾルブ・エミッシブ)
 
 		public:
 			Quad() {}
@@ -65,7 +83,9 @@ namespace Phoenix
 				bool useEmbeddedPixelShader = true,
 				bool useEmbeddedRasterizerState = true,
 				bool useEmbeddedDepthStencilState = true,
-				bool useEmbeddedSamplerState = true
+				bool useEmbeddedSamplerState = true,
+				bool useEmbeddedDissolve = false,
+				bool useEmbeddedDissolveEmissive = false
 			) const;
 
 			void Draw
@@ -79,7 +99,9 @@ namespace Phoenix
 				bool useEmbeddedPixelShader = true,
 				bool useEmbeddedRasterizerState = true,
 				bool useEmbeddedDepthStencilState = true,
-				bool useEmbeddedSamplerState = true
+				bool useEmbeddedSamplerState = true,
+				bool useEmbeddedDissolve = false,
+				bool useEmbeddedDissolveEmissive = false
 			) const;
 
 			void Draw
@@ -94,8 +116,17 @@ namespace Phoenix
 				bool useEmbeddedPixelShader = true,
 				bool useEmbeddedRasterizerState = true,
 				bool useEmbeddedDepthStencilState = true,
-				bool useEmbeddedSamplerState = true
+				bool useEmbeddedSamplerState = true,
+				bool useEmbeddedDissolve = false,
+				bool useEmbeddedDissolveEmissive = false
 			) const;
+
+			void SetDissolveThreshold(f32 threshold) { dissolveThreshold = threshold; }
+			void SetDissolveEmissiveWidth(f32 emissiveWidth) { dissolveEmissiveWidth = emissiveWidth; }
+
+			void LoadDissolveTexture(Graphics::IGraphicsDevice* graphicsDevice, const s8* textureFileName) { dissolveTexture->Initialize(graphicsDevice->GetDevice(), textureFileName, Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White); }
+			void LoadDissolveTexture02(Graphics::IGraphicsDevice* graphicsDevice, const s8* textureFileName) { dissolveTexture02->Initialize(graphicsDevice->GetDevice(), textureFileName, Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White); }
+			void LoadEmissiveTexture(Graphics::IGraphicsDevice* graphicsDevice, const s8* textureFileName) { emissiveTexture->Initialize(graphicsDevice->GetDevice(), textureFileName, Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White); }
 		};
 
 		class FullScreenQuad

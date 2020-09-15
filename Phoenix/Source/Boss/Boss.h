@@ -72,7 +72,7 @@ public:
 public:
 	static std::unique_ptr<Boss> Create();
 	void Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* player);
-	void Update();
+	void Update(bool onControl);
 	void UpdateUI();
 	void ChangeAnimation(AIStateType type);
 	void AttackJudgment();

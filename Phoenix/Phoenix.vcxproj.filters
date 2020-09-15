@@ -81,6 +81,9 @@
     <ClCompile Include="Source\Boss\AIState\DamageState.cpp">
       <Filter>Source\Boss\AIState</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\FadeSystem.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -142,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="Source\Boss\AIState\DamageState.h">
       <Filter>Source\Boss\AIState</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\FadeSystem.h">
+      <Filter>Source\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

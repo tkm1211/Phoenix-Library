@@ -213,6 +213,12 @@
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\EmittedParticleAlphaPS.hlsl">
       <Filter>Source\EmittedParticle\Draw</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\QuadAlphaCutOffPS.hlsl">
+      <Filter>Source\Quad</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\QuadDissolvePS.hlsl">
+      <Filter>Source\Quad</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\Bloom.hlsli">

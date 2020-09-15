@@ -63,8 +63,8 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	// トランスフォームの初期化
 	{
 		worldMatrix = Phoenix::Math::MatrixIdentity();
-		pos = { 0,0,135.0f };
-		rotate = { 0,0,0 };
+		pos = { 0,0,12.0f }; // tutorial : 135.0f , main : 12.0f
+		rotate = { 0,180.0f * 0.01745f,0 };
 		//rotate = { 0,0,0,1 };
 		scale = { 1,1,1 };
 		radius = 0.5f;
@@ -108,7 +108,7 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	}
 }
 
-void Player::Update(Phoenix::Graphics::Camera& camera)
+void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl)
 {
 	// 蓄積ダメージの確認
 	{
@@ -117,7 +117,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera)
 
 	// コントローラー操作(位置更新)
 	{
-		Control(camera);
+		if (onControl) Control(camera);
 	}
 
 	// アニメーション変更

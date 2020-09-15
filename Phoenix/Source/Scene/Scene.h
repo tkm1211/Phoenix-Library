@@ -17,9 +17,6 @@
 #include "Phoenix/FrameWork/Shader/StandardShader.h"
 #include "Phoenix/FrameWork/Shader/PBRShader.h"
 #include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
-//#include "../../Effekseer/include/Effekseer/Effekseer.h"
-//#include "../../Effekseer/include/EffekseerRendererDX11/EffekseerRendererDX11.h"
-//#include "../../Effekseer/include/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h"
 #include "Phoenix/FrameWork/FrameBuffer/FrameBuffer.h"
 #include "Phoenix/FrameWork/Quad/Quad.h"
 #include "Phoenix/FrameWork/IBL/IBL.h"
@@ -52,6 +49,9 @@ public:
 class SceneTitle : public Scene
 {
 private:
+	const Phoenix::f32 dissolveSpeed = 0.005f;
+
+private:
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
 	Phoenix::FrameWork::IShader* pbrShader = nullptr;
 	Phoenix::FrameWork::IShader* pbrSkinShader = nullptr;
@@ -73,20 +73,20 @@ private:
 
 	// タイトル
 	std::unique_ptr<Phoenix::Graphics::ITexture> logo;
+	std::unique_ptr<Phoenix::Graphics::ITexture> icon;
 	std::unique_ptr<Phoenix::Graphics::ITexture> button;
+	Phoenix::f32 dissolveThreshold = 0.0f;        //透過閾値
+	Phoenix::f32 dissolveEmissiveWidth = 0.0f;    //発光閾値(ディゾルブ・エミッシブ)
+
+	// フラグ
+	bool isChangeScene = false;
 
 private: // Debug
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
-	//::Effekseer::Effect* effect = nullptr;
-	//::Effekseer::Handle handle = 0;
 
 public:
 	SceneTitle() {}
-	~SceneTitle()
-	{
-		// エフェクトを解放します。再生中の場合は、再生が終了した後、自動的に解放されます。
-		//ES_SAFE_RELEASE(effect);
-	}
+	~SceneTitle() {}
 
 public:
 	void Init(SceneSystem* sceneSystem) override;
@@ -111,6 +111,7 @@ private:
 	Boss* boss = nullptr;
 	UISystem* uiSystem = nullptr;
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
+	Phoenix::FrameWork::ModelObject* bossStageModel = nullptr;
 	Phoenix::FrameWork::IShader* basicShader = nullptr;
 	Phoenix::FrameWork::IShader* basicSkinShader = nullptr;
 	Phoenix::FrameWork::IShader* standardShader = nullptr;
@@ -151,6 +152,7 @@ private: // Debug
 	Phoenix::Math::Vector2 texSize;
 
 	Phoenix::Math::Vector3 particlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	Phoenix::Math::Vector3 bossHitParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector4 particleNormal = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Color particleMainColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
 	Phoenix::f32 particleLife = 1.0f;
@@ -161,6 +163,7 @@ private: // Debug
 	std::unique_ptr<Phoenix::FrameWork::BitonicSort> bitonicSort;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> gpuParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> playerHitParticle;
+	std::unique_ptr<Phoenix::FrameWork::GPUParticle> bossHitParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> dusterParticle;
 
 	Phoenix::f32 dis = 10.0f;
@@ -190,11 +193,7 @@ private: // Debug
 
 public:
 	SceneGame() {}
-	~SceneGame()
-	{
-		// エフェクトを解放します。再生中の場合は、再生が終了した後、自動的に解放されます。
-		//ES_SAFE_RELEASE(hitEffect);
-	}
+	~SceneGame() {}
 
 public:
 	void Init(SceneSystem* sceneSystem) override;

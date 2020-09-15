@@ -101,6 +101,20 @@ namespace Phoenix
 				"QuadPSMS.cso"
 			);
 
+			embeddedAlphaCutOffPixelShader = Graphics::IShader::Create();
+			embeddedAlphaCutOffPixelShader->LoadPS
+			(
+				device,
+				"QuadAlphaCutOffPS.cso"
+			);
+
+			embeddedDissolvePixelShader = Graphics::IShader::Create();
+			embeddedDissolvePixelShader->LoadPS
+			(
+				device,
+				"QuadDissolvePS.cso"
+			);
+
 			embeddedSamplerState = Graphics::ISampler::Create();
 			if (!embeddedSamplerState->Initialize(device, samplerState))
 			{
@@ -119,11 +133,36 @@ namespace Phoenix
 				return false;
 			}
 
+			dissolveCB = Phoenix::Graphics::IBuffer::Create();
+			{
+				Phoenix::Graphics::PhoenixBufferDesc desc = {};
+				Phoenix::FND::MemSet(&desc, 0, sizeof(desc));
+				desc.usage = Phoenix::Graphics::PhoenixUsage::Default;
+				desc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
+				desc.cpuAccessFlags = 0;
+				desc.miscFlags = 0;
+				desc.byteWidth = sizeof(DissolveCB);
+				desc.structureByteStride = 0;
+				if (!dissolveCB->Initialize(device, desc))
+				{
+					return false;
+				}
+			}
+
+			dissolveTexture = Phoenix::Graphics::ITexture::Create();
+			dissolveTexture02 = Phoenix::Graphics::ITexture::Create();
+			emissiveTexture = Phoenix::Graphics::ITexture::Create();
+
 			return true;
 		}
 
 		void Quad::Finalize()
 		{
+			emissiveTexture.reset();
+			dissolveTexture.reset();
+
+			dissolveCB.reset();
+
 			embeddedSamplerState.reset();
 			embeddedDepthStencilState.reset();
 			embeddedRasterizerState.reset();
@@ -147,7 +186,9 @@ namespace Phoenix
 			bool useEmbeddedPixelShader,
 			bool useEmbeddedRasterizerState,
 			bool useEmbeddedDepthStencilState,
-			bool useEmbeddedSamplerState
+			bool useEmbeddedSamplerState,
+			bool useEmbeddedDissolve,
+			bool useEmbeddedDissolveEmissive
 		) const
 		{
 			HRESULT hr = S_OK;
@@ -283,8 +324,45 @@ namespace Phoenix
 			}
 			if (useEmbeddedPixelShader)
 			{
-				u32 index = multisampled ? 1 : 0;
-				embeddedPixelShader[index]->Activate(device);
+				if (useEmbeddedDissolve)
+				{
+					DissolveCB cb = {};
+					{
+						cb.dissolveThreshold = dissolveThreshold;
+						cb.dissolveEmissiveWidth = dissolveEmissiveWidth;
+						cb.dummy[0] = 0.0f;
+						cb.dummy[1] = 0.0f;
+					}
+
+					Phoenix::Graphics::IBuffer* psCBuffer[] =
+					{
+						dissolveCB.get()
+					};
+					context->UpdateSubresource(dissolveCB.get(), 0, 0, &cb, 0, 0);
+					context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+
+					Graphics::ITexture* texture[] =
+					{
+						dissolveTexture.get(),
+						dissolveTexture02.get(),
+						emissiveTexture.get()
+					};
+					context->SetShaderResources(Graphics::ShaderType::Pixel, 1, 3, texture);
+
+					if (!useEmbeddedDissolveEmissive)
+					{
+						embeddedAlphaCutOffPixelShader->Activate(device);
+					}
+					else
+					{
+						embeddedDissolvePixelShader->Activate(device);
+					}
+				}
+				else
+				{
+					u32 index = multisampled ? 1 : 0;
+					embeddedPixelShader[index]->Activate(device);
+				}
 			}
 			Graphics::ITexture* texture[] = { shaderResourceView };
 			context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
@@ -321,8 +399,36 @@ namespace Phoenix
 			}
 			if (useEmbeddedPixelShader)
 			{
-				u32 index = multisampled ? 1 : 0;
-				embeddedPixelShader[index]->Deactivate(device);
+				if (useEmbeddedDissolve)
+				{
+					Phoenix::Graphics::IBuffer* psCBuffer[] =
+					{
+						nullptr
+					};
+					context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+
+					Graphics::ITexture* texture[] =
+					{
+						nullptr,
+						nullptr,
+						nullptr
+					};
+					context->SetShaderResources(Graphics::ShaderType::Pixel, 1, 3, texture);
+
+					if (!useEmbeddedDissolveEmissive)
+					{
+						embeddedAlphaCutOffPixelShader->Deactivate(device);
+					}
+					else
+					{
+						embeddedDissolvePixelShader->Deactivate(device);
+					}
+				}
+				else
+				{
+					u32 index = multisampled ? 1 : 0;
+					embeddedPixelShader[index]->Deactivate(device);
+				}
 			}
 
 			Graphics::ITexture* nullTexture[] = { nullptr };
@@ -354,14 +460,16 @@ namespace Phoenix
 			bool useEmbeddedPixelShader,
 			bool useEmbeddedRasterizerState,
 			bool useEmbeddedDepthStencilState,
-			bool useEmbeddedSamplerState
+			bool useEmbeddedSamplerState,
+			bool useEmbeddedDissolve,
+			bool useEmbeddedDissolveEmissive
 		) const
 		{
 			Graphics::TextureDesc texDesc = {};
 			shaderResourceView->GetTextureDesc(&texDesc);
 
 			Draw(graphicsDevice, shaderResourceView, dx, dy, dw, dh, 0.0f, 0.0f, static_cast<float>(texDesc.width), static_cast<float>(texDesc.height), angle, r, g, b, a,
-				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState);
+				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState, useEmbeddedDissolve, useEmbeddedDissolveEmissive);
 		}
 
 		void Quad::Draw
@@ -376,14 +484,16 @@ namespace Phoenix
 			bool useEmbeddedPixelShader,
 			bool useEmbeddedRasterizerState,
 			bool useEmbeddedDepthStencilState,
-			bool useEmbeddedSamplerState
+			bool useEmbeddedSamplerState,
+			bool useEmbeddedDissolve,
+			bool useEmbeddedDissolveEmissive
 		) const
 		{
 			Graphics::TextureDesc texDesc = {};
 			shaderResourceView->GetTextureDesc(&texDesc);
 
 			Draw(graphicsDevice, shaderResourceView, pos.x, pos.y, size.x, size.y, texPos.x, texPos.y, texSize.x, texSize.y, angle, r, g, b, a,
-				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState);
+				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState, useEmbeddedDissolve, useEmbeddedDissolveEmissive);
 		}
 
 
