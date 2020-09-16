@@ -31,9 +31,28 @@ namespace Phoenix
 			return v2;
 		}
 
+		Vector2 ConvertToVector2FromVector(const DirectX::XMVECTOR& v)
+		{
+			Vector2 v2;
+
+			DirectX::XMFLOAT2 f2;
+			DirectX::XMStoreFloat2(&f2, v);
+
+			v2.x = f2.x;
+			v2.y = f2.y;
+
+			return v2;
+		}
+
 		f32 Vector2Length(const Vector2 v)
 		{
 			return SqrtF32((v.x) * (v.x) + (v.y) * (v.y));
+		}
+
+		Vector2 Vector2Normalize(const Vector2 v)
+		{
+			DirectX::XMVECTOR vT = DirectX::XMVector2Normalize(ConvertToVectorFromVector2(v));
+			return ConvertToVector2FromVector(vT);
 		}
 #pragma endregion
 

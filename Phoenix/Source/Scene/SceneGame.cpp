@@ -132,6 +132,12 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		skyMap->Initialize(graphicsDevice, "..\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Night MoonBurst\\NightMoonBurst.dds"); //Epic_BlueSunset\\Epic_BlueSunset03 //Night MoonBurst\\NightMoonBurst
 	}
 
+	// トーンマップ
+	{
+		toneMap = Phoenix::FrameWork::ToneMap::Create();
+		toneMap->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight());
+	}
+
 	// IBL
 	{
 		/*for (int i = 0; i < 6; ++i)
@@ -165,7 +171,7 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	}
 }
 
-void SceneGame::Update()
+void SceneGame::Update(Phoenix::f32 elapsedTime)
 {
 	bool onFade = sceneSystem->GetOnFade();
 
@@ -315,6 +321,20 @@ void SceneGame::Update()
 				}
 			}
 		}
+
+		Phoenix::f32 playerDis = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(playerPos.x, playerPos.z));
+		Phoenix::Math::Vector2 playerNormal = Phoenix::Math::Vector2Normalize(Phoenix::Math::Vector2(playerPos.x, playerPos.z));
+		if (stageRadius <= playerDis)
+		{
+			player->SetPosition(Phoenix::Math::Vector3(playerNormal.x * stageRadius, playerPos.y, playerNormal.y * stageRadius));
+
+		}
+		Phoenix::f32 bossDis = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(bossPos.x, bossPos.z));
+		Phoenix::Math::Vector2 bossNormal = Phoenix::Math::Vector2Normalize(Phoenix::Math::Vector2(bossPos.x, bossPos.z));
+		if (stageRadius <= bossDis)
+		{
+			boss->SetPosition(Phoenix::Math::Vector3(bossNormal.x * stageRadius, bossPos.y, bossNormal.y * stageRadius));
+		}
 	}
 
 	// UI更新
@@ -383,7 +403,7 @@ void SceneGame::Update()
 	}
 }
 
-void SceneGame::Draw()
+void SceneGame::Draw(Phoenix::f32 elapsedTime)
 {
 	Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
@@ -706,6 +726,8 @@ void SceneGame::Draw()
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 				}
 
+				PrimitiveRender(device, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(stageRadius, stageRadius, stageRadius));
+
 				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 			}
 		}
@@ -753,7 +775,9 @@ void SceneGame::Draw()
 		}
 		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 
-		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+		//quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+
+		toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
 	}
 	else
 	{
@@ -1033,7 +1057,21 @@ void SceneGame::GUI()
 			ImGui::DragFloat("life", &particleLife, 0.1f);
 			ImGui::DragFloat("size", &particleSize, 0.1f);
 			ImGui::DragFloat("scale", &particleScale, 0.1f);
-			ImGui::ColorEdit4("color", particleMainColor, 0.1f);
+			ImGui::ColorEdit4("color", particleMainColor);
+
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("ToneMap"))
+		{
+			ImGui::SliderFloat("whitePoint", &toneMap->shaderConstant.whitePoint, 0.0f, 30.0f);
+			ImGui::SliderFloat("averageGray", &toneMap->shaderConstant.averageGray, 0.0f, 3.0f);
+			ImGui::SliderFloat("brightness", &toneMap->shaderConstant.brightness, -1.0f, 1.0f);
+			ImGui::SliderFloat("contrast", &toneMap->shaderConstant.contrast, -1.0f, 1.0f);
+			ImGui::SliderFloat("hue", &toneMap->shaderConstant.hue, -1.0f, 1.0f);
+			ImGui::SliderFloat("saturation", &toneMap->shaderConstant.saturation, -1.0f, 1.0f);
+			ImGui::SliderFloat("amount", &toneMap->shaderConstant.amount, 0.0f, 1.0f, "sepia = %.3f");
+			ImGui::SliderFloat("offset", &toneMap->shaderConstant.offset, 0.0f, 10.0f, "vignette = %.3f");
+			ImGui::SliderFloat("darkness", &toneMap->shaderConstant.darkness, 0.0f, 1.0f, "vignette = %.3f");
 
 			ImGui::TreePop();
 		}

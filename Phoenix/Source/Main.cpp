@@ -36,11 +36,11 @@ void Main::Finalize()
 	Super::Finalize();
 }
 
-void Main::Update()
+void Main::Update(Phoenix::f32 elapsedTime)
 {
 	// シーン更新
 	{
-		sceneSystem->Update();
+		sceneSystem->Update(elapsedTime);
 	}
 
 	// パラメーター調整用GUI
@@ -55,7 +55,7 @@ void Main::GUI()
 	sceneSystem->GUI();
 }
 
-void Main::Render()
+void Main::Render(Phoenix::f32 elapsedTime)
 {
-	sceneSystem->Draw();
+	sceneSystem->Draw(elapsedTime);
 }

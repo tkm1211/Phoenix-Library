@@ -64,6 +64,9 @@
     <Filter Include="Source\EmittedParticle\Simulate">
       <UniqueIdentifier>{a26f783c-2864-4d41-afa6-5adcc25ea719}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\ToneMap">
+      <UniqueIdentifier>{d229f9aa-9761-4da5-9705-1f08be413bcc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingVS.hlsl">
@@ -218,6 +221,12 @@
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\QuadDissolvePS.hlsl">
       <Filter>Source\Quad</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\AverageLuminancePS.hlsl">
+      <Filter>Source\ToneMap</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\ToneMapPS.hlsl">
+      <Filter>Source\ToneMap</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

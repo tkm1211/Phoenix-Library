@@ -37,10 +37,10 @@ namespace Phoenix
 
 		protected:
 			// çXêV
-			virtual void Update() = 0;
+			virtual void Update(Phoenix::f32 elapsedTime) = 0;
 
 			// ï`âÊ
-			virtual void Render() = 0;
+			virtual void Render(Phoenix::f32 elapsedTime) = 0;
 		};
 	} // namespace FrameWork
 } // namespace Phoenix

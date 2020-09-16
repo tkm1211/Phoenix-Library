@@ -41,8 +41,8 @@ public:
 
 public:
 	virtual void Init(SceneSystem* sceneSystem) = 0;
-	virtual void Update() = 0;
-	virtual void Draw() = 0;
+	virtual void Update(Phoenix::f32 elapsedTime) = 0;
+	virtual void Draw(Phoenix::f32 elapsedTime) = 0;
 	virtual void GUI() = 0;
 };
 
@@ -90,8 +90,8 @@ public:
 
 public:
 	void Init(SceneSystem* sceneSystem) override;
-	void Update() override;
-	void Draw() override;
+	void Update(Phoenix::f32 elapsedTime) override;
+	void Draw(Phoenix::f32 elapsedTime) override;
 	void GUI() override;
 };
 
@@ -143,6 +143,9 @@ private:
 	// スカイマップ
 	std::unique_ptr<Phoenix::FrameWork::SkyMap> skyMap;
 
+	// トーンマップ
+	std::unique_ptr<Phoenix::FrameWork::ToneMap> toneMap;
+
 	// IBL
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> skyFrameBuffer[6];
 	std::unique_ptr<Phoenix::FrameWork::IBL> ibl;
@@ -177,6 +180,8 @@ private: // Debug
 
 	Phoenix::f32 pointLightDistance = 0.95f;
 
+	Phoenix::f32 stageRadius = 14.0f;
+
 	bool cameraFlg = false;
 	bool lockOnCamera = false;
 	bool isHitCollision = false;
@@ -197,8 +202,8 @@ public:
 
 public:
 	void Init(SceneSystem* sceneSystem) override;
-	void Update() override;
-	void Draw() override;
+	void Update(Phoenix::f32 elapsedTime) override;
+	void Draw(Phoenix::f32 elapsedTime) override;
 	void GUI() override;
 
 private:

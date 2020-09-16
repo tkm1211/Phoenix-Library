@@ -261,5 +261,72 @@ namespace Phoenix
 
 			void Draw(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* colorTexture, Graphics::ITexture* depthTexture, Graphics::ITexture* shadowTexture, const Math::Matrix& lightViewProjection, const Math::Matrix& inverseViewProjection);
 		};
+
+		class ToneMap : public FullScreenQuad
+		{
+		private:
+			struct ShaderConstants
+			{
+				float whitePoint = 3.435f; //The luminance level to use as the upper end of a tone mapping curve.
+				float averageGray = 1.145f; //The luminance level to use as the midpoint of a tone mapping curve.
+
+				//Brightness - Contrast Effect
+				//The brightness - contrast effect allows you to modify the brightness and contrast of the rendered image.
+				//Brightness: The brighness of the image.Ranges from - 1 to 1 (-1 is solid black, 0 no change, 1 solid white).
+				//Contrast : The contrast of the image.Ranges from - 1 to 1 (-1 is solid gray, 0 no change, 1 maximum contrast).
+				float brightness = 0.0f;
+				float contrast = 0.0f;
+
+				//Hue - Saturation Effect
+				//The hue - saturation effect allows you to modify the hue and saturation of the rendered image.
+				//Hue: The hue of the image.Ranges from - 1 to 1 (-1 is 180 degrees in the negative direction, 0 no change, 1 is 180 degrees in the postitive direction).
+				//Saturation : The saturation of the image.Ranges from - 1 to 1 (-1 is solid gray, 0 no change, 1 maximum saturation).
+				float hue = 0.0f;
+				float saturation = 0.0f;
+
+				//Sepia Effect
+				//The Sepia effect makes the image look like an old photograph.
+				//Amount: Controls the intensity of the effect. Ranges from 0 to 1.
+				float amount = 0.0f;
+
+				//Vignette Effect
+				//In photography and optics, vignetting is a reduction of an image's brightness or saturation at the periphery compared to the image center.
+				//You can use it to draw attention to the center of the frame. (from Wikipedia)
+				//Offset: Controls the offset of the effect.
+				//Darkness : Controls the darkness of the effect.
+				float offset = 0.0f;
+				float darkness = 1.0f;
+
+				float options[3];
+			};
+
+		private:
+			std::unique_ptr<FrameBuffer> averageLuminance;
+
+			std::unique_ptr<Graphics::IBuffer> shaderConstantsBuffer;
+
+			std::unique_ptr<Graphics::IShader> averageLuminancePS;
+			std::unique_ptr<Graphics::IShader> toneMapPS;
+
+			Graphics::Viewport viewport = {};
+
+			float cumulativeTime = 0;
+
+		public:
+			ShaderConstants shaderConstant;
+
+		public:
+			ToneMap() : FullScreenQuad() {}
+			~ToneMap() {}
+
+		public:
+			static std::unique_ptr<ToneMap> Create();
+
+			bool Initialize(Graphics::IGraphicsDevice* graphicsDevice, u32 width, u32 height);
+
+			void Finalize();
+
+			void Draw(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* colorTexture, f32 elapsedTime);
+		};
 	}
 }

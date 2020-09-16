@@ -144,6 +144,9 @@ namespace Phoenix
 
 			// バッファコピー
 			virtual void CopyResource(IBuffer* destinationBuffer, IBuffer* sourceBuffer) = 0;
+
+			// ミップマップ作成
+			virtual void GenerateMips(ITexture* texture) = 0;
 		};
 	} // namespace Graphics
 } // namespace Phoenix

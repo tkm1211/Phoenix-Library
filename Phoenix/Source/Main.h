@@ -43,10 +43,10 @@ public:
 	void Finalize() override;
 
 	// XV
-	void Update() override;
+	void Update(Phoenix::f32 elapsedTime) override;
 
 	// •`‰æ
-	void Render() override;
+	void Render(Phoenix::f32 elapsedTime) override;
 
 	// GUI
 	void GUI();

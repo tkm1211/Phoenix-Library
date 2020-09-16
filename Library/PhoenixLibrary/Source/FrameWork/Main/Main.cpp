@@ -98,13 +98,13 @@ namespace Phoenix
 				display->TimerTick();
 				display->CalculateFrameStats();
 				elapsedTime = display->TimerInterval();
-				Update();
+				Update(elapsedTime);
 			}
 
 			// •`‰æ
 			{
 				graphicsDevice->RenderBegin();
-				Render();
+				Render(elapsedTime);
 				graphicsDevice->RenderEnd();
 
 				ImGui::Render();

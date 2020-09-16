@@ -656,5 +656,20 @@ namespace Phoenix
 
 			deviceContext->CopyResource(d3dDestinationBuffer, d3dSourceBuffer);
 		}
+
+		// ミップマップ作成
+		void ContextDX11::GenerateMips(ITexture* texture)
+		{
+			if (!texture) return;
+
+			ID3D11ShaderResourceView* d3dShaderResourceViews = nullptr;
+			TextureDX11* textureDX11 = static_cast<TextureDX11*>(texture);
+			if (textureDX11 != nullptr)
+			{
+				d3dShaderResourceViews = textureDX11->GetD3DShaderResourceView();
+			}
+
+			deviceContext->GenerateMips(d3dShaderResourceViews);
+		}
 	} // namespace Graphics
 } // namespace Phoenix

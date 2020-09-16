@@ -16,9 +16,12 @@ namespace Phoenix
 #pragma region Functions for Vector2
 		extern DirectX::XMFLOAT2 ConvertToFloat2FromVector2(const Vector2 v);
 		extern DirectX::XMVECTOR ConvertToVectorFromVector2(const Vector2 v);
+		extern Vector2 ConvertToVector2FromVector(const DirectX::XMVECTOR& v);
 
 		// 2Dベクトルの長さを返す。
 		extern f32 Vector2Length(const Vector2 v);
+
+		extern Vector2 Vector2Normalize(const Vector2 v);
 #pragma endregion
 
 #pragma region Functions for Vector3

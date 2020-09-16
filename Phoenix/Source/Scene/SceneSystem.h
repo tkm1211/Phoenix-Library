@@ -35,8 +35,8 @@ public:
 public:
 	static std::unique_ptr<SceneSystem> Create();
 	void Init(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
-	void Update();
-	void Draw();
+	void Update(Phoenix::f32 elapsedTime);
+	void Draw(Phoenix::f32 elapsedTime);
 	void GUI();
 	void ChangeScene(SceneType sceneType, bool stack, bool fade);
 	void SetScene(SceneType sceneType);

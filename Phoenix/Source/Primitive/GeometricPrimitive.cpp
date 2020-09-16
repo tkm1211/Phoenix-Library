@@ -27,7 +27,7 @@ GeometricPrimitive::GeometricPrimitive(ID3D11Device *device, int type, bool isCr
 	//ワイヤーフレーム
 	D3D11_RASTERIZER_DESC rasterizer_desc = {}; //memo:「 = {}」で構造体を初期化
 	rasterizer_desc.FillMode = D3D11_FILL_WIREFRAME;
-	rasterizer_desc.CullMode = D3D11_CULL_BACK;
+	rasterizer_desc.CullMode = D3D11_CULL_NONE;
 	rasterizer_desc.FrontCounterClockwise = TRUE;
 	rasterizer_desc.DepthClipEnable = TRUE;
 	rasterizer_desc.AntialiasedLineEnable = TRUE;
@@ -37,7 +37,7 @@ GeometricPrimitive::GeometricPrimitive(ID3D11Device *device, int type, bool isCr
 	//ソリッド
 	ZeroMemory(&rasterizer_desc, sizeof(rasterizer_desc));
 	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
-	rasterizer_desc.CullMode = D3D11_CULL_BACK;
+	rasterizer_desc.CullMode = D3D11_CULL_NONE;
 	rasterizer_desc.FrontCounterClockwise = TRUE;
 	rasterizer_desc.DepthClipEnable = TRUE;
 	hr = device->CreateRasterizerState(&rasterizer_desc, solidRasterizerState.GetAddressOf());
@@ -96,7 +96,7 @@ void GeometricPrimitive::Render(ID3D11DeviceContext* deviceContext,
 	deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	//プリミティブモードの設定
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); // D3D11_PRIMITIVE_TOPOLOGY_LINELIST // D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
 
 	//入力レイアウトのバインド
 	deviceContext->IASetInputLayout(inputLayout.Get());

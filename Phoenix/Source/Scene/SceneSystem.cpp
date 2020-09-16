@@ -32,12 +32,12 @@ void SceneSystem::Init(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraph
 	ChangeScene(SceneType::Title, false, false);
 }
 
-void SceneSystem::Update()
+void SceneSystem::Update(Phoenix::f32 elapsedTime)
 {
 	// XVˆ—
 	if (stackScene)
 	{
-		stackScene->Update();
+		stackScene->Update(elapsedTime);
 	}
 	if (nextScene)
 	{
@@ -46,7 +46,7 @@ void SceneSystem::Update()
 		currentScene->Init(this);
 	}
 	fadeSystem->Update(this);
-	currentScene->Update();
+	currentScene->Update(elapsedTime);
 }
 
 void SceneSystem::GUI()
@@ -82,13 +82,13 @@ void SceneSystem::ReSetStackScene()
 	stackScene = nullptr;
 }
 
-void SceneSystem::Draw()
+void SceneSystem::Draw(Phoenix::f32 elapsedTime)
 {
 	if (stackScene)
 	{
-		stackScene->Draw();
+		stackScene->Draw(elapsedTime);
 	}
-	currentScene->Draw();
+	currentScene->Draw(elapsedTime);
 	fadeSystem->Draw(graphicsDevice);
 }
 

@@ -1170,5 +1170,136 @@ namespace Phoenix
 			}
 			postProcessingEffectsPS->Deactivate(device);
 		}
+
+		std::unique_ptr<ToneMap> ToneMap::Create()
+		{
+			return std::make_unique<ToneMap>();
+		}
+
+		bool ToneMap::Initialize(Graphics::IGraphicsDevice* graphicsDevice, u32 width, u32 height)
+		{
+			FullScreenQuad::Initialize(graphicsDevice);
+
+			averageLuminance = FrameBuffer::Create();
+			if (!averageLuminance->Initialize(graphicsDevice, 512, 512, false, 1, Phoenix::Graphics::TextureFormatDx::R16_FLOAT, Phoenix::Graphics::TextureFormatDx::UNKNOWN, true, false, true))
+			{
+				return false;
+			}
+
+			// 定数バッファ作成
+			{
+				Graphics::PhoenixBufferDesc bufferDesc = {};
+				Phoenix::FND::MemSet(&bufferDesc, 0, sizeof(bufferDesc));
+				bufferDesc.usage = Phoenix::Graphics::PhoenixUsage::Default;
+				bufferDesc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
+				bufferDesc.cpuAccessFlags = 0;
+				bufferDesc.miscFlags = 0;
+				bufferDesc.byteWidth = sizeof(ShaderConstants);
+				bufferDesc.structureByteStride = 0;
+
+				shaderConstantsBuffer = Graphics::IBuffer::Create();
+				if (!shaderConstantsBuffer->Initialize(graphicsDevice->GetDevice(), bufferDesc))
+				{
+					return false;
+				}
+			}
+
+			averageLuminancePS = Graphics::IShader::Create();
+			averageLuminancePS->LoadPS(graphicsDevice->GetDevice(), "AverageLuminancePS.cso");
+
+			toneMapPS = Graphics::IShader::Create();
+			toneMapPS->LoadPS(graphicsDevice->GetDevice(), "ToneMapPS.cso");
+
+			viewport.width = static_cast<float>(width);
+			viewport.height = static_cast<float>(height);
+			viewport.minDepth = 0.0f;
+			viewport.maxDepth = 1.0f;
+			viewport.x = 0.0f;
+			viewport.y = 0.0f;
+
+			return true;
+		}
+
+		void ToneMap::Finalize()
+		{
+			toneMapPS.reset();
+			averageLuminancePS.reset();
+
+			shaderConstantsBuffer.reset();
+
+			averageLuminance.reset();
+		}
+
+		void ToneMap::Draw(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* colorTexture, f32 elapsedTime)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
+
+			// データセット
+			{
+				Graphics::ITexture* texture[] = { colorTexture };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 1, texture);
+
+				Phoenix::Graphics::ISampler* sampler[] =
+				{
+					context->GetSamplerState(Phoenix::Graphics::SamplerState::PointWrap),
+					context->GetSamplerState(Phoenix::Graphics::SamplerState::LinearWrap),
+					context->GetSamplerState(Phoenix::Graphics::SamplerState::AnisotropicWrap)
+				};
+				context->SetSamplers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(sampler), sampler);
+			}
+
+			// 平均輝度
+			{
+				const float intervalTime = 1.0f / 5.0f; // 1.0f / 5.0f
+				cumulativeTime += elapsedTime;
+				//if (cumulativeTime > intervalTime)
+				{
+					averageLuminance->Clear(graphicsDevice);
+					averageLuminance->Activate(graphicsDevice);
+					averageLuminancePS->Activate(device);
+					FullScreenQuad::Draw(graphicsDevice);
+					averageLuminancePS->Deactivate(device);
+					averageLuminance->Deactivate(graphicsDevice);
+					context->GenerateMips(averageLuminance->GetRenderTargetSurface()->GetTexture());
+					cumulativeTime -= intervalTime;
+				}
+			}
+
+			// データセット
+			{
+				Phoenix::Graphics::IBuffer* psCBuffer[] =
+				{
+					shaderConstantsBuffer.get()
+				};
+				context->UpdateSubresource(shaderConstantsBuffer.get(), 0, 0, &shaderConstant, 0, 0);
+				context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+
+				Graphics::ITexture* texture[] = { averageLuminance->GetRenderTargetSurface()->GetTexture() };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 1, 1, texture);
+
+				Graphics::Viewport* v = { &viewport };
+				context->SetViewports(1, v);
+			}
+
+			// 描画
+			{
+				toneMapPS->Activate(device);
+				FullScreenQuad::Draw(graphicsDevice);
+				toneMapPS->Deactivate(device);
+			}
+
+			// データリセット
+			{
+				Phoenix::Graphics::ISampler* sampler[] =
+				{
+					context->GetSamplerState(Phoenix::Graphics::SamplerState::LinearWrap)
+				};
+				context->SetSamplers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(sampler), sampler);
+
+				Graphics::ITexture* texture[] = { nullptr, nullptr };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 2, texture);
+			}
+		}
 	}
 }

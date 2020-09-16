@@ -105,7 +105,7 @@ void SceneTitle::Init(SceneSystem* sceneSystem)
 	}
 }
 
-void SceneTitle::Update()
+void SceneTitle::Update(Phoenix::f32 elapsedTime)
 {
 	camera->SurveyCamera(0.0f, -0.005f, 300.0f, Phoenix::Math::Vector3(0.0f, 25.0f, 0.0f));
 	//camera->FreeCamera();
@@ -129,7 +129,7 @@ void SceneTitle::Update()
 	if (-0.1f < dissolveThreshold) dissolveThreshold -= dissolveSpeed;
 }
 
-void SceneTitle::Draw()
+void SceneTitle::Draw(Phoenix::f32 elapsedTime)
 {
 	/*commonData->renderer->BeginRendering();
 	commonData->manager->Draw();
@@ -260,26 +260,26 @@ void SceneTitle::GUI()
 	//}
 	//ImGui::End();
 
-	ImGui::Begin("Game");
-	{
-		/*if (ImGui::TreeNode("Shader"))
-		{
-			Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(commonData->pbrShader.get())->GetLight();
-			Phoenix::FrameWork::MaterialState* material = static_cast<Phoenix::FrameWork::PBRShader*>(commonData->pbrShader.get())->GetMaterial();
+	//ImGui::Begin("Game");
+	//{
+	//	/*if (ImGui::TreeNode("Shader"))
+	//	{
+	//		Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(commonData->pbrShader.get())->GetLight();
+	//		Phoenix::FrameWork::MaterialState* material = static_cast<Phoenix::FrameWork::PBRShader*>(commonData->pbrShader.get())->GetMaterial();
 
-			ImGui::DragFloat4("dir", &light->direction.x, 0.01f, -1.0f, 1.0f);
-			ImGui::DragFloat4("color", &light->color.x);
-			ImGui::DragFloat4("albedo", &material->albedo.x);
-			ImGui::DragFloat("metallic", &material->metallic, 0.01f, 0.0f, 1.0f);
-			ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
-			ImGui::TreePop();
-		}*/
-		if (ImGui::TreeNode("Dissolve"))
-		{
-			ImGui::DragFloat("Threshold", &dissolveThreshold, 0.01f);
-			ImGui::DragFloat("EmissiveWidth", &dissolveEmissiveWidth, 0.01f);
-			ImGui::TreePop();
-		}
-	}
-	ImGui::End();
+	//		ImGui::DragFloat4("dir", &light->direction.x, 0.01f, -1.0f, 1.0f);
+	//		ImGui::DragFloat4("color", &light->color.x);
+	//		ImGui::DragFloat4("albedo", &material->albedo.x);
+	//		ImGui::DragFloat("metallic", &material->metallic, 0.01f, 0.0f, 1.0f);
+	//		ImGui::DragFloat("roughness", &material->roughness, 0.01f, 0.0f, 1.0f);
+	//		ImGui::TreePop();
+	//	}*/
+	//	if (ImGui::TreeNode("Dissolve"))
+	//	{
+	//		ImGui::DragFloat("Threshold", &dissolveThreshold, 0.01f);
+	//		ImGui::DragFloat("EmissiveWidth", &dissolveEmissiveWidth, 0.01f);
+	//		ImGui::TreePop();
+	//	}
+	//}
+	//ImGui::End();
 }
