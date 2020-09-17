@@ -78,4 +78,5 @@ void FadeSystem::OnFade(SceneType sceneType)
 {
 	working = true;
 	type = sceneType;
+	dissolveThreshold = 1.0f;
 }

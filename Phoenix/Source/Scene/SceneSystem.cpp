@@ -3,6 +3,7 @@
 #include "../Player/Player.h"
 #include "../Boss/Boss.h"
 #include "Phoenix/Types.h"
+#include "Phoenix/FND/Util.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/Object/Object.h"
@@ -17,7 +18,7 @@ std::unique_ptr<SceneSystem> SceneSystem::Create()
 	return std::make_unique<SceneSystem>();
 }
 
-void SceneSystem::Init(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
+void SceneSystem::Initialize(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	this->display = display;
 	this->graphicsDevice = graphicsDevice;
@@ -29,7 +30,14 @@ void SceneSystem::Init(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraph
 
 	AddScene<SceneTitle>();
 	AddScene<SceneGame>();
+	AddScene<SceneGameClear>();
+	AddScene<SceneGameOver>();
 	ChangeScene(SceneType::Title, false, false);
+
+	for (Phoenix::u32 i = 0; i < scenes.size(); ++i)
+	{
+		scenes.at(i)->Construct(this);
+	}
 }
 
 void SceneSystem::Update(Phoenix::f32 elapsedTime)
@@ -43,7 +51,7 @@ void SceneSystem::Update(Phoenix::f32 elapsedTime)
 	{
 		currentScene = nextScene;
 		nextScene = nullptr;
-		currentScene->Init(this);
+		currentScene->Initialize();
 	}
 	fadeSystem->Update(this);
 	currentScene->Update(elapsedTime);

@@ -124,7 +124,8 @@ public:
 
 public:
 	static std::unique_ptr<Player> Create();
-	void Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
+	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
+	void Initialize();
 	void Update(Phoenix::Graphics::Camera& camera, bool onControl);
 	void UpdateTrasform();
 	void UpdateUI();
@@ -141,6 +142,7 @@ public:
 	Phoenix::Math::Vector3 GetPosition() { return pos; }
 	Phoenix::Math::Vector3 GetRotate() { return rotate; }
 	Phoenix::f32 GetRadius() { return radius; }
+	Phoenix::s32 GetHP() { return life; }
 	AnimationState GetAnimationState() { return animationState; }
 	const std::vector<Phoenix::FrameWork::CollisionData>* GetCollisionDatas() { return &collisionDatas; }
 	bool IsAttackJudgment() { return isAttackJudgment; }

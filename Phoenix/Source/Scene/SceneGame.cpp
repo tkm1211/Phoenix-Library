@@ -12,7 +12,7 @@
 #include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
 
 
-void SceneGame::Init(SceneSystem* sceneSystem)
+void SceneGame::Construct(SceneSystem* sceneSystem)
 {
 	this->sceneSystem = sceneSystem;
 	display = sceneSystem->GetDisplay();
@@ -23,24 +23,6 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	{
 		Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
 		primitive = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 1);
-
-		texSize = Phoenix::Math::Vector2(256.0f, 256.0f);
-
-		cameraFlg = false;
-		lockOnCamera = false;
-		isHitCollision = false;
-		isUpdate = true;
-		isPlayerUpdate = true;
-		isBossUpdate = true;
-		enableMSAA = false;
-		shadowBlend = false;
-		bloomBlend = true;
-		isPBR = true;
-
-		for (int i = 0; i < 10; ++i)
-		{
-			active[i] = false;
-		}
 	}
 
 	// 共通データのアドレス取得
@@ -57,13 +39,6 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		pbrSkinShader = commonData->pbrSkinShader.get();
 		camera = commonData->camera.get();
 		targetMark = commonData->targetMark.get();
-	}
-
-	// 共通データの初期化
-	{
-		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
-		camera->SetRotateX(0.5f);
-		camera->SetRotateY(0.0f);
 	}
 
 	// フレームバッファ
@@ -87,7 +62,7 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 	{
 		shadowMap = Phoenix::FrameWork::FrameBuffer::Create();
 		shadowMap->Initialize(graphicsDevice, 1024 * 5, 1024 * 5, false, 1, Phoenix::Graphics::TextureFormatDx::UNKNOWN, Phoenix::Graphics::TextureFormatDx::R32_TYPELESS);
-	
+
 		voidPS = Phoenix::Graphics::IShader::Create();
 		//voidPS->LoadPS(graphicsDevice->GetDevice(), "ShadowMapPS.cso");
 		lightSpaceCamera = std::make_unique<Phoenix::Graphics::Camera>();
@@ -150,24 +125,60 @@ void SceneGame::Init(SceneSystem* sceneSystem)
 		ibl->Initialize(graphicsDevice);*/
 	}
 
+	// GPUパーティクル
 	{
 		testComputeShader = Phoenix::FrameWork::TestComputeShader::Create();
-		testComputeShader->Initialize(graphicsDevice);
-
 		bitonicSort = Phoenix::FrameWork::BitonicSort::Create();
-		bitonicSort->Initialize(graphicsDevice);
-
 		gpuParticle = Phoenix::FrameWork::GPUParticle::Create();
-		gpuParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png"); // particle
-
 		playerHitParticle = Phoenix::FrameWork::GPUParticle::Create();
-		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
-
 		bossHitParticle = Phoenix::FrameWork::GPUParticle::Create();
-		bossHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
+		//dusterParticle = Phoenix::FrameWork::GPUParticle::Create();
+	}
+}
 
-		/*dusterParticle = Phoenix::FrameWork::GPUParticle::Create();
-		dusterParticle->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster02.png");*/
+void SceneGame::Initialize()
+{
+	// デバック用
+	{
+		texSize = Phoenix::Math::Vector2(256.0f, 256.0f);
+
+		cameraFlg = false;
+		lockOnCamera = false;
+		isHitCollision = false;
+		isUpdate = true;
+		isPlayerUpdate = true;
+		isBossUpdate = true;
+		enableMSAA = false;
+		shadowBlend = false;
+		bloomBlend = true;
+		isPBR = true;
+
+		for (int i = 0; i < 10; ++i)
+		{
+			active[i] = false;
+		}
+	}
+
+	// 共通データの初期化
+	{
+		player->Initialize();
+		boss->Initialize();
+
+		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
+		camera->SetRotateX(0.5f);
+		camera->SetRotateY(0.0f);
+
+		currentShader = pbrShader;
+	}
+
+	// GPUパーティクル
+	{
+		testComputeShader->Initialize(graphicsDevice);
+		bitonicSort->Initialize(graphicsDevice);
+		gpuParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png"); // particle
+		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
+		bossHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
+		//dusterParticle->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster02.png");
 	}
 }
 
@@ -185,6 +196,62 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 	if (isUpdate && isBossUpdate)
 	{
 		boss->Update(!onFade);
+	}
+
+	// カメラ更新
+	{
+		if (xInput[0].bLBt)
+		{
+			lockOnCamera = !lockOnCamera;
+		}
+
+		if (cameraFlg)
+		{
+			static bool isInit = false;
+			if (!isInit)
+			{
+				camera->SetRotateX(0.0f);
+				camera->SetRotateY(-3.14f);
+				isInit = true;
+			}
+			camera->FreeCamera();
+		}
+		else
+		{
+			//camera.ControllerCamera(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 100.0f, 0.0f));
+
+			Phoenix::Math::Vector3 bossPos = boss->GetPosition();
+			Phoenix::Math::Vector3 playerPos = player->GetPosition();
+
+			if (lockOnCamera) camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
+		}
+		//camera->Update();
+	}
+
+	// UI更新
+	{
+		player->UpdateUI();
+		boss->UpdateUI();
+	}
+
+	Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
+	light->direction = Phoenix::Math::Vector4(-camera->GetFront(), 1.0f);
+
+	// フェード中
+	if (sceneSystem->GetOnFade()) return;
+
+	// ゲームジャッジ
+	{
+		if (player->GetHP() <= 0)
+		{
+			sceneSystem->ChangeScene(SceneType::GameOver, false, true);
+		}
+
+		if (boss->GetHP() <= 0)
+		{
+			sceneSystem->ChangeScene(SceneType::GameClear, false, true);
+		}
 	}
 
 	// 当たり判定
@@ -342,40 +409,6 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		player->UpdateUI();
 		boss->UpdateUI();
 	}
-
-	// カメラ更新
-	{
-		if (xInput[0].bLBt)
-		{
-			lockOnCamera = !lockOnCamera;
-		}
-
-		if (cameraFlg)
-		{
-			static bool isInit = false;
-			if (!isInit)
-			{
-				camera->SetRotateX(0.0f);
-				camera->SetRotateY(-3.14f);
-				isInit = true;
-			}
-			camera->FreeCamera();
-		}
-		else
-		{
-			//camera.ControllerCamera(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 100.0f, 0.0f));
-
-			Phoenix::Math::Vector3 bossPos = boss->GetPosition();
-			Phoenix::Math::Vector3 playerPos = player->GetPosition();
-
-			if (lockOnCamera) camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
-			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
-		}
-		//camera->Update();
-	}
-
-	Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
-	light->direction = Phoenix::Math::Vector4(-camera->GetFront(), 1.0f);
 
 	if (isPBR)
 	{

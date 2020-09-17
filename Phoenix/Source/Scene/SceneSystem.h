@@ -11,7 +11,9 @@
 enum class SceneType
 {
 	Title,
-	Game
+	Game,
+	GameClear,
+	GameOver
 };
 
 class FadeSystem;
@@ -34,7 +36,7 @@ public:
 
 public:
 	static std::unique_ptr<SceneSystem> Create();
-	void Init(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
+	void Initialize(Phoenix::OS::IDisplay* display, Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 	void Update(Phoenix::f32 elapsedTime);
 	void Draw(Phoenix::f32 elapsedTime);
 	void GUI();

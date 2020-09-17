@@ -11,17 +11,8 @@ std::unique_ptr<Player> Player::Create()
 	return std::make_unique<Player>();
 }
 
-void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
+void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
-	//const char* filename = "..\\Data\\Assets\\Model\\Player\\MDL_Player_Attack.fbx";
-	//const char* filename = "..\\Data\\Assets\\Model\\danbo_fbx\\danbo_atk.fbx";
-	//const char* filename = "..\\Data\\Assets\\Model\\Hip_Hop_Dancing\\Hip_Hop_Dancing.fbx";
-	//const char* filename = "..\\Data\\Assets\\Model\\Hip_Hop_Dancing_02\\Hip_Hop_Dancing.fbx";
-	//const char* filename = "..\\Data\\Assets\\Model\\Catwalk_Walk_Turn_180_Tight_60\\Catwalk_Walk_Turn_180_Tight.fbx";
-	//const char* filename = "..\\Data\\Assets\\Model\\Standing_Melee_Attack_360_High\\Standing_Melee_Attack_360_High.fbx";
-	//const char* filename = "..\\Data\\Assets\\Model\\sandance_fbx\\sandance.fbx";
-	//const char* filename = "..\\Data\\Assets\\Model\\Vampire_A_Lusth\\Wait\\Zombie_Idle.fbx";
-
 	// モデル読み込み
 	{
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
@@ -41,6 +32,35 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // Head_Hit Head_Hit02 Damage
 	}
 
+	// コリジョン初期化
+	{
+		collisionDatas.resize(4);
+
+		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(0).radius = 0.5f;
+		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Hips");
+
+		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(1).radius = 0.25f;
+		collisionDatas.at(1).boneIndex = model->GetBoneIndex("RightHandIndex1");
+
+		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(2).radius = 0.25f;
+		collisionDatas.at(2).boneIndex = model->GetBoneIndex("LeftHandIndex1");
+
+		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(3).radius = 0.25f;
+		collisionDatas.at(3).boneIndex = model->GetBoneIndex("RightFoot");
+	}
+
+	// UI生成
+	{
+		ui = PlayerUI::Create();
+	}
+}
+
+void Player::Initialize()
+{
 	// アニメーションパラメーターの設定
 	{
 		animationState = AnimationState::Idle;
@@ -79,32 +99,6 @@ void Player::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		attackCollisionIndex = -1;
 		accumulationDamege = 0;
 		accumulationTimeCnt = 0;
-	}
-
-	// UI生成
-	{
-		ui = PlayerUI::Create();
-	}
-
-	// コリジョン初期化
-	{
-		collisionDatas.resize(4);
-
-		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(0).radius = 0.5f;
-		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Hips");
-
-		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(1).radius = 0.25f;
-		collisionDatas.at(1).boneIndex = model->GetBoneIndex("RightHandIndex1");
-
-		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(2).radius = 0.25f;
-		collisionDatas.at(2).boneIndex = model->GetBoneIndex("LeftHandIndex1");
-
-		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(3).radius = 0.25f;
-		collisionDatas.at(3).boneIndex = model->GetBoneIndex("RightFoot");
 	}
 }
 

@@ -15,7 +15,7 @@ std::unique_ptr<AI> BossAI::Create()
 	return std::make_unique<BossAI>();
 }
 
-void BossAI::Init()
+void BossAI::Construct()
 {
 	// ステートの追加
 	{
@@ -27,7 +27,10 @@ void BossAI::Init()
 		AddState<JumpAttackState>();
 		AddState<DamageState>();
 	}
+}
 
+void BossAI::Initialize()
+{
 	// 全ステートの初期化
 	for (Phoenix::u32 i = 0; i < states.size(); ++i)
 	{

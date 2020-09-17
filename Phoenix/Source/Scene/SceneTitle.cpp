@@ -8,30 +8,12 @@
 #include "Phoenix/FND/Util.h"
 
 
-void SceneTitle::Init(SceneSystem* sceneSystem)
+void SceneTitle::Construct(SceneSystem* sceneSystem)
 {
 	this->sceneSystem = sceneSystem;
 	display = sceneSystem->GetDisplay();
 	graphicsDevice = sceneSystem->GetGraphicsDevice();
 	commonData = sceneSystem->GetSceneCommonData();
-
-	//{
-	//	//const char* filename = "..\\Data\\Assets\\Model\\TestModel\\BlackSword03.fbx";
-	//	const char* filename = "..\\Data\\Assets\\Model\\TestModel\\danbo_fbx\\danbo_atk.fbx";
-	//	//const char* filename = "..\\Data\\Assets\\Model\\TestModel\\Sphere01\\Sphere01.fbx";
-	//	//const char* filename = "..\\Data\\Assets\\Model\\TestModel\\mari\\mari.fbx";
-	//	model = std::make_unique<Phoenix::FrameWork::ModelObject>();
-	//	model->Initialize(graphicsDevice);
-	//	model->Load(graphicsDevice, Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), filename));
-
-	//	// 待機モーション開始
-	//	{
-	//		model->PlayAnimation(0, 0);
-	//		model->UpdateTransform(1 / 60.0f);
-	//		model->SetLoopAnimation(true);
-	//		//model->PauseAnimation(true);
-	//	}
-	//}
 
 	// 共通データのアドレス取得
 	{
@@ -39,12 +21,6 @@ void SceneTitle::Init(SceneSystem* sceneSystem)
 		pbrShader = commonData->pbrShader.get();
 		pbrSkinShader = commonData->pbrSkinShader.get();
 		camera = commonData->camera.get();
-	}
-
-	// 共通データの初期化
-	{
-		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
-		camera->SetRotateX(0.1f);
 	}
 
 	// フレームバッファ
@@ -98,6 +74,21 @@ void SceneTitle::Init(SceneSystem* sceneSystem)
 		dissolveThreshold = 1.05f;
 		dissolveEmissiveWidth = 0.027f;
 	}
+}
+
+void SceneTitle::Initialize()
+{
+	// 共通データの初期化
+	{
+		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
+		camera->SetRotateX(0.1f);
+	}
+
+	// タイトル
+	{
+		dissolveThreshold = 1.05f;
+		dissolveEmissiveWidth = 0.027f;
+	}
 
 	// フラグ
 	{
@@ -111,14 +102,14 @@ void SceneTitle::Update(Phoenix::f32 elapsedTime)
 	//camera->FreeCamera();
 	camera->Update();
 
+	if (sceneSystem->GetOnFade()) return;
+
 	if (isChangeScene)
 	{
 		if (dissolveThreshold <= 1.2f) dissolveThreshold += dissolveSpeed;
 		else sceneSystem->ChangeScene(SceneType::Game, false, true);
 		return;
 	}
-
-	if (sceneSystem->GetOnFade()) return;
 
 	if (xInput[0].bAt || xInput[0].bBt || xInput[0].bXt || xInput[0].bYt || xInput[0].bRBt || xInput[0].bLBt || xInput[0].bRTt || xInput[0].bLTt || xInput[0].bSTARTt || xInput[0].bBACKt)
 	{
@@ -137,14 +128,8 @@ void SceneTitle::Draw(Phoenix::f32 elapsedTime)
 
 	Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
-	Phoenix::Graphics::Viewport* v = new Phoenix::Graphics::Viewport();
-	context->GetViewports(1, &v);
-
-	Phoenix::f32 aspectRatio = v->width / v->height;
-	Phoenix::f32 width = v->width;
-	Phoenix::f32 height = v->height;
-
-	Phoenix::FND::SafeDelete(v);
+	Phoenix::f32 width = display->GetWidth();
+	Phoenix::f32 height = display->GetHeight();
 
 	// Work No_0 framebuffer.
 	{

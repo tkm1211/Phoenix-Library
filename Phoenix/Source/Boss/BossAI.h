@@ -25,7 +25,8 @@ public:
 
 public:
 	static std::unique_ptr<AI> Create();
-	void Init() override;
+	void Construct() override;
+	void Initialize() override;
 	void Update() override;
 	void GUI() override;
 

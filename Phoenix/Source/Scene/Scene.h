@@ -40,7 +40,8 @@ public:
 	virtual ~Scene() {}
 
 public:
-	virtual void Init(SceneSystem* sceneSystem) = 0;
+	virtual void Construct(SceneSystem* sceneSystem) = 0;
+	virtual void Initialize() = 0;
 	virtual void Update(Phoenix::f32 elapsedTime) = 0;
 	virtual void Draw(Phoenix::f32 elapsedTime) = 0;
 	virtual void GUI() = 0;
@@ -89,7 +90,8 @@ public:
 	~SceneTitle() {}
 
 public:
-	void Init(SceneSystem* sceneSystem) override;
+	void Construct(SceneSystem* sceneSystem) override;
+	void Initialize() override;
 	void Update(Phoenix::f32 elapsedTime) override;
 	void Draw(Phoenix::f32 elapsedTime) override;
 	void GUI() override;
@@ -201,7 +203,8 @@ public:
 	~SceneGame() {}
 
 public:
-	void Init(SceneSystem* sceneSystem) override;
+	void Construct(SceneSystem* sceneSystem) override;
+	void Initialize() override;
 	void Update(Phoenix::f32 elapsedTime) override;
 	void Draw(Phoenix::f32 elapsedTime) override;
 	void GUI() override;
@@ -209,4 +212,45 @@ public:
 private:
 	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale);
 	Phoenix::Math::Vector3 WorldToScreen(const Phoenix::Math::Vector3& worldPosition);
+};
+
+class SceneGameClear : public Scene
+{
+private:
+	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
+	std::unique_ptr<Phoenix::Graphics::ITexture> logo;
+
+	bool isChangeScene = false;
+
+public:
+	SceneGameClear() {}
+	~SceneGameClear() {}
+
+public:
+	void Construct(SceneSystem* sceneSystem) override;
+	void Initialize() override;
+	void Update(Phoenix::f32 elapsedTime) override;
+	void Draw(Phoenix::f32 elapsedTime) override;
+	void GUI() override;
+};
+
+class SceneGameOver : public Scene
+{
+private:
+	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
+	std::unique_ptr<Phoenix::Graphics::ITexture> logo[2];
+
+	bool isChangeScene = false;
+	bool isRight = false;
+
+public:
+	SceneGameOver() {}
+	~SceneGameOver() {}
+
+public:
+	void Construct(SceneSystem* sceneSystem) override;
+	void Initialize() override;
+	void Update(Phoenix::f32 elapsedTime) override;
+	void Draw(Phoenix::f32 elapsedTime) override;
+	void GUI() override;
 };

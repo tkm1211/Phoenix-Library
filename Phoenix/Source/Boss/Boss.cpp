@@ -10,7 +10,7 @@ std::unique_ptr<Boss> Boss::Create()
 	return std::make_unique<Boss>();
 }
 
-void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* player)
+void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* player)
 {
 	// モデル読み込み
 	{
@@ -33,6 +33,50 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Damage\\Head_Hit.fbx", -1);
 	}
 
+	// コリジョン初期化
+	{
+		collisionDatas.resize(4);
+
+		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(0).radius = 1.5f;
+		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Mutant:Hips");
+
+		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(1).radius = 0.5f;
+		collisionDatas.at(1).boneIndex = model->GetBoneIndex("Mutant:RightHandIndex1");
+
+		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(2).radius = 1.3f;
+		collisionDatas.at(2).boneIndex = model->GetBoneIndex("Mutant:LeftHand");
+
+		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(3).radius = 2.65f;
+		collisionDatas.at(3).boneIndex = -1;
+	}
+
+	// プレイヤーアドレス取得
+	{
+		this->player = player;
+	}
+
+	// UI生成
+	{
+		ui = BossUI::Create();
+	}
+
+	// AI初期化
+	{
+		ai = BossAI::Create();
+		ai->Construct();
+
+		bossAI = static_cast<BossAI*>(ai.get());
+		bossAI->SharedBossPtr(this);
+		bossAI->SharedPlayerPtr(player);
+	}
+}
+
+void Boss::Initialize()
+{
 	// 待機モーション開始
 	{
 		model->PlayAnimation(0, 1);
@@ -56,52 +100,15 @@ void Boss::Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* play
 		isChangeAccumulationDamege = false;
 	}
 
-	// プレイヤーアドレス取得
-	{
-		this->player = player;
-	}
-
 	// AI初期化
 	{
-		ai = BossAI::Create();
-		ai->Init();
-
-		bossAI = static_cast<BossAI*>(ai.get());
-		bossAI->SharedBossPtr(this);
-		bossAI->SharedPlayerPtr(player);
-
+		ai->Initialize();
 		currentType = bossAI->GetCurrentStateType();
 	}
 
 	// インデックス取得
 	{
 		boneIndex = model->GetBoneIndex("Mutant:Hips");
-	}
-
-	// UI生成
-	{
-		ui = BossUI::Create();
-	}
-
-	// コリジョン初期化
-	{
-		collisionDatas.resize(4);
-
-		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(0).radius = 1.5f;
-		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Mutant:Hips");
-
-		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(1).radius = 0.5f;
-		collisionDatas.at(1).boneIndex = model->GetBoneIndex("Mutant:RightHandIndex1");
-
-		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(2).radius = 1.3f;
-		collisionDatas.at(2).boneIndex = model->GetBoneIndex("Mutant:LeftHand");
-
-		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(3).radius = 2.65f;
-		collisionDatas.at(3).boneIndex = -1;
 	}
 }
 

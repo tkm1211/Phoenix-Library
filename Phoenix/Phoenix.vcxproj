@@ -231,8 +231,10 @@
     <ClCompile Include="Source\Player\Player.cpp" />
     <ClCompile Include="Source\Primitive\GeometricPrimitive.cpp" />
     <ClCompile Include="Source\Scene\FadeSystem.cpp" />
+    <ClCompile Include="Source\Scene\SceneGameClear.cpp" />
     <ClCompile Include="Source\Scene\SceneCommonData.cpp" />
     <ClCompile Include="Source\Scene\SceneGame.cpp" />
+    <ClCompile Include="Source\Scene\SceneGameOver.cpp" />
     <ClCompile Include="Source\Scene\SceneSystem.cpp" />
     <ClCompile Include="Source\Scene\SceneTitle.cpp" />
     <ClCompile Include="Source\UI\BossUI.cpp" />

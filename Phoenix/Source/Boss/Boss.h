@@ -71,7 +71,8 @@ public:
 
 public:
 	static std::unique_ptr<Boss> Create();
-	void Init(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* player);
+	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player* player);
+	void Initialize();
 	void Update(bool onControl);
 	void UpdateUI();
 	void ChangeAnimation(AIStateType type);
@@ -87,6 +88,7 @@ public:
 	//Phoenix::Math::Vector3 GetRotate() { return rotate; }
 	Phoenix::Math::Quaternion GetRotate() { return rotate; }
 	Phoenix::f32 GetRadius() { return radius; }
+	Phoenix::s32 GetHP() { return life; }
 	Phoenix::u32 GetBoneIndex() { return boneIndex; }
 	std::vector<Phoenix::FrameWork::CollisionData>* GetCollisionDatas() { return &collisionDatas; }
 	bool IsAttackJudgment() { return isAttackJudgment; }

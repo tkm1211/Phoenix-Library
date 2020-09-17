@@ -10,10 +10,10 @@ std::shared_ptr<SceneCommonData> SceneCommonData::Create()
 void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	player = Player::Create();
-	player->Init(graphicsDevice);
+	player->Construct(graphicsDevice);
 
 	boss = Boss::Create();
-	boss->Init(graphicsDevice, player.get());
+	boss->Construct(graphicsDevice, player.get());
 
 	uiSystem = UISystem::Create();
 	{

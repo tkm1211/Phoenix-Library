@@ -26,7 +26,7 @@ bool Main::Initialize(Phoenix::uintPtr instance)
 	Super::Initialize(instance);
 
 	sceneSystem = SceneSystem::Create();
-	sceneSystem->Init(display.get(), graphicsDevice.get());
+	sceneSystem->Initialize(display.get(), graphicsDevice.get());
 
 	return true;
 }
