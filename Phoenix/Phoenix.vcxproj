@@ -112,7 +112,7 @@
       <MinimalRebuild />
       <PrecompiledHeader />
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;$(SolutionDir)Library\ExternalLibrary\Effekseer\include\Effekseer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;$(SolutionDir)Library\ExternalLibrary\Effekseer\include\Effekseer;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -134,7 +134,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -158,7 +158,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;$(SolutionDir)Library\ExternalLibrary\Effekseer\include\Effekseer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;$(SolutionDir)Library\ExternalLibrary\Effekseer\include\Effekseer;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -177,7 +177,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -235,6 +235,7 @@
     <ClCompile Include="Source\Scene\SceneCommonData.cpp" />
     <ClCompile Include="Source\Scene\SceneGame.cpp" />
     <ClCompile Include="Source\Scene\SceneGameOver.cpp" />
+    <ClCompile Include="Source\Scene\SceneLabo.cpp" />
     <ClCompile Include="Source\Scene\SceneSystem.cpp" />
     <ClCompile Include="Source\Scene\SceneTitle.cpp" />
     <ClCompile Include="Source\UI\BossUI.cpp" />
@@ -258,6 +259,7 @@
     <ClInclude Include="Source\Scene\FadeSystem.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Scene\SceneCommonData.h" />
+    <ClInclude Include="Source\Scene\SceneLabo.h" />
     <ClInclude Include="Source\Scene\SceneSystem.h" />
     <ClInclude Include="Source\UI\BossUI.h" />
     <ClInclude Include="Source\UI\PlayerUI.h" />

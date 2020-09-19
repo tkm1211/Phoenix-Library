@@ -55,6 +55,12 @@
     <Filter Include="Include\Effect">
       <UniqueIdentifier>{dd9f7100-fadf-4541-b563-502b81d700eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\Script">
+      <UniqueIdentifier>{31543a1f-04dd-4b3a-a3f9-fcddc91af041}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Script">
+      <UniqueIdentifier>{2d6d56c0-c0a2-4636-aac9-481d77bad2c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -111,6 +117,9 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Effect\EffectSystem.h">
       <Filter>Include\Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Script\Lua.h">
+      <Filter>Include\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -160,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\GPUParticle.cpp">
       <Filter>Source\ComputeShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Script\Lua.cpp">
+      <Filter>Source\Script</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

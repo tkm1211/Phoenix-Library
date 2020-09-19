@@ -28,6 +28,10 @@ void SceneSystem::Initialize(Phoenix::OS::IDisplay* display, Phoenix::Graphics::
 	fadeSystem = FadeSystem::Create();
 	fadeSystem->Initialize(graphicsDevice);
 
+	labo = SceneLabo::Create();
+	labo->Construct(this);
+	onLabo = false;
+
 	AddScene<SceneTitle>();
 	AddScene<SceneGame>();
 	AddScene<SceneGameClear>();
@@ -42,6 +46,39 @@ void SceneSystem::Initialize(Phoenix::OS::IDisplay* display, Phoenix::Graphics::
 
 void SceneSystem::Update(Phoenix::f32 elapsedTime)
 {
+	// ƒ‰ƒ{
+	{
+		if (labo->Finish())
+		{
+			onLabo = false;
+			labo->Initialize();
+		}
+
+		if (onLabo)
+		{
+			labo->Update(elapsedTime);
+			return;
+		}
+
+		if (GetKeyState(VK_CONTROL) < 0)
+		{
+			if (GetKeyState('L') < 0)
+			{
+				if (keyCnt == 0)
+				{
+					onLabo = true;
+					labo->Initialize();
+				}
+
+				keyCnt++;
+			}
+			else
+			{
+				keyCnt = 0;
+			}
+		}
+	}
+
 	// XVˆ—
 	if (stackScene)
 	{
@@ -59,6 +96,12 @@ void SceneSystem::Update(Phoenix::f32 elapsedTime)
 
 void SceneSystem::GUI()
 {
+	if (onLabo)
+	{
+		labo->GUI();
+		return;
+	}
+
 	currentScene->GUI();
 }
 
@@ -92,6 +135,12 @@ void SceneSystem::ReSetStackScene()
 
 void SceneSystem::Draw(Phoenix::f32 elapsedTime)
 {
+	if (onLabo)
+	{
+		labo->Draw(elapsedTime);
+		return;
+	}
+
 	if (stackScene)
 	{
 		stackScene->Draw(elapsedTime);

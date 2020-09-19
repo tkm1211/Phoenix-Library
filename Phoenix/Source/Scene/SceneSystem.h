@@ -6,6 +6,7 @@
 #include "Phoenix/OS/Display.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "SceneCommonData.h"
+#include "SceneLabo.h"
 
 
 enum class SceneType
@@ -29,6 +30,11 @@ private:
 	Phoenix::Graphics::IGraphicsDevice* graphicsDevice = nullptr;
 	std::shared_ptr<SceneCommonData> commonData;
 	std::shared_ptr<FadeSystem> fadeSystem;
+
+	// Labo
+	std::unique_ptr<SceneLabo> labo;
+	bool onLabo;
+	Phoenix::s32 keyCnt = 0;
 
 public:
 	SceneSystem() {}

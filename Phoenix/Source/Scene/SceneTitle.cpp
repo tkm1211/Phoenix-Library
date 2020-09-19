@@ -128,8 +128,8 @@ void SceneTitle::Draw(Phoenix::f32 elapsedTime)
 
 	Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 
-	Phoenix::f32 width = display->GetWidth();
-	Phoenix::f32 height = display->GetHeight();
+	Phoenix::f32 width = static_cast<Phoenix::f32>(display->GetWidth());
+	Phoenix::f32 height = static_cast<Phoenix::f32>(display->GetHeight());
 
 	// Work No_0 framebuffer.
 	{
