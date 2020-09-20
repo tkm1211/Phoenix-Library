@@ -31,7 +31,7 @@ namespace Phoenix
 			void Finalize() override;
 
 			// モデルデータ読み込み
-			bool Load(Graphics::ModelData& data) override;
+			bool Load(Graphics::ModelData& data, const char* dirname) override;
 
 			// アニメーションデータ読み込み
 			bool Load(Graphics::AnimationData& data) override;

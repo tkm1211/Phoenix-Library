@@ -25,12 +25,12 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	const char* filename = "..\\Data\\Assets\\Model\\Stage\\MDL_StartStage.fbx"; // stage01 Floor01 JOL\\MDL_StartStage
 	stageModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	stageModel->Initialize(graphicsDevice);
-	stageModel->Load(graphicsDevice, Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), filename));
+	stageModel->Load(graphicsDevice, filename);
 
 	filename = "..\\Data\\Assets\\Model\\Stage\\MDL_BossStage03.fbx";
 	bossStageModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	bossStageModel->Initialize(graphicsDevice);
-	bossStageModel->Load(graphicsDevice, Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), filename));
+	bossStageModel->Load(graphicsDevice, filename);
 
 	basicShader = Phoenix::FrameWork::BasicShader::Create();
 	basicShader->Initialize(graphicsDevice);
@@ -52,5 +52,5 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	Phoenix::Graphics::DeviceDX11* deviceDX11 = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
 
 	targetMark = Phoenix::Graphics::ITexture::Create();
-	targetMark->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\TargetMark\\target.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+	targetMark->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\TargetMark\\target.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 }

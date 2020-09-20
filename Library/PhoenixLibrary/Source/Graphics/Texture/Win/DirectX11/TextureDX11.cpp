@@ -10,6 +10,7 @@
 #include "Phoenix/FND/Logger.h"
 #include "Phoenix/FND/Util.h"
 #include "Phoenix/FND/STD.h"
+#include "Phoenix/OS/Path.h"
 #include "../../DirectXTex-master/WICTextureLoader/WICTextureLoader.h"
 #include "../../DirectXTex-master/DirectXTex/DirectXTex.h"
 
@@ -314,7 +315,15 @@ namespace Phoenix
 				}
 				else
 				{
-					check = LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
+					std::unique_ptr<OS::IFileStream> file;
+					file = OS::IFileStream::Create();
+					file->Initialize(nullptr);
+
+					const char* fullPass = OS::Path::GetFullPath(filename);
+
+					if (!file->Exists(fullPass)) break;
+
+					check = LoadTextureFromFile(d3dDevice, fullPass, &shaderResourceView);
 				}
 				break;
 			case Phoenix::Graphics::MaterialType::NormalMap:
@@ -327,7 +336,15 @@ namespace Phoenix
 				}
 				else
 				{
-					check = LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
+					std::unique_ptr<OS::IFileStream> file;
+					file = OS::IFileStream::Create();
+					file->Initialize(nullptr);
+
+					const char* fullPass = OS::Path::GetFullPath(filename);
+
+					if (!file->Exists(fullPass)) break;
+
+					check = LoadTextureFromFile(d3dDevice, fullPass, &shaderResourceView);
 				}
 				break;
 			case Phoenix::Graphics::MaterialType::Emissive:
@@ -339,7 +356,15 @@ namespace Phoenix
 				}
 				else
 				{
-					check = LoadTextureFromFile(d3dDevice, filename, &shaderResourceView);
+					std::unique_ptr<OS::IFileStream> file;
+					file = OS::IFileStream::Create();
+					file->Initialize(nullptr);
+
+					const char* fullPass = OS::Path::GetFullPath(filename);
+
+					if (!file->Exists(fullPass)) break;
+
+					check = LoadTextureFromFile(d3dDevice, fullPass, &shaderResourceView);
 				}
 				break;
 			default: break;

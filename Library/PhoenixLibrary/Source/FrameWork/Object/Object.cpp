@@ -28,6 +28,7 @@ namespace Phoenix
 		void ModelObject::Load(Graphics::IGraphicsDevice* graphicsDevice, const char* filename)
 		{
 			const char* fullPass = OS::Path::GetFullPath(filename);
+			std::string animFullPass = std::string(fullPass);
 
 			std::string modelFilename;
 			modelFilename = OS::Path::ChangeFileExtension(fullPass, "mdl");
@@ -40,7 +41,7 @@ namespace Phoenix
 					return;
 				}
 				Graphics::ModelData data;
-				if (!loader->Load(data))
+				if (!loader->Load(data, OS::Path::GetDirectoryName(filename)))
 				{
 					return;
 				}
@@ -95,7 +96,7 @@ namespace Phoenix
 
 			animator = std::make_unique<Animator>();
 			animator->Initialize(this);
-			LoadAnimation(fullPass, -1);
+			LoadAnimation(animFullPass.c_str(), -1);
 		}
 
 		// アニメーションの読み込み

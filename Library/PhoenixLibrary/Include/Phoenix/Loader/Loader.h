@@ -27,7 +27,7 @@ namespace Phoenix
 			virtual void Finalize() = 0;
 
 			// モデルデータ読み込み
-			virtual bool Load(Graphics::ModelData& data) = 0;
+			virtual bool Load(Graphics::ModelData& data, const char* dirname) = 0;
 
 			// アニメーションデータ読み込み
 			virtual bool Load(Graphics::AnimationData& data) = 0;

@@ -1,5 +1,7 @@
 #include "GeometricPrimitive.h"
 #include "../Source/Loader/ResourceManager.h"
+#include "Phoenix/OS/Stream.h"
+#include "Phoenix\OS\Path.h"
 
 #include <map>
 #include <vector>
@@ -15,12 +17,24 @@ GeometricPrimitive::GeometricPrimitive(ID3D11Device *device, int type, bool isCr
 		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
+	std::unique_ptr<Phoenix::OS::IFileStream> file;
+	file = Phoenix::OS::IFileStream::Create();
+	file->Initialize(nullptr);
+
 	//頂点シェーダーオブジェクト作成 && インプットレイアウト作成****************
-	ResourceManager::CreateVertexShaderAndInputLayout(device, "..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\GeometricPrimitiveVS.cso", &vertexShader, &inputLayout, ieDesc, ARRAYSIZE(ieDesc));
+	{
+		const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", "GeometricPrimitiveVS.cso");
+		const char* fullPass = Phoenix::OS::Path::GetFullPath(filename);
+		if (file->Exists(fullPass)) ResourceManager::CreateVertexShaderAndInputLayout(device, fullPass, &vertexShader, &inputLayout, ieDesc, ARRAYSIZE(ieDesc));
+	}
 	//**************************************************************************
 
 	//ピクセルシェーダーオブジェクト作成****************************************
-	ResourceManager::CreatePixelShader(device, "..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\GeometricPrimitivePS.cso", &pixelShader);
+	{
+		const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", "GeometricPrimitivePS.cso");
+		const char* fullPass = Phoenix::OS::Path::GetFullPath(filename);
+		if (file->Exists(fullPass)) ResourceManager::CreatePixelShader(device, filename, &pixelShader);
+	}
 	//**************************************************************************
 
 	//ラスタライザーステートオブジェクト作成************************************

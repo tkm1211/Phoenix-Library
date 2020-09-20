@@ -35,9 +35,9 @@ namespace Phoenix
 		void ShaderDX11::LoadVS(IDevice* device, const char* csoNameOfVertexShader, PhoenixInputElementDesc* inputElementDesc, u32 numElements)
 		{
 #ifdef _WIN64
-			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x64\\Debug\\", csoNameOfVertexShader);
+			const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", csoNameOfVertexShader);
 #else
-			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\", csoNameOfVertexShader);
+			const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", csoNameOfVertexShader);
 #endif
 			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
 
@@ -56,33 +56,49 @@ namespace Phoenix
 				descList.emplace_back(desc);
 			}
 
-			if (filename) ResourceManager::CreateVertexShaderAndInputLayout(d3dDevice, filename, &vertexShader, &inputLayout, descList.data(), numElements);
+			std::unique_ptr<OS::IFileStream> file;
+			file = OS::IFileStream::Create();
+			file->Initialize(nullptr);
+
+			const char* fullPass = OS::Path::GetFullPath(filename);
+			if (file->Exists(fullPass)) ResourceManager::CreateVertexShaderAndInputLayout(d3dDevice, fullPass, &vertexShader, &inputLayout, descList.data(), numElements);
 		}
 
 		// ジオメトリシェーダー読み込み
 		void ShaderDX11::LoadGS(IDevice* device, const char* csoNameOfGeometryShader)
 		{
 #ifdef _WIN64
-			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x64\\Debug\\", csoNameOfGeometryShader);
+			const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", csoNameOfGeometryShader);
 #else
-			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\", csoNameOfGeometryShader);
+			const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", csoNameOfGeometryShader);
 #endif
 
+			std::unique_ptr<OS::IFileStream> file;
+			file = OS::IFileStream::Create();
+			file->Initialize(nullptr);
+
+			const char* fullPass = OS::Path::GetFullPath(filename);
+
 			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
-			if (filename) ResourceManager::CreateGeometryShader(d3dDevice, filename, &geometryShader);
+			if (file->Exists(fullPass)) ResourceManager::CreateGeometryShader(d3dDevice, fullPass, &geometryShader);
 		}
 
 		// ピクセルシェーダー読み込み
 		void ShaderDX11::LoadPS(IDevice* device, const char* csoNameOfPixelShader)
 		{
 #ifdef _WIN64
-			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x64\\Debug\\", csoNameOfPixelShader);
+			const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", csoNameOfPixelShader);
 #else
-			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\", csoNameOfPixelShader);
+			const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", csoNameOfPixelShader);
 #endif
+			std::unique_ptr<OS::IFileStream> file;
+			file = OS::IFileStream::Create();
+			file->Initialize(nullptr);
+
+			const char* fullPass = OS::Path::GetFullPath(filename);
 
 			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
-			if (filename) ResourceManager::CreatePixelShader(d3dDevice, filename, &pixelShader);
+			if (file->Exists(fullPass)) ResourceManager::CreatePixelShader(d3dDevice, fullPass, &pixelShader);
 		}
 
 		// シェーダー開始
@@ -189,13 +205,18 @@ namespace Phoenix
 		void ComputeShaderDX11::Load(IDevice* device, const char* csoNameOfComputeShader)
 		{
 #ifdef _WIN64
-			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x64\\Debug\\", csoNameOfComputeShader);
+			const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", csoNameOfComputeShader);
 #else
-			const char* filename = Phoenix::OS::Path::Combine("..\\Library\\PhoenixLibrary\\Build\\vs2019\\obj\\PhoenixLib_HLSL\\x86\\Debug\\", csoNameOfComputeShader);
+			const char* filename = Phoenix::OS::Path::Combine("..\\Data\\Shader\\", csoNameOfComputeShader);
 #endif
+			std::unique_ptr<OS::IFileStream> file;
+			file = OS::IFileStream::Create();
+			file->Initialize(nullptr);
+
+			const char* fullPass = OS::Path::GetFullPath(filename);
 
 			ID3D11Device* d3dDevice = static_cast<DeviceDX11*>(device)->GetD3DDevice();
-			if (filename) ResourceManager::CreateComputeShader(d3dDevice, filename, &computeShader);
+			if (file->Exists(fullPass)) ResourceManager::CreateComputeShader(d3dDevice, fullPass, &computeShader);
 		}
 
 		// シェーダー開始

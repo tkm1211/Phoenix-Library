@@ -57,12 +57,12 @@ namespace Phoenix
 		}
 
 		// モデルデータ読み込み
-		bool Loader::Load(Graphics::ModelData& data)
+		bool Loader::Load(Graphics::ModelData& data, const char* dirname)
 		{
 			Triangulate();
 
 			ModelDataLoader modelDataLoader;
-			return modelDataLoader.Load(fbxScene, data, filename.c_str());
+			return modelDataLoader.Load(fbxScene, data, filename.c_str(), dirname);
 		}
 
 		// アニメーションデータ読み込み

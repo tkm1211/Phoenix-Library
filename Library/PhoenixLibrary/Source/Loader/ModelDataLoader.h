@@ -19,7 +19,7 @@ namespace Phoenix
 
 		public:
 			// モデルデータ読み込み
-			bool Load(FbxScene* fbxScene, Graphics::ModelData& data, const char* fbxFilename);
+			bool Load(FbxScene* fbxScene, Graphics::ModelData& data, const char* fbxFilename, const char* dirname);
 
 		private:
 			// ノード処理

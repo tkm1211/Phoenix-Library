@@ -35,7 +35,7 @@ namespace Phoenix
 		// モデルデータローダー
 		//****************************************************************************
 		// モデルデータ読み込み
-		bool ModelDataLoader::Load(FbxScene* fbxScene, Graphics::ModelData& data, const char* fbxFilename)
+		bool ModelDataLoader::Load(FbxScene* fbxScene, Graphics::ModelData& data, const char* fbxFilename, const char* dirname)
 		{
 			FbxNode* fbxRootNode = fbxScene->GetRootNode();
 
@@ -43,7 +43,7 @@ namespace Phoenix
 
 			ProcessMeshes(fbxRootNode, data);
 
-			ProcessMaterials(fbxScene, data, OS::Path::GetDirectoryName(fbxFilename));
+			ProcessMaterials(fbxScene, data, dirname);
 
 			return true;
 		}

@@ -64,7 +64,9 @@ namespace Phoenix
 
 
 			ImGuiIO& io = ImGui::GetIO();
-			//io.IniFilename = NULL;
+#if	!defined(PHOENIX_TARGET_DEBUG)
+			io.IniFilename = NULL;
+#endif
 			io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\meiryo.ttc", 20.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 			//io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\meiryo.ttc", 18.0f, NULL, glyphRangesJapanese);
 			//io.Fonts->AddFontFromFileTTF(".\\consolab.ttf", 10.0f, NULL, io.Fonts->GetGlyphRangesJapanese());

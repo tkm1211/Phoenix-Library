@@ -60,6 +60,7 @@ void SceneSystem::Update(Phoenix::f32 elapsedTime)
 			return;
 		}
 
+#if	defined(PHOENIX_TARGET_DEBUG)
 		if (GetKeyState(VK_CONTROL) < 0)
 		{
 			if (GetKeyState('L') < 0)
@@ -77,6 +78,7 @@ void SceneSystem::Update(Phoenix::f32 elapsedTime)
 				keyCnt = 0;
 			}
 		}
+#endif
 	}
 
 	// XVˆ—

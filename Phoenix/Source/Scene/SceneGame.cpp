@@ -931,6 +931,7 @@ Phoenix::Math::Vector3 SceneGame::WorldToScreen(const Phoenix::Math::Vector3& wo
 
 void SceneGame::GUI()
 {
+#if	defined(PHOENIX_TARGET_DEBUG)
 	ImGui::Begin("Game");
 	{
 		ImGui::Checkbox("Update", &isUpdate);
@@ -1110,4 +1111,5 @@ void SceneGame::GUI()
 		}
 	}
 	ImGui::End();
+#endif
 }
