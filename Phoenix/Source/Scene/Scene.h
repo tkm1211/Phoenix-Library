@@ -156,6 +156,11 @@ private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
 	Phoenix::Math::Vector2 texSize;
 
+	Phoenix::Math::Vector3 tempCameraFouce = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	Phoenix::f32 sphereLinearSpeed = 0.0f;
+	Phoenix::f32 distanceToFouceFromCamera = 0.0f;
+	bool hit = false;
+
 	Phoenix::Math::Vector3 particlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector3 bossHitParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector4 particleNormal = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -217,10 +222,27 @@ private:
 class SceneGameClear : public Scene
 {
 private:
+	const Phoenix::f32 addBright = 0.0025f;
+
+private:
 	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
 	std::unique_ptr<Phoenix::Graphics::ITexture> logo;
+	std::unique_ptr<Phoenix::Graphics::ITexture> button;
+
+	// フレームバッファ
+	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer;
+
+	// トーンマップ
+	std::unique_ptr<Phoenix::FrameWork::ToneMap> toneMap;
 
 	bool isChangeScene = false;
+
+	Phoenix::f32 bright = 0.1f; //明度
+	Phoenix::f32 contrast = 2.0f; //濃淡
+	Phoenix::f32 saturate = 0.5f; //彩度
+	Phoenix::Math::Color screenColor = { 1.0f, 1.0f, 1.0f, 1.0f }; //色調
+
+	bool isTurn = false;
 
 public:
 	SceneGameClear() {}
@@ -237,11 +259,28 @@ public:
 class SceneGameOver : public Scene
 {
 private:
+	const Phoenix::f32 addBright = 0.0025f;
+
+private:
 	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
-	std::unique_ptr<Phoenix::Graphics::ITexture> logo[2];
+	std::unique_ptr<Phoenix::Graphics::ITexture> logo;
+	std::unique_ptr<Phoenix::Graphics::ITexture> button[2];
+
+	// フレームバッファ
+	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer;
+
+	// トーンマップ
+	std::unique_ptr<Phoenix::FrameWork::ToneMap> toneMap;
 
 	bool isChangeScene = false;
 	bool isRight = false;
+
+	Phoenix::f32 bright = 0.1f; //明度
+	Phoenix::f32 contrast = 2.0f; //濃淡
+	Phoenix::f32 saturate = 0.5f; //彩度
+	Phoenix::Math::Color screenColor = { 1.0f, 1.0f, 1.0f, 1.0f }; //色調
+
+	bool isTurn = false;
 
 public:
 	SceneGameOver() {}

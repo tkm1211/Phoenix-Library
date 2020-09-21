@@ -169,6 +169,10 @@ void SceneGame::Initialize()
 		camera->SetRotateY(0.0f);
 
 		currentShader = pbrShader;
+
+		tempCameraFouce = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		sphereLinearSpeed = 0.0f;
+		distanceToFouceFromCamera = 0.0f;
 	}
 
 	// GPUパーティクル
@@ -187,6 +191,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 	bool onFade = sceneSystem->GetOnFade();
 
 	// プレイヤー更新
+	Phoenix::Math::Vector3 oldPlayerPos = player->GetPosition();
 	if (isUpdate && isPlayerUpdate)
 	{
 		player->Update(*camera, !onFade);
@@ -223,8 +228,80 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			Phoenix::Math::Vector3 bossPos = boss->GetPosition();
 			Phoenix::Math::Vector3 playerPos = player->GetPosition();
 
-			if (lockOnCamera) camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+#if 0
+			if (lockOnCamera)
+			{
+				camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+			}
 			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
+#else
+			// TODO : 他の方法で実装 （上方向に向くベクトルと高さでレイピック判定取って当たっていたら射影ベクトルを求めその方向にベクトルを変更）
+			if (lockOnCamera)
+			{
+				Phoenix::f32 bossPosY = bossPos.y;
+				bossPos.y = 0.0f;
+
+				Phoenix::Math::Vector3 dir = bossPos - playerPos;
+				dir.y = 0.0f;
+				Phoenix::f32 dis = Phoenix::Math::Vector3Length(dir);
+
+				if (dis <= 1.0f && playerPos.y < bossPosY)
+				{
+					camera->LockOnCamera(playerPos, camera->GetFocus() + (playerPos - oldPlayerPos), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), false);
+					hit = true;
+				}
+				else if (hit && playerPos.y < bossPosY)
+				{
+					camera->LockOnCamera(playerPos, camera->GetFocus() + (playerPos - oldPlayerPos), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), false);
+				}
+				else if (hit && bossPosY <= 0.0f)
+				{
+					Phoenix::Math::Vector3 start, end;
+
+					start = camera->GetFocus() - playerPos;
+					end = bossPos - playerPos;
+
+					start.y = 0.0f;
+					end.y = 0.0f;
+
+					Phoenix::f32 startLen = Phoenix::Math::Vector3Length(start);
+					Phoenix::f32 endLen = Phoenix::Math::Vector3Length(end);
+
+					start = Phoenix::Math::Vector3Normalize(start);
+					end = Phoenix::Math::Vector3Normalize(end);
+
+					Phoenix::f32 dot = Phoenix::Math::Vector3Dot(start, end);
+					Phoenix::f32 angle = acosf(dot);
+					Phoenix::f32 overAngle = 90.0f * 0.01745f;
+					if (overAngle <= angle)
+					{
+						Phoenix::Math::Vector3 right = Phoenix::Math::Vector3Cross(Phoenix::Math::Vector3::OneY, -start);
+						
+						dot = Phoenix::Math::Vector3Dot(right, end);
+						Phoenix::f32 angle = acosf(dot);
+						right *= angle < overAngle ? 1.0f : -1.0f;
+
+						Phoenix::Math::Vector3 newBossPos;
+						newBossPos.x = playerPos.x + right.x * endLen;
+						newBossPos.y = 0.0f;
+						newBossPos.z = playerPos.z + right.z * endLen;
+
+						camera->LockOnCamera(playerPos, newBossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+					}
+					else
+					{
+						camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+						hit = false;
+					}
+				}
+				else
+				{
+					camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+					hit = false;
+				}
+			}
+			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
+#endif
 		}
 		//camera->Update();
 	}
@@ -934,6 +1011,7 @@ void SceneGame::GUI()
 #if	defined(PHOENIX_TARGET_DEBUG)
 	ImGui::Begin("Game");
 	{
+		ImGui::Text("%d", hit);
 		ImGui::Checkbox("Update", &isUpdate);
 		ImGui::Checkbox("PlayerUpdate", &isPlayerUpdate);
 		ImGui::Checkbox("BossUpdate", &isBossUpdate);

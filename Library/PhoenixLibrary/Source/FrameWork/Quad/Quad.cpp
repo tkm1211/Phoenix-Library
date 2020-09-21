@@ -101,6 +101,13 @@ namespace Phoenix
 				"QuadPSMS.cso"
 			);
 
+			embeddedFilterPixelShader = Graphics::IShader::Create();
+			embeddedFilterPixelShader->LoadPS
+			(
+				device,
+				"QuadFilterPS.cso"
+			);
+
 			embeddedAlphaCutOffPixelShader = Graphics::IShader::Create();
 			embeddedAlphaCutOffPixelShader->LoadPS
 			(
@@ -131,6 +138,22 @@ namespace Phoenix
 			if (!embeddedDepthStencilState->Initialize(device, Graphics::DepthState::NoTestNoWrite))
 			{
 				return false;
+			}
+
+			filterCB = Phoenix::Graphics::IBuffer::Create();
+			{
+				Phoenix::Graphics::PhoenixBufferDesc desc = {};
+				Phoenix::FND::MemSet(&desc, 0, sizeof(desc));
+				desc.usage = Phoenix::Graphics::PhoenixUsage::Default;
+				desc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
+				desc.cpuAccessFlags = 0;
+				desc.miscFlags = 0;
+				desc.byteWidth = sizeof(FilterCB);
+				desc.structureByteStride = 0;
+				if (!filterCB->Initialize(device, desc))
+				{
+					return false;
+				}
 			}
 
 			dissolveCB = Phoenix::Graphics::IBuffer::Create();
@@ -187,6 +210,7 @@ namespace Phoenix
 			bool useEmbeddedRasterizerState,
 			bool useEmbeddedDepthStencilState,
 			bool useEmbeddedSamplerState,
+			bool useEmbeddedFileter,
 			bool useEmbeddedDissolve,
 			bool useEmbeddedDissolveEmissive
 		) const
@@ -324,7 +348,27 @@ namespace Phoenix
 			}
 			if (useEmbeddedPixelShader)
 			{
-				if (useEmbeddedDissolve)
+				if (useEmbeddedFileter)
+				{
+					FilterCB cb = {};
+					{
+						cb.bright = bright;
+						cb.contrast = contrast;
+						cb.saturate = saturate;
+						cb.option = 0.0f;
+						cb.screenColor = screenColor;
+					}
+
+					Phoenix::Graphics::IBuffer* psCBuffer[] =
+					{
+						filterCB.get()
+					};
+					context->UpdateSubresource(filterCB.get(), 0, 0, &cb, 0, 0);
+					context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+
+					embeddedFilterPixelShader->Activate(device);
+				}
+				else if (useEmbeddedDissolve)
 				{
 					DissolveCB cb = {};
 					{
@@ -399,7 +443,17 @@ namespace Phoenix
 			}
 			if (useEmbeddedPixelShader)
 			{
-				if (useEmbeddedDissolve)
+				if (useEmbeddedFileter)
+				{
+					Phoenix::Graphics::IBuffer* psCBuffer[] =
+					{
+						nullptr
+					};
+					context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+
+					embeddedFilterPixelShader->Deactivate(device);
+				}
+				else if (useEmbeddedDissolve)
 				{
 					Phoenix::Graphics::IBuffer* psCBuffer[] =
 					{
@@ -461,6 +515,7 @@ namespace Phoenix
 			bool useEmbeddedRasterizerState,
 			bool useEmbeddedDepthStencilState,
 			bool useEmbeddedSamplerState,
+			bool useEmbeddedFileter,
 			bool useEmbeddedDissolve,
 			bool useEmbeddedDissolveEmissive
 		) const
@@ -469,7 +524,7 @@ namespace Phoenix
 			shaderResourceView->GetTextureDesc(&texDesc);
 
 			Draw(graphicsDevice, shaderResourceView, dx, dy, dw, dh, 0.0f, 0.0f, static_cast<float>(texDesc.width), static_cast<float>(texDesc.height), angle, r, g, b, a,
-				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState, useEmbeddedDissolve, useEmbeddedDissolveEmissive);
+				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState, useEmbeddedFileter, useEmbeddedDissolve, useEmbeddedDissolveEmissive);
 		}
 
 		void Quad::Draw
@@ -485,6 +540,7 @@ namespace Phoenix
 			bool useEmbeddedRasterizerState,
 			bool useEmbeddedDepthStencilState,
 			bool useEmbeddedSamplerState,
+			bool useEmbeddedFileter,
 			bool useEmbeddedDissolve,
 			bool useEmbeddedDissolveEmissive
 		) const
@@ -493,7 +549,7 @@ namespace Phoenix
 			shaderResourceView->GetTextureDesc(&texDesc);
 
 			Draw(graphicsDevice, shaderResourceView, pos.x, pos.y, size.x, size.y, texPos.x, texPos.y, texSize.x, texSize.y, angle, r, g, b, a,
-				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState, useEmbeddedDissolve, useEmbeddedDissolveEmissive);
+				useEmbeddedVertexShader, useEmbeddedPixelShader, useEmbeddedRasterizerState, useEmbeddedDepthStencilState, useEmbeddedSamplerState, useEmbeddedFileter, useEmbeddedDissolve, useEmbeddedDissolveEmissive);
 		}
 
 

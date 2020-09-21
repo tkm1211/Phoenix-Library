@@ -71,7 +71,7 @@ void FadeSystem::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	quad->SetDissolveThreshold(dissolveThreshold);
 	//quad->Draw(graphicsDevice, fade.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
-	quad->Draw(graphicsDevice, fade.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, true);
+	quad->Draw(graphicsDevice, fade.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, false, true, false);
 }
 
 void FadeSystem::OnFade(SceneType sceneType)

@@ -44,6 +44,8 @@ namespace Phoenix
 
 		extern Vector3 Vector3Lerp(const Vector3 v1, const Vector3 v2, f32 s);
 
+		extern Vector3 Vector3SphereLinear(const Vector3 v1, const Vector3 v2, f32 s);
+
 		// 指定された行列により 3D ベクトルをトランスフォームし、その結果を w = 1 に射影する。
 		extern Vector3 Vector3TransformCoord(const Vector3 v, const Matrix m);
 

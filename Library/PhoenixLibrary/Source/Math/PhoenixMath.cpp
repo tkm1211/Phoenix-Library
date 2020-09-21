@@ -158,6 +158,24 @@ namespace Phoenix
 			return vT;
 		}
 
+		extern Vector3 Vector3SphereLinear(const Vector3 v1, const Vector3 v2, f32 s)
+		{
+			Vector3 start, end;
+			start = Vector3Normalize(v1);
+			end = Vector3Normalize(v2);
+
+			f32 angle = acosf(Vector3Dot(start, end));
+
+			f32 sinThita = sinf(angle);
+
+			f32 startPoint = sinf(angle * (1.0f - s));
+			f32 endPoint = sinf(angle * s);
+
+			Vector3 outV = (startPoint * start + endPoint * end) / sinThita;
+
+			return Vector3Normalize(outV);
+		}
+
 		extern Vector3 Vector3TransformCoord(const Vector3 v, const Matrix m)
 		{
 			Vector3 vT;

@@ -579,7 +579,7 @@ namespace Phoenix
 			SetLookAt(_pos, _target, _up);
 		}
 
-		void Camera::LockOnCamera(const Math::Vector3& center, const Math::Vector3& target, const Math::Vector3& centerAdjust, const Math::Vector3& targetAdjust)
+		void Camera::LockOnCamera(const Math::Vector3& center, const Math::Vector3& target, const Math::Vector3& centerAdjust, const Math::Vector3& targetAdjust, bool isLerp)
 		{
 #if 0
 			Math::Vector3 cameraPos;
@@ -598,7 +598,7 @@ namespace Phoenix
 			cameraPos.y = pos.y;
 
 			SetLookAt(cameraPos, center, Math::Vector3::OneY);
-#else
+#elif 0
 			Math::Vector3 dir = (center + centerAdjust) - (target + targetAdjust);
 			dir.y = center.y - target.y /*0.0f*/;
 			dir = Math::Vector3Normalize(dir);
@@ -622,7 +622,68 @@ namespace Phoenix
 			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y;
 
 			SetLookAt(_pos, _target, Math::Vector3::OneY);
+#elif 1
+			eye = (center + centerAdjust); /*Phoenix::Math::Vector3Lerp(eye, center, 0.6f)*/
+			if (isLerp) focus = Phoenix::Math::Vector3Lerp(focus, (target + targetAdjust), 0.05f);
+			else focus = target + targetAdjust;
+
+			Math::Vector3 dir = eye - focus;
+			dir.y = center.y - target.y /*0.0f*/;
+			dir = Math::Vector3Normalize(dir);
+
+			rotateX = 0.0f;
+			rotateY = atan2f(dir.x, dir.z);
+
+			front = Phoenix::Math::Vector3Lerp(front, -dir, 0.05f);
+
+			Math::Vector3 _pos = eye - (front * 6.5f);
+			Math::Vector3 _target = focus;
+
+			dir = center - target;
+			dir.y = 0.0f;
+			Math::Vector3 dirN = Math::Vector3Normalize(dir);
+			Math::Vector3 right = Math::Vector3Cross(Math::Vector3::OneY, -dirN);
+			_pos += right * -0.75f;
+
+			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y;
+
+			SetLookAt(_pos, _target, Math::Vector3::OneY);
 #endif
+		}
+
+		void Camera::SphereLinearLockOnCamera(const Math::Vector3& center, const Math::Vector3& start, const Math::Vector3& end, const Math::Vector3& centerAdjust, f32 sphereLinearSpeed, f32 distanceToFouceFromCamera)
+		{
+			eye = (center + centerAdjust); /*Phoenix::Math::Vector3Lerp(eye, center, 0.6f)*/
+			Math::Vector3 startVec = start - eye;
+			Math::Vector3 endVec = end - eye;
+
+			startVec.y = 0.0f;
+			endVec.y = 0.0f;
+
+			Math::Vector3 vec = Phoenix::Math::Vector3SphereLinear(start, end, sphereLinearSpeed);
+			focus = eye + vec * distanceToFouceFromCamera;
+
+			Math::Vector3 dir = eye - focus;
+			dir.y = center.y - target.y /*0.0f*/;
+			dir = Math::Vector3Normalize(dir);
+
+			rotateX = 0.0f;
+			rotateY = atan2f(dir.x, dir.z);
+
+			front = Phoenix::Math::Vector3Lerp(front, -dir, 0.05f);
+
+			Math::Vector3 _pos = eye - (front * 6.5f);
+			Math::Vector3 _target = focus;
+
+			dir = center - target;
+			dir.y = 0.0f;
+			Math::Vector3 dirN = Math::Vector3Normalize(dir);
+			Math::Vector3 right = Math::Vector3Cross(Math::Vector3::OneY, -dirN);
+			_pos += right * -0.75f;
+
+			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y;
+
+			SetLookAt(_pos, _target, Math::Vector3::OneY);
 		}
 	} // namespace Graphics
 } // namespace Phoenix

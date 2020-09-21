@@ -26,6 +26,15 @@ namespace Phoenix
 				Math::Vector4 color;
 			};
 
+			struct FilterCB
+			{
+				f32 bright; //明度
+				f32 contrast; //濃淡
+				f32 saturate; //彩度
+				f32 option;
+				Math::Color screenColor; //色調
+			};
+
 			struct DissolveCB
 			{
 				f32 dissolveThreshold;        //透過閾値
@@ -39,6 +48,7 @@ namespace Phoenix
 
 			std::unique_ptr<Graphics::IShader> embeddedVertexShader;
 			std::unique_ptr<Graphics::IShader> embeddedPixelShader[2];
+			std::unique_ptr<Graphics::IShader> embeddedFilterPixelShader;
 			std::unique_ptr<Graphics::IShader> embeddedAlphaCutOffPixelShader;
 			std::unique_ptr<Graphics::IShader> embeddedDissolvePixelShader;
 
@@ -46,11 +56,17 @@ namespace Phoenix
 			std::unique_ptr<Graphics::IDepthStencil> embeddedDepthStencilState;
 			std::unique_ptr<Graphics::ISampler> embeddedSamplerState;
 
+			std::unique_ptr<Graphics::IBuffer> filterCB;
 			std::unique_ptr<Graphics::IBuffer> dissolveCB;
 
 			std::unique_ptr<Graphics::ITexture> dissolveTexture;
 			std::unique_ptr<Graphics::ITexture> dissolveTexture02;
 			std::unique_ptr<Graphics::ITexture> emissiveTexture;
+
+			f32 bright; //明度
+			f32 contrast; //濃淡
+			f32 saturate; //彩度
+			Math::Color screenColor; //色調
 
 			f32 dissolveThreshold;        //透過閾値
 			f32 dissolveEmissiveWidth;    //発光閾値(ディゾルブ・エミッシブ)
@@ -84,6 +100,7 @@ namespace Phoenix
 				bool useEmbeddedRasterizerState = true,
 				bool useEmbeddedDepthStencilState = true,
 				bool useEmbeddedSamplerState = true,
+				bool useEmbeddedFileter = false,
 				bool useEmbeddedDissolve = false,
 				bool useEmbeddedDissolveEmissive = false
 			) const;
@@ -100,6 +117,7 @@ namespace Phoenix
 				bool useEmbeddedRasterizerState = true,
 				bool useEmbeddedDepthStencilState = true,
 				bool useEmbeddedSamplerState = true,
+				bool useEmbeddedFileter = false,
 				bool useEmbeddedDissolve = false,
 				bool useEmbeddedDissolveEmissive = false
 			) const;
@@ -117,9 +135,15 @@ namespace Phoenix
 				bool useEmbeddedRasterizerState = true,
 				bool useEmbeddedDepthStencilState = true,
 				bool useEmbeddedSamplerState = true,
+				bool useEmbeddedFileter = false,
 				bool useEmbeddedDissolve = false,
 				bool useEmbeddedDissolveEmissive = false
 			) const;
+
+			void SetBright(f32 bright) { this->bright = bright; }
+			void SetContrast(f32 contrast) { this->contrast = contrast; }
+			void SetSaturate(f32 saturate) { this->saturate = saturate; }
+			void SetScreenColor(Math::Color screenColor) { this->screenColor = screenColor; }
 
 			void SetDissolveThreshold(f32 threshold) { dissolveThreshold = threshold; }
 			void SetDissolveEmissiveWidth(f32 emissiveWidth) { dissolveEmissiveWidth = emissiveWidth; }
