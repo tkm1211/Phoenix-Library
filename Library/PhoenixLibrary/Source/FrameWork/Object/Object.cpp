@@ -236,5 +236,71 @@ namespace Phoenix
 		{
 			return animator->IsBlend();
 		}
+
+		// 再生位置設定
+		void ModelObject::SetCurrentTime(f32 seconds)
+		{
+			animator->SetCurrentTime(seconds);
+		}
+
+		// 再生位置取得
+		f32 ModelObject::GetCurrentTime()
+		{
+			return animator->GetCurrentTime();
+		}
+
+		// 残り再生時間取得
+		f32 ModelObject::GetLastTime()
+		{
+			return animator->GetLastTime();
+		}
+
+		// 再生開始位置設定
+		void ModelObject::SetBeginTime(f32 seconds)
+		{
+			animator->SetBeginTime(seconds);
+		}
+
+		// 再生開始位置取得
+		f32 ModelObject::GetBeginTime()
+		{
+			return animator->GetBeginTime();
+		}
+
+		// 再生終了位置設定
+		void ModelObject::SetEndTime(f32 seconds)
+		{
+			animator->SetEndTime(seconds);
+		}
+
+		// 再生終了位置取得
+		f32 ModelObject::GetEndTime()
+		{
+			return animator->GetEndTime();
+		}
+
+		// ループ再生開始位置設定
+		void ModelObject::SetLoopBeginTime(f32 seconds)
+		{
+			animator->SetLoopBeginTime(seconds);
+		}
+
+		// ループ再生開始位置取得
+		f32 ModelObject::GetLoopBeginTime()
+		{
+			return animator->GetLoopBeginTime();
+		}
+
+		// ループ再生終了位置設定
+		void ModelObject::SetLoopEndTime(f32 seconds)
+		{
+			animator->SetLoopEndTime(seconds);
+		}
+
+		// ループ再生終了位置取得
+		f32 ModelObject::GetLoopEndTime()
+		{
+			return animator->GetLoopEndTime();
+		}
 	}
 }

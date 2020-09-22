@@ -61,6 +61,10 @@ private:
 	Phoenix::s32 accumulationTimeCnt = 0;
 	bool isChangeAccumulationDamege = false;
 
+	// ƒfƒBƒ]ƒ‹ƒu
+	bool isDissolve = false;
+	Phoenix::f32 animCnt = 0.0f;
+
 public:
 	Boss() :
 		worldMatrix(Phoenix::Math::MatrixIdentity()),
@@ -78,7 +82,14 @@ public:
 	void ChangeAnimation(AIStateType type);
 	void AttackJudgment();
 	void GUI();
-	void Damage(int damage) { life -= damage; accumulationDamege += damage; }
+	void Damage(int damage)
+	{
+		life -= damage;
+		if (!IsJumpAttack())
+		{
+			accumulationDamege += damage;
+		}
+	}
 	void AccumulationDamege();
 
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
@@ -102,6 +113,7 @@ public:
 		isChangeAccumulationDamege = false;
 		return true;
 	}
+	bool IsDissolve() { return isDissolve; }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 	//void SetRotate(Phoenix::Math::Vector3 rotate) { this->rotate = rotate; }

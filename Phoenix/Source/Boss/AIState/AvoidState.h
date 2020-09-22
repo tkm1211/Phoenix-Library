@@ -7,7 +7,8 @@
 class AvoidState : public AIState
 {
 private:
-	/*static constexpr*/ float RollSpeed = 0.15f;
+	/*static constexpr*/ Phoenix::f32 RollSpeed = 0.15f;
+	/*static constexpr*/ Phoenix::f32 judgeDistance = 5.0f;
 
 private:
 	Phoenix::f32 animationCnt = 0.0f;

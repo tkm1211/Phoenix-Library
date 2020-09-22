@@ -110,6 +110,8 @@ void Boss::Initialize()
 	{
 		boneIndex = model->GetBoneIndex("Mutant:Hips");
 	}
+
+	isDissolve = false;
 }
 
 void Boss::Update(bool onControl)
@@ -140,7 +142,26 @@ void Boss::Update(bool onControl)
 	// アニメーション更新
 	{
 		model->UpdateTransform(1 / 60.0f);
-		if(IsJumpAttack()) effectModel->UpdateTransform(1 / 60.0f);
+
+		// TODO : リファクタリング (アニメーション時間の取得)
+		if (!isDissolve) effectModel->UpdateTransform(1 / 60.0f);
+		if (IsJumpAttack())
+		{
+			if (animCnt <= 150.0f / 60.0f)
+			{
+				isDissolve = false;
+			}
+			else
+			{
+				isDissolve = true;
+			}
+			animCnt += 1.0f / 60.0f;
+		}
+		else
+		{
+			animCnt = 0.0f;
+			isDissolve = false;
+		}
 	}
 
 	// ワールド行列を作成
@@ -248,6 +269,7 @@ void Boss::ChangeAnimation(AIStateType type)
 		effectModel->PlayAnimation(0, 0, 0.2f);
 		effectModel->UpdateTransform(1 / 60.0f);
 		effectModel->SetLoopAnimation(false);
+		//effectModel->SetEndTime(160.0f / 60.0f);
 		break;
 
 	case AIStateType::Damage:

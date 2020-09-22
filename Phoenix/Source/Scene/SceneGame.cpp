@@ -134,6 +134,34 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		bossHitParticle = Phoenix::FrameWork::GPUParticle::Create();
 		//dusterParticle = Phoenix::FrameWork::GPUParticle::Create();
 	}
+
+	{
+		dissolveCB = Phoenix::Graphics::IBuffer::Create();
+		{
+			Phoenix::Graphics::PhoenixBufferDesc desc = {};
+			Phoenix::FND::MemSet(&desc, 0, sizeof(desc));
+			desc.usage = Phoenix::Graphics::PhoenixUsage::Default;
+			desc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
+			desc.cpuAccessFlags = 0;
+			desc.miscFlags = 0;
+			desc.byteWidth = sizeof(DissolveCB);
+			desc.structureByteStride = 0;
+			if (!dissolveCB->Initialize(graphicsDevice->GetDevice(), desc))
+			{
+				return;
+			}
+		}
+
+		embeddedDissolvePixelShader = Phoenix::Graphics::IShader::Create();
+		embeddedDissolvePixelShader->LoadPS
+		(
+			graphicsDevice->GetDevice(),
+			"BasicMaskPS.cso"
+		);
+
+		dissolveTexture = Phoenix::Graphics::ITexture::Create();
+		dissolveTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Mask\\Dissolve\\dissolve_animation2.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+	}
 }
 
 void SceneGame::Initialize()
@@ -812,9 +840,43 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 			{
 				if (boss->IsJumpAttack())
 				{
+					// TODO : Create dissolve shader.
+					if (boss->IsDissolve())
+					{
+						dissolveThreshold += 0.02f;
+					}
+
+					DissolveCB cb = {};
+					{
+						cb.dissolveThreshold = dissolveThreshold;
+						cb.dissolveEmissiveWidth = dissolveEmissiveWidth;
+						cb.dummy[0] = 0.0f;
+						cb.dummy[1] = 0.0f;
+					}
+
+					Phoenix::Graphics::IBuffer* psCBuffer[] =
+					{
+						dissolveCB.get()
+					};
+					context->UpdateSubresource(dissolveCB.get(), 0, 0, &cb, 0, 0);
+					context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 1, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+
+					Phoenix::Graphics::ITexture* texture[] =
+					{
+						dissolveTexture.get()
+					};
+					context->SetShaderResources(Phoenix::Graphics::ShaderType::Pixel, 10, 1, texture);
+
 					basicSkinShader->Begin(graphicsDevice, *camera);
+					embeddedDissolvePixelShader->Activate(graphicsDevice->GetDevice());
 					basicSkinShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetEffectModel());
+					embeddedDissolvePixelShader->Deactivate(graphicsDevice->GetDevice());
 					basicSkinShader->End(graphicsDevice);
+				}
+				else
+				{
+					dissolveThreshold = 0.0f;
+					dissolveEmissiveWidth = 0.0f;
 				}
 			}
 

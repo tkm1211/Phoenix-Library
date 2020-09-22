@@ -183,6 +183,39 @@ namespace Phoenix
 			// ブレンド中か
 			bool IsBlend();
 
+			// 再生位置設定
+			void SetCurrentTime(f32 seconds);
+
+			// 再生位置取得
+			f32 GetCurrentTime();
+
+			// 残り再生時間取得
+			f32 GetLastTime();
+
+			// 再生開始位置設定
+			void SetBeginTime(f32 seconds);
+
+			// 再生開始位置取得
+			f32 GetBeginTime();
+
+			// 再生終了位置設定
+			void SetEndTime(f32 seconds);
+
+			// 再生終了位置取得
+			f32 GetEndTime();
+
+			// ループ再生開始位置設定
+			void SetLoopBeginTime(f32 seconds);
+
+			// ループ再生開始位置取得
+			f32 GetLoopBeginTime();
+
+			// ループ再生終了位置設定
+			void SetLoopEndTime(f32 seconds);
+
+			// ループ再生終了位置取得
+			f32 GetLoopEndTime();
+
 			// モデルリソースの取得
 			Graphics::IModelResource* GetModelResource() { return modelResource.get(); }
 
@@ -379,6 +412,72 @@ namespace Phoenix
 			{
 				return currentAnimation->player->IsBlend();
 			}
+			// 再生位置設定
+			void SetCurrentTime(f32 seconds)
+			{
+				currentAnimation->player->SetCurrentTime(seconds);
+			}
+
+			// 再生位置取得
+			f32 GetCurrentTime()
+			{
+				return currentAnimation->player->GetCurrentTime();
+			}
+
+			// 残り再生時間取得
+			f32 GetLastTime()
+			{
+				return currentAnimation->player->GetLastTime();
+			}
+
+			// 再生開始位置設定
+			void SetBeginTime(f32 seconds)
+			{
+				currentAnimation->player->SetBeginTime(seconds);
+			}
+
+			// 再生開始位置取得
+			f32 GetBeginTime()
+			{
+				return currentAnimation->player->GetBeginTime();
+			}
+
+			// 再生終了位置設定
+			void SetEndTime(f32 seconds)
+			{
+				currentAnimation->player->SetEndTime(seconds);
+			}
+
+			// 再生終了位置取得
+			f32 GetEndTime()
+			{
+				return currentAnimation->player->GetEndTime();
+			}
+
+			// ループ再生開始位置設定
+			void SetLoopBeginTime(f32 seconds)
+			{
+				currentAnimation->player->SetLoopBeginTime(seconds);
+			}
+
+			// ループ再生開始位置取得
+			f32 GetLoopBeginTime()
+			{
+				return currentAnimation->player->GetLoopBeginTime();
+			}
+
+			// ループ再生終了位置設定
+			void SetLoopEndTime(f32 seconds)
+			{
+				currentAnimation->player->SetLoopEndTime(seconds);
+			}
+
+			// ループ再生終了位置取得
+			f32 GetLoopEndTime()
+			{
+				return currentAnimation->player->GetLoopEndTime();
+			}
+
 
 			// アニメーションバンクインデックス取得
 			u32 GetAnimationBankIndex(const char* name) const

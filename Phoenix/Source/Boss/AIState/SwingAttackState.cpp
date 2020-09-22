@@ -41,7 +41,7 @@ void SwingAttackState01::Update(Boss* boss, Player* player)
 
 		return;
 	}
-	if (animationCnt <= 0.0f)
+	if (animationCnt <= 0.84f)
 	{
 		Phoenix::Math::Vector3 dir = player->GetPosition() - boss->GetPosition();
 		dir = Phoenix::Math::Vector3Normalize(dir);
@@ -65,7 +65,11 @@ void SwingAttackState01::Update(Boss* boss, Player* player)
 
 			Phoenix::Math::Quaternion q;
 			q = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
-			rotate *= q;
+			//rotate *= q;
+
+			Phoenix::Math::Quaternion rotateT = rotate;
+			rotateT *= q;
+			rotate = Phoenix::Math::QuaternionSlerp(rotate, rotateT, 0.17f);
 		}
 		boss->SetRotate(rotate);
 	}

@@ -17,8 +17,10 @@ void AvoidState::Update(Boss* boss, Player* player)
 	if (!boss->GetModel()->IsPlaying())
 	{
 		isChangeState = true;
-		//nextStateType = AIStateType::Move;
-		nextStateType = AIStateType::JumpAttack;
+
+		Phoenix::f32 dis = Phoenix::Math::Vector3Length(player->GetPosition() - boss->GetPosition());
+		nextStateType = dis <= judgeDistance ? AIStateType::SwingAttack01 : AIStateType::JumpAttack;
+
 		return;
 	}
 	if (animationCnt <= 0.0f)

@@ -37,7 +37,10 @@ void MoveState::Update(Boss* boss, Player* player)
 	else if (MoveMaxCnt <= moveCnt++)
 	{
 		isChangeState = true;
-		nextStateType = AIStateType::JumpAttack;
+		
+		Phoenix::f32 dis = Phoenix::Math::Vector3Length(player->GetPosition() - boss->GetPosition());
+		nextStateType = dis <= judgeDistance ? AIStateType::SwingAttack01 : AIStateType::JumpAttack;
+
 		return;
 	}
 

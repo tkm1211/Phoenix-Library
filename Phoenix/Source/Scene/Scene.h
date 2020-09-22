@@ -203,6 +203,19 @@ private: // Debug
 
 	bool onPointLight = false;
 
+private:
+	struct DissolveCB
+	{
+		Phoenix::f32 dissolveThreshold;        //透過閾値
+		Phoenix::f32 dissolveEmissiveWidth;    //発光閾値(ディゾルブ・エミッシブ)
+		Phoenix::f32 dummy[2];
+	};
+	std::unique_ptr<Phoenix::Graphics::IShader> embeddedDissolvePixelShader;
+	std::unique_ptr<Phoenix::Graphics::IBuffer> dissolveCB;
+	std::unique_ptr<Phoenix::Graphics::ITexture> dissolveTexture;
+	Phoenix::f32 dissolveThreshold;        //透過閾値
+	Phoenix::f32 dissolveEmissiveWidth;    //発光閾値(ディゾルブ・エミッシブ)
+
 public:
 	SceneGame() {}
 	~SceneGame() {}
