@@ -220,9 +220,9 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 	// プレイヤー更新
 	Phoenix::Math::Vector3 oldPlayerPos = player->GetPosition();
-	if (isUpdate && isPlayerUpdate)
+	if (isUpdate)
 	{
-		player->Update(*camera, !onFade);
+		player->Update(*camera, !onFade && isPlayerUpdate);
 	}
 
 	// ボス更新
@@ -1077,8 +1077,12 @@ void SceneGame::GUI()
 		ImGui::Checkbox("Update", &isUpdate);
 		ImGui::Checkbox("PlayerUpdate", &isPlayerUpdate);
 		ImGui::Checkbox("BossUpdate", &isBossUpdate);
-		player->GUI();
-		boss->GUI();
+		{
+			player->GUI();
+		}
+		{
+			boss->GUI();
+		}
 		if (ImGui::TreeNode("Camera"))
 		{
 			ImGui::Checkbox("FreeCamera", &cameraFlg);

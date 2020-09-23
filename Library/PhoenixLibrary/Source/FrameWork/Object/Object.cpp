@@ -177,6 +177,12 @@ namespace Phoenix
 			animator->Play(bank, clip, fadeTime);
 		}
 
+		// アニメーションの同時再生
+		void ModelObject::PlayBlendAnimation(u32 bank, u32 clip, f32 fadeTime)
+		{
+			animator->BlendPlay(bank, clip, fadeTime);
+		}
+
 		// 一時停止/再開
 		void ModelObject::PauseAnimation(bool pause)
 		{
@@ -193,6 +199,12 @@ namespace Phoenix
 		void ModelObject::SetLoopAnimation(bool loop)
 		{
 			animator->SetLoop(loop);
+		}
+
+		// ループ同時再生設定
+		void ModelObject::SetBlendLoopAnimation(bool loop)
+		{
+			animator->SetBlendLoop(loop);
 		}
 
 		// 再生中
@@ -301,6 +313,12 @@ namespace Phoenix
 		f32 ModelObject::GetLoopEndTime()
 		{
 			return animator->GetLoopEndTime();
+		}
+
+		// ブレンドレートの設定
+		void ModelObject::SetBlendRate(f32 rate)
+		{
+			animator->SetBlendRate(rate);
 		}
 	}
 }

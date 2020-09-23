@@ -21,7 +21,7 @@ void SwingAttackState01::Update(Boss* boss, Player* player)
 
 		isChangeState = true;
 
-		if (player->GetAnimationState() == Player::AnimationState::Attack)
+		if (player->IsAttack() && boss->IsAccumulationDamege())
 		{
 			nextStateType = AIStateType::Avoid;
 		}
@@ -93,7 +93,7 @@ void SwingAttackState02::Update(Boss* boss, Player* player)
 	{
 		isChangeState = true;
 
-		if (player->GetAnimationState() == Player::AnimationState::Attack)
+		if (player->IsAttack() && boss->IsAccumulationDamege())
 		{
 			nextStateType = AIStateType::Avoid;
 		}

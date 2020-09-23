@@ -339,7 +339,7 @@ void Boss::AttackJudgment()
 		float time = static_cast<JumpAttackState*>(bossAI->GetCurrentState())->GetAnimationCnt() * 60.0f;
 
 		//if (37.0f <= time && time <= 50.0f)
-		if (102.0f <= time && time <= 150.0f)
+		if (102.0f <= time && time <= 122.0f)
 		{
 			Judgment(3);
 		}

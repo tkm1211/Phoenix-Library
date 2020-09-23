@@ -15,7 +15,7 @@ class Boss
 {
 private:
 	/*static constexpr*/ Phoenix::s32 MaxLife = 1000; // TODO : í≤êÆïKê{
-	/*static constexpr*/ Phoenix::s32 AccumulationMaxDamege = 90; // TODO : í≤êÆïKê{
+	/*static constexpr*/ Phoenix::s32 AccumulationMaxDamege = 60; // TODO : í≤êÆïKê{
 	/*static constexpr*/ Phoenix::s32 AccumulationTime = 5 * 60;
 
 private:
@@ -105,6 +105,7 @@ public:
 	bool IsAttackJudgment() { return isAttackJudgment; }
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
 	BossUI* GetUI() { return ui.get(); }
+	bool IsAccumulationDamege() { return (0.0f < accumulationDamege); }
 	bool IsJumpAttack() { return (currentType == AIStateType::JumpAttack) ? true : false; }
 	bool IsChangeAccumulationDamege()
 	{

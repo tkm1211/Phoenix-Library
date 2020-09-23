@@ -31,18 +31,38 @@ static bool CircleVsCircle(Phoenix::Math::Vector2 pos1, Phoenix::Math::Vector2 p
 class Player
 {
 public:
+#if 0
 	enum class AnimationState
 	{
 		Idle,
 		Walk,
 		Run,
+		SlowRun,
 		Roll,
-		Attack,
+		Attack01,
+		Attack02,
+		Attack03,
 		Damage
-		//BackWalk,
-		//BackRun,
 	};
+#else
+	enum class AnimationState
+	{
+		Idle,
+		Walk,
+		Run,
+		SlowRun,
+		Roll,
+		Attack01,
+		Attack02,
+		Attack03,
+		Attack04,
+		Attack05,
+		Attack06,
+		Damage
+	};
+#endif
 
+#if 0
 	enum class AttackAnimationState
 	{
 		Attack01,
@@ -50,19 +70,76 @@ public:
 		Attack03,
 		End
 	};
+#elif 0
+	enum class AttackAnimationState
+	{
+		Attack01_1,
+		Attack01_2,
+		Attack02_1,
+		Attack02_2,
+		Attack02_3,
+		Attack02_4,
+		Attack02_5,
+		Attack02_6,
+		Attack03_1,
+		End
+	};
+#else
+	enum class AttackAnimationState
+	{
+		Attack01,
+		Attack02,
+		Attack03,
+		Attack04,
+		Attack05,
+		Attack06,
+		End
+	};
+#endif
 
 private:
-	/*static constexpr*/ float WalkSpeed = 0.021f;
-	/*static constexpr*/ float RunSpeed = 0.18f;
-	/*static constexpr*/ float RollSpeed = 0.15f;
-	/*static constexpr*/ float KnockBackSpeed = -0.03f;
-	/*static constexpr*/ float KnockBackDownSpeed = 0.0003f;
-	/*static constexpr*/ float Attack03Speed = 0.1f;
-	/*static constexpr*/ float AnimationSpeed30 = 0.03333333f;
-	/*static constexpr*/ float AnimationSpeed45 = 0.02222222f;
-	/*static constexpr*/ float AnimationSpeed60 = 0.01666667f;
-	/*static constexpr*/ float Attack01ReceptionStartTime = 1.3333332f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
-	/*static constexpr*/ float Attack02ReceptionStartTime = 2.2f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
+	struct AttackData
+	{
+		AnimationState animationState;
+		AttackAnimationState attackState;
+
+		AnimationState nextAnimationState;
+		AttackAnimationState nextAttackState;
+
+		Phoenix::f32 playBeginTime;
+		Phoenix::f32 playEndTime;
+
+		Phoenix::f32 collisionBeginTime;
+		Phoenix::f32 collisionEndTime;
+
+		Phoenix::s32 collisionNum;
+
+		Phoenix::f32 receptionBeginTime;
+		Phoenix::f32 receptionEndTime;
+
+		Phoenix::f32 nextMoveSpeed;
+		Phoenix::f32 animationSpeed;
+	};
+
+private:
+	/*static constexpr*/ Phoenix::f32 WalkSpeed = 0.021f;
+	/*static constexpr*/ Phoenix::f32 RunSpeed = 0.18f;
+	/*static constexpr*/ Phoenix::f32 SlowRunSpeed = 0.09f;
+	/*static constexpr*/ Phoenix::f32 RollSpeed = 0.15f;
+	/*static constexpr*/ Phoenix::f32 KnockBackSpeed = -0.03f;
+	/*static constexpr*/ Phoenix::f32 KnockBackDownSpeed = 0.0003f;
+	/*static constexpr*/ Phoenix::f32 Attack03Speed = 0.1f;
+	/*static constexpr*/ Phoenix::f32 AnimationSpeed30 = 30.0f; // 0.03333333f
+	/*static constexpr*/ Phoenix::f32 AnimationSpeed45 = 45.0f; // 0.02222222f
+	/*static constexpr*/ Phoenix::f32 AnimationSpeed60 = 60.0f; // 0.01666667f
+	/*static constexpr*/ Phoenix::f32 Attack01AnimationSpeed = 1.75f;
+	/*static constexpr*/ Phoenix::f32 Attack02AnimationSpeed = 2.0f;
+	/*static constexpr*/ Phoenix::f32 Attack03AnimationSpeed = 1.75f;
+	/*static constexpr*/ Phoenix::f32 Attack04AnimationSpeed = 1.15f;
+	/*static constexpr*/ Phoenix::f32 Attack05AnimationSpeed = 1.0f;
+	/*static constexpr*/ Phoenix::f32 Attack06AnimationSpeed = 1.0f;
+	/*static constexpr*/ Phoenix::f32 Attack01ReceptionStartTime = 1.3333332f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
+	/*static constexpr*/ Phoenix::f32 Attack02ReceptionStartTime = 2.2f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
 	/*static constexpr*/ Phoenix::s32 MaxLife = 100; // TODO : 調整必須
 	/*static constexpr*/ Phoenix::s32 AccumulationMaxDamege = 10; // TODO : 調整必須
 	/*static constexpr*/ Phoenix::s32 AccumulationTime = 60;
@@ -81,6 +158,7 @@ private:
 
 	AnimationState animationState;
 	AttackAnimationState attackState;
+	std::vector<AttackData> attackDatas;
 
 	bool isChangeAnimation;
 	bool isAttack;
@@ -108,6 +186,9 @@ private:
 	Phoenix::s32 accumulationDamege = 0;
 	Phoenix::s32 accumulationTimeCnt = 0;
 
+	// ブレンド
+	Phoenix::f32 blendRate = 0.0f;
+
 public:
 	Player() :
 		worldMatrix(Phoenix::Math::MatrixIdentity()), 
@@ -131,11 +212,11 @@ public:
 	void UpdateUI();
 	void Control(Phoenix::Graphics::Camera& camera);
 	void ChangeAnimation();
-	void ChangeAttackAnimation();
+	void ChangeAttackAnimation(Phoenix::u32 animationNum);
 	void AttackJudgment();
 	void GUI();
 	void Damage(int damage);
-	void AccumulationDamege();
+	bool AccumulationDamege();
 
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
@@ -149,6 +230,7 @@ public:
 	bool Invincible() { return invincible; }
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
 	PlayerUI* GetUI() { return ui.get(); }
+	bool IsAttack() { return isAttack; }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 	void SetIsHit(bool isHit) { this->isHit = isHit; }

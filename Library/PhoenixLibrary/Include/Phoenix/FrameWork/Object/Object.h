@@ -153,6 +153,9 @@ namespace Phoenix
 			// アニメーションの再生
 			void PlayAnimation(u32 bank, u32 clip, f32 fadeTime = 0.0f);
 
+			// アニメーションの同時再生
+			void PlayBlendAnimation(u32 bank, u32 clip, f32 fadeTime = 0.0f);
+
 			// 一時停止/再開
 			void PauseAnimation(bool pause);
 
@@ -161,6 +164,9 @@ namespace Phoenix
 
 			// ループ再生設定
 			void SetLoopAnimation(bool loop);
+
+			// ループ同時再生設定
+			void SetBlendLoopAnimation(bool loop);
 
 			// 再生中
 			bool IsPlaying();
@@ -215,6 +221,9 @@ namespace Phoenix
 
 			// ループ再生終了位置取得
 			f32 GetLoopEndTime();
+
+			// 
+			void SetBlendRate(f32 rate);
 
 			// モデルリソースの取得
 			Graphics::IModelResource* GetModelResource() { return modelResource.get(); }
@@ -282,6 +291,9 @@ namespace Phoenix
 			std::unique_ptr<OS::IFileStream> file;
 
 			Animation* currentAnimation = nullptr;
+			Animation* blendCurrentAnimation = nullptr; // 同時再生用
+
+			f32 blendRate = 0.0f;
 
 		public:
 			void Initialize(ModelObject* model)
@@ -355,6 +367,33 @@ namespace Phoenix
 				}
 
 				currentAnimation = &animation;
+				blendCurrentAnimation = nullptr;
+				animation.player->Play(clip);
+				animation.player->SetBlendTime(fadeTime);
+			}
+
+			// 同時再生
+			void BlendPlay(u32 bank, u32 clip, f32 fadeTime = 0.0f)
+			{
+				if (bank < 0 || bank >= animations.size())
+				{
+					return;
+				}
+
+				Animation& animation = animations.at(bank);
+				if (!animation.resource)
+				{
+					return;
+				}
+				const Graphics::AnimationData& data = animation.resource->GetAnimationData();
+
+				if (clip < 0 || clip >= data.clips.size())
+				{
+					return;
+				}
+
+				blendRate = 0.0f;
+				blendCurrentAnimation = &animation;
 				animation.player->Play(clip);
 				animation.player->SetBlendTime(fadeTime);
 			}
@@ -375,6 +414,12 @@ namespace Phoenix
 			void SetLoop(bool loop)
 			{
 				currentAnimation->player->SetLoop(loop);
+			}
+
+			// ループ同時再生設定
+			void SetBlendLoop(bool loop)
+			{
+				blendCurrentAnimation->player->SetLoop(loop);
 			}
 
 			// 再生中
@@ -478,6 +523,11 @@ namespace Phoenix
 				return currentAnimation->player->GetLoopEndTime();
 			}
 
+			// ブレンドレートの設定
+			void SetBlendRate(f32 rate)
+			{
+				blendRate = rate;
+			}
 
 			// アニメーションバンクインデックス取得
 			u32 GetAnimationBankIndex(const char* name) const
@@ -496,30 +546,76 @@ namespace Phoenix
 			{
 				if (currentAnimation != nullptr)
 				{
-					std::unique_ptr<Graphics::IAnimationPlayer>& animationPlayer = currentAnimation->player;
-					animationPlayer->Update(elapsedTime);
-
-					if (animationPlayer->IsPlaying())
+					if (blendCurrentAnimation != nullptr)
 					{
-						s32 animationNodeCount = static_cast<s32>(nodes->size());
-						for (s32 animationNodeID = 0; animationNodeID < animationNodeCount; ++animationNodeID)
+						std::unique_ptr<Graphics::IAnimationPlayer>& animationPlayer = currentAnimation->player;
+						std::unique_ptr<Graphics::IAnimationPlayer>& blendAnimationPlayer = blendCurrentAnimation->player;
+
+						animationPlayer->Update(elapsedTime);
+						blendAnimationPlayer->Update(elapsedTime);
+
+						if (animationPlayer->IsPlaying())
 						{
-							s16 bindNodeID = currentAnimation->bindNodeIDs.at(animationNodeID);
-							if (bindNodeID < 0) continue;
+							s32 animationNodeCount = static_cast<s32>(nodes->size());
+							for (s32 animationNodeID = 0; animationNodeID < animationNodeCount; ++animationNodeID)
+							{
+								s16 bindNodeID = currentAnimation->bindNodeIDs.at(animationNodeID);
+								if (bindNodeID < 0) continue;
 
-							ModelObject::Node& node = nodes->at(animationNodeID);
+								s16 blendBindNodeID = blendCurrentAnimation->bindNodeIDs.at(animationNodeID);
+								if (blendBindNodeID < 0) continue;
 
-							Math::Vector3 scale = node.scale;
-							Math::Quaternion rotate = node.rotate;
-							Math::Vector3 translate = node.translate;
+								ModelObject::Node& node = nodes->at(animationNodeID);
 
-							animationPlayer->CalculateScale(animationNodeID, scale);
-							animationPlayer->CalculateRotate(animationNodeID, rotate);
-							animationPlayer->CalculateTranslate(animationNodeID, translate);
+								Math::Vector3 scale = node.scale;
+								Math::Quaternion rotate = node.rotate;
+								Math::Vector3 translate = node.translate;
 
-							node.scale = scale;
-							node.rotate = rotate;
-							node.translate = translate;
+								Math::Vector3 blendScale = node.scale;
+								Math::Quaternion blendRotate = node.rotate;
+								Math::Vector3 blendTranslate = node.translate;
+
+								animationPlayer->CalculateScale(animationNodeID, scale);
+								animationPlayer->CalculateRotate(animationNodeID, rotate);
+								animationPlayer->CalculateTranslate(animationNodeID, translate);
+
+								blendAnimationPlayer->CalculateScale(animationNodeID, blendScale);
+								blendAnimationPlayer->CalculateRotate(animationNodeID, blendRotate);
+								blendAnimationPlayer->CalculateTranslate(animationNodeID, blendTranslate);
+
+								node.scale = Math::Vector3Lerp(scale, blendScale, blendRate);
+								node.rotate = Math::QuaternionSlerp(rotate, blendRotate, blendRate);
+								node.translate = Math::Vector3Lerp(translate, blendTranslate, blendRate);
+							}
+						}
+					}
+					else
+					{
+						std::unique_ptr<Graphics::IAnimationPlayer>& animationPlayer = currentAnimation->player;
+						animationPlayer->Update(elapsedTime);
+
+						if (animationPlayer->IsPlaying())
+						{
+							s32 animationNodeCount = static_cast<s32>(nodes->size());
+							for (s32 animationNodeID = 0; animationNodeID < animationNodeCount; ++animationNodeID)
+							{
+								s16 bindNodeID = currentAnimation->bindNodeIDs.at(animationNodeID);
+								if (bindNodeID < 0) continue;
+
+								ModelObject::Node& node = nodes->at(animationNodeID);
+
+								Math::Vector3 scale = node.scale;
+								Math::Quaternion rotate = node.rotate;
+								Math::Vector3 translate = node.translate;
+
+								animationPlayer->CalculateScale(animationNodeID, scale);
+								animationPlayer->CalculateRotate(animationNodeID, rotate);
+								animationPlayer->CalculateTranslate(animationNodeID, translate);
+
+								node.scale = scale;
+								node.rotate = rotate;
+								node.translate = translate;
+							}
 						}
 					}
 				}
