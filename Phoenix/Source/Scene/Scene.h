@@ -152,6 +152,11 @@ private:
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> skyFrameBuffer[6];
 	std::unique_ptr<Phoenix::FrameWork::IBL> ibl;
 
+	// ヒットストップ
+	bool isHitStop = false;
+	Phoenix::s32 hitStopCnt = 0;
+	Phoenix::s32 hitStopMaxCnt = 2;
+
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
 	Phoenix::Math::Vector2 texSize;

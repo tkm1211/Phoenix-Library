@@ -150,11 +150,15 @@ private:
 
 	Phoenix::Math::Matrix worldMatrix;
 	Phoenix::Math::Vector3 pos;
-	Phoenix::Math::Vector3 rotate;
-	//Phoenix::Math::Quaternion rotate;
+	//Phoenix::Math::Vector3 rotate;
+	Phoenix::Math::Quaternion rotate;
 	Phoenix::Math::Vector3 scale;
 	Phoenix::f32 radius;
 	Phoenix::f32 speed;
+
+	//Phoenix::Math::Vector3 newRotate;
+	Phoenix::Math::Quaternion newRotate;
+	Phoenix::f32 rotateY;
 
 	AnimationState animationState;
 	AttackAnimationState attackState;
@@ -221,7 +225,8 @@ public:
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
 	Phoenix::Math::Vector3 GetPosition() { return pos; }
-	Phoenix::Math::Vector3 GetRotate() { return rotate; }
+	//Phoenix::Math::Vector3 GetRotate() { return rotate; }
+	Phoenix::Math::Quaternion GetRotate() { return rotate; }
 	Phoenix::f32 GetRadius() { return radius; }
 	Phoenix::s32 GetHP() { return life; }
 	AnimationState GetAnimationState() { return animationState; }

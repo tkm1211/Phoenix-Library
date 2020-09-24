@@ -220,25 +220,25 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 	// プレイヤー更新
 	Phoenix::Math::Vector3 oldPlayerPos = player->GetPosition();
-	if (isUpdate)
+	if (isUpdate && !isHitStop)
 	{
 		player->Update(*camera, !onFade && isPlayerUpdate);
 	}
 
 	// ボス更新
-	if (isUpdate && isBossUpdate)
+	if (isUpdate && isBossUpdate && !isHitStop)
 	{
 		boss->Update(!onFade);
 	}
 
 	// カメラ更新
 	{
-		if (xInput[0].bLBt)
+		if (xInput[0].bLBt && !isHitStop)
 		{
 			lockOnCamera = !lockOnCamera;
 		}
 
-		if (cameraFlg)
+		if (cameraFlg && !isHitStop)
 		{
 			static bool isInit = false;
 			if (!isInit)
@@ -401,7 +401,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			player->UpdateTrasform();
 		}
 
-		if (player->IsAttackJudgment())
+		if (player->IsAttackJudgment() && !isHitStop)
 		{
 			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
 			const std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
@@ -445,9 +445,16 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					playerAttackEndCount = 0.0f;
 					onPointLight = true;
 				}
+
+				// Set Hit Stop
+				if (player->GetAttackCollisionIndex() == 3)
+				{
+					isHitStop = true;
+					hitStopCnt = 0;
+				}
 			}
 		}
-		else if (onPointLight)
+		else if (onPointLight && !isHitStop)
 		{
 			Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
 			
@@ -466,7 +473,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			}
 		}
 
-		if (boss->IsAttackJudgment() && !player->Invincible())
+		if (boss->IsAttackJudgment() && !player->Invincible() && !isHitStop)
 		{
 			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
 			const std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
@@ -538,6 +545,15 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 		//dusterParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
 		//dusterParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+	}
+
+	if (isHitStop)
+	{
+		if (hitStopMaxCnt <= hitStopCnt++)
+		{
+			isHitStop = false;
+			hitStopCnt = 0;
+		}
 	}
 }
 

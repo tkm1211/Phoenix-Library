@@ -141,11 +141,11 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 				break;
 
 			case AttackAnimationState::Attack06:
-				SetAttackData(AnimationState::Attack06, AttackAnimationState::Attack06, AnimationState::Idle, AttackAnimationState::End, -1.0f, 111.0f, 51.0f, 70.0f, 1, 0.0f, 0.0f, 0.0f, Attack06AnimationSpeed);
+				SetAttackData(AnimationState::Attack06, AttackAnimationState::Attack06, AnimationState::Idle, AttackAnimationState::End, -1.0f, 111.0f, 51.0f, 70.0f, 3, 0.0f, 0.0f, 0.0f, Attack06AnimationSpeed);
 				break;
 
 			case AttackAnimationState::End:
-				SetAttackData(AnimationState::Idle, AttackAnimationState::End, AnimationState::Attack01, AttackAnimationState::Attack01, -1.0f, -1.0f, -1.0f, -1.0f, 3, 0.0f, 0.0f, 0.0f, 1.0f);
+				SetAttackData(AnimationState::Idle, AttackAnimationState::End, AnimationState::Attack01, AttackAnimationState::Attack01, -1.0f, -1.0f, -1.0f, -1.0f, 0, 0.0f, 0.0f, 0.0f, 1.0f);
 				break;
 			default: break;
 			}
@@ -180,8 +180,8 @@ void Player::Initialize()
 	{
 		worldMatrix = Phoenix::Math::MatrixIdentity();
 		pos = { 0,0,12.0f }; // tutorial : 135.0f , main : 12.0f
-		rotate = { 0,180.0f * 0.01745f,0 };
-		//rotate = { 0,0,0,1 };
+		//rotate = { 0,180.0f * 0.01745f,0 };
+		rotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), 180.0f * 0.01745f);
 		scale = { 1,1,1 };
 		radius = 0.5f;
 	}
@@ -196,6 +196,8 @@ void Player::Initialize()
 		accumulationDamege = 0;
 		accumulationTimeCnt = 0;
 		blendRate = 0.0f;
+		newRotate = rotate;
+		rotateY = 180.0f * 0.01745f;
 	}
 }
 
@@ -252,14 +254,14 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl)
 void Player::UpdateTrasform()
 {
 	Phoenix::Math::Vector3 scale = this->scale;
-	Phoenix::Math::Vector3 rotate = this->rotate;
-	//Phoenix::Math::Quaternion rotate = this->rotate;
+	//Phoenix::Math::Vector3 rotate = this->rotate;
+	Phoenix::Math::Quaternion rotate = this->rotate;
 	Phoenix::Math::Vector3 translate = pos;
 
 	Phoenix::Math::Matrix S, R, T;
 	S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
-	R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
-	//R = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+	//R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
+	R = Phoenix::Math::MatrixRotationQuaternion(&rotate);
 	T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
 
 	worldMatrix = S * R * T;
@@ -575,8 +577,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	}
 #else
 
-	// プレイヤー回転
-	auto RotatePlayer = [&]()
+	// プレイヤーの最終方向を決定する角度を計算
+	auto UpdateRotateY = [&]()
 	{
 		float len = sqrtf(sX * sX + sY * sY);
 
@@ -591,9 +593,23 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		sX *= mag;
 		sY *= mag;
 
+		rotateY = camera.GetRotateY() + atan2f(sX, sY);
+	};
+
+	// プレイヤー回転
+	auto RotatePlayer = [&](Phoenix::f32 angle)
+	{
+#if 0
 		Phoenix::Math::Vector3 oldAngle = rotate;
 		oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
 		rotate = oldAngle;
+#elif 0
+		newRotate = rotate;
+		newRotate.y = camera.GetRotateY() + atan2f(sX, sY);
+#else
+		newRotate = rotate;
+		newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
+#endif
 	};
 
 	// アニメーション変更
@@ -636,7 +652,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 			if (sX != 0.0f || sY != 0.0f)
 			{
-				RotatePlayer();
+				UpdateRotateY();
+				RotatePlayer(rotateY);
 			}
 
 			if (attackState == AttackAnimationState::End)
@@ -665,7 +682,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 			if (sX != 0.0f || sY != 0.0f)
 			{
-				RotatePlayer();
+				UpdateRotateY();
+				RotatePlayer(rotateY);
 			}
 		}
 		// 回避ステート中
@@ -684,7 +702,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			// 移動ステート
 			if (sX != 0.0f || sY != 0.0f)
 			{
-				RotatePlayer();
+				UpdateRotateY();
+				RotatePlayer(rotateY);
 
 				if (!xInput[0].bRBs && animationState != AnimationState::Walk)
 				{
@@ -711,15 +730,21 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// 座標更新
 	if (!isChangeAnimation)
 	{
+		//rotate = Phoenix::Math::Vector3Lerp(rotate, newRotate, 0.05f);
+		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f);
+
+		/*Phoenix::Math::Matrix rotateMatirx = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+		Phoenix::f32 rotateY = asinf(rotateMatirx._31);*/
+
 		if (animationState == AnimationState::Walk)
 		{
-			pos.x += sinf(rotate.y) * (speed + (SlowRunSpeed * blendRate));
-			pos.z += cosf(rotate.y) * (speed + (SlowRunSpeed * blendRate));
+			pos.x += sinf(rotateY) * (speed + (SlowRunSpeed * blendRate));
+			pos.z += cosf(rotateY) * (speed + (SlowRunSpeed * blendRate));
 		}
 		else
 		{
-			pos.x += sinf(rotate.y) * speed;
-			pos.z += cosf(rotate.y) * speed;
+			pos.x += sinf(rotateY) * speed;
+			pos.z += cosf(rotateY) * speed;
 		}
 	}
 #endif
