@@ -15,10 +15,13 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	boss = Boss::Create();
 	boss->Construct(graphicsDevice, player.get());
 
+	targetMarkUI = TargetMarkUI::Create();
+
 	uiSystem = UISystem::Create();
 	{
 		uiSystem->AddUI(player->GetUI());
 		uiSystem->AddUI(boss->GetUI());
+		uiSystem->AddUI(targetMarkUI.get());
 	}
 	uiSystem->Initialize(graphicsDevice);
 

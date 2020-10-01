@@ -4,6 +4,7 @@
 #include "../Player/Player.h"
 #include "../Boss/Boss.h"
 #include "../UI/UISystem.h"
+#include "../UI/TargetMarkUI.h"
 #include "Phoenix/Types.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Camera.h"
@@ -21,6 +22,7 @@ class SceneCommonData
 public:
 	std::shared_ptr<Player> player;
 	std::shared_ptr<Boss> boss;
+	std::shared_ptr<TargetMarkUI> targetMarkUI;
 	std::shared_ptr<UISystem> uiSystem;
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> stageModel;
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> bossStageModel;

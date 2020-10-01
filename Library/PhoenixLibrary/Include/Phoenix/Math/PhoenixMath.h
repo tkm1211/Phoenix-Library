@@ -22,6 +22,8 @@ namespace Phoenix
 		extern f32 Vector2Length(const Vector2 v);
 
 		extern Vector2 Vector2Normalize(const Vector2 v);
+
+		extern Vector2 Vector2Lerp(const Vector2 v1, const Vector2 v2, f32 s);
 #pragma endregion
 
 #pragma region Functions for Vector3

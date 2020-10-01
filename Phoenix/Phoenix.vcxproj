@@ -241,6 +241,7 @@
     <ClCompile Include="Source\Scene\SceneTutorial.cpp" />
     <ClCompile Include="Source\UI\BossUI.cpp" />
     <ClCompile Include="Source\UI\PlayerUI.cpp" />
+    <ClCompile Include="Source\UI\TargetMarkUI.cpp" />
     <ClCompile Include="Source\UI\UISystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -264,6 +265,7 @@
     <ClInclude Include="Source\Scene\SceneSystem.h" />
     <ClInclude Include="Source\UI\BossUI.h" />
     <ClInclude Include="Source\UI\PlayerUI.h" />
+    <ClInclude Include="Source\UI\TargetMarkUI.h" />
     <ClInclude Include="Source\UI\UI.h" />
     <ClInclude Include="Source\UI\UISystem.h" />
   </ItemGroup>

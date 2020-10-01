@@ -54,6 +54,16 @@ namespace Phoenix
 			DirectX::XMVECTOR vT = DirectX::XMVector2Normalize(ConvertToVectorFromVector2(v));
 			return ConvertToVector2FromVector(vT);
 		}
+
+		Vector2 Vector2Lerp(const Vector2 v1, const Vector2 v2, f32 s)
+		{
+			Vector2 vT;
+
+			vT.x = (1.0f - s) * (v1.x) + s * (v2.x);
+			vT.y = (1.0f - s) * (v1.y) + s * (v2.y);
+
+			return vT;
+		}
 #pragma endregion
 
 #pragma region Functions for Vector3

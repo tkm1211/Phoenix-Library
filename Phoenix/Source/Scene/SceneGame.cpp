@@ -39,6 +39,7 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		pbrSkinShader = commonData->pbrSkinShader.get();
 		camera = commonData->camera.get();
 		targetMark = commonData->targetMark.get();
+		targetMarkUI = commonData->targetMarkUI.get();
 	}
 
 	// フレームバッファ
@@ -92,7 +93,7 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 	// ブルーム
 	{
 		quad = Phoenix::FrameWork::Quad::Create();
-		quad->Initialize(graphicsDevice);
+		quad->Initialize(graphicsDevice, Phoenix::Graphics::SamplerState::PointBorder);
 
 		msaaResolve = Phoenix::FrameWork::MSAAResolve::Create();
 		msaaResolve->Initialize(graphicsDevice);
@@ -490,6 +491,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		lockOnCamera = !lockOnCamera;
 #else
 		camera->SetTargetPos(boss->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
+		targetMarkUI->LockOnTarget();
 #endif
 	}
 
@@ -667,6 +669,18 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 	{
 		commonData->bgm->Update();
 		commonData->se->Update();
+	}
+
+	// UI Update
+	{
+		Phoenix::f32 size = 128.0f / 4.0f;
+
+		Phoenix::Math::Vector3 bossPos = boss->GetPosition();
+		bossPos.y += 1.5f;
+
+		Phoenix::Math::Vector3 screenPos = WorldToScreen(bossPos);
+
+		targetMarkUI->Update(Phoenix::Math::Vector2(screenPos.x, screenPos.y));
 	}
 }
 
@@ -1261,6 +1275,19 @@ void SceneGame::GUI()
 			}
 			ImGui::TreePop();
 
+		}
+		if (ImGui::TreeNode("UI"))
+		{
+			if (ImGui::TreeNode("TargetMark"))
+			{
+				if (ImGui::Button("On"))
+				{
+					targetMarkUI->LockOnTarget();
+				}
+
+				ImGui::TreePop();
+			}
+			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Shadow"))
 		{

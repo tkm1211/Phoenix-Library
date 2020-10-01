@@ -96,6 +96,9 @@
     <ClCompile Include="Source\Scene\SceneTutorial.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\UI\TargetMarkUI.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -163,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene\SceneLabo.h">
       <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\TargetMarkUI.h">
+      <Filter>Source\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
