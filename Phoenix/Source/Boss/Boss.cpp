@@ -112,6 +112,8 @@ void Boss::Initialize()
 	}
 
 	isDissolve = false;
+	isJumpAttackStart = false;
+	onJumpAttackStart = false;
 }
 
 void Boss::Update(bool onControl)
@@ -143,6 +145,7 @@ void Boss::Update(bool onControl)
 	{
 		model->UpdateTransform(1 / 60.0f);
 
+#if 0
 		// TODO : リファクタリング (アニメーション時間の取得)
 		if (!isDissolve) effectModel->UpdateTransform(1 / 60.0f);
 		if (IsJumpAttack())
@@ -162,6 +165,9 @@ void Boss::Update(bool onControl)
 			animCnt = 0.0f;
 			isDissolve = false;
 		}
+#else
+		if (IsJumpAttack()) effectModel->UpdateTransform(1 / 60.0f);
+#endif
 	}
 
 	// ワールド行列を作成
@@ -342,10 +348,18 @@ void Boss::AttackJudgment()
 		if (102.0f <= time && time <= 122.0f)
 		{
 			Judgment(3);
+
+			isJumpAttackStart = false;
+			if (!onJumpAttackStart)
+			{
+				isJumpAttackStart = true;
+				onJumpAttackStart = true;
+			}
 		}
 		else
 		{
 			NoJudgment();
+			onJumpAttackStart = false;
 		}
 	}
 }

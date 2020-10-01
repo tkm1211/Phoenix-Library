@@ -234,6 +234,12 @@
     <FxCompile Include="..\..\..\Source\HLSL\BasicMaskPS.hlsl">
       <Filter>Source\Basic</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\PetalEffectCS.hlsl">
+      <Filter>Source\EmittedParticle\Simulate</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\SoilEffectCS.hlsl">
+      <Filter>Source\EmittedParticle\Simulate</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\Bloom.hlsli">

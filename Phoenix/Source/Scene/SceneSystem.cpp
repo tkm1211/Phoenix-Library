@@ -22,6 +22,7 @@ void SceneSystem::Initialize(Phoenix::OS::IDisplay* display, Phoenix::Graphics::
 {
 	this->display = display;
 	this->graphicsDevice = graphicsDevice;
+
 	commonData = SceneCommonData::Create();
 	commonData->Initialize(graphicsDevice);
 

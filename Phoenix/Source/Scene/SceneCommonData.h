@@ -8,6 +8,7 @@
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/Object/Object.h"
+#include "Phoenix/FrameWork/Audio/Audio.h"
 #include "Phoenix/FrameWork/Shader/Shader.h"
 #include "Phoenix/FrameWork/Shader/BasicShader.h"
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
@@ -30,8 +31,37 @@ public:
 	std::shared_ptr<Phoenix::FrameWork::IShader> pbrSkinShader;
 	std::shared_ptr<Phoenix::Graphics::Camera> camera;
 
+	//// フレームバッファ
+	//std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[3];
+
+	//// ポストプロセス
+	//std::unique_ptr<Phoenix::FrameWork::PostProcessingEffects> postProcessingEffects;
+
+	//// シャドウマップ
+	//std::unique_ptr<Phoenix::FrameWork::FrameBuffer> shadowMap;
+	//std::unique_ptr<Phoenix::Graphics::IShader> voidPS;
+	//std::unique_ptr<Phoenix::Graphics::Camera> lightSpaceCamera;
+	//std::unique_ptr<Phoenix::Graphics::IBuffer> shaderConstantsBuffer;
+	//std::unique_ptr<Phoenix::Graphics::ISampler> comparisonSamplerState;
+	////ShaderConstants shaderContexts;
+
+	//// ブルーム
+	//std::unique_ptr<Phoenix::FrameWork::Quad> quad;
+	//std::unique_ptr<Phoenix::FrameWork::MSAAResolve> msaaResolve;
+	//std::unique_ptr<Phoenix::FrameWork::Bloom> bloom;
+
+	//// スカイマップ
+	//std::unique_ptr<Phoenix::FrameWork::SkyMap> skyMap;
+
+	//// トーンマップ
+	//std::unique_ptr<Phoenix::FrameWork::ToneMap> toneMap;
+
 	// エフェクト
 	std::shared_ptr<Phoenix::Graphics::ITexture> targetMark;
+
+	// BGM + SE
+	std::shared_ptr<Phoenix::FrameWork::CXAudio2> bgm;
+	std::shared_ptr<Phoenix::FrameWork::CXAudio2> se;
 
 public:
 	SceneCommonData() {}

@@ -754,7 +754,7 @@ bool GetDInputState(DINPUT *dinput, int _num)
 	return true;
 }
 
-void SetXInputVibration(int rVib, int lVib, int _cnt, int _num)
+void SetXInputVibration(float rVib, float lVib, int _cnt, int _num)
 {
 	xInput[_num].isVibration = true;
 	xInput[_num].rVib = rVib;
@@ -763,8 +763,8 @@ void SetXInputVibration(int rVib, int lVib, int _cnt, int _num)
 
 	XINPUT_VIBRATION vibration;
 	ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
-	vibration.wLeftMotorSpeed = lVib;  // val:0~65535
-	vibration.wRightMotorSpeed = rVib; // val:0~65535
+	vibration.wLeftMotorSpeed = (int)(lVib * 65535.0f);  // val:0~65535
+	vibration.wRightMotorSpeed = (int)(rVib * 65535.0f); // val:0~65535
 	XInputSetState(_num, &vibration);
 }
 

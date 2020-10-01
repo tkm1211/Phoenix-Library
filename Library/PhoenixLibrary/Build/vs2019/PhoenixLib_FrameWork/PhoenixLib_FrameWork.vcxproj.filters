@@ -61,6 +61,12 @@
     <Filter Include="Source\Script">
       <UniqueIdentifier>{2d6d56c0-c0a2-4636-aac9-481d77bad2c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\Audio">
+      <UniqueIdentifier>{82353a04-4382-4890-bcb5-c1ce6c51aaf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Audio">
+      <UniqueIdentifier>{f8b3e180-a7e3-4ae8-abbd-eb2a94086b67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -120,6 +126,12 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Script\Lua.h">
       <Filter>Include\Script</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\Audio.h">
+      <Filter>Include\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\WAVFileReader.h">
+      <Filter>Include\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -172,6 +184,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Script\Lua.cpp">
       <Filter>Source\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Audio\Audio.cpp">
+      <Filter>Source\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Audio\WAVFileReader.cpp">
+      <Filter>Source\Audio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

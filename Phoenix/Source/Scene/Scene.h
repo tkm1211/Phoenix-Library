@@ -157,6 +157,19 @@ private:
 	Phoenix::s32 hitStopCnt = 0;
 	Phoenix::s32 hitStopMaxCnt = 2;
 
+	// カメラシェイク
+	bool isCameraShake = false;
+	Phoenix::Math::Vector3 shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	Phoenix::f32 shakeWidth = 0.0f;
+	Phoenix::f32 shakeHeight = 0.0f;
+	Phoenix::s32 cameraShakeCnt = 0;
+	Phoenix::s32 cameraShakeMaxCnt = 0;
+
+	// コントローラー振動
+	Phoenix::f32 vibrationRight = 0.0f;
+	Phoenix::f32 vibrationLeft = 0.0f;
+	Phoenix::s32 vibrationMaxCnt = 0;
+
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
 	Phoenix::Math::Vector2 texSize;
@@ -168,6 +181,7 @@ private: // Debug
 
 	Phoenix::Math::Vector3 particlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector3 bossHitParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	Phoenix::Math::Vector3 jumpAttackParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector4 particleNormal = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Color particleMainColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
 	Phoenix::f32 particleLife = 1.0f;
@@ -179,6 +193,8 @@ private: // Debug
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> gpuParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> playerHitParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> bossHitParticle;
+	std::unique_ptr<Phoenix::FrameWork::GPUParticle> petalParticle;
+	std::unique_ptr<Phoenix::FrameWork::GPUParticle> soilParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> dusterParticle;
 
 	Phoenix::f32 dis = 10.0f;
@@ -193,6 +209,8 @@ private: // Debug
 	Phoenix::f32 pointLightDistance = 0.95f;
 
 	Phoenix::f32 stageRadius = 14.0f;
+
+	Phoenix::f32 adjustY = 1.25f;
 
 	bool cameraFlg = false;
 	bool lockOnCamera = false;

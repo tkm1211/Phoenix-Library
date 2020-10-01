@@ -39,6 +39,18 @@ namespace Phoenix
 
 			return buffer;
 		}
+		const wchar_t* Path::GetFullPathW(const wchar_t* filePath, wchar_t* buffer, int bufferSize)
+		{
+			if (buffer == nullptr)
+			{
+				static wchar_t s_string_buffer[256];
+				buffer = s_string_buffer;
+				bufferSize = sizeof(s_string_buffer);
+			}
+			::GetFullPathNameW(filePath, bufferSize, buffer, nullptr);
+
+			return buffer;
+		}
 		
 		// ƒtƒ@ƒCƒ‹–¼Žæ“¾
 		const char* Path::GetFileName(const char* filePath)

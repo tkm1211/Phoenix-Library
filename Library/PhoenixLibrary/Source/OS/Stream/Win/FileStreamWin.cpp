@@ -43,6 +43,18 @@ namespace Phoenix
 			}
 			return err == 0;
 		}
+		bool FileStreamWin::ExistsW(const wchar_t* path)
+		{
+			::SetCurrentDirectoryA(basePath);
+
+			FILE* fp = nullptr;
+			errno_t err = _wfopen_s(&fp, path, L"rb");
+			if (fp != nullptr)
+			{
+				fclose(fp);
+			}
+			return err == 0;
+		}
 
 		// ÉIÅ[ÉvÉì
 		bool FileStreamWin::Open(const char* path, FileAccess access)

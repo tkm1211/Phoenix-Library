@@ -71,6 +71,7 @@ namespace Phoenix
 
 			// 存在確認
 			virtual bool Exists(const char* path) = 0;
+			virtual bool ExistsW(const wchar_t* path) = 0;
 
 			// オープン
 			virtual bool Open(const char* path, FileAccess access) = 0;

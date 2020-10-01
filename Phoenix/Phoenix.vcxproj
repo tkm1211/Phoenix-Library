@@ -238,6 +238,7 @@
     <ClCompile Include="Source\Scene\SceneLabo.cpp" />
     <ClCompile Include="Source\Scene\SceneSystem.cpp" />
     <ClCompile Include="Source\Scene\SceneTitle.cpp" />
+    <ClCompile Include="Source\Scene\SceneTutorial.cpp" />
     <ClCompile Include="Source\UI\BossUI.cpp" />
     <ClCompile Include="Source\UI\PlayerUI.cpp" />
     <ClCompile Include="Source\UI\UISystem.cpp" />

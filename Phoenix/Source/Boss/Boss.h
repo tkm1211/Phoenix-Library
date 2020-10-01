@@ -65,6 +65,12 @@ private:
 	bool isDissolve = false;
 	Phoenix::f32 animCnt = 0.0f;
 
+	// ジャンプ攻撃スタート時
+	bool isJumpAttackStart = false;
+
+	// ジャンプ攻撃にスタートを一度オンしたか確認
+	bool onJumpAttackStart = false;
+
 public:
 	Boss() :
 		worldMatrix(Phoenix::Math::MatrixIdentity()),
@@ -115,6 +121,7 @@ public:
 		return true;
 	}
 	bool IsDissolve() { return isDissolve; }
+	bool IsJumpAttackStart() { return isJumpAttackStart; }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 	//void SetRotate(Phoenix::Math::Vector3 rotate) { this->rotate = rotate; }

@@ -186,7 +186,15 @@ public:
 
 extern bool GetXInputState(XINPUT *xinput, int _num = 0);         //Xboxコントローラーの入力状態の取得
 extern bool GetDInputState(DINPUT *dinput, int _num = 0);         //PS4コントローラーの入力状態の取得
-extern void SetXInputVibration(int rVib, int lVib, int _cnt, int _num = 0); //Xboxコントローラーのバイブレーション値の設定
+
+/// <summary>
+/// Xboxコントローラーのバイブレーション値の設定
+/// </summary>
+/// <param name="rVib"> 右の振動値 : 0.0f ~ 1.0f </param>
+/// <param name="lVib"> 左の振動値 : 0.0f ~ 1.0f </param>
+/// <param name="_cnt"> 振動時間(フレーム) </param>
+/// <param name="_num"> コントローラー番号 : 0 ~ 3 </param>
+extern void SetXInputVibration(float rVib, float lVib, int _cnt, int _num = 0);
 
 
 class Mouse

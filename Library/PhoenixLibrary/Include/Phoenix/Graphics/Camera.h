@@ -58,8 +58,16 @@ namespace Phoenix
 			f32 rotateY;
 			float distance;
 
+			Phoenix::Math::Vector3 shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+
 		public:
 			f32 speed = 1.0f;
+			f32 adjustRight = 0.75f;
+
+			bool onTarget = false;
+			s32 targetCnt = 0;
+			s32 targetMaxCnt = 10;
+			Math::Vector3 targetPos = { 0.0f, 0.0f, 0.0f };
 
 		public:
 			Camera();
@@ -122,6 +130,8 @@ namespace Phoenix
 			f32 GetFarZ() const { return farZ; }
 
 			f32 GetRotateY() const { return rotateY; }
+
+			void SetCameraShake(Phoenix::Math::Vector3 cameraShake) { shake = cameraShake; }
 
 			// Ž‹“_ˆÊ’uÝ’è
 			void SetEye(Math::Vector3 eye) { this->eye = eye; }
@@ -187,6 +197,8 @@ namespace Phoenix
 			void ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust);
 
 			void LockOnCamera(const Math::Vector3& center, const Math::Vector3& target, const Math::Vector3& centerAdjust, const Math::Vector3& targetAdjust, bool isLerp = true);
+
+			void SetTargetPos(const Math::Vector3& target, const Math::Vector3& targetAdjust);
 
 			void SphereLinearLockOnCamera(const Math::Vector3& center, const Math::Vector3& start, const Math::Vector3& end, const Math::Vector3& centerAdjust, f32 sphereLinearSpeed, f32 distanceToFouceFromCamera);
 

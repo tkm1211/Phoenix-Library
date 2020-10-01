@@ -15,6 +15,7 @@ namespace Phoenix
 
 			// フルパスを取得
 			static const char* GetFullPath(const char* filePath, char* buffer = nullptr, int bufferSize = 0);
+			static const wchar_t* GetFullPathW(const wchar_t* filePath, wchar_t* buffer = nullptr, int bufferSize = 0);
 
 			// フルパスからファイル名を取得
 			static const char* GetFileName(const char* filePath);

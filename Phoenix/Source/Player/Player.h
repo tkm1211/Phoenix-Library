@@ -140,6 +140,7 @@ private:
 	/*static constexpr*/ Phoenix::f32 Attack06AnimationSpeed = 1.0f;
 	/*static constexpr*/ Phoenix::f32 Attack01ReceptionStartTime = 1.3333332f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
 	/*static constexpr*/ Phoenix::f32 Attack02ReceptionStartTime = 2.2f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
+	/*static constexpr*/ Phoenix::f32 Attack01MoveSpeed = 0.5f;
 	/*static constexpr*/ Phoenix::s32 MaxLife = 100; // TODO : 調整必須
 	/*static constexpr*/ Phoenix::s32 AccumulationMaxDamege = 10; // TODO : 調整必須
 	/*static constexpr*/ Phoenix::s32 AccumulationTime = 60;

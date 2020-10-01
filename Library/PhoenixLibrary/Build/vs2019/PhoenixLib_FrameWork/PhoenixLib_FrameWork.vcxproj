@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\Audio.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\WAVFileReader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\BitonicSort.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\ComputeShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\GPUParticle.h" />
@@ -41,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Audio\Audio.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Audio\WAVFileReader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\BitonicSort.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\ComputeShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\GPUParticle.cpp" />

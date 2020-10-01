@@ -630,7 +630,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		animationSpeed = speed;
 	};
 
-	// 攻撃ステート
+	// 攻撃ステートへ
 	if (xInput[0].bXt && (isAttack || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
 	{
 		Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
@@ -660,9 +660,14 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			{
 				isAttack = false;
 			}
+			else if (attackState == AttackAnimationState::Attack01)
+			{
+				pos.x += sinf(rotateY) * Attack01MoveSpeed;
+				pos.z += cosf(rotateY) * Attack01MoveSpeed;
+			}
 		}
 	}
-	// 待機ステート
+	// 待機ステートへ
 	else if (isAttack && !model->IsPlaying())
 	{
 		ChangeAnimationState(AnimationState::Idle, 0.0f);
@@ -675,7 +680,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// 攻撃ステート以外
 	if (!isAttack)
 	{
-		// 回避ステート
+		// 回避ステートへ
 		if (xInput[0].bAt && animationState != AnimationState::Roll)
 		{
 			ChangeAnimationState(AnimationState::Roll, RollSpeed);
@@ -689,7 +694,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		// 回避ステート中
 		else if (animationState == AnimationState::Roll)
 		{
-			// 待機ステート
+			// 待機ステートへ
 			if (!model->IsPlaying())
 			{
 				ChangeAnimationState(AnimationState::Idle, 0.0f);
@@ -705,7 +710,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 				UpdateRotateY();
 				RotatePlayer(rotateY);
 
-				if (!xInput[0].bRBs && animationState != AnimationState::Walk)
+				if ((!xInput[0].bRBs && !(GetKeyState(VK_SHIFT) < 0)) && animationState != AnimationState::Walk)
 				{
 					ChangeAnimationState(AnimationState::Walk, WalkSpeed);
 				}
@@ -714,8 +719,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 					ChangeAnimationState(AnimationState::Run, RunSpeed);
 				}
 			}
-			// 待機ステート
-			else if ((animationState != AnimationState::Idle))
+			// 待機ステートへ
+			else if (animationState != AnimationState::Idle)
 			{
 				ChangeAnimationState(AnimationState::Idle, 0.0f);
 			}
@@ -724,6 +729,29 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// 攻撃中
 	else
 	{
+		// 回避ステートへ
+		if (xInput[0].bAt && animationState != AnimationState::Roll)
+		{
+			Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
+
+			// 次の攻撃が発動するボタンの受付
+			if (attackDatas[index].receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatas[index].receptionEndTime)
+			{
+				ChangeAnimationState(AnimationState::Roll, RollSpeed);
+				ChangeAttackAnimationState(AttackAnimationState::End, 0.0f);
+
+				isAttack = false;
+				attackReceptionTimeCnt = 0.0f;
+
+				if (sX != 0.0f || sY != 0.0f)
+				{
+					UpdateRotateY();
+					RotatePlayer(rotateY);
+				}
+			}
+		}
+
+		// アタックアニメーションスピード計測
 		attackReceptionTimeCnt += animationSpeed / 60.0f;
 	}
 
@@ -998,6 +1026,7 @@ void Player::AttackJudgment()
 			}
 		}
 #else
+		//if (animationState == AnimationState::)
 		Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
 
 		// 当たり判定
@@ -1010,6 +1039,10 @@ void Player::AttackJudgment()
 			NoJudgment();
 		}
 #endif
+	}
+	else
+	{
+		isAttackJudgment = false;
 	}
 }
 

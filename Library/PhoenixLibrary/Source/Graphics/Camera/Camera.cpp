@@ -530,6 +530,17 @@ namespace Phoenix
 			oldCursor = newCursor;
 			newCursor = Math::Vector2(static_cast<float>(cursor.x), static_cast<float>(cursor.y));
 
+			Phoenix::f32 sX = 0.0f;
+			Phoenix::f32 sY = 0.0f;
+
+			sX = xInput[0].sRX / 1000.0f;
+			sY = xInput[0].sRY / 1000.0f;
+
+			sY = GetKeyState(VK_UP) < 0 ? -1.0f : sY;
+			sY = GetKeyState(VK_DOWN) < 0 ? 1.0f : sY;
+			sX = GetKeyState(VK_LEFT) < 0 ? -1.0f : sX;
+			sX = GetKeyState(VK_RIGHT) < 0 ? 1.0f : sX;
+
 			if (GetKeyState(VK_RBUTTON) < 0)
 			{
 				f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
@@ -540,8 +551,8 @@ namespace Phoenix
 			}
 			else
 			{
-				rotateY -= (static_cast<float>(xInput[0].sRX) / 1000.0f) * 2.0f * 0.01745f;
-				rotateX -= (static_cast<float>(xInput[0].sRY) / 1000.0f) * 2.0f * 0.01745f;
+				rotateY -= sX * 3.5f * 0.01745f;
+				rotateX -= sY * 3.5f * 0.01745f;
 				if (0.0f < rotateX)
 				{
 					rotateX = 0.0f;
@@ -569,12 +580,36 @@ namespace Phoenix
 			Math::Vector3 _distance = { 750.0f, 750.0f, 750.0f };
 			Math::Vector3 _pos = _target - (front * _distance);
 #else
-			eye = Phoenix::Math::Vector3Lerp(eye, (center + adjust), 0.1f);
+			eye = Phoenix::Math::Vector3Lerp(eye, (center + adjust), 0.5f);
 			front = _front /*Phoenix::Math::Vector3Lerp(front, _front, 0.05f)*/;
 
 			Math::Vector3 _pos = eye - (front * 6.5f);
-			Math::Vector3 _target = eye - (front * -7.5f);
-			focus = _target;
+
+			Math::Vector3 _target;
+			if (onTarget)
+			{
+				focus = Phoenix::Math::Vector3Lerp(focus, targetPos, 0.1f);
+
+				f32 dis = abs(Phoenix::Math::Vector3Length(focus - targetPos));
+				//if (targetMaxCnt <= targetCnt++)
+				if (dis <= 1.0f)
+				{
+					targetCnt = 0;
+					onTarget = false;
+				}
+
+				Math::Vector3 dir = eye - focus;
+				dir.y = center.y - target.y;
+				dir = Math::Vector3Normalize(dir);
+
+				rotateX = atan2f(dir.y, dir.z);
+				rotateY = atan2f(dir.x, dir.z);
+			}
+			else
+			{
+				focus = Phoenix::Math::Vector3Lerp(focus, (eye - (front * -7.5f)), 0.5f);
+			}
+			_target = focus + shake;
 #endif
 			SetLookAt(_pos, _target, _up);
 		}
@@ -637,18 +672,29 @@ namespace Phoenix
 			front = Phoenix::Math::Vector3Lerp(front, -dir, 0.05f);
 
 			Math::Vector3 _pos = eye - (front * 6.5f);
-			Math::Vector3 _target = focus;
+			Math::Vector3 _target = focus + shake;
 
 			dir = center - target;
 			dir.y = 0.0f;
 			Math::Vector3 dirN = Math::Vector3Normalize(dir);
-			Math::Vector3 right = Math::Vector3Cross(Math::Vector3::OneY, -dirN);
-			_pos += right * -0.75f;
+
+			right = Math::Vector3Cross(Math::Vector3::OneY, -dirN);
+			_pos += right * -adjustRight;
+
+			//Phoenix::Math::Vector3 vec = Vector3SphereLinear(right, front, 0.5f);
+			//_pos += vec * -adjustRight;
 
 			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y;
 
 			SetLookAt(_pos, _target, Math::Vector3::OneY);
 #endif
+		}
+
+		void Camera::SetTargetPos(const Math::Vector3& target, const Math::Vector3& targetAdjust)
+		{
+			onTarget = true;
+			targetPos = target + targetAdjust;
+			targetCnt = 0;
 		}
 
 		void Camera::SphereLinearLockOnCamera(const Math::Vector3& center, const Math::Vector3& start, const Math::Vector3& end, const Math::Vector3& centerAdjust, f32 sphereLinearSpeed, f32 distanceToFouceFromCamera)

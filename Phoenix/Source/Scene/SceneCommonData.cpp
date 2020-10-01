@@ -53,4 +53,10 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 
 	targetMark = Phoenix::Graphics::ITexture::Create();
 	targetMark->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\TargetMark\\target.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+
+	bgm = Phoenix::FrameWork::CXAudio2::Create();
+	bgm->Load(L"..\\Data\\Assets\\Audio\\BGM\\GameMain.wav", 1);
+
+	se = Phoenix::FrameWork::CXAudio2::Create();
+	se->Load(L"..\\Data\\Assets\\Audio\\SE\\Player\\Walk\\walk.wav", 0);
 }

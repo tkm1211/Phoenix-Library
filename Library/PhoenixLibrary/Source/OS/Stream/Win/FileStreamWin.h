@@ -29,6 +29,7 @@ namespace Phoenix
 
 			// 存在確認
 			bool Exists(const char* path) override;
+			bool ExistsW(const wchar_t* path) override;
 
 			// オープン
 			bool Open(const char* path, FileAccess access) override;

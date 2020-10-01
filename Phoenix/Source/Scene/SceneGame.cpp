@@ -132,6 +132,8 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		gpuParticle = Phoenix::FrameWork::GPUParticle::Create();
 		playerHitParticle = Phoenix::FrameWork::GPUParticle::Create();
 		bossHitParticle = Phoenix::FrameWork::GPUParticle::Create();
+		petalParticle = Phoenix::FrameWork::GPUParticle::Create();
+		soilParticle = Phoenix::FrameWork::GPUParticle::Create();
 		//dusterParticle = Phoenix::FrameWork::GPUParticle::Create();
 	}
 
@@ -201,6 +203,13 @@ void SceneGame::Initialize()
 		tempCameraFouce = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 		sphereLinearSpeed = 0.0f;
 		distanceToFouceFromCamera = 0.0f;
+
+		isCameraShake = false;
+		shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		shakeWidth = 0.0f;
+		shakeHeight = 0.0f;
+		cameraShakeCnt = 0;
+		cameraShakeMaxCnt = 0;
 	}
 
 	// GPUパーティクル
@@ -210,6 +219,8 @@ void SceneGame::Initialize()
 		gpuParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png"); // particle
 		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
 		bossHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
+		petalParticle->Initialize(graphicsDevice, "PetalEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\JumpAttack\\Petal01.png", false);
+		soilParticle->Initialize(graphicsDevice, "SoilEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\JumpAttack\\Soil01.png", false);
 		//dusterParticle->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster02.png");
 	}
 }
@@ -231,122 +242,8 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		boss->Update(!onFade);
 	}
 
-	// カメラ更新
-	{
-		if (xInput[0].bLBt && !isHitStop)
-		{
-			lockOnCamera = !lockOnCamera;
-		}
-
-		if (cameraFlg && !isHitStop)
-		{
-			static bool isInit = false;
-			if (!isInit)
-			{
-				camera->SetRotateX(0.0f);
-				camera->SetRotateY(-3.14f);
-				isInit = true;
-			}
-			camera->FreeCamera();
-		}
-		else
-		{
-			//camera.ControllerCamera(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 100.0f, 0.0f));
-
-			Phoenix::Math::Vector3 bossPos = boss->GetPosition();
-			Phoenix::Math::Vector3 playerPos = player->GetPosition();
-
-#if 0
-			if (lockOnCamera)
-			{
-				camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
-			}
-			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
-#else
-			// TODO : 他の方法で実装 （上方向に向くベクトルと高さでレイピック判定取って当たっていたら射影ベクトルを求めその方向にベクトルを変更）
-			if (lockOnCamera)
-			{
-				Phoenix::f32 bossPosY = bossPos.y;
-				bossPos.y = 0.0f;
-
-				Phoenix::Math::Vector3 dir = bossPos - playerPos;
-				dir.y = 0.0f;
-				Phoenix::f32 dis = Phoenix::Math::Vector3Length(dir);
-
-				if (dis <= 1.0f && playerPos.y < bossPosY)
-				{
-					camera->LockOnCamera(playerPos, camera->GetFocus() + (playerPos - oldPlayerPos), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), false);
-					hit = true;
-				}
-				else if (hit && playerPos.y < bossPosY)
-				{
-					camera->LockOnCamera(playerPos, camera->GetFocus() + (playerPos - oldPlayerPos), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), false);
-				}
-				else if (hit && bossPosY <= 0.0f)
-				{
-					Phoenix::Math::Vector3 start, end;
-
-					start = camera->GetFocus() - playerPos;
-					end = bossPos - playerPos;
-
-					start.y = 0.0f;
-					end.y = 0.0f;
-
-					Phoenix::f32 startLen = Phoenix::Math::Vector3Length(start);
-					Phoenix::f32 endLen = Phoenix::Math::Vector3Length(end);
-
-					start = Phoenix::Math::Vector3Normalize(start);
-					end = Phoenix::Math::Vector3Normalize(end);
-
-					Phoenix::f32 dot = Phoenix::Math::Vector3Dot(start, end);
-					Phoenix::f32 angle = acosf(dot);
-					Phoenix::f32 overAngle = 90.0f * 0.01745f;
-					if (overAngle <= angle)
-					{
-						Phoenix::Math::Vector3 right = Phoenix::Math::Vector3Cross(Phoenix::Math::Vector3::OneY, -start);
-						
-						dot = Phoenix::Math::Vector3Dot(right, end);
-						Phoenix::f32 angle = acosf(dot);
-						right *= angle < overAngle ? 1.0f : -1.0f;
-
-						Phoenix::Math::Vector3 newBossPos;
-						newBossPos.x = playerPos.x + right.x * endLen;
-						newBossPos.y = 0.0f;
-						newBossPos.z = playerPos.z + right.z * endLen;
-
-						camera->LockOnCamera(playerPos, newBossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
-					}
-					else
-					{
-						camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
-						hit = false;
-					}
-				}
-				else
-				{
-					camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
-					hit = false;
-				}
-			}
-			else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
-#endif
-		}
-		//camera->Update();
-	}
-
-	// UI更新
-	{
-		player->UpdateUI();
-		boss->UpdateUI();
-	}
-
-	Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
-	light->direction = Phoenix::Math::Vector4(-camera->GetFront(), 1.0f);
-
-	// フェード中
-	if (sceneSystem->GetOnFade()) return;
-
 	// ゲームジャッジ
+	if (!onFade)
 	{
 		if (player->GetHP() <= 0)
 		{
@@ -452,6 +349,49 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					isHitStop = true;
 					hitStopCnt = 0;
 				}
+
+				// Set Camera Shake
+				{
+					if (!isCameraShake)
+					{
+						if (player->GetAttackCollisionIndex() == 1)
+						{
+							isCameraShake = true;
+							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+							cameraShakeCnt = 0;
+
+							shakeWidth = 0.0f;
+							shakeHeight = 0.015f;
+							cameraShakeMaxCnt = 5;
+
+							SetXInputVibration(1.0f, 0.0f, 5);
+						}
+						else if (player->GetAttackCollisionIndex() == 2)
+						{
+							isCameraShake = true;
+							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+							cameraShakeCnt = 0;
+
+							shakeWidth = 0.015f;
+							shakeHeight = 0.0f;
+							cameraShakeMaxCnt = 5;
+
+							SetXInputVibration(0.0f, 1.0f, 5);
+						}
+						else if (player->GetAttackCollisionIndex() == 3)
+						{
+							isCameraShake = true;
+							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+							cameraShakeCnt = 0;
+
+							shakeWidth = 0.075f;
+							shakeHeight = 0.0f;
+							cameraShakeMaxCnt = 10;
+
+							SetXInputVibration(1.0f, 1.0f, 10);
+						}
+					}
+				}
 			}
 		}
 		else if (onPointLight && !isHitStop)
@@ -477,6 +417,32 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		{
 			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
 			const std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
+			if (boss->IsJumpAttackStart() && !isCameraShake)
+			{
+				isCameraShake = true;
+				shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+				cameraShakeCnt = 0;
+
+				shakeWidth = 0.0f;
+				shakeHeight = 0.75f;
+				cameraShakeMaxCnt = 20;
+
+				petalParticle->Burst(50);
+				petalParticle->SetParticleLife(1.0f);
+				petalParticle->SetParticleSize(0.07f);
+				petalParticle->SetParticleScale(0.75f);
+				petalParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+				petalParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)); // particleMainColor
+
+				soilParticle->Burst(50);
+				soilParticle->SetParticleLife(2.0f);
+				soilParticle->SetParticleSize(0.07f);
+				soilParticle->SetParticleScale(0.75f);
+				soilParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+				soilParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)); // particleMainColor
+
+				jumpAttackParticlePos = bossPos;
+			}
 			if (SphereVsSphere(playerDatas->at(0).pos, bossDatas->at(boss->GetAttackCollisionIndex()).pos, playerDatas->at(0).radius, bossDatas->at(boss->GetAttackCollisionIndex()).radius))
 			{
 				Phoenix::Math::Vector3 normal;
@@ -516,11 +482,124 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		}
 	}
 
+	// カメラ更新
+	{
+	if (xInput[0].bLBt && !isHitStop)
+	{
+#if 0
+		lockOnCamera = !lockOnCamera;
+#else
+		camera->SetTargetPos(boss->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
+#endif
+	}
+
+	if (cameraFlg && !isHitStop)
+	{
+		static bool isInit = false;
+		if (!isInit)
+		{
+			camera->SetRotateX(0.0f);
+			camera->SetRotateY(-3.14f);
+			isInit = true;
+		}
+		camera->FreeCamera();
+	}
+	else
+	{
+		//camera.ControllerCamera(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 100.0f, 0.0f));
+
+		Phoenix::Math::Vector3 bossPos = boss->GetPosition();
+		Phoenix::Math::Vector3 playerPos = player->GetPosition();
+
+#if 0
+		if (lockOnCamera)
+		{
+			camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+		}
+		else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
+#else
+		// TODO : 他の方法で実装 （上方向に向くベクトルと高さでレイピック判定取って当たっていたら射影ベクトルを求めその方向にベクトルを変更）
+		if (lockOnCamera)
+		{
+			Phoenix::f32 bossPosY = bossPos.y;
+			bossPos.y = 0.0f;
+
+			Phoenix::Math::Vector3 dir = bossPos - playerPos;
+			dir.y = 0.0f;
+			Phoenix::f32 dis = Phoenix::Math::Vector3Length(dir);
+
+			if (dis <= 1.0f && playerPos.y < bossPosY)
+			{
+				camera->LockOnCamera(playerPos, camera->GetFocus() + (playerPos - oldPlayerPos), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), false);
+				hit = true;
+			}
+			else if (hit && playerPos.y < bossPosY)
+			{
+				camera->LockOnCamera(playerPos, camera->GetFocus() + (playerPos - oldPlayerPos), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), false);
+			}
+			else if (hit && bossPosY <= 0.0f)
+			{
+				Phoenix::Math::Vector3 start, end;
+
+				start = camera->GetFocus() - playerPos;
+				end = bossPos - playerPos;
+
+				start.y = 0.0f;
+				end.y = 0.0f;
+
+				Phoenix::f32 startLen = Phoenix::Math::Vector3Length(start);
+				Phoenix::f32 endLen = Phoenix::Math::Vector3Length(end);
+
+				start = Phoenix::Math::Vector3Normalize(start);
+				end = Phoenix::Math::Vector3Normalize(end);
+
+				Phoenix::f32 dot = Phoenix::Math::Vector3Dot(start, end);
+				Phoenix::f32 angle = acosf(dot);
+				Phoenix::f32 overAngle = 90.0f * 0.01745f;
+				if (overAngle <= angle)
+				{
+					Phoenix::Math::Vector3 right = Phoenix::Math::Vector3Cross(Phoenix::Math::Vector3::OneY, -start);
+
+					dot = Phoenix::Math::Vector3Dot(right, end);
+					Phoenix::f32 angle = acosf(dot);
+					right *= angle < overAngle ? 1.0f : -1.0f;
+
+					Phoenix::Math::Vector3 newBossPos;
+					newBossPos.x = playerPos.x + right.x * endLen;
+					newBossPos.y = 0.0f;
+					newBossPos.z = playerPos.z + right.z * endLen;
+
+					camera->LockOnCamera(playerPos, newBossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+				}
+				else
+				{
+					camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+					hit = false;
+				}
+			}
+			else
+			{
+				camera->LockOnCamera(playerPos, bossPos, Phoenix::Math::Vector3(0.0f, adjustY, 0.0f), Phoenix::Math::Vector3(0.0f, 1.85f, 0.0f));
+				hit = false;
+			}
+		}
+		else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
+#endif
+	}
+	//camera->Update();
+	}
+
 	// UI更新
 	{
 		player->UpdateUI();
 		boss->UpdateUI();
 	}
+
+	Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetLight();
+	light->direction = Phoenix::Math::Vector4(-camera->GetFront(), 1.0f);
+
+	// フェード中
+	if (sceneSystem->GetOnFade()) return;
 
 	if (isPBR)
 	{
@@ -543,6 +622,12 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		bossHitParticle->UpdateCPU(graphicsDevice, bossHitParticlePos, 1.0f / 60.0f);
 		bossHitParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 
+		petalParticle->UpdateCPU(graphicsDevice, jumpAttackParticlePos, 1.0f / 60.0f);
+		petalParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+
+		soilParticle->UpdateCPU(graphicsDevice, jumpAttackParticlePos, 1.0f / 60.0f);
+		soilParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+
 		//dusterParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
 		//dusterParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 	}
@@ -554,6 +639,34 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			isHitStop = false;
 			hitStopCnt = 0;
 		}
+	}
+	if (isCameraShake)
+	{
+		Phoenix::Math::Vector3 right = camera->GetRight();
+		Phoenix::f32 len = static_cast<Phoenix::f32>(cameraShakeCnt) / static_cast<Phoenix::f32>(cameraShakeMaxCnt);
+		//shakeHeight *= cameraShakeCnt % 5 == 0 ? -1.0f : 1.0f;
+
+		//shake = right * (shakeWidth * (1.0f - len));
+		//shake.y = shakeHeight * len;
+
+		shake = right * (cosf(450.0f * len * 0.01745f) * (shakeWidth * (1.0f - len)));
+		shake.y = cosf(450.0f * len * 0.01745f) * (shakeHeight * (1.0f - len));
+
+		camera->SetCameraShake(shake);
+
+		if (cameraShakeMaxCnt <= cameraShakeCnt++)
+		{
+			isCameraShake = false;
+			cameraShakeCnt = 0;
+			shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+			camera->SetCameraShake(shake);
+		}
+	}
+
+	// サウンド再生
+	{
+		commonData->bgm->Update();
+		commonData->se->Update();
 	}
 }
 
@@ -840,6 +953,8 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 							gpuParticle->Draw(graphicsDevice, *camera);
 							playerHitParticle->Draw(graphicsDevice, *camera);
 							bossHitParticle->Draw(graphicsDevice, *camera);
+							petalParticle->Draw(graphicsDevice, *camera);
+							soilParticle->Draw(graphicsDevice, *camera);
 							//dusterParticle->Draw(graphicsDevice, *camera);
 						}
 						context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
@@ -854,6 +969,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 
 			// Draw Effect Model.
 			{
+#if 0
 				if (boss->IsJumpAttack())
 				{
 					// TODO : Create dissolve shader.
@@ -894,6 +1010,14 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 					dissolveThreshold = 0.0f;
 					dissolveEmissiveWidth = 0.0f;
 				}
+#else
+				if (boss->IsJumpAttack())
+				{
+					basicSkinShader->Begin(graphicsDevice, *camera);
+					basicSkinShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetEffectModel());
+					basicSkinShader->End(graphicsDevice);
+				}
+#endif
 			}
 
 			// Draw collision primitive.
@@ -963,9 +1087,9 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 		}
 		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 
-		//quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 
-		toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
+		//toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
 	}
 	else
 	{
@@ -1102,7 +1226,10 @@ void SceneGame::GUI()
 		if (ImGui::TreeNode("Camera"))
 		{
 			ImGui::Checkbox("FreeCamera", &cameraFlg);
+			ImGui::Checkbox("LockCamera", &lockOnCamera);
 			ImGui::DragFloat("MoveSpeed", &camera->speed, 0.1f, 0.1f, 50.0f);
+			ImGui::DragFloat("adjustY", &adjustY, 0.1f);
+			ImGui::DragFloat("adjustRight", &camera->adjustRight, 0.1f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Collision"))
@@ -1253,6 +1380,30 @@ void SceneGame::GUI()
 			ImGui::DragFloat("scale", &particleScale, 0.1f);
 			ImGui::ColorEdit4("color", particleMainColor);
 
+			//if (ImGui::TreeNode("JumpAttackParticle"))
+			//{
+			//	if (ImGui::Button("Burst"))
+			//	{
+			//		jumpAttackParticle->Burst(50);
+			//		jumpAttackParticle->SetParticleLife(particleLife);
+			//		jumpAttackParticle->SetParticleSize(particleSize);
+			//		jumpAttackParticle->SetParticleScale(particleScale);
+			//		jumpAttackParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+			//		jumpAttackParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)); // particleMainColor
+
+			//		jumpAttackParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+			//	}
+
+			//	ImGui::DragFloat3("Pos", &jumpAttackParticlePos.x, 0.1f);
+			//	ImGui::DragFloat3("normal", &particleNormal.x, 0.1f);
+			//	ImGui::DragFloat("life", &particleLife, 0.1f);
+			//	ImGui::DragFloat("size", &particleSize, 0.1f);
+			//	ImGui::DragFloat("scale", &particleScale, 0.1f);
+			//	ImGui::ColorEdit4("color", particleMainColor);
+
+			//	ImGui::TreePop();
+			//}
+
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("ToneMap"))
@@ -1266,6 +1417,50 @@ void SceneGame::GUI()
 			ImGui::SliderFloat("amount", &toneMap->shaderConstant.amount, 0.0f, 1.0f, "sepia = %.3f");
 			ImGui::SliderFloat("offset", &toneMap->shaderConstant.offset, 0.0f, 10.0f, "vignette = %.3f");
 			ImGui::SliderFloat("darkness", &toneMap->shaderConstant.darkness, 0.0f, 1.0f, "vignette = %.3f");
+
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Pad"))
+		{
+			if (ImGui::Button("On Vibration"))
+			{
+				SetXInputVibration(vibrationRight, vibrationLeft, vibrationMaxCnt);
+			}
+
+			ImGui::SliderFloat("shakeRight", &vibrationRight, 0.0f, 65535.0f);
+			ImGui::SliderFloat("shakeLeft", &vibrationLeft, 0.0f, 65535.0f);
+			ImGui::DragInt("shakeMaxCnt", &vibrationMaxCnt);
+
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Audio"))
+		{
+			if (ImGui::TreeNode("BGM"))
+			{
+				if (ImGui::Button("Play BGM"))
+				{
+					commonData->bgm->PlayWAV();
+				}
+				if (ImGui::Button("Stop BGM"))
+				{
+					commonData->bgm->StopWAV();
+				}
+
+				ImGui::TreePop();
+			}
+			if (ImGui::TreeNode("SE"))
+			{
+				if (ImGui::Button("Play SE"))
+				{
+					commonData->se->PlayWAV();
+				}
+				if (ImGui::Button("Stop SE"))
+				{
+					commonData->se->StopWAV();
+				}
+
+				ImGui::TreePop();
+			}
 
 			ImGui::TreePop();
 		}
