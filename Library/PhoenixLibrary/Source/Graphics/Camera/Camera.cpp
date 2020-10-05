@@ -568,49 +568,50 @@ namespace Phoenix
 			f32 ySin = sinf(rotateY);
 			f32 yCos = cosf(rotateY);
 
+			// このフレームのベクトルを使用するのでここで計算しておく
 			Math::Vector3 _front = { xCos * -ySin, xSin, xCos * -yCos };
 			Math::Vector3 _right = { yCos, 0.0f, -ySin };
 			Math::Vector3 _up = Math::Vector3Cross(_right, _front);
+			front = _front;
 
-#if 0
-			focus.y = center.y;
-			focus = Phoenix::Math::Vector3Lerp(focus, center, 0.075f);
+			// ここで中心を計算しておくことで注視点とカメラ座標を求めることができる
+			eye = (center + adjust);
 
-			Math::Vector3 _target = focus + adjust;
-			Math::Vector3 _distance = { 750.0f, 750.0f, 750.0f };
-			Math::Vector3 _pos = _target - (front * _distance);
-#else
-			eye = Phoenix::Math::Vector3Lerp(eye, (center + adjust), 0.5f);
-			front = _front /*Phoenix::Math::Vector3Lerp(front, _front, 0.05f)*/;
-
-			Math::Vector3 _pos = eye - (front * 6.5f);
-
-			Math::Vector3 _target;
+			// 注視点がターゲットに移動している時と移動していない時で分岐しておくことで処理が見やすくなる
 			if (onTarget)
 			{
+				// 画面にターゲットが映っていない状態からいきなり映ると違和感が出る
+				// そこで線形補間を使用して、徐々に注視点をターゲットに近づけていくことで振り向いたようになる
 				focus = Phoenix::Math::Vector3Lerp(focus, targetPos, 0.1f);
 
+				// ある程度、近づいてきたらフリーカメラに戻したため
 				f32 dis = abs(Phoenix::Math::Vector3Length(focus - targetPos));
-				//if (targetMaxCnt <= targetCnt++)
 				if (dis <= 1.0f)
 				{
 					targetCnt = 0;
 					onTarget = false;
 				}
 
-				Math::Vector3 dir = eye - focus;
-				dir.y = center.y - target.y;
+				// このフレームで回転した値を次のフレームで使用するのでここで計算しておく
+				Math::Vector3 dir = center - focus;
 				dir = Math::Vector3Normalize(dir);
-
-				rotateX = atan2f(dir.y, dir.z);
+				rotateX = atan2f(-dir.y, dir.z);
 				rotateY = atan2f(dir.x, dir.z);
 			}
 			else
 			{
 				focus = Phoenix::Math::Vector3Lerp(focus, (eye - (front * -7.5f)), 0.5f);
 			}
-			_target = focus + shake;
-#endif
+
+			// カメラ座標を計算する時に、前ベクトルが変わってしまっているので再計算
+			front = Phoenix::Math::Vector3Normalize(focus - eye);
+
+			Math::Vector3 _pos = eye - (front * 6.5f);
+			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y; // ステージに埋まってしまうので押し出し
+		
+			// カメラシェイク値を注視点に入れるとズレが生じるから
+			Math::Vector3 _target = focus + shake;
+
 			SetLookAt(_pos, _target, _up);
 		}
 

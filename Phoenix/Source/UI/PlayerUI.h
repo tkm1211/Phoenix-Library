@@ -9,8 +9,16 @@
 class PlayerUI : public UI
 {
 private:
-	/*static constexpr*/ Phoenix::f32 TexWidth = 640.0f;
-	/*static constexpr*/ Phoenix::f32 TexHeigth = 64.0f;
+#if (defined(DEBUG) | defined(_DEBUG))
+	static constexpr Phoenix::f32 SizeWidth = 640.0f;
+	static constexpr Phoenix::f32 SizeHeigth = 64.0f;
+#else
+	static constexpr Phoenix::f32 SizeWidth = 640.0f * 1.5f;
+	static constexpr Phoenix::f32 SizeHeigth = 64.0f * 1.5f;
+#endif
+
+	static constexpr Phoenix::f32 TexWidth = 640.0f;
+	static constexpr Phoenix::f32 TexHeigth = 64.0f;
 
 private:
 	std::shared_ptr<Phoenix::Graphics::ITexture> hp;

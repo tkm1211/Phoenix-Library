@@ -631,7 +631,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	};
 
 	// 攻撃ステートへ
-	if (xInput[0].bXt && (isAttack || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
+	if ((xInput[0].bXt || GetAsyncKeyState(VK_RETURN) & 1) && (isAttack || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
 	{
 		Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
 
@@ -681,7 +681,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	if (!isAttack)
 	{
 		// 回避ステートへ
-		if (xInput[0].bAt && animationState != AnimationState::Roll)
+		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Roll)
 		{
 			ChangeAnimationState(AnimationState::Roll, RollSpeed);
 
@@ -730,7 +730,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	else
 	{
 		// 回避ステートへ
-		if (xInput[0].bAt && animationState != AnimationState::Roll)
+		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Roll)
 		{
 			Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
 

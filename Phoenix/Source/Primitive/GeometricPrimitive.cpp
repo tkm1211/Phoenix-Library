@@ -110,7 +110,7 @@ void GeometricPrimitive::Render(ID3D11DeviceContext* deviceContext,
 	deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	//プリミティブモードの設定
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); // D3D11_PRIMITIVE_TOPOLOGY_LINELIST // D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // D3D11_PRIMITIVE_TOPOLOGY_LINELIST // D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
 
 	//入力レイアウトのバインド
 	deviceContext->IASetInputLayout(inputLayout.Get());

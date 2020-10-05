@@ -107,7 +107,7 @@ void SceneTitle::Update(Phoenix::f32 elapsedTime)
 	if (isChangeScene)
 	{
 		if (dissolveThreshold <= 1.2f) dissolveThreshold += dissolveSpeed;
-		else sceneSystem->ChangeScene(SceneType::Game, false, true);
+		else sceneSystem->ChangeScene(SceneType::Tutorial, false, true);
 		return;
 	}
 
@@ -230,20 +230,21 @@ void SceneTitle::Draw(Phoenix::f32 elapsedTime)
 
 void SceneTitle::GUI()
 {
-	//ImGui::Begin("Title");
-	//{
-	//	ImGui::Text("test");
-	//	if (ImGui::Button("Chage Scene Game"))
-	//	{
-	//		sceneSystem->ChangeScene(SceneType::Game, false);
-	//	}
-	//	//if (ImGui::Button("play"))
-	//	//{
-	//	//	// エフェクトの再生
-	//	//	//handle = commonData->manager->Play(effect, 0, 0, 0);
-	//	//}
-	//}
-	//ImGui::End();
+#if	defined(PHOENIX_TARGET_DEBUG)
+	ImGui::Begin("Title");
+	{
+		ImGui::Text("test");
+		if (ImGui::Button("Chage Scene Game"))
+		{
+			sceneSystem->ChangeScene(SceneType::Game, false, true);
+		}
+		//if (ImGui::Button("play"))
+		//{
+		//	// エフェクトの再生
+		//	//handle = commonData->manager->Play(effect, 0, 0, 0);
+		//}
+	}
+	ImGui::End();
 
 	//ImGui::Begin("Game");
 	//{
@@ -267,4 +268,5 @@ void SceneTitle::GUI()
 	//	}
 	//}
 	//ImGui::End();
+#endif
 }

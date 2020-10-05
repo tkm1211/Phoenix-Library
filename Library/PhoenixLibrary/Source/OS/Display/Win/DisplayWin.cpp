@@ -61,12 +61,12 @@ namespace Phoenix
 				wcex.cbClsExtra = 0;
 				wcex.cbWndExtra = 0;
 				wcex.hInstance = hInstaice;
-				wcex.hIcon = 0;
+				wcex.hIcon = LoadIcon(hInstaice, IDI_APPLICATION);
 				wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 				wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 				wcex.lpszMenuName = NULL;
 				wcex.lpszClassName = this->name;
-				wcex.hIconSm = 0;
+				wcex.hIconSm = LoadIcon(hInstaice, IDI_APPLICATION);
 				RegisterClassEx(&wcex);
 
 				hwnd = CreateWindow(this->name, this->name,
@@ -80,6 +80,9 @@ namespace Phoenix
 				UpdateWindow(hwnd);
 			}
 
+			// Icon
+			//SetClassLongW(hwnd, GCL_HICON, static_cast<LONG>((LONG_PTR)LoadIconW(hInstaice, (101 == 0) ? (LPWSTR)IDI_APPLICATION : MAKEINTRESOURCEW(101))));
+
 			// Drag&Dropに対応
 			DragAcceptFiles(hwnd, TRUE);
 
@@ -90,6 +93,15 @@ namespace Phoenix
 			PAD.hwnd = hwnd;
 			PAD.instance = hInstaice;
 			PAD.InitInputDevice();
+
+#if !(defined(DEBUG) | defined(_DEBUG))
+			SetMenu(hwnd, NULL);	//メニューを隠す
+			SetWindowLong(hwnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);//ウィンドウのスタイルを変更
+			MoveWindow(hwnd, GetSystemMetrics(SM_XVIRTUALSCREEN),
+				GetSystemMetrics(SM_YVIRTUALSCREEN),
+				GetSystemMetrics(SM_CXVIRTUALSCREEN),
+				GetSystemMetrics(SM_CYVIRTUALSCREEN), TRUE);
+#endif
 
 			return true;
 		}

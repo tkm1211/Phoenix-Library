@@ -23,18 +23,19 @@ void BossUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	Phoenix::f32 height = v->height;
 	Phoenix::FND::SafeDelete(v);
 
-	pos = Phoenix::Math::Vector2(width - TexWidth, height - TexHeigth);
-	size = Phoenix::Math::Vector2(TexWidth, TexHeigth);
+	pos = Phoenix::Math::Vector2(width - SizeWidth, height - SizeHeigth);
+	size = Phoenix::Math::Vector2(SizeWidth, SizeHeigth);
 	hpTexPos = Phoenix::Math::Vector2(TexWidth, TexHeigth);
 }
 
 void BossUI::Update(Phoenix::f32 hpPercent)
 {
+	size.x = SizeWidth * (hpPercent / 100.0f);
 	hpTexPos.x = TexWidth * (hpPercent / 100.0f);
 }
 
 void BossUI::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::FrameWork::Quad* quad)
 {
-	quad->Draw(graphicsDevice, hpBack.get(), pos.x, pos.y, TexWidth, TexHeigth);
-	quad->Draw(graphicsDevice, hp.get(), pos, hpTexPos, Phoenix::Math::Vector2(0.0f, 0.0f), hpTexPos);
+	quad->Draw(graphicsDevice, hpBack.get(), pos.x, pos.y, SizeWidth, SizeHeigth);
+	quad->Draw(graphicsDevice, hp.get(), pos, size, Phoenix::Math::Vector2(0.0f, 0.0f), hpTexPos);
 }

@@ -18,8 +18,16 @@ namespace Phoenix
 		//****************************************************************************
 		bool Main::Initialize(uintPtr instance)
 		{
+#if (defined(DEBUG) | defined(_DEBUG))
+			Phoenix::s32 width = 1280;
+			Phoenix::s32 height = 720;
+#else
+			Phoenix::s32 width = 1920;
+			Phoenix::s32 height = 1080;
+#endif
 			display = Phoenix::OS::IDisplay::Create();
-			if (!display->Initialize(L"Phoenix", 1280, 720, instance))
+
+			if (!display->Initialize(L"Phoenix", width, height, instance))
 			{
 				return false;
 			}
@@ -33,8 +41,8 @@ namespace Phoenix
 			Phoenix::Graphics::Viewport v;
 			v.x = 0.0f;
 			v.y = 0.0f;
-			v.width = 1280.0f;
-			v.height = 720.0f;
+			v.width = static_cast<Phoenix::f32>(width);
+			v.height = static_cast<Phoenix::f32>(height);
 			v.minDepth = 0.0f;
 			v.maxDepth = 1.0f;
 			graphicsDevice->GetContext()->SetViewports(1, &v);

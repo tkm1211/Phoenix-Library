@@ -245,6 +245,7 @@
     <ClCompile Include="Source\UI\UISystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Source\Boss\AI.h" />
     <ClInclude Include="Source\Boss\AIState\AIState.h" />
     <ClInclude Include="Source\Boss\AIState\AvoidState.h" />
@@ -268,6 +269,12 @@
     <ClInclude Include="Source\UI\TargetMarkUI.h" />
     <ClInclude Include="Source\UI\UI.h" />
     <ClInclude Include="Source\UI\UISystem.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Phoenix.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Data\Assets\Texture\Icon\Icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

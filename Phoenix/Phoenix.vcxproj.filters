@@ -25,6 +25,9 @@
     <Filter Include="Source\UI">
       <UniqueIdentifier>{cb010aa5-c517-4843-86b9-f8fc343f23e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{b37bd37c-5fa6-490d-8350-8b2072e17ca9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -170,5 +173,18 @@
     <ClInclude Include="Source\UI\TargetMarkUI.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Data\Assets\Texture\Icon\Icon.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Phoenix.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

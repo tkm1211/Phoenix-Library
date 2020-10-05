@@ -113,6 +113,7 @@ private:
 	Player* player = nullptr;
 	Boss* boss = nullptr;
 	UISystem* uiSystem = nullptr;
+	TargetMarkUI* targetMarkUI = nullptr;
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
 	Phoenix::FrameWork::ModelObject* bossStageModel = nullptr;
 	Phoenix::FrameWork::IShader* basicShader = nullptr;
@@ -173,6 +174,7 @@ private:
 
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
+	std::shared_ptr<GeometricPrimitive> boxPrimitive;
 	Phoenix::Math::Vector2 texSize;
 
 	Phoenix::Math::Vector3 tempCameraFouce = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
@@ -209,7 +211,7 @@ private: // Debug
 
 	Phoenix::f32 pointLightDistance = 0.95f;
 
-	Phoenix::f32 stageRadius = 14.0f;
+	Phoenix::Math::Vector3 stageScale = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 
 	Phoenix::f32 adjustY = 1.25f;
 
@@ -252,7 +254,7 @@ public:
 	void GUI() override;
 
 private:
-	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale);
+	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale, bool isBox = false);
 	Phoenix::Math::Vector3 WorldToScreen(const Phoenix::Math::Vector3& worldPosition);
 };
 
