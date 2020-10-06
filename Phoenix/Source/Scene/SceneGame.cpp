@@ -1145,6 +1145,13 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 
 #if 1
 		uiSystem->Draw(graphicsDevice);
+
+		float w = 480.0f * 0.5f;
+		float h = 270.0f * 0.5f;
+		quad->Draw(graphicsDevice, commonData->avoidUI.get(), Phoenix::Math::Vector2(w * 0.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
+		quad->Draw(graphicsDevice, commonData->attackUI.get(), Phoenix::Math::Vector2(w * 1.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
+		quad->Draw(graphicsDevice, commonData->runUI.get(), Phoenix::Math::Vector2(w * 2.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
+		quad->Draw(graphicsDevice, commonData->targetUI.get(), Phoenix::Math::Vector2(w * 3.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
 #endif
 	}
 	

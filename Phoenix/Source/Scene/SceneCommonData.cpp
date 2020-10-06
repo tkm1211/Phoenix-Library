@@ -62,4 +62,14 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 
 	se = Phoenix::FrameWork::CXAudio2::Create();
 	se->Load(L"..\\Data\\Assets\\Audio\\SE\\Player\\Walk\\walk.wav", 0);
+
+	avoidUI = Phoenix::Graphics::ITexture::Create();
+	attackUI = Phoenix::Graphics::ITexture::Create();
+	runUI = Phoenix::Graphics::ITexture::Create();
+	targetUI = Phoenix::Graphics::ITexture::Create();
+
+	avoidUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\Avoid.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+	attackUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\Attack.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+	runUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\Run.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+	targetUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\Target.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 }
