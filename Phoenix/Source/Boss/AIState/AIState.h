@@ -8,6 +8,7 @@ enum class AIStateType
 	Avoid,			// 回避
 	SwingAttack01,	// 右殴り攻撃（近距離攻撃）
 	SwingAttack02,	// 左殴り攻撃（近距離攻撃）
+	RotationAttack,	// 回転攻撃（近距離攻撃）
 	JumpAttack,		// ジャンプ攻撃（遠距離攻撃）
 	Damage,			// ひるみ
 	None			// 何でもない

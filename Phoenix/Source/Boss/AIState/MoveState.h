@@ -8,7 +8,7 @@ class MoveState : public AIState
 {
 private:
 	/*static constexpr*/ Phoenix::f32 MoveSpeed = 0.05f;
-	/*static constexpr*/ Phoenix::s32 MoveMaxCnt = 5 * 60;
+	/*static constexpr*/ Phoenix::s32 MoveMaxCnt = 2 * 60;
 	/*static constexpr*/ Phoenix::f32 judgeDistance = 5.0f;
 
 private:

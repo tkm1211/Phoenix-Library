@@ -13,9 +13,11 @@ void JumpAttackState::Init()
 	oldPosY = 0.0f;
 	oldAngleY = 0.0f;
 	animationCnt = 0.0f;
+	gravityCnt = 0;
 
 	velocity = { 0.0f, 0.0f, 0.0f };
 	acceleration = { 0.0f, 0.0f, 0.0f };
+	moveSpeed = 0.0f;
 }
 
 void JumpAttackState::Update(Boss* boss, Player* player)
@@ -81,7 +83,26 @@ void JumpAttackState::Update(Boss* boss, Player* player)
 		//float maxT = ((2 * velocity.y) / 9.8f);
 		//velocity.y = boss->GetPosition().y + (velocity.y * maxT) - ((1.0f / 2.0f) * 9.8f * (maxT * maxT));
 
+		Phoenix::Math::Vector3 playerPos = player->GetPosition();
+		Phoenix::Math::Vector3 bossPos = boss->GetPosition();
 		speedY = JumpSpeed;
+		gravityCnt = 0;
+		if (!OnChangeTarget(bossPos, playerPos, 300.0f))
+		{
+			isChangeState = true;
+			nextStateType = AIStateType::Move;
+			return;
+		}
+		else
+		{
+			shotY = shot[0].y < shot[1].y ? shot[1].y : shot[0].y;
+			shotY *= 0.01f;
+			nextY = shotY - g * 0.5f;
+
+			Phoenix::f32 t = (1.68f - 0.4f) / (1.0f / 60.0f);
+			moveSpeed = fabs(Phoenix::Math::Vector3Length(playerPos - bossPos)) / t;
+			moveSpeed += 0.05f;
+		}
 		//speedY = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(velocity.x, velocity.z));
 	}
 	else if (animationCnt <= 1.68f)
@@ -92,14 +113,45 @@ void JumpAttackState::Update(Boss* boss, Player* player)
 #if 1
 		angle = atan2f(forward.x, forward.z);
 
-		bossPos.x += sinf(angle) * MoveSpeed;
-		//bossPos.y += boneM._42 - oldPosY;
-		bossPos.y += speedY; // TODO : Add PosY
-		bossPos.z += cosf(angle) * MoveSpeed;
-		if (bossPos.y <= 0.0f)
+		// Add Y
 		{
-			bossPos.y = 0.0f;
+			nextY -= g;
+			bossPos.y += nextY / 5.0f;
+			if (bossPos.y <= 0.0f)
+			{
+				bossPos.y = 0.0f;
+			}
 		}
+
+		if (0.0f < bossPos.y)
+		{
+			bossPos.x += sinf(angle) * moveSpeed;
+			bossPos.z += cosf(angle) * moveSpeed;
+		}
+
+		//Phoenix::f32 yMax = 50.0f;
+		//Phoenix::f32 g = 9.8f * 0.01f;
+		//Phoenix::f32 t = animationCnt - 0.4f;
+		//t = t == 0.0f ? 0.0f : t / (1.68f - 0.4f);
+
+		////bossPos.y += boneM._42 - oldPosY;
+		////bossPos.y += speedY; // TODO : Add PosY
+		////if (t <= 1.0f)
+		//{
+		//	Phoenix::f32 addY = sqrt(2.0f * g * yMax);
+		//	addY -= 0.5f;
+		//	addY = addY * g * t * t;
+
+		//	bossPos.y = sqrt(2.0f * g * yMax) * t - 0.5f * g * t * t;
+
+		//	gravityCnt++;
+		//	g = gravityCnt == 1 ? 9.8f * 0.5f : 9.8f;
+		//	bossPos.y -= g * gravityCnt * 0.01f;
+		//	if (bossPos.y <= 0.0f)
+		//	{
+		//		bossPos.y = 0.0f;
+		//	}
+		//}
 		boss->SetPosition(bossPos);
 
 		oldPosY = boneM._42;
@@ -167,4 +219,44 @@ Phoenix::Math::Vector3 JumpAttackState::QuadraticEquation(const Phoenix::Math::V
 	}
 
 	return X;
+}
+
+bool JumpAttackState::OnChangeTarget(Phoenix::Math::Vector3 start, Phoenix::Math::Vector3 target, Phoenix::f32 speed)
+{
+	startPos = start;
+	targetPos = target;
+
+	Phoenix::Math::Vector3 disVec = targetPos - startPos;
+
+	Phoenix::Math::Vector2 xz = { disVec.x, disVec.z };
+
+	Phoenix::f32 disY = disVec.y;
+	Phoenix::f32 disX = fabs(Phoenix::Math::Vector2Length(xz));
+	//bool toBack = (disVec.x < 0) ? true : false;
+
+	Phoenix::f32 g = -9.8f * 0.01f;
+	Phoenix::f32 a = (g * disX * disX) / (2.0f * speed * speed);
+	Phoenix::f32 b = disX / a;
+	Phoenix::f32 c = (a - disY) / a;
+
+	Phoenix::f32 root = pow(-c + (b * b) / 4.0f, 0.5f);
+
+	Phoenix::f32 ts = (b * b / 4.0f) - c;
+	if (ts < 0.0f)
+	{
+		return false;
+	}
+	else
+	{
+		Phoenix::f32 angle[2];
+		angle[0] = atanf((-b / 2.0f) + root);
+		angle[1] = atanf((-b / 2.0f) - root);
+
+		for (Phoenix::s32 i = 0; i < 2; ++i)
+		{
+			shot[i].y = sinf(angle[i]) * speed;
+		}
+	}
+
+	return true;
 }

@@ -24,9 +24,18 @@ private:
 	Phoenix::f32 animationCnt = 0.0f;
 	Phoenix::f32 speedY = 0.0f;
 	Phoenix::f32 time = 0.0f;
+	Phoenix::s32 gravityCnt = 0;
+	Phoenix::f32 g = 9.8f * 0.01f;
+	Phoenix::f32 shotY = 0.0f;
+	Phoenix::f32 nextY = 0.0f;
+	Phoenix::f32 moveSpeed = 0.0f;
 
 	Phoenix::Math::Vector3 velocity = { 0.0f, 0.0f, 0.0f };
 	Phoenix::Math::Vector3 acceleration = { 0.0f, 0.0f, 0.0f };
+
+	Phoenix::Math::Vector3 startPos = { 0.0f, 0.0f, 0.0f };
+	Phoenix::Math::Vector3 targetPos = { 0.0f, 0.0f, 0.0f };
+	Phoenix::Math::Vector3 shot[2] = { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
 public:
 	JumpAttackState() {}
@@ -37,4 +46,5 @@ public:
 	void Update(Boss* boss, Player* player) override;
 	Phoenix::f32 GetAnimationCnt() { return animationCnt; }
 	Phoenix::Math::Vector3 QuadraticEquation(const Phoenix::Math::Vector3& p, const Phoenix::Math::Vector3& t, Phoenix::f32 s, Phoenix::f32 g = -9.8f);
+	bool OnChangeTarget(Phoenix::Math::Vector3 start, Phoenix::Math::Vector3 target, Phoenix::f32 speed);
 };

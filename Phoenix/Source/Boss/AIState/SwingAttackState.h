@@ -11,6 +11,7 @@ private:
 
 private:
 	Phoenix::f32 animationCnt = 0.0f;
+	Phoenix::s32 swingDerivedNum = 0;
 
 public:
 	SwingAttackState01() {}

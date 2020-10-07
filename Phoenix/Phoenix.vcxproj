@@ -223,6 +223,7 @@
     <ClCompile Include="Source\Boss\AIState\DamageState.cpp" />
     <ClCompile Include="Source\Boss\AIState\JumpAttackState.cpp" />
     <ClCompile Include="Source\Boss\AIState\MoveState.cpp" />
+    <ClCompile Include="Source\Boss\AIState\RotationAttackState.cpp" />
     <ClCompile Include="Source\Boss\AIState\SwingAttackState.cpp" />
     <ClCompile Include="Source\Boss\AIState\WaitState.cpp" />
     <ClCompile Include="Source\Boss\Boss.cpp" />
@@ -252,6 +253,7 @@
     <ClInclude Include="Source\Boss\AIState\DamageState.h" />
     <ClInclude Include="Source\Boss\AIState\JumpAttackState.h" />
     <ClInclude Include="Source\Boss\AIState\MoveState.h" />
+    <ClInclude Include="Source\Boss\AIState\RotationAttackState.h" />
     <ClInclude Include="Source\Boss\AIState\SwingAttackState.h" />
     <ClInclude Include="Source\Boss\AIState\WaitState.h" />
     <ClInclude Include="Source\Boss\Boss.h" />

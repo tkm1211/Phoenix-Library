@@ -2,6 +2,7 @@
 #include "BossAI.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
 #include "AIState/SwingAttackState.h"
+#include "AIState/RotationAttackState.h"
 #include "AIState/JumpAttackState.h"
 
 
@@ -16,7 +17,7 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player*
 	{
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		model->Initialize(graphicsDevice);
-		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Idle02.fbx"); // Mutant_Idle02 Mutant_Breathing_Idle
+		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Roaring.fbx"); // Mutant_Idle02 Mutant_Breathing_Idle Mutant_Roaring
 
 		effectModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		effectModel->Initialize(graphicsDevice);
@@ -29,6 +30,7 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player*
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Avoid\\Sprinting_Forward_Roll.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Right\\Mutant_Swiping.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Left\\Mutant_Punch.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Rotate\\Right_Rotate.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Jump\\Jump_Attack02.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Damage\\Head_Hit.fbx", -1);
 	}
@@ -82,6 +84,7 @@ void Boss::Initialize()
 		model->PlayAnimation(0, 1);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		model->SetSpeed(1.5f);
 		//model->PauseAnimation(true);
 	}
 
@@ -172,6 +175,9 @@ void Boss::Update(bool onControl)
 
 	// ÉèÅ[ÉãÉhçsóÒÇçÏê¨
 	{
+		//pos.y -= 9.8f * 0.01f;
+		//if (pos.y <= 0.0f) pos.y = 0.0f;
+
 		Phoenix::Math::Matrix S, R, T;
 		S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
 		//R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
@@ -240,6 +246,7 @@ void Boss::ChangeAnimation(AIStateType type)
 		model->PlayAnimation(0, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		model->SetSpeed(1.5f);
 		break;
 
 	case AIStateType::Move:
@@ -267,8 +274,14 @@ void Boss::ChangeAnimation(AIStateType type)
 		model->SetLoopAnimation(false);
 		break;
 
+	case AIStateType::RotationAttack:
+		model->PlayAnimation(5, 1, 0.2f);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+		break;
+
 	case AIStateType::JumpAttack:
-		model->PlayAnimation(5, 0, 0.2f);
+		model->PlayAnimation(6, 0, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 
@@ -279,7 +292,7 @@ void Boss::ChangeAnimation(AIStateType type)
 		break;
 
 	case AIStateType::Damage:
-		model->PlayAnimation(6, 1, 0.2f);
+		model->PlayAnimation(7, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		break;
@@ -333,6 +346,20 @@ void Boss::AttackJudgment()
 		if (14.0f <= time && time <= 23.0f)
 		{
 			Judgment(1);
+		}
+		else
+		{
+			NoJudgment();
+		}
+	}
+	else if (currentType == AIStateType::RotationAttack)
+	{
+		BossAI* bossAI = static_cast<BossAI*>(ai.get());
+		float time = static_cast<RotationAttackState*>(bossAI->GetCurrentState())->GetAnimationCnt() * 60.0f;
+
+		if (37.0f <= time && time <= 77.0f)
+		{
+			Judgment(2);
 		}
 		else
 		{

@@ -1079,6 +1079,7 @@ bool Player::AccumulationDamege()
 	if (AccumulationMaxDamege <= accumulationDamege)
 	{
 		isChangeAnimation = true;
+		isAttack = false;
 		speed = 0.0f;
 		animationState = AnimationState::Damage;
 

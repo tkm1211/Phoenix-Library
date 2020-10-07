@@ -3,6 +3,7 @@
 #include "AIState/MoveState.h"
 #include "AIState/AvoidState.h"
 #include "AIState/SwingAttackState.h"
+#include "AIState/RotationAttackState.h"
 #include "AIState/JumpAttackState.h"
 #include "AIState/DamageState.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
@@ -24,6 +25,7 @@ void BossAI::Construct()
 		AddState<AvoidState>();
 		AddState<SwingAttackState01>();
 		AddState<SwingAttackState02>();
+		AddState<RotationAttackState>();
 		AddState<JumpAttackState>();
 		AddState<DamageState>();
 	}
