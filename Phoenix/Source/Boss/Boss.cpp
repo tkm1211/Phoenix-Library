@@ -84,7 +84,7 @@ void Boss::Initialize()
 		model->PlayAnimation(0, 1);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
-		model->SetSpeed(1.5f);
+		model->SetSpeed(2.0f);
 		//model->PauseAnimation(true);
 	}
 
@@ -246,7 +246,7 @@ void Boss::ChangeAnimation(AIStateType type)
 		model->PlayAnimation(0, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
-		model->SetSpeed(1.5f);
+		model->SetSpeed(2.0f);
 		break;
 
 	case AIStateType::Move:

@@ -544,7 +544,6 @@ namespace Phoenix
 			if (GetKeyState(VK_RBUTTON) < 0)
 			{
 				f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
-
 				f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
 				rotateY -= moveX * 0.5f;
 				rotateX += moveY * 0.5f;
@@ -585,7 +584,7 @@ namespace Phoenix
 				focus = Phoenix::Math::Vector3Lerp(focus, targetPos, 0.1f);
 
 				// ある程度、近づいてきたらフリーカメラに戻したため
-				f32 dis = abs(Phoenix::Math::Vector3Length(focus - targetPos));
+				f32 dis = fabs(Phoenix::Math::Vector3Length(focus - targetPos));
 				if (dis <= 1.0f)
 				{
 					targetCnt = 0;
@@ -606,10 +605,10 @@ namespace Phoenix
 			// カメラ座標を計算する時に、前ベクトルが変わってしまっているので再計算
 			front = Phoenix::Math::Vector3Normalize(focus - eye);
 
-			Math::Vector3 _pos = eye - (front * 6.5f);
+			Math::Vector3 _pos = eye - (front * 7.5f);
 			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y; // ステージに埋まってしまうので押し出し
 		
-			// カメラシェイク値を注視点に入れるとズレが生じるから
+			// カメラシェイク値を注視点に加算するとズレが生じるので変数に代入
 			Math::Vector3 _target = focus + shake;
 
 			SetLookAt(_pos, _target, _up);

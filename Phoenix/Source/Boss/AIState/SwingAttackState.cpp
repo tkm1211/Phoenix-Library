@@ -36,9 +36,14 @@ void SwingAttackState01::Update(Boss* boss, Player* player)
 		}*/
 		else
 		{
-			if (player->GetRadius() + boss->GetRadius() + 5.0f < len)
+			/*if (player->GetRadius() + boss->GetRadius() + 5.0f < len)
 			{
 				nextStateType = AIStateType::JumpAttack;
+			}
+			else*/
+			if (player->IsDamage())
+			{
+				nextStateType = AIStateType::SwingAttack02;
 			}
 			else
 			{

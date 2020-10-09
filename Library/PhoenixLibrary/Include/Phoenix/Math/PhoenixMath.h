@@ -13,6 +13,10 @@ namespace Phoenix
 {
 	namespace Math
 	{
+#pragma region Functions for f32
+		extern f32 f32Lerp(const f32 f1, const f32 f2, f32 s);
+#pragma endregion
+
 #pragma region Functions for Vector2
 		extern DirectX::XMFLOAT2 ConvertToFloat2FromVector2(const Vector2 v);
 		extern DirectX::XMVECTOR ConvertToVectorFromVector2(const Vector2 v);

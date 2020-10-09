@@ -33,7 +33,7 @@ VertextoPixel main(uint fakeIndex : SV_VERTEXID)
     float lifeLerp = 1 - particle.life / particle.maxLife;
     float size = lerp(particle.sizeBeginEnd.x, particle.sizeBeginEnd.y, lifeLerp);
     float opacity = saturate(lerp(1, 0, lifeLerp) * xEmitterOpacity);
-    float rotation = lifeLerp * particle.rotationalVelocity;
+    float rotation = particle.rotationalVelocity;
 
 	// expand the point into a billboard in view space:
     float3 quadPos = BILLBOARD[vertexID];
@@ -46,7 +46,7 @@ VertextoPixel main(uint fakeIndex : SV_VERTEXID)
 		cos(rotation), -sin(rotation),
 		sin(rotation), cos(rotation)
 		);
-    //quadPos.xy = mul(quadPos.xy, rot);
+    quadPos.xy = mul(quadPos.xy, rot);
 
 	// scale the billboard:
     quadPos *= size;

@@ -1,5 +1,6 @@
 #include "SceneLabo.h"
 #include "SceneSystem.h"
+#include "Phoenix/FND/Operation.h"
 
 
 std::unique_ptr<SceneLabo> SceneLabo::Create()
@@ -50,10 +51,25 @@ void SceneLabo::GUI()
 			if (ImGui::TreeNode("Load Script"))
 			{
 				ImGui::InputText("File Name : (Script.lua)", filePass, 1024);
+				if (ImGui::Button("Inport"))
+				{
+					const wchar_t* fullPass = Phoenix::OS::Path::GetFullPathW(L"..\\Data\\Script");
+
+					TCHAR szFile[MAX_PATH];
+					std::wstring fileNameW = std::wstring(fullPass);
+
+					if (GetFileName(0, szFile, sizeof(szFile) / sizeof(TCHAR), fileNameW.c_str(), L".lua", true))
+					{
+						size_t len = 0;
+						errno_t err = 0;
+
+						//•ÏŠ·
+						err = wcstombs_s(&len, filePass, sizeof(filePass), szFile, _TRUNCATE);
+					}
+				}
 				if (ImGui::Button("Load"))
 				{
-					const char* fullPass = Phoenix::OS::Path::GetFullPath(Phoenix::OS::Path::Combine("..\\Data\\Script\\", filePass));
-					judgeLoad = luaSystem->LoadScript(fullPass);
+					judgeLoad = luaSystem->LoadScript(filePass);
 					aliveCnt = 1;
 				}
 				if (judgeLoad && 0 < aliveCnt)

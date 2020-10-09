@@ -357,7 +357,7 @@ private: // Debug
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> bossHitParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> petalParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> soilParticle;
-	std::unique_ptr<Phoenix::FrameWork::GPUParticle> dusterParticle;
+	std::unique_ptr<Phoenix::FrameWork::GPUParticle> dusterParticle[3];
 
 	Phoenix::f32 dis = 10.0f;
 	Phoenix::f32 width = 30.0f;
@@ -388,6 +388,8 @@ private: // Debug
 
 	bool onPointLight = false;
 
+	bool isDrawUI = false;
+
 private:
 	struct DissolveCB
 	{
@@ -396,10 +398,14 @@ private:
 		Phoenix::f32 dummy[2];
 	};
 	std::unique_ptr<Phoenix::Graphics::IShader> embeddedDissolvePixelShader;
+	std::unique_ptr<Phoenix::Graphics::IShader> pbrDissolvePixelShader;
 	std::unique_ptr<Phoenix::Graphics::IBuffer> dissolveCB;
+	std::unique_ptr<Phoenix::Graphics::ITexture> bossRedTexture;
 	std::unique_ptr<Phoenix::Graphics::ITexture> dissolveTexture;
+	std::unique_ptr<Phoenix::Graphics::ITexture> emissiveTexture;
 	Phoenix::f32 dissolveThreshold;        //透過閾値
 	Phoenix::f32 dissolveEmissiveWidth;    //発光閾値(ディゾルブ・エミッシブ)
+	bool isTurn = false;
 
 public:
 	SceneGame() {}

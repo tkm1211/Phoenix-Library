@@ -24,6 +24,7 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FND\Flag.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FND\Logger.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FND\NonCopyable.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FND\Operation.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FND\STD.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FND\Util.h" />
     <ClInclude Include="..\..\..\Source\FND\pch.h" />
@@ -31,6 +32,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FND\Assert\Assert.cpp" />
     <ClCompile Include="..\..\..\Source\FND\Logger\Logger.cpp" />
+    <ClCompile Include="..\..\..\Source\FND\Operation\Operation.cpp" />
     <ClCompile Include="..\..\..\Source\FND\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

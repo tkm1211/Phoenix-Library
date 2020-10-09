@@ -132,7 +132,7 @@ namespace Phoenix
 				cb.particleScaling = scaleX;
 				cb.particleSize = size;
 				cb.particleMotionBlurAmount = motionBlurAmount;
-				cb.particleRotation = rotation * Phoenix::Math::PI * 60;
+				cb.particleRotation = rotation;
 				cb.particleColor = 0; // TODO : material color
 				cb.particleEmissive = 0; // TODO : material emissive color w
 				cb.emitterOpacity = 0; // TODO : material base color w

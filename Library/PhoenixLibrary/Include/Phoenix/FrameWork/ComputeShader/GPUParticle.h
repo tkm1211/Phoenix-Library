@@ -222,6 +222,8 @@ namespace Phoenix
 
 			void SetParticleScale(float particleScale) { scaleX = particleScale; }
 
+			void SetParticleRotate(float particleRotate) { rotation = particleRotate; }
+
 			void SetParticleNormal(Math::Vector4 particleNormal) { normal = particleNormal; }
 
 			void SetParticleColor(Math::Color particleColor) { mainColor = particleColor; }

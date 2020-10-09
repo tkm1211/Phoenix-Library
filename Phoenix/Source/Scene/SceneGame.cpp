@@ -135,7 +135,9 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		bossHitParticle = Phoenix::FrameWork::GPUParticle::Create();
 		petalParticle = Phoenix::FrameWork::GPUParticle::Create();
 		soilParticle = Phoenix::FrameWork::GPUParticle::Create();
-		//dusterParticle = Phoenix::FrameWork::GPUParticle::Create();
+		//dusterParticle[0] = Phoenix::FrameWork::GPUParticle::Create();
+		//dusterParticle[1] = Phoenix::FrameWork::GPUParticle::Create();
+		//dusterParticle[2] = Phoenix::FrameWork::GPUParticle::Create();
 	}
 
 	{
@@ -162,8 +164,25 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 			"BasicMaskPS.cso"
 		);
 
+		pbrDissolvePixelShader = Phoenix::Graphics::IShader::Create();
+		pbrDissolvePixelShader->LoadPS
+		(
+			graphicsDevice->GetDevice(),
+			"PhysicallyBasedRenderingDissolvePS.cso"
+		);
+
+		bossRedTexture = Phoenix::Graphics::ITexture::Create();
+		bossRedTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Boss\\Mutant_diffuse_Red1.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+
 		dissolveTexture = Phoenix::Graphics::ITexture::Create();
-		dissolveTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Mask\\Dissolve\\dissolve_animation2.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+		dissolveTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Mask\\Dissolve\\dissolve_animation1_2.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+
+		emissiveTexture = Phoenix::Graphics::ITexture::Create();
+		emissiveTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Mask\\Dissolve\\dissolve_edgecolor_gray.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+
+		dissolveThreshold = 1.15f;
+		dissolveEmissiveWidth = 0.01f;
+		isTurn = false;
 	}
 }
 
@@ -188,6 +207,8 @@ void SceneGame::Initialize()
 		{
 			active[i] = false;
 		}
+
+		isDrawUI = true;
 	}
 
 	// 共通データの初期化
@@ -218,17 +239,33 @@ void SceneGame::Initialize()
 		testComputeShader->Initialize(graphicsDevice);
 		bitonicSort->Initialize(graphicsDevice);
 		gpuParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png"); // particle
-		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
+		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS Fire\\FireOrigin02
 		bossHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
 		petalParticle->Initialize(graphicsDevice, "PetalEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\JumpAttack\\Petal01.png", false);
 		soilParticle->Initialize(graphicsDevice, "SoilEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\JumpAttack\\Soil01.png", false);
-		//dusterParticle->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster02.png");
+		//dusterParticle[0]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster05.png", false);
+		//dusterParticle[1]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster06.png", false);
+		//dusterParticle[2]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster07.png", false);
 	}
 }
 
 void SceneGame::Update(Phoenix::f32 elapsedTime)
 {
 	bool onFade = sceneSystem->GetOnFade();
+
+	//if (dissolveThreshold <= -0.15f)
+	//{
+	//	isTurn = false;
+	//}
+	//else if (1.15f <= dissolveThreshold)
+	//{
+	//	isTurn = true;
+	//}
+	////Phoenix::f32 addThreshold = isTurn ? -0.005f : 0.005f;
+	////if (!isTurn) dissolveThreshold = Phoenix::Math::f32Lerp(dissolveThreshold, -0.2f, -0.005f);
+	////else if (isTurn) dissolveThreshold = Phoenix::Math::f32Lerp(1.2f, dissolveThreshold, 0.05f);
+
+	//dissolveThreshold += isTurn ? -0.005f : 0.005f;
 
 	// プレイヤー更新
 	Phoenix::Math::Vector3 oldPlayerPos = player->GetPosition();
@@ -321,14 +358,20 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					playerHitParticle->SetParticleSize(0.07f);
 					playerHitParticle->SetParticleScale(0.25f);
 					playerHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
-					playerHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor
+					playerHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)
 
-					//dusterParticle->Burst(5);
-					//dusterParticle->SetParticleLife(1.0f);
-					//dusterParticle->SetParticleSize(0.25f);
-					//dusterParticle->SetParticleScale(1.0f);
-					//dusterParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-					//dusterParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 0.5f)); // Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)
+					//for (Phoenix::s32 i = 0; i < 3; ++i)
+					//{
+					//	dusterParticle[i]->Burst(1);
+					//	dusterParticle[i]->SetParticleLife(1.0f);
+					//	dusterParticle[i]->SetParticleSize(0.5f);
+					//	dusterParticle[i]->SetParticleScale(0.5f);
+					//	dusterParticle[i]->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+					//	dusterParticle[i]->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)); // Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)
+					//}
+					//dusterParticle[0]->SetParticleRotate(0.025f);
+					//dusterParticle[1]->SetParticleRotate(-0.015f);
+					//dusterParticle[2]->SetParticleRotate(0.005f);
 
 					particlePos = playerDatas->at(player->GetAttackCollisionIndex()).pos;
 				}
@@ -587,7 +630,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 				hit = false;
 			}
 		}
-		else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
+		else camera->ControllerCamera(playerPos, Phoenix::Math::Vector3(0.0f, 1.75f, 0.0f));
 #endif
 	}
 	//camera->Update();
@@ -632,8 +675,11 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		soilParticle->UpdateCPU(graphicsDevice, jumpAttackParticlePos, 1.0f / 60.0f);
 		soilParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 
-		//dusterParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
-		//dusterParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+		/*for (Phoenix::s32 i = 0; i < 3; ++i)
+		{
+			dusterParticle[i]->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
+			dusterParticle[i]->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+		}*/
 	}
 
 	if (isHitStop)
@@ -957,7 +1003,64 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 				if (currentShader)
 				{
 					currentShader->Begin(graphicsDevice, *camera);
-					currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+					{
+						pbrDissolvePixelShader->Activate(graphicsDevice->GetDevice());
+						{
+							// ピクセルシェーダー用バッファ更新
+							{
+								DissolveCB cb = {};
+								{
+									cb.dissolveThreshold = dissolveThreshold;
+									cb.dissolveEmissiveWidth = dissolveEmissiveWidth;
+									cb.dummy[0] = 0.0f;
+									cb.dummy[1] = 0.0f;
+								}
+								Phoenix::Graphics::IBuffer* psCBuffer[] =
+								{
+									dissolveCB.get()
+								};
+								context->UpdateSubresource(dissolveCB.get(), 0, 0, &cb, 0, 0);
+								context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 2, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+							}
+
+							// ピクセルシェーダー用テクスチャ更新
+							{
+								Phoenix::Graphics::ITexture* texture[] =
+								{
+									bossRedTexture.get(),
+									dissolveTexture.get(),
+									emissiveTexture.get()
+								};
+								context->SetShaderResources(Phoenix::Graphics::ShaderType::Pixel, 6, 3, texture);
+							}
+
+							// Draw.
+							{
+								currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+							}
+
+							// ピクセルシェーダー用テクスチャ更新
+							{
+								Phoenix::Graphics::ITexture* texture[] =
+								{
+									nullptr,
+									nullptr,
+									nullptr
+								};
+								context->SetShaderResources(Phoenix::Graphics::ShaderType::Pixel, 6, 3, texture);
+							}
+
+							// ピクセルシェーダー用バッファ更新
+							{
+								Phoenix::Graphics::IBuffer* psCBuffer[] =
+								{
+									nullptr
+								};
+								context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 2, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+							}
+						}
+						pbrDissolvePixelShader->Deactivate(graphicsDevice->GetDevice());
+					}
 					currentShader->End(graphicsDevice);
 
 					// Draw Effect.
@@ -971,7 +1074,10 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 							bossHitParticle->Draw(graphicsDevice, *camera);
 							petalParticle->Draw(graphicsDevice, *camera);
 							soilParticle->Draw(graphicsDevice, *camera);
-							//dusterParticle->Draw(graphicsDevice, *camera);
+							/*for (Phoenix::s32 i = 0; i < 3; ++i)
+							{
+								dusterParticle[i]->Draw(graphicsDevice, *camera);
+							}*/
 						}
 						context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 					}
@@ -1144,7 +1250,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 #endif
 
 #if 1
-		uiSystem->Draw(graphicsDevice);
+		if (isDrawUI) uiSystem->Draw(graphicsDevice);
 
 		float w = 480.0f * 0.5f;
 		float h = 270.0f * 0.5f;
@@ -1287,6 +1393,7 @@ void SceneGame::GUI()
 		}
 		if (ImGui::TreeNode("UI"))
 		{
+			ImGui::Checkbox("DrawUI", &isDrawUI);
 			if (ImGui::TreeNode("TargetMark"))
 			{
 				if (ImGui::Button("On"))
@@ -1317,6 +1424,12 @@ void SceneGame::GUI()
 			ImGui::Checkbox("On", &bloomBlend);
 			ImGui::DragFloat("glowExtractionThreshold", &bloom->shaderContants.glowExtractionThreshold, 0.01f, 0.0f, 5.0f);
 			ImGui::DragFloat("blurConvolutionIntensity", &bloom->shaderContants.blurConvolutionIntensity, 0.01f, 0.0f, 5.0f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Dissolve"))
+		{
+			ImGui::DragFloat("Threshold", &dissolveThreshold, 0.01f);
+			ImGui::DragFloat("EmissiveWidth", &dissolveEmissiveWidth, 0.01f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("FrameBuffer"))

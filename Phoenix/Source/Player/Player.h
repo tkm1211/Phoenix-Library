@@ -237,6 +237,7 @@ public:
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
 	PlayerUI* GetUI() { return ui.get(); }
 	bool IsAttack() { return isAttack; }
+	bool IsDamage() { return animationState == AnimationState::Damage; }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 	void SetIsHit(bool isHit) { this->isHit = isHit; }

@@ -240,6 +240,9 @@
     <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\SoilEffectCS.hlsl">
       <Filter>Source\EmittedParticle\Simulate</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingDissolvePS.hlsl">
+      <Filter>Source\PBR</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\Bloom.hlsli">
