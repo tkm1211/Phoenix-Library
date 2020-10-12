@@ -19,6 +19,7 @@ void WaitState::Update(Boss* boss, Player* player)
 		waitTimer = 0;
 		isChangeState = true;
 		nextStateType = AIStateType::Move;
+		//nextStateType = AIStateType::Wait;
 	}
 	else
 	{

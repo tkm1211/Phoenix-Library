@@ -611,6 +611,9 @@ namespace Phoenix
 			// カメラシェイク値を注視点に加算するとズレが生じるので変数に代入
 			Math::Vector3 _target = focus + shake;
 
+			_right = Math::Vector3Cross(front, _up);
+			_up = Math::Vector3Cross(_right, front);
+
 			SetLookAt(_pos, _target, _up);
 		}
 
@@ -730,6 +733,34 @@ namespace Phoenix
 			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y;
 
 			SetLookAt(_pos, _target, Math::Vector3::OneY);
+		}
+
+		void Camera::InitEventCamera(const Math::Vector3& focus, const Math::Vector3& front, Phoenix::f32 len)
+		{
+			this->focus = focus;
+
+			Math::Vector3 _target = focus + shake;
+			Math::Vector3 _right = Math::Vector3Cross(front, Math::Vector3::OneY);
+			Math::Vector3 _up = Math::Vector3Cross(_right, front);
+			Math::Vector3 _pos = this->focus - (front * len);
+
+			eye = _pos;
+
+			SetLookAt(_pos, _target, _up);
+		}
+
+		void Camera::EventCamera(const Math::Vector3& focus, const Math::Vector3& front, Phoenix::f32 len)
+		{
+			this->focus = Phoenix::Math::Vector3Lerp(this->focus, focus, 0.5f);
+			
+			Math::Vector3 _target = focus + shake;
+			Math::Vector3 _right = Math::Vector3Cross(front, Math::Vector3::OneY);
+			Math::Vector3 _up = Math::Vector3Cross(_right, front);
+			Math::Vector3 _pos = this->focus - (front * len);
+
+			eye = _pos;
+
+			SetLookAt(_pos, _target, _up);
 		}
 	} // namespace Graphics
 } // namespace Phoenix

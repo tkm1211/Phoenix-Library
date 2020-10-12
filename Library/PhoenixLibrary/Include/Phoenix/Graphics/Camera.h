@@ -202,6 +202,9 @@ namespace Phoenix
 
 			void SphereLinearLockOnCamera(const Math::Vector3& center, const Math::Vector3& start, const Math::Vector3& end, const Math::Vector3& centerAdjust, f32 sphereLinearSpeed, f32 distanceToFouceFromCamera);
 
+			void InitEventCamera(const Math::Vector3& focus, const Math::Vector3& front, Phoenix::f32 len);
+			void EventCamera(const Math::Vector3& focus, const Math::Vector3& front, Phoenix::f32 len);
+
 		private:
 			// ビューベクトルを取得
 			void GetViewVectors(Math::Vector3& front, Math::Vector3& up);

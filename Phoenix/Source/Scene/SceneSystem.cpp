@@ -38,6 +38,7 @@ void SceneSystem::Initialize(Phoenix::OS::IDisplay* display, Phoenix::Graphics::
 	AddScene<SceneGame>();
 	AddScene<SceneGameClear>();
 	AddScene<SceneGameOver>();
+	AddScene<SceneEvent>();
 	ChangeScene(SceneType::Title, false, false);
 
 	for (Phoenix::u32 i = 0; i < scenes.size(); ++i)

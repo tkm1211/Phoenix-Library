@@ -15,7 +15,8 @@ enum class SceneType
 	Tutorial,
 	Game,
 	GameClear,
-	GameOver
+	GameOver,
+	Event
 };
 
 class FadeSystem;

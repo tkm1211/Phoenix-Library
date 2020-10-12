@@ -105,6 +105,9 @@
     <ClCompile Include="Source\Boss\AIState\RotationAttackState.cpp">
       <Filter>Source\Boss\AIState</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\SceneEvent.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
