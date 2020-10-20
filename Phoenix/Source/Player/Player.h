@@ -192,7 +192,13 @@ private:
 	Phoenix::s32 accumulationTimeCnt = 0;
 
 	// ブレンド
-	Phoenix::f32 blendRate = 0.0f;
+	Phoenix::Math::Vector3 blendRate = { 0.0f, 0.0f, 0.0f };
+
+	// エネミーテリトリーフラグ
+	bool inTerritory = false;
+
+	// バトルモード
+	bool isBattleMode = false;
 
 public:
 	Player() :
@@ -222,6 +228,42 @@ public:
 	void GUI();
 	void Damage(int damage);
 	bool AccumulationDamege();
+	void Rotation(Phoenix::Math::Vector3 targetPos)
+	{
+		Phoenix::Math::Vector3 dir = targetPos - pos;
+		dir = Phoenix::Math::Vector3Normalize(dir);
+		dir.y = 0.0f;
+
+		//Phoenix::Math::Quaternion rotate = boss->GetRotate();
+		Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+		Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
+		Phoenix::Math::Vector3 up = Phoenix::Math::Vector3(m._21, m._22, m._23);
+		Phoenix::Math::Vector3 right = Phoenix::Math::Vector3(m._11, m._12, m._13);
+		forward.y = 0.0f;
+
+		Phoenix::f32 angle;
+		angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
+
+		// 回転
+		if (1e-8f < fabs(angle))
+		{
+			Phoenix::f32 angleR;
+			angleR = acosf(Phoenix::Math::Vector3Dot(dir, right));
+			angleR -= (90.0f * 0.01745f);
+
+			if (0.0f < angleR) angle *= -1;
+
+			Phoenix::Math::Quaternion q;
+			q = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
+			//rotate *= q;
+
+			Phoenix::Math::Quaternion rotateT = rotate;
+			rotateT *= q;
+			//rotate = Phoenix::Math::QuaternionSlerp(rotate, rotateT, 0.17f);
+			rotate = rotateT;
+		}
+	}
+	void InEnemyTerritory(bool inTerritory) { this->inTerritory = inTerritory; }
 
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }

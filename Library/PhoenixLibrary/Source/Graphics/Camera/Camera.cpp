@@ -522,7 +522,7 @@ namespace Phoenix
 			SetLookAt(_pos, _target, _up);
 		}
 
-		void Camera::ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust)
+		void Camera::ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 lerpTime)
 		{
 			// TODO : Win関数を別の関数に差し替え
 			POINT cursor;
@@ -574,7 +574,8 @@ namespace Phoenix
 			front = _front;
 
 			// ここで中心を計算しておくことで注視点とカメラ座標を求めることができる
-			eye = (center + adjust);
+			//eye = (center + adjust);
+			eye = Phoenix::Math::Vector3Lerp(eye, (center + adjust), lerpTime);
 
 			// 注視点がターゲットに移動している時と移動していない時で分岐しておくことで処理が見やすくなる
 			if (onTarget)
@@ -608,6 +609,77 @@ namespace Phoenix
 			Math::Vector3 _pos = eye - (front * 7.5f);
 			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y; // ステージに埋まってしまうので押し出し
 		
+			// カメラシェイク値を注視点に加算するとズレが生じるので変数に代入
+			Math::Vector3 _target = focus + shake;
+
+			_right = Math::Vector3Cross(front, _up);
+			_up = Math::Vector3Cross(_right, front);
+
+			SetLookAt(_pos, _target, _up);
+		}
+
+		void Camera::ControllerCamera02(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 lerpTime)
+		{
+			// TODO : Win関数を別の関数に差し替え
+			POINT cursor;
+			GetCursorPos(&cursor);
+			oldCursor = newCursor;
+			newCursor = Math::Vector2(static_cast<float>(cursor.x), static_cast<float>(cursor.y));
+
+			Phoenix::f32 sX = 0.0f;
+			Phoenix::f32 sY = 0.0f;
+
+			sX = xInput[0].sRX / 1000.0f;
+			sY = xInput[0].sRY / 1000.0f;
+
+			sY = GetKeyState(VK_UP) < 0 ? -1.0f : sY;
+			sY = GetKeyState(VK_DOWN) < 0 ? 1.0f : sY;
+			sX = GetKeyState(VK_LEFT) < 0 ? -1.0f : sX;
+			sX = GetKeyState(VK_RIGHT) < 0 ? 1.0f : sX;
+
+			if (GetKeyState(VK_RBUTTON) < 0)
+			{
+				f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
+				f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
+				rotateY -= moveX * 0.5f;
+				rotateX += moveY * 0.5f;
+			}
+			else
+			{
+				rotateY -= sX * 3.5f * 0.01745f;
+				rotateX -= sY * 3.5f * 0.01745f;
+				if (0.5f < rotateX)
+				{
+					rotateX = 0.5f;
+				}
+				if (rotateX < -0.5f)
+				{
+					rotateX = -0.5f;
+				}
+			}
+
+			if (sY == 0.0f)
+			{
+				rotateX = Phoenix::Math::f32Lerp(rotateX, -0.15f, 0.15f);
+			}
+
+			f32 xSin = sinf(rotateX);
+			f32 xCos = cosf(rotateX);
+			f32 ySin = sinf(rotateY);
+			f32 yCos = cosf(rotateY);
+
+			// このフレームのベクトルを使用するのでここで計算しておく
+			Math::Vector3 _front = { xCos * -ySin, xSin, xCos * -yCos };
+			Math::Vector3 _right = { yCos, 0.0f, -ySin };
+			Math::Vector3 _up = Math::Vector3Cross(_right, _front);
+			front = _front;
+
+			// 注視点が変わっても線形補間で違和感をなくす
+			focus = Phoenix::Math::Vector3Lerp(focus, (center + adjust), lerpTime);
+
+			Math::Vector3 _pos = focus - (front * len);
+			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y; // ステージに埋まってしまうので押し出し
+
 			// カメラシェイク値を注視点に加算するとズレが生じるので変数に代入
 			Math::Vector3 _target = focus + shake;
 

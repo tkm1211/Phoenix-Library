@@ -28,6 +28,9 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{b37bd37c-5fa6-490d-8350-8b2072e17ca9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Mannequin">
+      <UniqueIdentifier>{b1235755-55e5-450b-b657-ff631f55606f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -108,6 +111,9 @@
     <ClCompile Include="Source\Scene\SceneEvent.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Mannequin\Mannequin.cpp">
+      <Filter>Source\Mannequin</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -179,21 +185,18 @@
     <ClInclude Include="Source\UI\TargetMarkUI.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Boss\AIState\RotationAttackState.h">
       <Filter>Source\Boss\AIState</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Mannequin\Mannequin.h">
+      <Filter>Source\Mannequin</Filter>
+    </ClInclude>
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\Data\Assets\Texture\Icon\Icon.ico">
-      <Filter>Resources</Filter>
-    </Image>
+    <ResourceCompile Include="Phoenix1.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Phoenix.rc">
-      <Filter>Resources</Filter>
-    </ResourceCompile>
+    <Image Include="..\Data\Assets\Texture\Icon\Icon.ico" />
   </ItemGroup>
 </Project>

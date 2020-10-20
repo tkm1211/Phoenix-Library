@@ -15,6 +15,9 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	boss = Boss::Create();
 	boss->Construct(graphicsDevice, player.get());
 
+	mannequin = Mannequin::Create();
+	mannequin->Construct(graphicsDevice);
+
 	targetMarkUI = TargetMarkUI::Create();
 
 	uiSystem = UISystem::Create();

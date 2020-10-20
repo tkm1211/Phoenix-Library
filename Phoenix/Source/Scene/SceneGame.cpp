@@ -405,8 +405,8 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 							cameraShakeCnt = 0;
 
 							shakeWidth = 0.0f;
-							shakeHeight = 0.015f;
-							cameraShakeMaxCnt = 5;
+							shakeHeight = 0.15f;
+							cameraShakeMaxCnt = 7;
 
 							SetXInputVibration(1.0f, 0.0f, 5);
 						}
@@ -416,9 +416,9 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 							cameraShakeCnt = 0;
 
-							shakeWidth = 0.015f;
+							shakeWidth = 0.15f;
 							shakeHeight = 0.0f;
-							cameraShakeMaxCnt = 5;
+							cameraShakeMaxCnt = 7;
 
 							SetXInputVibration(0.0f, 1.0f, 5);
 						}
@@ -428,7 +428,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 							cameraShakeCnt = 0;
 
-							shakeWidth = 0.075f;
+							shakeWidth = 0.75f;
 							shakeHeight = 0.0f;
 							cameraShakeMaxCnt = 10;
 

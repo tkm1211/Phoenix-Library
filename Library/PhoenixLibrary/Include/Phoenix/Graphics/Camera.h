@@ -194,7 +194,8 @@ namespace Phoenix
 
 			void SurveyCamera(f32 addRotateX, f32 addRotateY, f32 distance, Math::Vector3 target);
 
-			void ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust);
+			void ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 lerpTime = 1.0f);
+			void ControllerCamera02(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 lerpTime = 1.0f);
 
 			void LockOnCamera(const Math::Vector3& center, const Math::Vector3& target, const Math::Vector3& centerAdjust, const Math::Vector3& targetAdjust, bool isLerp = true);
 

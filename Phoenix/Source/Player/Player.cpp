@@ -44,6 +44,38 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack05\\Uppercut.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack06\\RoundhouseKick.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // Head_Hit Head_Hit02 Damage
+		
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Idle\\Ready_Idle.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Forward\\Walk_Forward.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Back\\Walk_Backward.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Right\\Walk_Right.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Left\\Walk_Left.fbx", -1);
+#endif
+
+#if 1
+		model->AddAnimationLayer(0);
+		model->AddAnimationLayer(1);
+		model->AddAnimationLayer(2);
+		model->AddAnimationLayer(3);
+		model->AddAnimationLayer(4);
+		model->AddAnimationLayer(5);
+		model->AddAnimationLayer(6);
+		model->AddAnimationLayer(7);
+		model->AddAnimationLayer(8);
+		model->AddAnimationLayer(9);
+		model->AddAnimationLayer(10);
+		model->AddAnimationLayer(11);
+
+		model->AddAnimationLayer(12);
+		model->AddAnimationLayer(12, 56, 65);
+		//model->AddAnimationLayer(13);
+
+		model->AddBlendAnimationToLayer(13, 13, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(14, 13, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(15, 13, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
+		model->AddBlendAnimationToLayer(16, 13, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
+
+		model->AddBlendAnimationToLayer(static_cast<Phoenix::u32>(AnimationState::SlowRun), static_cast<Phoenix::u32>(AnimationState::Walk), Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
 #endif
 	}
 
@@ -195,9 +227,11 @@ void Player::Initialize()
 		attackCollisionIndex = -1;
 		accumulationDamege = 0;
 		accumulationTimeCnt = 0;
-		blendRate = 0.0f;
+		blendRate = { 0.0f, 0.0f, 0.0f };
 		newRotate = rotate;
 		rotateY = 180.0f * 0.01745f;
+		inTerritory = false;
+		isBattleMode = false;
 	}
 }
 
@@ -223,7 +257,15 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl)
 	// アニメーション更新
 	{
 		model->UpdateTransform(1 / 60.0f);
-		model->SetBlendRate(blendRate);
+
+		if (isBattleMode)
+		{
+			model->SetBlendRate(Phoenix::Math::Vector3(blendRate.x, -blendRate.y, 0.0f));
+		}
+		else
+		{
+			model->SetBlendRate(blendRate.z);
+		}
 	}
 
 	// ワールド行列を作成
@@ -292,8 +334,14 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 	// ブレンドレート計算
 	{
-		blendRate = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(sX, sY));
-		blendRate = 1.0f <= blendRate ? 1.0f : blendRate;
+		if (isBattleMode)
+		{
+			blendRate.x = sX;
+			blendRate.y = sY;
+		}
+
+		blendRate.z = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(sX, sY));
+		blendRate.z = 1.0f <= blendRate.z ? 1.0f : blendRate.z;
 	}
 
 #if 0
@@ -580,6 +628,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// プレイヤーの最終方向を決定する角度を計算
 	auto UpdateRotateY = [&]()
 	{
+		if (isBattleMode) return;
+
 		float len = sqrtf(sX * sX + sY * sY);
 
 		if (len <= 0)
@@ -599,6 +649,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// プレイヤー回転
 	auto RotatePlayer = [&](Phoenix::f32 angle)
 	{
+		if (isBattleMode) return;
 #if 0
 		Phoenix::Math::Vector3 oldAngle = rotate;
 		oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
@@ -758,21 +809,40 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// 座標更新
 	if (!isChangeAnimation)
 	{
+		if (isBattleMode) return;
+
 		//rotate = Phoenix::Math::Vector3Lerp(rotate, newRotate, 0.05f);
+
 		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f);
 
 		/*Phoenix::Math::Matrix rotateMatirx = Phoenix::Math::MatrixRotationQuaternion(&rotate);
 		Phoenix::f32 rotateY = asinf(rotateMatirx._31);*/
 
-		if (animationState == AnimationState::Walk)
+		/*if (inTerritory)
 		{
-			pos.x += sinf(rotateY) * (speed + (SlowRunSpeed * blendRate));
-			pos.z += cosf(rotateY) * (speed + (SlowRunSpeed * blendRate));
+			if (animationState == AnimationState::Walk)
+			{
+				pos.x += sinf(rotateY + (90.0f * 0.01745f)) * (speed + (SlowRunSpeed * blendRate));
+				pos.z += cosf(rotateY + (90.0f * 0.01745f)) * (speed + (SlowRunSpeed * blendRate));
+			}
+			else
+			{
+				pos.x += sinf(rotateY + (90.0f * 0.01745f)) * speed;
+				pos.z += cosf(rotateY + (90.0f * 0.01745f)) * speed;
+			}
 		}
-		else
+		else*/
 		{
-			pos.x += sinf(rotateY) * speed;
-			pos.z += cosf(rotateY) * speed;
+			if (animationState == AnimationState::Walk)
+			{
+				pos.x += sinf(rotateY) * (speed + (SlowRunSpeed * blendRate.z));
+				pos.z += cosf(rotateY) * (speed + (SlowRunSpeed * blendRate.z));
+			}
+			else
+			{
+				pos.x += sinf(rotateY) * speed;
+				pos.z += cosf(rotateY) * speed;
+			}
 		}
 	}
 #endif
@@ -786,17 +856,35 @@ void Player::ChangeAnimation()
 	switch (animationState)
 	{
 	case AnimationState::Idle:
-		model->PlayAnimation(animationNum, 1, 0.1f);
-		model->UpdateTransform(1 / 60.0f);
-		model->SetLoopAnimation(true);
+		if (isBattleMode)
+		{
+			model->PlayAnimation(12, 1, 0.2f);
+			model->UpdateTransform(1 / 60.0f);
+			model->SetLoopAnimation(true);
+		}
+		else
+		{
+			model->PlayAnimation(animationNum, 1, 0.1f);
+			model->UpdateTransform(1 / 60.0f);
+			model->SetLoopAnimation(true);
+		}
 		break;
 
 	case AnimationState::Walk:
-		model->PlayAnimation(animationNum, 1, 0.2f);
-		model->PlayBlendAnimation(static_cast<Phoenix::u32>(AnimationState::SlowRun), 1, 0.2f);
-		model->UpdateTransform(1 / 60.0f);
-		model->SetLoopAnimation(true);
-		model->SetBlendLoopAnimation(true);
+		if (isBattleMode)
+		{
+			model->PlayAnimation(12, 1, 0.2f);
+			model->PlayBlendAnimation(13, 1, 0.2f);
+			model->UpdateTransform(1 / 60.0f);
+			model->SetLoopAnimation(true);
+			model->SetBlendLoopAnimation(true);
+		}
+		else
+		{
+			model->PlayAnimation(animationNum, 1, 0.2f);
+			model->UpdateTransform(1 / 60.0f);
+			model->SetLoopAnimation(true);
+		}
 		break;
 
 	case AnimationState::Run:
@@ -1106,6 +1194,7 @@ void Player::GUI()
 		if (ImGui::TreeNode("Prameter"))
 		{
 			ImGui::Text("HP : %d", life);
+			ImGui::Checkbox("BattleMode", &isBattleMode);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Transform"))
@@ -1148,7 +1237,7 @@ void Player::GUI()
 
 			if (ImGui::TreeNode("Blend"))
 			{
-				ImGui::DragFloat("Rate", &blendRate, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("Rate", &blendRate.x, 0.01f, 0.0f, 1.0f);
 				if (ImGui::Button("PlayBlendAnim"))
 				{
 					isChangeAnimation = true;

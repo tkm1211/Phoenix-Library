@@ -3,6 +3,7 @@
 #include <memory>
 #include "../Player/Player.h"
 #include "../Boss/Boss.h"
+#include "../Mannequin/Mannequin.h"
 #include "../UI/UISystem.h"
 #include "../UI/TargetMarkUI.h"
 #include "../Primitive/GeometricPrimitive.h"
@@ -112,7 +113,7 @@ private:
 private:
 	// 共通データのアドレス
 	Player* player = nullptr;
-	Boss* boss = nullptr;
+	Mannequin* mannequin = nullptr;
 	UISystem* uiSystem = nullptr;
 	TargetMarkUI* targetMarkUI = nullptr;
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
@@ -209,6 +210,7 @@ private: // Debug
 
 	Phoenix::f32 playerAttackEndCount;
 	Phoenix::f32 playerAttackEndMaxCount = 30;
+	Phoenix::f32 grayScale;
 
 	Phoenix::f32 pointLightDistance = 0.95f;
 
@@ -229,6 +231,8 @@ private: // Debug
 	bool active[10] = { false };
 
 	bool onPointLight = false;
+
+	bool isDrawUI = false;
 
 private:
 	struct DissolveCB

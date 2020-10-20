@@ -105,6 +105,21 @@ namespace Phoenix
 			animator->LoadResource(resourceManamger.get(), filename, index);
 		}
 
+		void ModelObject::AddAnimationLayer(s32 setBaseAnimationIndex, const s8* beginNodeName, const s8* endNodeName)
+		{
+			animator->AddLayer(setBaseAnimationIndex, beginNodeName, endNodeName);
+		}
+
+		void ModelObject::AddAnimationLayer(s32 setBaseAnimationIndex, s32 beginNodeIndex, s32 endNodeIndex)
+		{
+			animator->AddLayer(setBaseAnimationIndex, beginNodeIndex, endNodeIndex);
+		}
+
+		void ModelObject::AddBlendAnimationToLayer(s32 addBlendAnimationIndex, s32 animationLayerIndex, Phoenix::Math::Vector3 plot)
+		{
+			animator->AddBlendAnimationToLayer(addBlendAnimationIndex, animationLayerIndex, plot);
+		}
+
 		// 行列を更新
 		void ModelObject::UpdateTransform(f32 elapsedTime)
 		{
@@ -172,15 +187,15 @@ namespace Phoenix
 		}
 
 		// アニメーションの再生
-		void ModelObject::PlayAnimation(u32 bank, u32 clip, f32 fadeTime)
+		void ModelObject::PlayAnimation(u32 layerIndex, u32 clip, f32 fadeTime)
 		{
-			animator->Play(bank, clip, fadeTime);
+			animator->Play(layerIndex, layerIndex, clip, fadeTime);
 		}
 
 		// アニメーションの同時再生
-		void ModelObject::PlayBlendAnimation(u32 bank, u32 clip, f32 fadeTime)
+		void ModelObject::PlayBlendAnimation(u32 layerIndex, u32 clip, f32 fadeTime)
 		{
-			animator->BlendPlay(bank, clip, fadeTime);
+			animator->BlendPlay(layerIndex, layerIndex, clip, fadeTime);
 		}
 
 		// 一時停止/再開
@@ -317,6 +332,10 @@ namespace Phoenix
 
 		// ブレンドレートの設定
 		void ModelObject::SetBlendRate(f32 rate)
+		{
+			animator->SetBlendRate(rate);
+		}
+		void ModelObject::SetBlendRate(Phoenix::Math::Vector3 rate)
 		{
 			animator->SetBlendRate(rate);
 		}

@@ -229,6 +229,7 @@
     <ClCompile Include="Source\Boss\Boss.cpp" />
     <ClCompile Include="Source\Boss\BossAI.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Mannequin\Mannequin.cpp" />
     <ClCompile Include="Source\Player\Player.cpp" />
     <ClCompile Include="Source\Primitive\GeometricPrimitive.cpp" />
     <ClCompile Include="Source\Scene\FadeSystem.cpp" />
@@ -247,7 +248,7 @@
     <ClCompile Include="Source\UI\UISystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="Source\Boss\AI.h" />
     <ClInclude Include="Source\Boss\AIState\AIState.h" />
     <ClInclude Include="Source\Boss\AIState\AvoidState.h" />
@@ -260,6 +261,7 @@
     <ClInclude Include="Source\Boss\Boss.h" />
     <ClInclude Include="Source\Boss\BossAI.h" />
     <ClInclude Include="Source\Main.h" />
+    <ClInclude Include="Source\Mannequin\Mannequin.h" />
     <ClInclude Include="Source\Player\Player.h" />
     <ClInclude Include="Source\Primitive\GeometricPrimitive.h" />
     <ClInclude Include="Source\Scene\FadeSystem.h" />
@@ -274,7 +276,7 @@
     <ClInclude Include="Source\UI\UISystem.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Phoenix.rc" />
+    <ResourceCompile Include="Phoenix1.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Data\Assets\Texture\Icon\Icon.ico" />
