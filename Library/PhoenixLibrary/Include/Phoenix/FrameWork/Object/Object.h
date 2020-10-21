@@ -1395,7 +1395,8 @@ namespace Phoenix
 			//Animation* blendCurrentAnimation = nullptr; // “¯ŽžÄ¶—p
 
 			AnimationLayer* currentAnimationLayer = nullptr;
-			AnimationLayer* blendCurrentAnimationLayer = nullptr;
+			AnimationLayer* blendCurrentAnimationLayer[2] = { nullptr, nullptr };
+			s32 blendCurrentAnimationLayerSize = 2;
 
 			//f32 blendRate = 0.0f;
 			Phoenix::Math::Vector3 blendRate = { 0.0f, 0.0f, 0.0f };
@@ -1529,7 +1530,8 @@ namespace Phoenix
 				}
 
 				currentAnimationLayer = &animatioLayer;
-				blendCurrentAnimationLayer = nullptr;
+				blendCurrentAnimationLayer[0] = nullptr;
+				blendCurrentAnimationLayer[1] = nullptr;
 				animatioLayer.baseAnimation->player->Play(clip);
 				animatioLayer.baseAnimation->player->SetBlendTime(fadeTime);
 
@@ -1566,7 +1568,8 @@ namespace Phoenix
 					return;
 				}
 
-				blendCurrentAnimationLayer = &animatioLayer;
+				if (blendCurrentAnimationLayer[0] == nullptr) blendCurrentAnimationLayer[0] = &animatioLayer;
+				else if (blendCurrentAnimationLayer[1] == nullptr) blendCurrentAnimationLayer[1] = &animatioLayer;
 				animatioLayer.baseAnimation->player->Play(clip);
 				animatioLayer.baseAnimation->player->SetBlendTime(fadeTime);
 
@@ -1637,17 +1640,23 @@ namespace Phoenix
 			// ƒ‹[ƒv“¯ŽžÄ¶Ý’è
 			void SetBlendLoop(bool loop)
 			{
-				blendCurrentAnimationLayer->baseAnimation->player->SetLoop(loop);
-
-				s32 blendAnimationsCount = static_cast<s32>(blendCurrentAnimationLayer->blendAnimations.size());
-				if (blendAnimationsCount <= 0)
+				for (s32 i = 0; i < blendCurrentAnimationLayerSize; ++i)
 				{
-					return;
-				}
+					if (blendCurrentAnimationLayer[i] != nullptr)
+					{
+						blendCurrentAnimationLayer[i]->baseAnimation->player->SetLoop(loop);
 
-				for (s32 blendAnimationsID = 0; blendAnimationsID < blendAnimationsCount; ++blendAnimationsID)
-				{
-					blendCurrentAnimationLayer->blendAnimations.at(blendAnimationsID).blendCurrentAnimation->player->SetLoop(loop);
+						s32 blendAnimationsCount = static_cast<s32>(blendCurrentAnimationLayer[i]->blendAnimations.size());
+						if (blendAnimationsCount <= 0)
+						{
+							return;
+						}
+
+						for (s32 blendAnimationsID = 0; blendAnimationsID < blendAnimationsCount; ++blendAnimationsID)
+						{
+							blendCurrentAnimationLayer[i]->blendAnimations.at(blendAnimationsID).blendCurrentAnimation->player->SetLoop(loop);
+						}
+					}
 				}
 			}
 
@@ -1822,6 +1831,8 @@ namespace Phoenix
 			void SetBlendRate(f32 rate)
 			{
 				blendRate.x = rate;
+				blendRate.y = 0.0f;
+				blendRate.z = 0.0f;
 			}
 
 			void SetBlendRate(Phoenix::Math::Vector3 rate)
@@ -1959,35 +1970,77 @@ namespace Phoenix
 			{
 				if (currentAnimationLayer != nullptr)
 				{
-					if (blendCurrentAnimationLayer != nullptr)
+					if (blendCurrentAnimationLayer[0] != nullptr)
 					{
-						UpdateLayer(currentAnimationLayer, elapsedTime);
-						UpdateLayer(blendCurrentAnimationLayer, elapsedTime);
-
-						s32 animationNodeCount = static_cast<s32>(nodes->size());
-						for (s32 animationNodeID = 0; animationNodeID < animationNodeCount; ++animationNodeID)
+						if (blendCurrentAnimationLayer[1] != nullptr)
 						{
-							s16 bindNodeID = currentAnimationLayer->baseAnimation->bindNodeIDs.at(animationNodeID);
-							if (bindNodeID < 0) continue;
+							UpdateLayer(currentAnimationLayer, elapsedTime);
+							UpdateLayer(blendCurrentAnimationLayer[0], elapsedTime);
+							UpdateLayer(blendCurrentAnimationLayer[1], elapsedTime);
 
-							ModelObject::Node& node = nodes->at(animationNodeID);
-							ModelObject::Node& currentNode = currentAnimationLayer->nodes.at(animationNodeID);
-							ModelObject::Node& blendCurrentNode = blendCurrentAnimationLayer->nodes.at(animationNodeID);
-
-							Math::Vector3 scale = currentNode.scale;
-							Math::Quaternion rotate = currentNode.rotate;
-							Math::Vector3 translate = currentNode.translate;
-
-							if (animationNodeID == 1 || (blendCurrentAnimationLayer->beginNodeIndex <= animationNodeID && animationNodeID <= blendCurrentAnimationLayer->endNodeIndex))
+							s32 animationNodeCount = static_cast<s32>(nodes->size());
+							for (s32 animationNodeID = 0; animationNodeID < animationNodeCount; ++animationNodeID)
 							{
-								scale = blendCurrentNode.scale;
-								rotate = blendCurrentNode.rotate;
-								translate = blendCurrentNode.translate;
-							}
+								s16 bindNodeID = currentAnimationLayer->baseAnimation->bindNodeIDs.at(animationNodeID);
+								if (bindNodeID < 0) continue;
 
-							node.scale = scale;
-							node.rotate = rotate;
-							node.translate = translate;
+								ModelObject::Node& node = nodes->at(animationNodeID);
+								ModelObject::Node& currentNode = currentAnimationLayer->nodes.at(animationNodeID);
+								ModelObject::Node& blendCurrentNode01 = blendCurrentAnimationLayer[0]->nodes.at(animationNodeID);
+								ModelObject::Node& blendCurrentNode02 = blendCurrentAnimationLayer[1]->nodes.at(animationNodeID);
+
+								Math::Vector3 scale = currentNode.scale;
+								Math::Quaternion rotate = currentNode.rotate;
+								Math::Vector3 translate = currentNode.translate;
+
+								if (blendCurrentAnimationLayer[0]->beginNodeIndex <= animationNodeID && animationNodeID <= blendCurrentAnimationLayer[0]->endNodeIndex)
+								{
+									scale = blendCurrentNode01.scale;
+									rotate = blendCurrentNode01.rotate;
+									translate = blendCurrentNode01.translate;
+								}
+								if (blendCurrentAnimationLayer[1]->beginNodeIndex <= animationNodeID && animationNodeID <= blendCurrentAnimationLayer[1]->endNodeIndex)
+								{
+									scale = blendCurrentNode02.scale;
+									rotate = blendCurrentNode02.rotate;
+									translate = blendCurrentNode02.translate;
+								}
+
+								node.scale = scale;
+								node.rotate = rotate;
+								node.translate = translate;
+							}
+						}
+						else
+						{
+							UpdateLayer(currentAnimationLayer, elapsedTime);
+							UpdateLayer(blendCurrentAnimationLayer[0], elapsedTime);
+
+							s32 animationNodeCount = static_cast<s32>(nodes->size());
+							for (s32 animationNodeID = 0; animationNodeID < animationNodeCount; ++animationNodeID)
+							{
+								s16 bindNodeID = currentAnimationLayer->baseAnimation->bindNodeIDs.at(animationNodeID);
+								if (bindNodeID < 0) continue;
+
+								ModelObject::Node& node = nodes->at(animationNodeID);
+								ModelObject::Node& currentNode = currentAnimationLayer->nodes.at(animationNodeID);
+								ModelObject::Node& blendCurrentNode = blendCurrentAnimationLayer[0]->nodes.at(animationNodeID);
+
+								Math::Vector3 scale = currentNode.scale;
+								Math::Quaternion rotate = currentNode.rotate;
+								Math::Vector3 translate = currentNode.translate;
+
+								if (animationNodeID == 1 || (blendCurrentAnimationLayer[0]->beginNodeIndex <= animationNodeID && animationNodeID <= blendCurrentAnimationLayer[0]->endNodeIndex))
+								{
+									scale = blendCurrentNode.scale;
+									rotate = blendCurrentNode.rotate;
+									translate = blendCurrentNode.translate;
+								}
+
+								node.scale = scale;
+								node.rotate = rotate;
+								node.translate = translate;
+							}
 						}
 					}
 					else

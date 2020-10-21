@@ -50,6 +50,11 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Back\\Walk_Backward.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Right\\Walk_Right.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Left\\Walk_Left.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Forward\\Forward_Step.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Back\\Back_Step.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Right\\Right_Step.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Left\\Left_Step.fbx", -1);
 #endif
 
 #if 1
@@ -68,7 +73,11 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		model->AddAnimationLayer(12);
 		model->AddAnimationLayer(12, 56, 65);
-		//model->AddAnimationLayer(13);
+
+		model->AddAnimationLayer(17);
+		model->AddAnimationLayer(18);
+		model->AddAnimationLayer(19);
+		model->AddAnimationLayer(20);
 
 		model->AddBlendAnimationToLayer(13, 13, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
 		model->AddBlendAnimationToLayer(14, 13, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
@@ -628,57 +637,80 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// プレイヤーの最終方向を決定する角度を計算
 	auto UpdateRotateY = [&]()
 	{
-		if (isBattleMode) return;
-
-		float len = sqrtf(sX * sX + sY * sY);
-
-		if (len <= 0)
+		/*if (isBattleMode)
 		{
-			sX = 0;
-			sY = 0;
+			Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
+			float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+
+			if (len <= 0)
+			{
+				dir.x = 0;
+				dir.z = 0;
+			}
+
+			float mag = 1 / len;
+
+			dir.x *= mag;
+			dir.z *= mag;
+
+			rotateY = atan2f(dir.x, dir.z);
 		}
+		else*/
+		{
+			float len = sqrtf(sX * sX + sY * sY);
 
-		float mag = 1 / len;
+			if (len <= 0)
+			{
+				sX = 0;
+				sY = 0;
+			}
 
-		sX *= mag;
-		sY *= mag;
+			float mag = 1 / len;
 
-		rotateY = camera.GetRotateY() + atan2f(sX, sY);
+			sX *= mag;
+			sY *= mag;
+
+			rotateY = camera.GetRotateY() + atan2f(sX, sY);
+		}
 	};
 
 	// プレイヤー回転
 	auto RotatePlayer = [&](Phoenix::f32 angle)
 	{
-		if (isBattleMode) return;
+		if (isBattleMode)
+		{
+			Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
+			float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+
+			if (len <= 0)
+			{
+				dir.x = 0;
+				dir.z = 0;
+			}
+
+			float mag = 1 / len;
+
+			dir.x *= mag;
+			dir.z *= mag;
+
+			Phoenix::f32 angleY = atan2f(dir.x, dir.z);
+
+			newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
+		}
+		else
+		{
 #if 0
-		Phoenix::Math::Vector3 oldAngle = rotate;
-		oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
-		rotate = oldAngle;
+			Phoenix::Math::Vector3 oldAngle = rotate;
+			oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
+			rotate = oldAngle;
 #elif 0
-		newRotate = rotate;
-		newRotate.y = camera.GetRotateY() + atan2f(sX, sY);
+			newRotate = rotate;
+			newRotate.y = camera.GetRotateY() + atan2f(sX, sY);
 #else
-		newRotate = rotate;
-		newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
+			newRotate = rotate;
+			newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
 #endif
-	};
-
-	// アニメーション変更
-	auto ChangeAnimationState = [&](AnimationState state, Phoenix::f32 moveSpeed = 0.0f)
-	{
-		isChangeAnimation = true;
-		animationState = state;
-		
-		speed = moveSpeed;
-	};
-
-	// 攻撃アニメーション変更
-	auto ChangeAttackAnimationState = [&](AttackAnimationState state, Phoenix::f32 speed)
-	{
-		isAttack = true;
-
-		attackState = state;
-		animationSpeed = speed;
+		}
 	};
 
 	// 攻撃ステートへ
@@ -731,29 +763,61 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// 攻撃ステート以外
 	if (!isAttack)
 	{
-		// 回避ステートへ
-		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Roll)
+		// 回避ステート
+		if (isBattleMode)
 		{
-			ChangeAnimationState(AnimationState::Roll, RollSpeed);
-
-			if (sX != 0.0f || sY != 0.0f)
+			// 回避ステートへ
+			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
 			{
-				UpdateRotateY();
-				RotatePlayer(rotateY);
+				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
+
+				if (sX != 0.0f || sY != 0.0f)
+				{
+					UpdateRotateY();
+					RotatePlayer(rotateY);
+					if (sY < 0.0f) dedgeLayerIndex = 14;
+					if (sY > 0.0f) dedgeLayerIndex = 15;
+					if (sX < 0.0f) dedgeLayerIndex = 17;
+					if (sX > 0.0f) dedgeLayerIndex = 16;
+				}
+			}
+			// 回避ステート中
+			else if (animationState == AnimationState::Dedge)
+			{
+				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.025f);
+				// 待機ステートへ
+				if (!model->IsPlaying())
+				{
+					ChangeAnimationState(AnimationState::Idle, 0.0f);
+				}
 			}
 		}
-		// 回避ステート中
-		else if (animationState == AnimationState::Roll)
+		else
 		{
-			// 待機ステートへ
-			if (!model->IsPlaying())
+			// 回避ステートへ
+			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Roll)
 			{
-				ChangeAnimationState(AnimationState::Idle, 0.0f);
+				ChangeAnimationState(AnimationState::Roll, RollSpeed);
+
+				if (sX != 0.0f || sY != 0.0f)
+				{
+					UpdateRotateY();
+					RotatePlayer(rotateY);
+				}
+			}
+			// 回避ステート中
+			else if (animationState == AnimationState::Roll)
+			{
+				// 待機ステートへ
+				if (!model->IsPlaying())
+				{
+					ChangeAnimationState(AnimationState::Idle, 0.0f);
+				}
 			}
 		}
 
 		// 回避ステート以外
-		if (animationState != AnimationState::Roll)
+		if (animationState != AnimationState::Roll && animationState != AnimationState::Dedge)
 		{
 			// 移動ステート
 			if (sX != 0.0f || sY != 0.0f)
@@ -763,7 +827,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 				if ((!xInput[0].bRBs && !(GetKeyState(VK_SHIFT) < 0)) && animationState != AnimationState::Walk)
 				{
-					ChangeAnimationState(AnimationState::Walk, WalkSpeed);
+					if (isBattleMode) ChangeAnimationState(AnimationState::Walk, BattleWalkSpeed);
+					else ChangeAnimationState(AnimationState::Walk, WalkSpeed);
 				}
 				if ((xInput[0].bRBs || GetKeyState(VK_SHIFT) < 0) && animationState != AnimationState::Run)
 				{
@@ -780,24 +845,45 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// 攻撃中
 	else
 	{
-		// 回避ステートへ
-		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Roll)
+		if (isBattleMode)
 		{
-			Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
-
-			// 次の攻撃が発動するボタンの受付
-			if (attackDatas[index].receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatas[index].receptionEndTime)
+			// 回避ステートへ
+			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
 			{
-				ChangeAnimationState(AnimationState::Roll, RollSpeed);
-				ChangeAttackAnimationState(AttackAnimationState::End, 0.0f);
-
-				isAttack = false;
-				attackReceptionTimeCnt = 0.0f;
+				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
 
 				if (sX != 0.0f || sY != 0.0f)
 				{
 					UpdateRotateY();
 					RotatePlayer(rotateY);
+					if (sY < 0.0f) dedgeLayerIndex = 14;
+					if (sY > 0.0f) dedgeLayerIndex = 15;
+					if (sX < 0.0f) dedgeLayerIndex = 17;
+					if (sX > 0.0f) dedgeLayerIndex = 16;
+				}
+			}
+		}
+		else
+		{
+			// 回避ステートへ
+			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Roll)
+			{
+				Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
+
+				// 次の攻撃が発動するボタンの受付
+				if (attackDatas[index].receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatas[index].receptionEndTime)
+				{
+					ChangeAnimationState(AnimationState::Roll, RollSpeed);
+					ChangeAttackAnimationState(AttackAnimationState::End, 0.0f);
+
+					isAttack = false;
+					attackReceptionTimeCnt = 0.0f;
+
+					if (sX != 0.0f || sY != 0.0f)
+					{
+						UpdateRotateY();
+						RotatePlayer(rotateY);
+					}
 				}
 			}
 		}
@@ -809,7 +895,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// 座標更新
 	if (!isChangeAnimation)
 	{
-		if (isBattleMode) return;
+		//if (isBattleMode) return;
 
 		//rotate = Phoenix::Math::Vector3Lerp(rotate, newRotate, 0.05f);
 
@@ -833,10 +919,18 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		}
 		else*/
 		{
-			if (animationState == AnimationState::Walk)
+			if (animationState == AnimationState::Walk/* && !isBattleMode*/)
 			{
-				pos.x += sinf(rotateY) * (speed + (SlowRunSpeed * blendRate.z));
-				pos.z += cosf(rotateY) * (speed + (SlowRunSpeed * blendRate.z));
+				if (isBattleMode)
+				{
+					pos.x += sinf(rotateY) * (speed + (BattleSlowRunSpeed * blendRate.z));
+					pos.z += cosf(rotateY) * (speed + (BattleSlowRunSpeed * blendRate.z));
+				}
+				else
+				{
+					pos.x += sinf(rotateY) * (speed + (SlowRunSpeed * blendRate.z));
+					pos.z += cosf(rotateY) * (speed + (SlowRunSpeed * blendRate.z));
+				}
 			}
 			else
 			{
@@ -913,6 +1007,25 @@ void Player::ChangeAnimation()
 		model->PlayAnimation(animationNum, 1, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		break;
+
+	case AnimationState::Dedge:
+		model->PlayAnimation(dedgeLayerIndex, 0, 0.2f);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+
+		if (dedgeLayerIndex == 14)
+		{
+			model->SetSpeed(1.85f);
+		}
+		else if(dedgeLayerIndex == 15)
+		{
+			model->SetSpeed(1.75f);
+		}
+		else
+		{
+			model->SetSpeed(1.5f);
+		}
 		break;
 	
 	default: break;

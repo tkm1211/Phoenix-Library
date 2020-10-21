@@ -58,7 +58,8 @@ public:
 		Attack04,
 		Attack05,
 		Attack06,
-		Damage
+		Damage,
+		Dedge
 	};
 #endif
 
@@ -123,9 +124,12 @@ private:
 
 private:
 	/*static constexpr*/ Phoenix::f32 WalkSpeed = 0.021f;
+	/*static constexpr*/ Phoenix::f32 BattleWalkSpeed = 0.0105f;
 	/*static constexpr*/ Phoenix::f32 RunSpeed = 0.18f;
 	/*static constexpr*/ Phoenix::f32 SlowRunSpeed = 0.09f;
+	/*static constexpr*/ Phoenix::f32 BattleSlowRunSpeed = 0.045f;
 	/*static constexpr*/ Phoenix::f32 RollSpeed = 0.15f;
+	/*static constexpr*/ Phoenix::f32 DedgeSpeed = 0.1f;
 	/*static constexpr*/ Phoenix::f32 KnockBackSpeed = -0.03f;
 	/*static constexpr*/ Phoenix::f32 KnockBackDownSpeed = 0.0003f;
 	/*static constexpr*/ Phoenix::f32 Attack03Speed = 0.1f;
@@ -199,6 +203,8 @@ private:
 
 	// バトルモード
 	bool isBattleMode = false;
+	Phoenix::u32 dedgeLayerIndex = 0;
+	Phoenix::Math::Vector3 targetPos = { 0.0f, 0.0f, 0.0f };
 
 public:
 	Player() :
@@ -263,7 +269,30 @@ public:
 			rotate = rotateT;
 		}
 	}
-	void InEnemyTerritory(bool inTerritory) { this->inTerritory = inTerritory; }
+	void InEnemyTerritory(bool inTerritory)
+	{
+		if (this->inTerritory != inTerritory) ChangeAnimationState(AnimationState::Idle, 0.0f);
+		this->inTerritory = inTerritory;
+		SetBattleMode(inTerritory);
+	}
+
+	// アニメーション変更
+	void ChangeAnimationState(AnimationState state, Phoenix::f32 moveSpeed = 0.0f)
+	{
+		isChangeAnimation = true;
+		animationState = state;
+
+		speed = moveSpeed;
+	};
+
+	// 攻撃アニメーション変更
+	void ChangeAttackAnimationState(AttackAnimationState state, Phoenix::f32 speed)
+	{
+		isAttack = true;
+
+		attackState = state;
+		animationSpeed = speed;
+	};
 
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
@@ -283,4 +312,7 @@ public:
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 	void SetIsHit(bool isHit) { this->isHit = isHit; }
+
+	void SetBattleMode(bool isBattleMode) { this->isBattleMode = isBattleMode; }
+	void SetTargetPos(Phoenix::Math::Vector3 targetPos) { this->targetPos = targetPos; }
 };
