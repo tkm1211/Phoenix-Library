@@ -37,7 +37,6 @@ void main(uint3 DTid : SV_DispatchThreadID, uint Gid : SV_GroupIndex)
       //      particle.force = particle.life * 5.0f;
       //      particle.force *= sin((particle.maxLife * 0.5f) - particle.life) < 0.0f ? -1.0f : 1.0f;
             
-            float seed = particle.life;
             particle.position.x += particle.velocity.x * 2.0f * dt;
             particle.position.y += particle.velocity.y * 2.0f * dt;
             particle.position.z += particle.velocity.z * 2.0f * dt;

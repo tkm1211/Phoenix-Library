@@ -67,6 +67,30 @@
     <Filter Include="Source\Audio">
       <UniqueIdentifier>{f8b3e180-a7e3-4ae8-abbd-eb2a94086b67}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\Component">
+      <UniqueIdentifier>{da5fbbf8-9498-4241-a037-eb82e8e35d27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Compoment">
+      <UniqueIdentifier>{1eca1275-ba67-4e07-a645-ec98bc7c6acc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\SystemContainer">
+      <UniqueIdentifier>{a6e0a397-1b0a-4e99-a6fc-f4ada2c8c400}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SystemContainer">
+      <UniqueIdentifier>{59b7a086-ce06-4515-9dd9-33f81f11bd27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\System">
+      <UniqueIdentifier>{b9876ba1-a1ef-4823-8175-e5056ee2d3d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\System">
+      <UniqueIdentifier>{dae13f82-91b0-44ca-bf30-1a27afa5742a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Actor">
+      <UniqueIdentifier>{9bfc9b85-f36d-436b-b63f-b39da2870c8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor">
+      <UniqueIdentifier>{d87dd28b-1201-4e3c-b0fb-4fdbc6d7d771}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -132,6 +156,27 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\WAVFileReader.h">
       <Filter>Include\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Component.h">
+      <Filter>Include\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\SystemContainer\SystemContainer.h">
+      <Filter>Include\SystemContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\System\ActorSystem.h">
+      <Filter>Include\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\System\System.h">
+      <Filter>Include\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Actor\Actor.h">
+      <Filter>Include\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Transform.h">
+      <Filter>Include\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\System\SceneSystem.h">
+      <Filter>Include\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -190,6 +235,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Audio\WAVFileReader.cpp">
       <Filter>Source\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\SystemContainer\SystemContainer.cpp">
+      <Filter>Source\SystemContainer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\System\ActorSystem.cpp">
+      <Filter>Source\System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Actor\Actor.cpp">
+      <Filter>Source\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\System\SceneSystem.cpp">
+      <Filter>Source\System</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

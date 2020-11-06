@@ -13,8 +13,7 @@ void Mannequin::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	{
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		model->Initialize(graphicsDevice);
-		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Enemy\\Idol\\Mutant_Breathing_Idle.fbx");
-		//model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Mixamo\\Sword_And_Shield_Attack\\Sword_And_Shield_Attack.fbx");
+		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Enemy\\Boss01\\Idle\\Ready_Idle.fbx");
 
 		model->AddAnimationLayer(0);
 	}
@@ -24,7 +23,7 @@ void Mannequin::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		collisionDatas.resize(1);
 
 		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(0).radius = 1.25f;
+		collisionDatas.at(0).radius = 1.0f;
 		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Hips");
 	}
 }
@@ -43,8 +42,8 @@ void Mannequin::Initialize()
 		worldMatrix = Phoenix::Math::MatrixIdentity();
 		pos = { 0,0,55.0f };
 		rotate = { 0,0,0,1 };
-		scale = { 1.25f,1.25f,1.25f };
-		radius = 1.25f;
+		scale = { 1.0f,1.0f,1.0f };
+		radius = 1.0f;
 	}
 }
 

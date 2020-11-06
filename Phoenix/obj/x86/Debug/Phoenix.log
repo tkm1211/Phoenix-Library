@@ -1,4 +1,8 @@
-﻿  AvoidState.cpp
+﻿  BattleEnemyController.cpp
+  DynamicDifficultyAdjuster.cpp
+  MetaAI.cpp
+  PlayerSkillAnalyzer.cpp
+  AvoidState.cpp
   DamageState.cpp
   JumpAttackState.cpp
   MoveState.cpp
@@ -8,35 +12,41 @@
   Boss.cpp
   BossAI.cpp
   Main.cpp
+  Mannequin.cpp
   Player.cpp
   GeometricPrimitive.cpp
   FadeSystem.cpp
+  SceneEvent.cpp
   SceneGameClear.cpp
+  コードを生成中...
+  コンパイル中...
   SceneCommonData.cpp
   SceneGame.cpp
   SceneGameOver.cpp
   SceneLabo.cpp
   SceneSystem.cpp
   SceneTitle.cpp
-  コードを生成中...
-  コンパイル中...
   SceneTutorial.cpp
   BossUI.cpp
   PlayerUI.cpp
   TargetMarkUI.cpp
   UISystem.cpp
   コードを生成中...
-     ライブラリ D:\Phoenix Project\Phoenix\Phoenix\.\bin\x86\Debug\Phoenix.lib とオブジェクト D:\Phoenix Project\Phoenix\Phoenix\.\bin\x86\Debug\Phoenix.exp を作成中
-SceneLabo.obj : error LNK2019: 未解決の外部シンボル _lua_settop が関数 "public: int __thiscall Phoenix::FrameWork::LuaSystem::GetGlobalValue<int>(char const *)" (??$GetGlobalValue@H@LuaSystem@FrameWork@Phoenix@@QAEHPBD@Z) で参照されました
+     ライブラリ D:\Phoenix Project\BOXER\Project\Phoenix\.\bin\x86\Debug\Phoenix.lib とオブジェクト D:\Phoenix Project\BOXER\Project\Phoenix\.\bin\x86\Debug\Phoenix.exp を作成中
+SceneEvent.obj : error LNK2019: 未解決の外部シンボル _lua_settop が関数 "public: int __thiscall Phoenix::FrameWork::LuaSystem::GetGlobalValue<int>(char const *)" (??$GetGlobalValue@H@LuaSystem@FrameWork@Phoenix@@QAEHPBD@Z) で参照されました
+SceneLabo.obj : error LNK2001: 外部シンボル _lua_settop は未解決です
 PhoenixLib_FrameWork.lib(Lua.obj) : error LNK2001: 外部シンボル _lua_settop は未解決です
-SceneLabo.obj : error LNK2019: 未解決の外部シンボル _lua_type が関数 "public: int __thiscall Phoenix::FrameWork::LuaSystem::GetGlobalValue<int>(char const *)" (??$GetGlobalValue@H@LuaSystem@FrameWork@Phoenix@@QAEHPBD@Z) で参照されました
-SceneLabo.obj : error LNK2019: 未解決の外部シンボル _lua_tonumberx が関数 "public: int __thiscall Phoenix::FrameWork::LuaSystem::GetGlobalValue<int>(char const *)" (??$GetGlobalValue@H@LuaSystem@FrameWork@Phoenix@@QAEHPBD@Z) で参照されました
+SceneEvent.obj : error LNK2019: 未解決の外部シンボル _lua_type が関数 "public: int __thiscall Phoenix::FrameWork::LuaSystem::GetGlobalValue<int>(char const *)" (??$GetGlobalValue@H@LuaSystem@FrameWork@Phoenix@@QAEHPBD@Z) で参照されました
+SceneLabo.obj : error LNK2001: 外部シンボル _lua_type は未解決です
+SceneEvent.obj : error LNK2019: 未解決の外部シンボル _lua_tonumberx が関数 "public: int __thiscall Phoenix::FrameWork::LuaSystem::GetGlobalValue<int>(char const *)" (??$GetGlobalValue@H@LuaSystem@FrameWork@Phoenix@@QAEHPBD@Z) で参照されました
+SceneLabo.obj : error LNK2001: 外部シンボル _lua_tonumberx は未解決です
 PhoenixLib_FrameWork.lib(Lua.obj) : error LNK2001: 外部シンボル _lua_tonumberx は未解決です
-SceneLabo.obj : error LNK2019: 未解決の外部シンボル _lua_getglobal が関数 "public: int __thiscall Phoenix::FrameWork::LuaSystem::GetGlobalValue<int>(char const *)" (??$GetGlobalValue@H@LuaSystem@FrameWork@Phoenix@@QAEHPBD@Z) で参照されました
+SceneEvent.obj : error LNK2019: 未解決の外部シンボル _lua_getglobal が関数 "public: int __thiscall Phoenix::FrameWork::LuaSystem::GetGlobalValue<int>(char const *)" (??$GetGlobalValue@H@LuaSystem@FrameWork@Phoenix@@QAEHPBD@Z) で参照されました
+SceneLabo.obj : error LNK2001: 外部シンボル _lua_getglobal は未解決です
 PhoenixLib_FrameWork.lib(Lua.obj) : error LNK2001: 外部シンボル _lua_getglobal は未解決です
 PhoenixLib_FrameWork.lib(Lua.obj) : error LNK2019: 未解決の外部シンボル _lua_close が関数 "public: void __thiscall Phoenix::FrameWork::LuaSystem::Finalize(void)" (?Finalize@LuaSystem@FrameWork@Phoenix@@QAEXXZ) で参照されました
 PhoenixLib_FrameWork.lib(Lua.obj) : error LNK2019: 未解決の外部シンボル _lua_pushnumber が関数 "public: void __thiscall Phoenix::FrameWork::LuaSystem::SetIntArgument(int)" (?SetIntArgument@LuaSystem@FrameWork@Phoenix@@QAEXH@Z) で参照されました
 PhoenixLib_FrameWork.lib(Lua.obj) : error LNK2019: 未解決の外部シンボル _lua_pcallk が関数 "public: bool __thiscall Phoenix::FrameWork::LuaSystem::CallFunction(int)" (?CallFunction@LuaSystem@FrameWork@Phoenix@@QAE_NH@Z) で参照されました
 PhoenixLib_FrameWork.lib(Lua.obj) : error LNK2019: 未解決の外部シンボル _luaL_loadfilex が関数 "public: bool __thiscall Phoenix::FrameWork::LuaSystem::LoadScript(char const *)" (?LoadScript@LuaSystem@FrameWork@Phoenix@@QAE_NPBD@Z) で参照されました
 PhoenixLib_FrameWork.lib(Lua.obj) : error LNK2019: 未解決の外部シンボル _luaL_newstate が関数 "public: bool __thiscall Phoenix::FrameWork::LuaSystem::Initialize(class Phoenix::Graphics::IGraphicsDevice *)" (?Initialize@LuaSystem@FrameWork@Phoenix@@QAE_NPAVIGraphicsDevice@Graphics@3@@Z) で参照されました
-D:\Phoenix Project\Phoenix\Phoenix\.\bin\x86\Debug\Phoenix.exe : fatal error LNK1120: 9 件の未解決の外部参照
+D:\Phoenix Project\BOXER\Project\Phoenix\.\bin\x86\Debug\Phoenix.exe : fatal error LNK1120: 9 件の未解決の外部参照

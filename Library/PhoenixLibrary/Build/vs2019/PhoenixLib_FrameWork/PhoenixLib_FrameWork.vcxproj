@@ -19,8 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Actor\Actor.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\Audio.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\WAVFileReader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Component.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Transform.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\BitonicSort.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\ComputeShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\ComputeShader\GPUParticle.h" />
@@ -39,10 +42,15 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\Shader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\StandardShader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\SystemContainer\SystemContainer.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\System\ActorSystem.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\System\SceneSystem.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\System\System.h" />
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Actor\Actor.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Audio\Audio.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Audio\WAVFileReader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\BitonicSort.cpp" />
@@ -66,6 +74,9 @@
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicSkinShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\PBRShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\StandardShader.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\SystemContainer\SystemContainer.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\System\ActorSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\System\SceneSystem.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -149,7 +160,6 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -157,6 +167,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;../../../../ExternalLibrary/Lua53_Lib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -170,7 +181,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -180,6 +190,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;../../../../ExternalLibrary/Lua53_Lib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -195,13 +206,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;../../../../ExternalLibrary/Lua53_Lib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -215,7 +226,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -225,6 +235,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;../../../../ExternalLibrary/Lua53_Lib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>

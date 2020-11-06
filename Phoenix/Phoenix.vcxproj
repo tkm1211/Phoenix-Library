@@ -104,7 +104,6 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -113,6 +112,7 @@
       <PrecompiledHeader />
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;$(SolutionDir)Library\ExternalLibrary\Effekseer\include\Effekseer;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,7 +128,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -136,6 +135,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,12 +154,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;$(SolutionDir)Library\ExternalLibrary\Effekseer\include\Effekseer;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,7 +171,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -179,6 +178,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -219,6 +219,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AI\MetaAI\BattleEnemyController.cpp" />
+    <ClCompile Include="Source\AI\MetaAI\BattleEnemySystem.cpp" />
+    <ClCompile Include="Source\AI\MetaAI\DynamicDifficultyAdjuster.cpp" />
+    <ClCompile Include="Source\AI\MetaAI\MetaAI.cpp" />
+    <ClCompile Include="Source\AI\MetaAI\PlayerSkillAnalyzer.cpp" />
+    <ClCompile Include="Source\AI\StateMachine\StateMachine.cpp" />
     <ClCompile Include="Source\Boss\AIState\AvoidState.cpp" />
     <ClCompile Include="Source\Boss\AIState\DamageState.cpp" />
     <ClCompile Include="Source\Boss\AIState\JumpAttackState.cpp" />
@@ -228,6 +234,8 @@
     <ClCompile Include="Source\Boss\AIState\WaitState.cpp" />
     <ClCompile Include="Source\Boss\Boss.cpp" />
     <ClCompile Include="Source\Boss\BossAI.cpp" />
+    <ClCompile Include="Source\Enemy\Enemy.cpp" />
+    <ClCompile Include="Source\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Mannequin\Mannequin.cpp" />
     <ClCompile Include="Source\Player\Player.cpp" />
@@ -249,6 +257,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="Source\AI\MetaAI\BattleEnemyController.h" />
+    <ClInclude Include="Source\AI\MetaAI\BattleEnemySystem.h" />
+    <ClInclude Include="Source\AI\MetaAI\DynamicDifficultyAdjuster.h" />
+    <ClInclude Include="Source\AI\MetaAI\MetaAI.h" />
+    <ClInclude Include="Source\AI\MetaAI\MetaAISystem.h" />
+    <ClInclude Include="Source\AI\MetaAI\MetaType.h" />
+    <ClInclude Include="Source\AI\MetaAI\PlayerSkillAnalyzer.h" />
+    <ClInclude Include="Source\AI\StateMachine\StateMachine.h" />
     <ClInclude Include="Source\Boss\AI.h" />
     <ClInclude Include="Source\Boss\AIState\AIState.h" />
     <ClInclude Include="Source\Boss\AIState\AvoidState.h" />
@@ -260,6 +276,9 @@
     <ClInclude Include="Source\Boss\AIState\WaitState.h" />
     <ClInclude Include="Source\Boss\Boss.h" />
     <ClInclude Include="Source\Boss\BossAI.h" />
+    <ClInclude Include="Source\Enemy\Enemy.h" />
+    <ClInclude Include="Source\Enemy\EnemyBattleState.h" />
+    <ClInclude Include="Source\Enemy\EnemyManager.h" />
     <ClInclude Include="Source\Main.h" />
     <ClInclude Include="Source\Mannequin\Mannequin.h" />
     <ClInclude Include="Source\Player\Player.h" />

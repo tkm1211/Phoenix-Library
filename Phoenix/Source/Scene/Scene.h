@@ -3,6 +3,7 @@
 #include <memory>
 #include "../Player/Player.h"
 #include "../Boss/Boss.h"
+#include "../Enemy/EnemyManager.h"
 #include "../Mannequin/Mannequin.h"
 #include "../UI/UISystem.h"
 #include "../UI/TargetMarkUI.h"
@@ -113,6 +114,7 @@ private:
 private:
 	// 共通データのアドレス
 	Player* player = nullptr;
+	EnemyManager* enemyManager = nullptr;
 	Mannequin* mannequin = nullptr;
 	UISystem* uiSystem = nullptr;
 	TargetMarkUI* targetMarkUI = nullptr;

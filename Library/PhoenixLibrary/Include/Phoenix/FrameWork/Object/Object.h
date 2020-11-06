@@ -1214,7 +1214,7 @@ namespace Phoenix
 			void Load(Graphics::IGraphicsDevice* graphicsDevice, const char* filename);
 
 			// アニメーションの読み込み
-			void LoadAnimation(const char* filename, s32 index);
+			s32 LoadAnimation(const char* filename, s32 index);
 
 			void AddAnimationLayer(s32 setBaseAnimationIndex, const s8* beginNodeName, const s8* endNodeName);
 
@@ -1411,7 +1411,7 @@ namespace Phoenix
 			}
 
 			// アニメーションリソース読み込み
-			void LoadResource(OS::IResourceManager* resourceManamger, const char* filename, s32 index)
+			s32 LoadResource(OS::IResourceManager* resourceManamger, const char* filename, s32 index)
 			{
 				if (index < 0)
 				{
@@ -1428,16 +1428,18 @@ namespace Phoenix
 					std::unique_ptr<Loader::ILoader> loader = Loader::ILoader::Create();
 					if (!loader->Initialize(filename))
 					{
-						return;
+						return -1;
 					}
 					Graphics::AnimationData data;
 					if (!loader->Load(data))
 					{
-						return;
+						return -1;
 					}
 					Graphics::AnimationData::Serialize(data, animation.filename.c_str());
 				}
 				LoadResource(resourceManamger, animation);
+
+				return index;
 			}
 
 			void LoadResource(OS::IResourceManager* resourceManamger, Animation& animation)

@@ -2,7 +2,6 @@
 #include "Phoenix/FrameWork/Renderer/ModelRenderer.h"
 #include "Phoenix/FrameWork/Shader/BasicShader.h"
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
-#include "Phoenix/FrameWork/Input/InputDevice.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
 
 
@@ -23,27 +22,22 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	// アニメーション読み込み
 	{
-#if 0
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardWalk\\Walking_With_Shopping_Bag.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardRun\\Running.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardRun\\SlowRunning.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Roll\\Sprinting_Forward_Roll.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack01\\Elbow_Uppercut_Combo.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack02\\Uppercut_Jab.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack03\\Strike_Foward_Jog.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // Head_Hit Head_Hit02 Damage
-#else
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardWalk\\Walking_With_Shopping_Bag.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardRun\\Running.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardRun\\SlowRunning.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Roll\\Sprinting_Forward_Roll.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack01\\LeftJab.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack02\\RightHook.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack03\\LeftHook.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack04\\RightHook2.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack05\\Uppercut.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack06\\RoundhouseKick.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // Head_Hit Head_Hit02 Damage
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\LeftPunch\\Left_Punch_Begin.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\LeftPunch\\Left_Punch_End.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\RightPunch\\Righ_Punch_Begin.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\RightPunch\\Righ_Punch_End.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\TurnKick\\Turn_Kick_Begin.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\TurnKick\\Turn_Kick_01.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\TurnKick\\Turn_Kick_End.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1);
 		
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Idle\\Ready_Idle.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Forward\\Walk_Forward.fbx", -1);
@@ -55,37 +49,42 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Back\\Back_Step.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Right\\Right_Step.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Left\\Left_Step.fbx", -1);
-#endif
 
-#if 1
+
 		model->AddAnimationLayer(0);
+
 		model->AddAnimationLayer(1);
 		model->AddAnimationLayer(2);
 		model->AddAnimationLayer(3);
 		model->AddAnimationLayer(4);
+
 		model->AddAnimationLayer(5);
 		model->AddAnimationLayer(6);
+
 		model->AddAnimationLayer(7);
 		model->AddAnimationLayer(8);
+
 		model->AddAnimationLayer(9);
 		model->AddAnimationLayer(10);
 		model->AddAnimationLayer(11);
 
 		model->AddAnimationLayer(12);
-		model->AddAnimationLayer(12, 56, 65);
 
-		model->AddAnimationLayer(17);
+		model->AddAnimationLayer(13);
+		model->AddAnimationLayer(13, 56, 65); // 14
+
 		model->AddAnimationLayer(18);
 		model->AddAnimationLayer(19);
 		model->AddAnimationLayer(20);
+		model->AddAnimationLayer(21);
 
-		model->AddBlendAnimationToLayer(13, 13, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
-		model->AddBlendAnimationToLayer(14, 13, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
-		model->AddBlendAnimationToLayer(15, 13, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
-		model->AddBlendAnimationToLayer(16, 13, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
+
+		model->AddBlendAnimationToLayer(14, 14, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(15, 14, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(16, 14, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
+		model->AddBlendAnimationToLayer(17, 14, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
 
 		model->AddBlendAnimationToLayer(static_cast<Phoenix::u32>(AnimationState::SlowRun), static_cast<Phoenix::u32>(AnimationState::Walk), Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
-#endif
 	}
 
 	// コリジョン初期化
@@ -116,82 +115,88 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	// アタックデータ生成
 	{
-		AttackData data;
-
 		auto SetAttackData = [&]
 		(
-			AnimationState animationState,
-			AttackAnimationState attackState,
-			AnimationState nextAnimationState,
-			AttackAnimationState nextAttackState,
+			AttackAnimationState animState,
+			Phoenix::s32 animIndex,
+
+			Phoenix::f32 playSpeed,
 			Phoenix::f32 playBeginTime,
 			Phoenix::f32 playEndTime,
+
+			Phoenix::s32 collisionNum,
 			Phoenix::f32 collisionBeginTime,
 			Phoenix::f32 collisionEndTime,
-			Phoenix::u32 collisionNum,
+
+			bool receptionStack,
 			Phoenix::f32 receptionBeginTime,
-			Phoenix::f32 receptionEndTime,
-			Phoenix::f32 nextMoveSpeed,
-			Phoenix::f32 animationSpeed
+			Phoenix::f32 receptionEndTime
 		)
 		{
-			data.animationState = animationState;
-			data.attackState = attackState;
+			AttackData data;
 
-			data.nextAnimationState = nextAnimationState;
-			data.nextAttackState = nextAttackState;
+			data.animState = animState;
+			data.animIndex = animIndex;
 
+			data.playSpeed = playSpeed;
 			data.playBeginTime = playBeginTime == -1.0f ? -1.0f : playBeginTime / 60.0f;
 			data.playEndTime = playEndTime == -1.0f ? -1.0f : playEndTime / 60.0f;
 
+			data.collisionNum = collisionNum;
 			data.collisionBeginTime = collisionBeginTime == -1.0f ? -1.0f : collisionBeginTime / 60.0f;
 			data.collisionEndTime = collisionEndTime == -1.0f ? -1.0f : collisionEndTime / 60.0f;
 
-			data.collisionNum = collisionNum;
-
+			data.receptionStack = receptionStack;
 			data.receptionBeginTime = receptionBeginTime == -1.0f ? -1.0f : receptionBeginTime / 60.0f;
 			data.receptionEndTime = receptionEndTime == -1.0f ? -1.0f : receptionEndTime / 60.0f;
 
-			data.nextMoveSpeed = nextMoveSpeed;
-			data.animationSpeed = animationSpeed;
+			return data;
 		};
 
-		Phoenix::u32 endNum = static_cast<Phoenix::u32>(AttackAnimationState::End);
-		for (Phoenix::u32 i = 0; i < endNum + 1; ++i)
+		// 弱攻撃
 		{
-			switch (static_cast<AttackAnimationState>(i))
+			// 右ストレート
 			{
-			case AttackAnimationState::Attack01:
-				SetAttackData(AnimationState::Attack01, AttackAnimationState::Attack01, AnimationState::Attack02, AttackAnimationState::Attack02, -1.0f, -1.0f, 18.0f, 30.0f, 2, 23.0f, 80.0f, 0.0f, Attack01AnimationSpeed);
-				break;
+				AttackDatas datas;
 
-			case AttackAnimationState::Attack02:
-				SetAttackData(AnimationState::Attack02, AttackAnimationState::Attack02, AnimationState::Attack03, AttackAnimationState::Attack03, -1.0f, -1.0f, 60.0f, 85.0f, 1, 70.0f, 130.0f, 0.0f, Attack02AnimationSpeed);
-				break;
+				// 入力キー設定
+				datas.SetKey(AttackKey::WeakAttack);
 
-			case AttackAnimationState::Attack03:
-				SetAttackData(AnimationState::Attack03, AttackAnimationState::Attack03, AnimationState::Attack04, AttackAnimationState::Attack04, -1.0f, -1.0f, 30.0f, 40.0f, 2, 40.0f, 75.0f, 0.0f, Attack03AnimationSpeed);
-				break;
+				datas.AddData(SetAttackData(AttackAnimationState::Attack01, 7, 2.0f, -1.0f, -1.0f, 1, 13.0f, 23.0f, true, 13.0f, 23.0f));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack01, 8, 1.0f, 24.0f, 47.0f, 0, -1.0f, -1.0f, false, 24.0f, 47.0f));
 
-			case AttackAnimationState::Attack04:
-				SetAttackData(AnimationState::Attack04, AttackAnimationState::Attack04, AnimationState::Attack05, AttackAnimationState::Attack05, -1.0f, -1.0f, 17.0f, 27.0f, 1, 27.0f, 66.0f, 0.0f, Attack04AnimationSpeed);
-				break;
-
-			case AttackAnimationState::Attack05:
-				SetAttackData(AnimationState::Attack05, AttackAnimationState::Attack05, AnimationState::Attack06, AttackAnimationState::Attack06, -1.0f, -1.0f, 24.0f, 35.0f, 2, 35.0f, 88.0f, 0.0f, Attack05AnimationSpeed);
-				break;
-
-			case AttackAnimationState::Attack06:
-				SetAttackData(AnimationState::Attack06, AttackAnimationState::Attack06, AnimationState::Idle, AttackAnimationState::End, -1.0f, 111.0f, 51.0f, 70.0f, 3, 0.0f, 0.0f, 0.0f, Attack06AnimationSpeed);
-				break;
-
-			case AttackAnimationState::End:
-				SetAttackData(AnimationState::Idle, AttackAnimationState::End, AnimationState::Attack01, AttackAnimationState::Attack01, -1.0f, -1.0f, -1.0f, -1.0f, 0, 0.0f, 0.0f, 0.0f, 1.0f);
-				break;
-			default: break;
+				attackDatasList.emplace_back(datas);
 			}
 
-			attackDatas.emplace_back(data);
+			// 左ストレート
+			{
+				AttackDatas datas;
+
+				// 入力キー設定
+				datas.SetKey(AttackKey::WeakAttack);
+
+				datas.AddData(SetAttackData(AttackAnimationState::Attack02, 5, 2.0f, -1.0f, -1.0f, 2, 10.0f, 20.0f, true, 15.0f, 20.0f));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack02, 6, 1.0f, 21.0f, 47.0f, 0, -1.0f, -1.0f, false, 21.0f, 47.0f));
+
+				attackDatasList.emplace_back(datas);
+			}
+		}
+
+		// 強攻撃
+		{
+			// 回転キック
+			{
+				AttackDatas datas;
+
+				// 入力キー設定
+				datas.SetKey(AttackKey::StrongAttack);
+
+				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 9, 1.25f, -1.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 10, 2.0f, 25.0f, 46.0f, 3, 43.0f, 46.0f, false, -1.0f, -1.0f));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 11, 1.0f, 47.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f));
+
+				attackDatasList.emplace_back(datas);
+			}
 		}
 	}
 }
@@ -241,6 +246,8 @@ void Player::Initialize()
 		rotateY = 180.0f * 0.01745f;
 		inTerritory = false;
 		isBattleMode = false;
+		receptionStack = false;
+		stackKey = AttackKey::None;
 	}
 }
 
@@ -353,325 +360,23 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		blendRate.z = 1.0f <= blendRate.z ? 1.0f : blendRate.z;
 	}
 
-#if 0
-	if (animationState == AnimationState::Damage)
-	{
-		if (isChangeAnimation)
-		{
-			sX = 0.0f;
-			sY = -1.0f;
-
-			if (sX != 0.0f || sY != 0.0f)
-			{
-				float len = sqrtf(sX * sX + sY * sY);
-
-				if (len <= 0)
-				{
-					sX = 0;
-					sY = 0;
-				}
-
-				float mag = 1 / len;
-
-				sX *= mag;
-				sY *= mag;
-
-				Phoenix::Math::Vector3 oldAngle = rotate;
-				oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
-				rotate = oldAngle;
-			}
-		}
-
-		/*pos.x += sinf(rotate.y) * speed;
-		pos.z += cosf(rotate.y) * speed;
-
-		speed += KnockBackDownSpeed;*/
-	}
-	else if (xInput[0].bXt && animationState != AnimationState::Roll)
-	{
-		if (!isAttack && ((animationState != AnimationState::Attack01) && (animationState != AnimationState::Attack02) && (animationState != AnimationState::Attack03)) && attackState == AttackAnimationState::End)
-		{
-			attackReceptionTimeCnt = 0;
-			animationSpeed = AnimationSpeed30;
-			isChangeAnimation = true;
-			isAttack = true;
-			isHit = false;
-			animationState = AnimationState::Attack01;
-			attackState = AttackAnimationState::Attack01;
-
-			if (sX != 0.0f || sY != 0.0f)
-			{
-				float len = sqrtf(sX * sX + sY * sY);
-
-				if (len <= 0)
-				{
-					sX = 0;
-					sY = 0;
-				}
-
-				float mag = 1 / len;
-
-				sX *= mag;
-				sY *= mag;
-
-				Phoenix::Math::Vector3 oldAngle = rotate;
-				oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
-				rotate = oldAngle;
-			}
-		}
-		else if (isAttack && ((animationState != AnimationState::Attack02) && (animationState != AnimationState::Attack03)) && attackState == AttackAnimationState::Attack01)
-		{
-			//float len = model->GetLength(); // test
-			if (Attack01ReceptionStartTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= model->GetLength())
-			{
-				attackReceptionTimeCnt = 0;
-				animationSpeed = AnimationSpeed30;
-				isChangeAnimation = true;
-				isAttack = true;
-				isHit = false;
-				animationState = AnimationState::Attack02;
-				attackState = AttackAnimationState::Attack02;
-
-				if (sX != 0.0f || sY != 0.0f)
-				{
-					float len = sqrtf(sX * sX + sY * sY);
-
-					if (len <= 0)
-					{
-						sX = 0;
-						sY = 0;
-					}
-
-					float mag = 1 / len;
-
-					sX *= mag;
-					sY *= mag;
-
-					Phoenix::Math::Vector3 oldAngle = rotate;
-					oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
-					rotate = oldAngle;
-				}
-			}
-		}
-		else if (isAttack && ((animationState != AnimationState::Attack01) && (animationState != AnimationState::Attack03)) && attackState == AttackAnimationState::Attack02)
-		{
-			//float len = model->GetLength(); // test
-			if (Attack02ReceptionStartTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= model->GetLength())
-			{
-				attackReceptionTimeCnt = 0;
-				animationSpeed = AnimationSpeed45;
-				speed = Attack03Speed;
-				isChangeAnimation = true;
-				isAttack = true;
-				isHit = false;
-				animationState = AnimationState::Attack03;
-				attackState = AttackAnimationState::Attack03;
-
-				if (sX != 0.0f || sY != 0.0f)
-				{
-					float len = sqrtf(sX * sX + sY * sY);
-
-					if (len <= 0)
-					{
-						sX = 0;
-						sY = 0;
-					}
-
-					float mag = 1 / len;
-
-					sX *= mag;
-					sY *= mag;
-
-					Phoenix::Math::Vector3 oldAngle = rotate;
-					oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
-					rotate = oldAngle;
-				}
-			}
-		}
-	}
-	else if (isAttack)
-	{
-		if (((animationState == AnimationState::Attack01) || (animationState == AnimationState::Attack02) || (animationState == AnimationState::Attack03)) && !model->IsPlaying())
-		{
-			attackReceptionTimeCnt = 0;
-			isChangeAnimation = true;
-			isAttack = false;
-			animationState = AnimationState::Idle;
-			attackState = AttackAnimationState::End;
-		}
-		if (xInput[0].bAt
-			&& ((1.5f <= attackReceptionTimeCnt && attackState == AttackAnimationState::Attack01)
-			|| (3.0f <= attackReceptionTimeCnt && attackState == AttackAnimationState::Attack02)))
-		{
-			speed = RollSpeed;
-			attackReceptionTimeCnt = 0;
-			animationSpeed = 0;
-			isChangeAnimation = true;
-			isAttack = false;
-			animationState = AnimationState::Roll;
-			attackState = AttackAnimationState::End;
-
-			if (sX != 0.0f || sY != 0.0f)
-			{
-				float len = sqrtf(sX * sX + sY * sY);
-
-				if (len <= 0)
-				{
-					sX = 0;
-					sY = 0;
-				}
-
-				float mag = 1 / len;
-
-				sX *= mag;
-				sY *= mag;
-
-				Phoenix::Math::Vector3 oldAngle = rotate;
-				oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
-				rotate = oldAngle;
-			}
-		}
-		else if (animationState == AnimationState::Attack03 && attackState == AttackAnimationState::Attack03 && model->IsPlaying())
-		{
-			pos.x += sinf(rotate.y) * speed;
-			pos.z += cosf(rotate.y) * speed;
-		}
-
-		attackReceptionTimeCnt += animationSpeed;
-	}
-	else if (((animationState != AnimationState::Attack01) && (animationState != AnimationState::Attack02) && (animationState != AnimationState::Attack03)))
-	{
-		if (xInput[0].bAt && animationState != AnimationState::Roll)
-		{
-			attackReceptionTimeCnt = 0;
-			isChangeAnimation = true;
-			invincible = false;
-			speed = RollSpeed;
-			animationState = AnimationState::Roll;
-		}
-		else if (animationState == AnimationState::Roll && model->IsPlaying())
-		{
-			if (0.34f <= attackReceptionTimeCnt && attackReceptionTimeCnt <= 0.92f)
-			{
-				invincible = true;
-			}
-			else
-			{
-				invincible = false;
-			}
-			
-			pos.x += sinf(rotate.y) * speed;
-			pos.z += cosf(rotate.y) * speed;
-
-			attackReceptionTimeCnt += animationSpeed;
-		}
-		else if (animationState == AnimationState::Roll && !model->IsPlaying())
-		{
-			attackReceptionTimeCnt = 0;
-			isChangeAnimation = true;
-			invincible = false;
-			speed = 0.0f;
-			animationState = AnimationState::Idle;
-		}
-	}
-
-	if (animationState != AnimationState::Roll && ((animationState != AnimationState::Attack01) && (animationState != AnimationState::Attack02) && (animationState != AnimationState::Attack03)) && animationState != AnimationState::Damage)
-	{
-		if (sX != 0.0f || sY != 0.0f)
-		{
-			float len = sqrtf(sX * sX + sY * sY);
-
-			if (len <= 0)
-			{
-				sX = 0;
-				sY = 0;
-			}
-
-			float mag = 1 / len;
-
-			sX *= mag;
-			sY *= mag;
-
-			len = sqrtf(sX * sX + sY * sY);
-
-			Phoenix::Math::Vector3 oldAngle = rotate;
-			oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
-			rotate = oldAngle;
-
-			if (animationState == AnimationState::Walk)
-			{
-				pos.x += sinf(oldAngle.y) * (speed + (SlowRunSpeed * blendRate));
-				pos.z += cosf(oldAngle.y) * (speed + (SlowRunSpeed * blendRate));
-			}
-			else
-			{
-				pos.x += sinf(oldAngle.y) * speed;
-				pos.z += cosf(oldAngle.y) * speed;
-			}
-
-			if (!xInput[0].bRBs && animationState != AnimationState::Walk)
-			{
-				isChangeAnimation = true;
-				speed = WalkSpeed;
-				animationState = AnimationState::Walk;
-			}
-			if ((xInput[0].bRBs || GetKeyState(VK_SHIFT) < 0) && animationState != AnimationState::Run)
-			{
-				isChangeAnimation = true;
-				speed = RunSpeed;
-				animationState = AnimationState::Run;
-			}
-		}
-		else
-		{
-			if (animationState != AnimationState::Idle)
-			{
-				isChangeAnimation = true;
-				speed = 0.0f;
-				animationState = AnimationState::Idle;
-			}
-		}
-	}
-#else
-
 	// プレイヤーの最終方向を決定する角度を計算
 	auto UpdateRotateY = [&]()
 	{
-		/*if (isBattleMode)
+		float len = sqrtf(sX * sX + sY * sY);
+
+		if (len <= 0)
 		{
-			Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
-			float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
-
-			if (len <= 0)
-			{
-				dir.x = 0;
-				dir.z = 0;
-			}
-
-			float mag = 1 / len;
-
-			dir.x *= mag;
-			dir.z *= mag;
-
-			rotateY = atan2f(dir.x, dir.z);
+			sX = 0;
+			sY = 0;
 		}
-		else*/
-		{
-			float len = sqrtf(sX * sX + sY * sY);
 
-			if (len <= 0)
-			{
-				sX = 0;
-				sY = 0;
-			}
+		float mag = 1 / len;
 
-			float mag = 1 / len;
+		sX *= mag;
+		sY *= mag;
 
-			sX *= mag;
-			sY *= mag;
-
-			rotateY = camera.GetRotateY() + atan2f(sX, sY);
-		}
+		rotateY = camera.GetRotateY() + atan2f(sX, sY);
 	};
 
 	// プレイヤー回転
@@ -699,65 +404,258 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		}
 		else
 		{
-#if 0
-			Phoenix::Math::Vector3 oldAngle = rotate;
-			oldAngle.y = camera.GetRotateY() + atan2f(sX, sY);
-			rotate = oldAngle;
-#elif 0
-			newRotate = rotate;
-			newRotate.y = camera.GetRotateY() + atan2f(sX, sY);
-#else
 			newRotate = rotate;
 			newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
-#endif
 		}
 	};
 
-	// 攻撃ステートへ
-	if ((xInput[0].bXt || GetAsyncKeyState(VK_RETURN) & 1) && (isAttack || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
+	auto ChangeAnimation = [&](Phoenix::u32 index, Phoenix::u32 nextIndex)
 	{
-		Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
-
-		// 次の攻撃が発動するボタンの受付
-		if (attackDatas[index].receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatas[index].receptionEndTime)
+		if (attackDatasList.at(index).datas.size() - 1 <= attackComboState)
 		{
-			AnimationState oldState = animationState;
-			Phoenix::u32 nextIndex = index + static_cast<Phoenix::u32>(1);
-			Phoenix::f32 nextAnimaitonSpeed = attackDatas.size() != nextIndex ? attackDatas[nextIndex].animationSpeed : attackDatas[0].animationSpeed;
+			attackComboState = -1;
+		}
 
-			ChangeAnimationState(attackDatas[index].nextAnimationState, attackDatas[index].nextMoveSpeed);
-			ChangeAttackAnimationState(attackDatas[index].nextAttackState, nextAnimaitonSpeed);
+		if (attackComboState == -1)
+		{
+			attackComboState = 0;
+			attackReceptionTimeCnt = 0.0f;
 
-			if (oldState != animationState)
+			receptionStack = false;
+			stackKey = AttackKey::None;
+
+			ChangeAnimationState(AnimationState::Attack, 0.0f);
+			ChangeAttackAnimationState(attackDatasList.at(nextIndex).datas.at(attackComboState).animState, attackDatasList.at(nextIndex).datas.at(attackComboState).animIndex, attackDatasList.at(nextIndex).datas.at(attackComboState).playSpeed);
+		}
+	};
+
+	auto JudgeDedgeIndex = [&]()
+	{
+		if (sX != 0.0f || sY != 0.0f)
+		{
+			UpdateRotateY();
+			RotatePlayer(rotateY);
+
+			if (sY < 0.0f)
 			{
+				dedgeLayerIndex = 15;
+			}
+			if (sY > 0.0f)
+			{
+				dedgeLayerIndex = 16;
+			}
+			if (sX < 0.0f)
+			{
+				dedgeLayerIndex = 17;
+			}
+			if (sX > 0.0f)
+			{
+				dedgeLayerIndex = 18;
+			}
+
+			//Phoenix::Math::Vector3 dir = targetPos - GetPosition();
+			//dir = Phoenix::Math::Vector3Normalize(dir);
+			//dir.y = 0.0f;
+
+			//Phoenix::f32 newRotateY = atan2f(-dir.x, -dir.z) + atan2f(sX, sY);
+
+			//Phoenix::Math::Vector3 f = { sinf(newRotateY),  0.0f, cosf(newRotateY) };
+
+			///*Phoenix::Math::Quaternion newQ = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), newRotateY);
+			//Phoenix::Math::Matrix newM = Phoenix::Math::MatrixRotationQuaternion(&newQ);
+			//Phoenix::Math::Vector3 newForward = Phoenix::Math::Vector3(newM._31, newM._32, newM._33);
+			//newForward.y = 0.0f;*/
+
+			//Phoenix::Math::Quaternion q = rotate/* * newQ*/;
+			//Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&q);
+			//Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
+
+			//Phoenix::Math::Vector3 cameraForword = camera.GetFront();
+			//cameraForword.y = 0.0f;
+
+			//Phoenix::f32 angle = acosf(Phoenix::Math::Vector3Dot(dir, cameraForword)) / 0.01745f;
+			////if (45.0f <= angle && angle <= 135.0f) f *= -1;
+
+			//if (fabsf(f.x) < fabsf(f.z))
+			//{
+			//	if (f.z < 0.0f)
+			//	{
+			//		dedgeLayerIndex = 15;
+			//		rotateY = atan2f(-dir.x, -dir.z) + atan2f(0.0f, -1.0f);
+			//	}
+			//	if (f.z > 0.0f)
+			//	{
+			//		dedgeLayerIndex = 16;
+			//		rotateY = atan2f(-dir.x, -dir.z) + atan2f(0.0f, 1.0f);
+			//	}
+			//}
+			//if (fabsf(f.z) < fabsf(f.x))
+			//{
+			//	if (f.x < 0.0f)
+			//	{
+			//		dedgeLayerIndex = 17;
+			//		rotateY = atan2f(-dir.x, -dir.z) + atan2f(-1.0f, 0.0f);
+			//	}
+			//	if (f.x > 0.0f)
+			//	{
+			//		dedgeLayerIndex = 18;
+			//		rotateY = atan2f(-dir.x, -dir.z) + atan2f(1.0f, 0.0f);
+			//	}
+			//}
+
+			//rotateY = newRotateY;
+
+			/*Phoenix::Math::Quaternion q = rotate * newRotateY;
+			Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&q);
+			Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
+			Phoenix::Math::Vector3 up = Phoenix::Math::Vector3(matrix._21, matrix._22, matrix._23);
+			Phoenix::Math::Vector3 right = Phoenix::Math::Vector3(matrix._11, matrix._12, matrix._13);
+
+			forward.y = 0.0f;
+
+			Phoenix::f32 angleSX, angleSY;
+			angleSX = acosf(Phoenix::Math::Vector3Dot(dir, forward));
+			angleSY = acosf(Phoenix::Math::Vector3Dot(dir, right));
+
+			if (1e-8f < fabs(angleSX))
+			{
+				Phoenix::f32 angleR;
+				{
+					angleR = acosf(Phoenix::Math::Vector3Dot(dir, right));
+					angleR -= (90.0f * 0.01745f);
+					if (0.0f < angleR) angleSX *= -1;
+				}
+				{
+					angleR = acosf(Phoenix::Math::Vector3Dot(dir, forward));
+					angleR -= (90.0f * 0.01745f);
+					if (0.0f < angleR) angleSY *= -1;
+				}
+
+				if (fabsf(forward.z) < fabsf(forward.x))
+				{
+					if (angleSX < 0.0f)
+					{
+						dedgeLayerIndex = 17;
+						rotateY = atan2f(dir.x, dir.z);
+						rotateY += 270.0f * 0.01745f;
+
+					}
+					if (angleSX > 0.0f)
+					{
+						dedgeLayerIndex = 18;
+						rotateY = atan2f(dir.x, dir.z);
+						rotateY += 90.0f * 0.01745f;
+					}
+				}
+				else if (fabsf(forward.x) < fabsf(forward.z))
+				{
+					if (angleSY < 0.0f)
+					{
+						dedgeLayerIndex = 15;
+						rotateY = atan2f(dir.x, dir.z);
+						rotateY += 0.0f * 0.01745f;
+					}
+					if (angleSY > 0.0f)
+					{
+						dedgeLayerIndex = 16;
+						rotateY = atan2f(dir.x, dir.z);
+						rotateY += 180.0f * 0.01745f;
+					}
+				}
+			}*/
+		}
+	};
+
+	// 攻撃キーの入力確認
+	AttackKey key = AttackKey::None;
+	{
+		if (xInput[0].bXt || GetAsyncKeyState('J') & 1)
+		{
+			key = AttackKey::WeakAttack;
+		}
+		if (xInput[0].bYt || GetAsyncKeyState('K') & 1)
+		{
+			key = AttackKey::StrongAttack;
+		}
+	}
+
+	// 攻撃ステートへ
+	if ((key != AttackKey::None) && isBattleMode && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
+	{
+		if (attackState == AttackAnimationState::End)
+		{
+			// 弱攻撃からスタートするため
+			if (attackDatasList[0].receptionKey == key)
+			{
+				attackComboState = 0;
 				attackReceptionTimeCnt = 0.0f;
-			}
 
-			if (sX != 0.0f || sY != 0.0f)
-			{
-				UpdateRotateY();
-				RotatePlayer(rotateY);
+				ChangeAnimationState(AnimationState::Attack, 0.0f);
+				ChangeAttackAnimationState(attackDatasList.at(0).datas.at(0).animState, attackDatasList.at(0).datas.at(0).animIndex, attackDatasList.at(0).datas.at(0).playSpeed);
 			}
+		}
+		else
+		{
+			Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
+			Phoenix::u32 nextIndex = index + 1;
 
-			if (attackState == AttackAnimationState::End)
+			// 次の攻撃が発動するボタンの受付
+			if (receptionStack)
 			{
-				isAttack = false;
+				if (nextIndex < attackDatasList.size())
+				{
+					if (!attackDatasList.at(index).datas.at(attackComboState).receptionStack)
+					{
+						if (attackDatasList.at(nextIndex).receptionKey == stackKey)
+						{
+							ChangeAnimation(index, nextIndex);
+						}
+					}
+				}
 			}
-			else if (attackState == AttackAnimationState::Attack01)
+			else if (attackDatasList.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).receptionEndTime)
 			{
-				pos.x += sinf(rotateY) * Attack01MoveSpeed;
-				pos.z += cosf(rotateY) * Attack01MoveSpeed;
+				if (nextIndex < attackDatasList.size())
+				{
+					if (attackDatasList.at(nextIndex).receptionKey == key)
+					{
+						if (attackDatasList.at(index).datas.at(attackComboState).receptionStack)
+						{
+							receptionStack = true;
+							stackKey = key;
+						}
+						else
+						{
+							ChangeAnimation(index, nextIndex);
+						}
+					}
+				}
 			}
 		}
 	}
-	// 待機ステートへ
-	else if (isAttack && !model->IsPlaying())
+	else if ((animationState == AnimationState::Attack) && !model->IsPlaying())
 	{
-		ChangeAnimationState(AnimationState::Idle, 0.0f);
-		ChangeAttackAnimationState(AttackAnimationState::End, 0.0f);
-		
-		isAttack = false;
-		attackReceptionTimeCnt = 0.0f;
+		Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
+
+		if (0 <= attackComboState && attackComboState < attackDatasList.at(index).datas.size() - 1)
+		{
+			++attackComboState;
+
+			ChangeAnimationState(AnimationState::Attack, 0.0f);
+			ChangeAttackAnimationState(attackDatasList.at(index).datas.at(attackComboState).animState, attackDatasList.at(index).datas.at(attackComboState).animIndex, attackDatasList.at(index).datas.at(attackComboState).playSpeed);
+		}
+		else
+		{
+			ChangeAnimationState(AnimationState::Idle, 0.0f);
+			ChangeAttackAnimationState(AttackAnimationState::End, -1, 0.0f);
+
+			isAttack = false;
+			attackReceptionTimeCnt = 0.0f;
+			attackComboState = -1;
+
+			receptionStack = false;
+			stackKey = AttackKey::None;
+		}
 	}
 
 	// 攻撃ステート以外
@@ -770,44 +668,12 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
 			{
 				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
-
-				if (sX != 0.0f || sY != 0.0f)
-				{
-					UpdateRotateY();
-					RotatePlayer(rotateY);
-					if (sY < 0.0f) dedgeLayerIndex = 14;
-					if (sY > 0.0f) dedgeLayerIndex = 15;
-					if (sX < 0.0f) dedgeLayerIndex = 17;
-					if (sX > 0.0f) dedgeLayerIndex = 16;
-				}
+				JudgeDedgeIndex();
 			}
 			// 回避ステート中
 			else if (animationState == AnimationState::Dedge)
 			{
 				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.025f);
-				// 待機ステートへ
-				if (!model->IsPlaying())
-				{
-					ChangeAnimationState(AnimationState::Idle, 0.0f);
-				}
-			}
-		}
-		else
-		{
-			// 回避ステートへ
-			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Roll)
-			{
-				ChangeAnimationState(AnimationState::Roll, RollSpeed);
-
-				if (sX != 0.0f || sY != 0.0f)
-				{
-					UpdateRotateY();
-					RotatePlayer(rotateY);
-				}
-			}
-			// 回避ステート中
-			else if (animationState == AnimationState::Roll)
-			{
 				// 待機ステートへ
 				if (!model->IsPlaying())
 				{
@@ -825,14 +691,23 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 				UpdateRotateY();
 				RotatePlayer(rotateY);
 
-				if ((!xInput[0].bRBs && !(GetKeyState(VK_SHIFT) < 0)) && animationState != AnimationState::Walk)
+				if (isBattleMode)
 				{
-					if (isBattleMode) ChangeAnimationState(AnimationState::Walk, BattleWalkSpeed);
-					else ChangeAnimationState(AnimationState::Walk, WalkSpeed);
+					if (animationState != AnimationState::Walk)
+					{
+						ChangeAnimationState(AnimationState::Walk, BattleWalkSpeed);
+					}
 				}
-				if ((xInput[0].bRBs || GetKeyState(VK_SHIFT) < 0) && animationState != AnimationState::Run)
+				else
 				{
-					ChangeAnimationState(AnimationState::Run, RunSpeed);
+					if ((!xInput[0].bRBs && !(GetKeyState(VK_SHIFT) < 0)) && animationState != AnimationState::Walk)
+					{
+						ChangeAnimationState(AnimationState::Walk, WalkSpeed);
+					}
+					if ((xInput[0].bRBs || GetKeyState(VK_SHIFT) < 0) && animationState != AnimationState::Run)
+					{
+						ChangeAnimationState(AnimationState::Run, RunSpeed);
+					}
 				}
 			}
 			// 待機ステートへ
@@ -850,40 +725,18 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			// 回避ステートへ
 			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
 			{
-				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
-
-				if (sX != 0.0f || sY != 0.0f)
-				{
-					UpdateRotateY();
-					RotatePlayer(rotateY);
-					if (sY < 0.0f) dedgeLayerIndex = 14;
-					if (sY > 0.0f) dedgeLayerIndex = 15;
-					if (sX < 0.0f) dedgeLayerIndex = 17;
-					if (sX > 0.0f) dedgeLayerIndex = 16;
-				}
-			}
-		}
-		else
-		{
-			// 回避ステートへ
-			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Roll)
-			{
 				Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
 
 				// 次の攻撃が発動するボタンの受付
-				if (attackDatas[index].receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatas[index].receptionEndTime)
+				if (attackDatasList.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).receptionEndTime)
 				{
-					ChangeAnimationState(AnimationState::Roll, RollSpeed);
-					ChangeAttackAnimationState(AttackAnimationState::End, 0.0f);
+					ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
+					ChangeAttackAnimationState(AttackAnimationState::End, -1, 0.0f);
 
 					isAttack = false;
 					attackReceptionTimeCnt = 0.0f;
 
-					if (sX != 0.0f || sY != 0.0f)
-					{
-						UpdateRotateY();
-						RotatePlayer(rotateY);
-					}
+					JudgeDedgeIndex();
 				}
 			}
 		}
@@ -895,29 +748,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// 座標更新
 	if (!isChangeAnimation)
 	{
-		//if (isBattleMode) return;
-
-		//rotate = Phoenix::Math::Vector3Lerp(rotate, newRotate, 0.05f);
-
 		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f);
-
-		/*Phoenix::Math::Matrix rotateMatirx = Phoenix::Math::MatrixRotationQuaternion(&rotate);
-		Phoenix::f32 rotateY = asinf(rotateMatirx._31);*/
-
-		/*if (inTerritory)
-		{
-			if (animationState == AnimationState::Walk)
-			{
-				pos.x += sinf(rotateY + (90.0f * 0.01745f)) * (speed + (SlowRunSpeed * blendRate));
-				pos.z += cosf(rotateY + (90.0f * 0.01745f)) * (speed + (SlowRunSpeed * blendRate));
-			}
-			else
-			{
-				pos.x += sinf(rotateY + (90.0f * 0.01745f)) * speed;
-				pos.z += cosf(rotateY + (90.0f * 0.01745f)) * speed;
-			}
-		}
-		else*/
 		{
 			if (animationState == AnimationState::Walk/* && !isBattleMode*/)
 			{
@@ -939,7 +770,6 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			}
 		}
 	}
-#endif
 }
 
 void Player::ChangeAnimation()
@@ -952,7 +782,7 @@ void Player::ChangeAnimation()
 	case AnimationState::Idle:
 		if (isBattleMode)
 		{
-			model->PlayAnimation(12, 1, 0.2f);
+			model->PlayAnimation(13, 1, 0.2f);
 			model->UpdateTransform(1 / 60.0f);
 			model->SetLoopAnimation(true);
 		}
@@ -967,8 +797,8 @@ void Player::ChangeAnimation()
 	case AnimationState::Walk:
 		if (isBattleMode)
 		{
-			model->PlayAnimation(12, 1, 0.2f);
-			model->PlayBlendAnimation(13, 1, 0.2f);
+			model->PlayAnimation(13, 1, 0.2f);
+			model->PlayBlendAnimation(14, 1, 0.2f);
 			model->UpdateTransform(1 / 60.0f);
 			model->SetLoopAnimation(true);
 			model->SetBlendLoopAnimation(true);
@@ -994,12 +824,7 @@ void Player::ChangeAnimation()
 		model->SetSpeed(1.5f);
 		break;
 
-	case AnimationState::Attack01:
-	case AnimationState::Attack02:
-	case AnimationState::Attack03:
-	case AnimationState::Attack04:
-	case AnimationState::Attack05:
-	case AnimationState::Attack06:
+	case AnimationState::Attack:
 		ChangeAttackAnimation(animationNum);
 		break;
 
@@ -1013,19 +838,20 @@ void Player::ChangeAnimation()
 		model->PlayAnimation(dedgeLayerIndex, 0, 0.2f);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		model->SetSpeed(1.85f);
 
-		if (dedgeLayerIndex == 14)
+		/*if (dedgeLayerIndex == 15)
 		{
 			model->SetSpeed(1.85f);
 		}
-		else if(dedgeLayerIndex == 15)
+		else if(dedgeLayerIndex == 16)
 		{
 			model->SetSpeed(1.75f);
 		}
 		else
 		{
 			model->SetSpeed(1.5f);
-		}
+		}*/
 		break;
 	
 	default: break;
@@ -1036,40 +862,13 @@ void Player::ChangeAnimation()
 
 void Player::ChangeAttackAnimation(Phoenix::u32 animationNum)
 {
-#if 0
-	switch (attackState)
-	{
-	case AttackAnimationState::Attack01:
-		model->PlayAnimation(animationNum, 1, 0.2f);
-		model->UpdateTransform(1 / 60.0f);
-		model->SetLoopAnimation(false);
-		model->SetSpeed(2.0f);
-		break;
-
-	case AttackAnimationState::Attack02:
-		model->PlayAnimation(animationNum, 1, 0.2f);
-		model->UpdateTransform(1 / 60.0f);
-		model->SetLoopAnimation(false);
-		model->SetSpeed(2.0f);
-		break;
-
-	case AttackAnimationState::Attack03:
-		model->PlayAnimation(animationNum, 1, 0.2f);
-		model->UpdateTransform(1 / 60.0f);
-		model->SetLoopAnimation(false);
-		model->SetSpeed(1.5f);
-		break;
-
-	case AttackAnimationState::End: break;
-	default: break;
-	}
-#else
 	Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
-	Phoenix::f32 beginTime = attackDatas[index].playBeginTime;
-	Phoenix::f32 endTime = attackDatas[index].playEndTime;
-	Phoenix::f32 animationSpeed = attackDatas[index].animationSpeed;
+	Phoenix::u32 animIndex = static_cast<Phoenix::u32>(attackDatasList.at(index).datas.at(attackComboState).animIndex);
+	Phoenix::f32 animationSpeed = attackDatasList.at(index).datas.at(attackComboState).playSpeed;
+	Phoenix::f32 beginTime = attackDatasList.at(index).datas.at(attackComboState).playBeginTime;
+	Phoenix::f32 endTime = attackDatasList.at(index).datas.at(attackComboState).playEndTime;
 
-	model->PlayAnimation(animationNum, 1, 0.2f);
+	model->PlayAnimation(animIndex, 0, 0.2f);
 	model->UpdateTransform(1 / 60.0f);
 	model->SetLoopAnimation(false);
 	model->SetSpeed(animationSpeed);
@@ -1083,7 +882,6 @@ void Player::ChangeAttackAnimation(Phoenix::u32 animationNum)
 	{
 		model->SetEndTime(endTime);
 	}
-#endif
 }
 
 void Player::AttackJudgment()
@@ -1108,138 +906,17 @@ void Player::AttackJudgment()
 			attackCollisionIndex = -1;
 		};
 
-#if 0
-		float time = attackReceptionTimeCnt * 60.0f;
-		if (attackState == AttackAnimationState::Attack01)
-		{
-			if (36.0f <= time && time <= 46.0f)
-			{
-				Judgment(2);
-			}
-			else if (68.0f <= time && time <= 80.0f)
-			{
-				Judgment(1);
-			}
-			else
-			{
-				NoJudgment();
-			}
-		}
-		else if (attackState == AttackAnimationState::Attack02)
-		{
-			if (40.0f <= time && time <= 55.0f)
-			{
-				Judgment(2);
-			}
-			else if (75.0f <= time && time <= 85.0f)
-			{
-				Judgment(1);
-			}
-			else if (96.0f <= time && time <= 107.0f)
-			{
-				Judgment(2);
-			}
-			else if (113.0f <= time && time <= 120.0f)
-			{
-				Judgment(1);
-			}
-			else if (129.0f <= time && time <= 139.0f)
-			{
-				Judgment(2);
-			}
-			else if (146.0f <= time && time <= 156.0f)
-			{
-				Judgment(1);
-			}
-			else
-			{
-				NoJudgment();
-			}
-		}
-		else if (attackState == AttackAnimationState::Attack03)
-		{
-			if (22.0f <= time && time <= 42.0f)
-			{
-				Judgment(3);
-			}
-			else
-			{
-				NoJudgment();
-			}
-		}
-#elif 0
-		float time = attackReceptionTimeCnt * 60.0f;
-		if (animationState == AnimationState::Attack01)
-		{
-			if (36.0f <= time && time <= 46.0f)
-			{
-				Judgment(2);
-			}
-			else if (68.0f <= time && time <= 80.0f)
-			{
-				Judgment(1);
-			}
-			else
-			{
-				NoJudgment();
-			}
-		}
-		else if (animationState == AnimationState::Attack02)
-		{
-			if (40.0f <= time && time <= 55.0f)
-			{
-				Judgment(2);
-			}
-			else if (75.0f <= time && time <= 85.0f)
-			{
-				Judgment(1);
-			}
-			else if (96.0f <= time && time <= 107.0f)
-			{
-				Judgment(2);
-			}
-			else if (113.0f <= time && time <= 120.0f)
-			{
-				Judgment(1);
-			}
-			else if (129.0f <= time && time <= 139.0f)
-			{
-				Judgment(2);
-			}
-			else if (146.0f <= time && time <= 156.0f)
-			{
-				Judgment(1);
-			}
-			else
-			{
-				NoJudgment();
-			}
-		}
-		else if (animationState == AnimationState::Attack03)
-		{
-			if (22.0f <= time && time <= 42.0f)
-			{
-				Judgment(3);
-			}
-			else
-			{
-				NoJudgment();
-			}
-		}
-#else
-		//if (animationState == AnimationState::)
 		Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
 
 		// 当たり判定
-		if (attackDatas[index].collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatas[index].collisionEndTime)
+		if (attackDatasList.at(index).datas.at(attackComboState).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).collisionEndTime)
 		{
-			Judgment(attackDatas[index].collisionNum);
+			Judgment(attackDatasList.at(index).datas.at(attackComboState).collisionNum);
 		}
 		else
 		{
 			NoJudgment();
 		}
-#endif
 	}
 	else
 	{

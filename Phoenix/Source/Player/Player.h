@@ -4,6 +4,7 @@
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/Object/Object.h"
+#include "Phoenix/FrameWork/Input/InputDevice.h"
 #include "../UI/PlayerUI.h"
 
 
@@ -52,12 +53,7 @@ public:
 		Run,
 		SlowRun,
 		Roll,
-		Attack01,
-		Attack02,
-		Attack03,
-		Attack04,
-		Attack05,
-		Attack06,
+		Attack,
 		Damage,
 		Dedge
 	};
@@ -91,35 +87,49 @@ public:
 		Attack01,
 		Attack02,
 		Attack03,
-		Attack04,
-		Attack05,
-		Attack06,
 		End
 	};
 #endif
 
+	enum class AttackKey
+	{
+		WeakAttack,
+		StrongAttack,
+		None
+	};
+
 private:
 	struct AttackData
 	{
-		AnimationState animationState;
-		AttackAnimationState attackState;
+		AttackAnimationState animState; // アニメーションステート
+		Phoenix::s32 animIndex; // アニメーションレイヤーの番号
 
-		AnimationState nextAnimationState;
-		AttackAnimationState nextAttackState;
+		Phoenix::f32 playSpeed; // 再生スピード
+		Phoenix::f32 playBeginTime; // 再生開始時間（再生フレーム）
+		Phoenix::f32 playEndTime; // 再生終了時間（再生フレーム）
 
-		Phoenix::f32 playBeginTime;
-		Phoenix::f32 playEndTime;
+		Phoenix::s32 collisionNum; // 当たり判定の番号
+		Phoenix::f32 collisionBeginTime; // 当たり判定開始時間（再生フレーム）
+		Phoenix::f32 collisionEndTime; // 当たり判定終了時間（再生フレーム）
 
-		Phoenix::f32 collisionBeginTime;
-		Phoenix::f32 collisionEndTime;
+		bool receptionStack; // 次のアニメーションへ遷移するための入力受付をスタックするかどうか？
+		Phoenix::f32 receptionBeginTime; // 次のアニメーションへ遷移するための入力受付開始時間
+		Phoenix::f32 receptionEndTime; // 次のアニメーションへ遷移するための入力受付終了時間
+	};
 
-		Phoenix::s32 collisionNum;
+	struct AttackDatas
+	{
+		AttackKey receptionKey; // 入力キー
+		std::vector<AttackData> datas;
 
-		Phoenix::f32 receptionBeginTime;
-		Phoenix::f32 receptionEndTime;
-
-		Phoenix::f32 nextMoveSpeed;
-		Phoenix::f32 animationSpeed;
+		void SetKey(AttackKey key)
+		{
+			receptionKey = key;
+		}
+		void AddData(AttackData data)
+		{
+			datas.emplace_back(data);
+		}
 	};
 
 private:
@@ -129,7 +139,7 @@ private:
 	/*static constexpr*/ Phoenix::f32 SlowRunSpeed = 0.09f;
 	/*static constexpr*/ Phoenix::f32 BattleSlowRunSpeed = 0.045f;
 	/*static constexpr*/ Phoenix::f32 RollSpeed = 0.15f;
-	/*static constexpr*/ Phoenix::f32 DedgeSpeed = 0.1f;
+	/*static constexpr*/ Phoenix::f32 DedgeSpeed = 0.05f;
 	/*static constexpr*/ Phoenix::f32 KnockBackSpeed = -0.03f;
 	/*static constexpr*/ Phoenix::f32 KnockBackDownSpeed = 0.0003f;
 	/*static constexpr*/ Phoenix::f32 Attack03Speed = 0.1f;
@@ -167,7 +177,10 @@ private:
 
 	AnimationState animationState;
 	AttackAnimationState attackState;
-	std::vector<AttackData> attackDatas;
+	Phoenix::s32 attackComboState = -1;
+	Phoenix::s32 currentAttackAnimIndex = -1;
+	//std::vector<AttackData> attackDatas;
+	std::vector<AttackDatas> attackDatasList;
 
 	bool isChangeAnimation;
 	bool isAttack;
@@ -205,6 +218,10 @@ private:
 	bool isBattleMode = false;
 	Phoenix::u32 dedgeLayerIndex = 0;
 	Phoenix::Math::Vector3 targetPos = { 0.0f, 0.0f, 0.0f };
+
+	// 入力スタック
+	bool receptionStack = false;
+	AttackKey stackKey = AttackKey::None;
 
 public:
 	Player() :
@@ -286,13 +303,38 @@ public:
 	};
 
 	// 攻撃アニメーション変更
-	void ChangeAttackAnimationState(AttackAnimationState state, Phoenix::f32 speed)
+	void ChangeAttackAnimationState(AttackAnimationState state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed)
 	{
 		isAttack = true;
 
 		attackState = state;
+		currentAttackAnimIndex = attackAnimIndex;
 		animationSpeed = speed;
 	};
+
+	bool CheckHitKey(AttackKey key)
+	{
+		switch (key)
+		{
+		case AttackKey::WeakAttack:
+			if ((xInput[0].bXt || GetAsyncKeyState('J') & 1))
+			{
+				return true;
+			}
+			break;
+
+		case AttackKey::StrongAttack:
+			if ((xInput[0].bYt || GetAsyncKeyState('K') & 1))
+			{
+				return true;
+			}
+			break;
+
+		default: break;
+		}
+
+		return false;
+	}
 
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
@@ -302,7 +344,7 @@ public:
 	Phoenix::f32 GetRadius() { return radius; }
 	Phoenix::s32 GetHP() { return life; }
 	AnimationState GetAnimationState() { return animationState; }
-	const std::vector<Phoenix::FrameWork::CollisionData>* GetCollisionDatas() { return &collisionDatas; }
+	const std::vector<Phoenix::FrameWork::CollisionData> GetCollisionDatas() { return collisionDatas; }
 	bool IsAttackJudgment() { return isAttackJudgment; }
 	bool Invincible() { return invincible; }
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }

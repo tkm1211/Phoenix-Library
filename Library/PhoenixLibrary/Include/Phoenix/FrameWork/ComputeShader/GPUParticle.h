@@ -61,6 +61,7 @@ namespace Phoenix
 				Math::Vector2 sizeBeginEnd;
 				f32 life;
 				u32 colorMirror;
+				Math::Vector4 motionVelocity;
 			};
 
 			struct ParticleCounters
@@ -181,7 +182,7 @@ namespace Phoenix
 			f32 scaleX = 1.0f;
 			f32 scaleY = 1.0f;
 			f32 rotation = 0.0f;
-			f32 motionBlurAmount = 0.0f;
+			f32 motionBlurAmount = 1.0f;
 			f32 mass = 1.0f;
 			Math::Vector4 normal = Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 			Math::Color mainColor = Math::Color(1.0f, 1.0f, 1.0f, 1.0f);

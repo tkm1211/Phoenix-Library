@@ -3,7 +3,9 @@
 #include <memory>
 #include "../Player/Player.h"
 #include "../Boss/Boss.h"
+#include "../Enemy/EnemyManager.h"
 #include "../Mannequin/Mannequin.h"
+#include "../AI/MetaAI/MetaAI.h"
 #include "../UI/UISystem.h"
 #include "../UI/TargetMarkUI.h"
 #include "Phoenix/Types.h"
@@ -23,7 +25,9 @@ class SceneCommonData
 public:
 	std::shared_ptr<Player> player;
 	std::shared_ptr<Boss> boss;
+	std::shared_ptr<EnemyManager> enemyManager;
 	std::shared_ptr<Mannequin> mannequin;
+	std::shared_ptr<MetaAI> metaAI;
 	std::shared_ptr<TargetMarkUI> targetMarkUI;
 	std::shared_ptr<UISystem> uiSystem;
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> stageModel;

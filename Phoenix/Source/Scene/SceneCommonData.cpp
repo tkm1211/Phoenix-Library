@@ -1,5 +1,7 @@
 #include "SceneCommonData.h"
 #include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
+#include "../AI/MetaAI/BattleEnemySystem.h"
+#include "../AI/MetaAI/MetaType.h"
 
 
 std::shared_ptr<SceneCommonData> SceneCommonData::Create()
@@ -15,8 +17,19 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	boss = Boss::Create();
 	boss->Construct(graphicsDevice, player.get());
 
+	enemyManager = EnemyManager::Create();
+	enemyManager->Construct(graphicsDevice);
+
 	mannequin = Mannequin::Create();
 	mannequin->Construct(graphicsDevice);
+
+	std::shared_ptr<Meta::BattleEnemySystem> battleEnemySystem = Meta::BattleEnemySystem::Create();
+	battleEnemySystem->Construct();
+	battleEnemySystem->SetManager(enemyManager);
+
+	metaAI = MetaAI::Create();
+	metaAI->AddSystem<Meta::BattleEnemySystem>(static_cast<Phoenix::s32>(MetaType::Battle), battleEnemySystem);
+	metaAI->Construct();
 
 	targetMarkUI = TargetMarkUI::Create();
 
@@ -28,12 +41,12 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	}
 	uiSystem->Initialize(graphicsDevice);
 
-	const char* filename = "..\\Data\\Assets\\Model\\Stage\\MDL_StartStage.fbx"; // stage01 Floor01 JOL\\MDL_StartStage
+	const char* filename = "..\\Data\\Assets\\Model\\Stage\\MDL_StartStage.fbx"; // stage01 Floor01 JOL // MDL_StartStage  // Stage_Collision
 	stageModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	stageModel->Initialize(graphicsDevice);
 	stageModel->Load(graphicsDevice, filename);
 
-	filename = "..\\Data\\Assets\\Model\\Stage\\MDL_BossStage03.fbx";
+	filename = "..\\Data\\Assets\\Model\\Stage\\MDL_BossStage03.fbx"; // MDL_BossStage03 // Stage_Collision
 	bossStageModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
 	bossStageModel->Initialize(graphicsDevice);
 	bossStageModel->Load(graphicsDevice, filename);

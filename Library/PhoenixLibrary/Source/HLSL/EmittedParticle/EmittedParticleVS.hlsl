@@ -52,7 +52,7 @@ VertextoPixel main(uint fakeIndex : SV_VERTEXID)
     quadPos *= size;
 
 	// scale the billboard along view space motion vector:
-    float3 velocity = mul((float3x3)cb_view, particle.velocity);
+    float3 velocity = mul((float3x3)cb_view, particle.motionVelocity.xyz);
     quadPos += dot(quadPos, velocity) * velocity * xParticleMotionBlurAmount;
 
 	// copy to output:

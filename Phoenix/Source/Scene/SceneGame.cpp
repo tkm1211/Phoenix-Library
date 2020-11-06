@@ -338,7 +338,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 		if (player->IsAttackJudgment() && !isHitStop)
 		{
-			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
+			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = &player->GetCollisionDatas();
 			const std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
 			if (SphereVsSphere(playerDatas->at(player->GetAttackCollisionIndex()).pos, bossDatas->at(0).pos, playerDatas->at(player->GetAttackCollisionIndex()).radius, bossDatas->at(0).radius))
 			{
@@ -459,7 +459,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 		if (boss->IsAttackJudgment() && !player->Invincible() && !isHitStop)
 		{
-			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
+			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = &player->GetCollisionDatas();
 			const std::vector<Phoenix::FrameWork::CollisionData>* bossDatas = boss->GetCollisionDatas();
 			if (boss->IsJumpAttackStart() && !isCameraShake)
 			{
@@ -939,6 +939,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 				Phoenix::Math::Matrix W;
 				{
 					Phoenix::Math::Vector3 scale = { 1.0f, 1.0f, 1.0f };
+					//Phoenix::Math::Vector3 scale = { 175.0f, 175.0f, 175.0f };
 					Phoenix::Math::Vector3 rotate = { 0.0f, 0.0f, 0.0f };
 					Phoenix::Math::Vector3 translate = { 0.0f, 0.0f, 0.0f };
 
@@ -1150,7 +1151,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 				Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
 				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Opaque), 0, 0xFFFFFFFF);
 
-				for(const auto data : *player->GetCollisionDatas())
+				for(const auto data : player->GetCollisionDatas())
 				{
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 				}

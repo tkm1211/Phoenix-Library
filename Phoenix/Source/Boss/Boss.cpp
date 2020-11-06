@@ -33,6 +33,17 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Player*
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Rotate\\Right_Rotate.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Attack\\Jump\\Jump_Attack02.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Damage\\Head_Hit.fbx", -1);
+
+		model->AddAnimationLayer(0);
+		model->AddAnimationLayer(1);
+		model->AddAnimationLayer(2);
+		model->AddAnimationLayer(3);
+		model->AddAnimationLayer(4);
+		model->AddAnimationLayer(5);
+		model->AddAnimationLayer(6);
+		model->AddAnimationLayer(7);
+
+		effectModel->AddAnimationLayer(0);
 	}
 
 	// ƒRƒŠƒWƒ‡ƒ“‰Šú‰»

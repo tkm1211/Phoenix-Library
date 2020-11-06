@@ -29,7 +29,7 @@ public:
 	void GUI();
 
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
-	const std::vector<Phoenix::FrameWork::CollisionData>* GetCollisionDatas() { return &collisionDatas; }
+	const std::vector<Phoenix::FrameWork::CollisionData> GetCollisionDatas() { return collisionDatas; }
 
 	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
 	Phoenix::Math::Vector3 GetPosition() { return pos; }

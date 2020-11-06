@@ -31,6 +31,18 @@
     <Filter Include="Source\Mannequin">
       <UniqueIdentifier>{b1235755-55e5-450b-b657-ff631f55606f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\AI">
+      <UniqueIdentifier>{342bd1d7-6372-49ea-9ca6-4eadac478728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\AI\MetaAI">
+      <UniqueIdentifier>{994fe8c0-a42f-479d-8aed-2ded08719f54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Enemy">
+      <UniqueIdentifier>{b5507d48-23e0-4f70-beff-d050d3b9dc92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\AI\StateMachine">
+      <UniqueIdentifier>{0b005f4b-a378-4c45-900b-c83da9cbf080}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -90,9 +102,6 @@
     <ClCompile Include="Source\Scene\FadeSystem.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\SceneGameClear.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene\SceneGameOver.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
@@ -113,6 +122,33 @@
     </ClCompile>
     <ClCompile Include="Source\Mannequin\Mannequin.cpp">
       <Filter>Source\Mannequin</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\SceneGameClear.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AI\MetaAI\MetaAI.cpp">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AI\MetaAI\PlayerSkillAnalyzer.cpp">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AI\MetaAI\DynamicDifficultyAdjuster.cpp">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AI\MetaAI\BattleEnemyController.cpp">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Enemy\Enemy.cpp">
+      <Filter>Source\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Enemy\EnemyManager.cpp">
+      <Filter>Source\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AI\MetaAI\BattleEnemySystem.cpp">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AI\StateMachine\StateMachine.cpp">
+      <Filter>Source\AI\StateMachine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +228,39 @@
       <Filter>Source\Mannequin</Filter>
     </ClInclude>
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="Source\AI\MetaAI\MetaAI.h">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\MetaAI\PlayerSkillAnalyzer.h">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\MetaAI\DynamicDifficultyAdjuster.h">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\MetaAI\BattleEnemyController.h">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Enemy\Enemy.h">
+      <Filter>Source\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Enemy\EnemyManager.h">
+      <Filter>Source\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\MetaAI\MetaAISystem.h">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\MetaAI\BattleEnemySystem.h">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\MetaAI\MetaType.h">
+      <Filter>Source\AI\MetaAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Enemy\EnemyBattleState.h">
+      <Filter>Source\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\StateMachine\StateMachine.h">
+      <Filter>Source\AI\StateMachine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Phoenix1.rc" />

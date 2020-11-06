@@ -108,6 +108,8 @@ void main( uint3 DTid : SV_DispatchThreadID )
 		//color_modifier |= (uint)(255.0f * lerp(1, rand(seed, uv), xParticleRandomFactor)) << 16;
         color_modifier = 0x00FFFFFF;
         particle.colorMirror |= xParticleColor & color_modifier;
+		
+        particle.motionVelocity = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 
 		// new particle index retrieved from dead list (pop):

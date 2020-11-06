@@ -27,7 +27,7 @@ namespace Phoenix
 #endif
 			display = Phoenix::OS::IDisplay::Create();
 
-			if (!display->Initialize(L"Phoenix", width, height, instance))
+			if (!display->Initialize(L"BOXER", width, height, instance))
 			{
 				return false;
 			}

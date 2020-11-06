@@ -10,6 +10,8 @@
 #include "Phoenix/FND/Util.h"
 #include "../Source/Graphics/Texture/Win/DirectX11/TextureDX11.h"
 #include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
+#include "../Enemy/EnemyManager.h"
+#include "../Enemy/Enemy.h"
 
 
 void SceneTutorial::Construct(SceneSystem* sceneSystem)
@@ -31,6 +33,7 @@ void SceneTutorial::Construct(SceneSystem* sceneSystem)
 	// 共通データのアドレス取得
 	{
 		player = commonData->player.get();
+		enemyManager = commonData->enemyManager.get();
 		mannequin = commonData->mannequin.get();
 		uiSystem = commonData->uiSystem.get();
 		stageModel = commonData->stageModel.get();
@@ -196,6 +199,7 @@ void SceneTutorial::Initialize()
 	// 共通データの初期化
 	{
 		player->Initialize();
+		enemyManager->Initialize();
 		mannequin->Initialize();
 
 		player->SetPosition(Phoenix::Math::Vector3(0.0f, 0.0f, 75.0f));
@@ -216,6 +220,12 @@ void SceneTutorial::Initialize()
 		shakeHeight = 0.0f;
 		cameraShakeCnt = 0;
 		cameraShakeMaxCnt = 0;
+
+		Phoenix::FrameWork::Transform transform;
+		transform.SetTranslate({ 0,0,75.0f });
+		transform.SetRotate({ 0,0,0,1 });
+		transform.SetScale({ 1.0f,1.0f,1.0f });
+		enemyManager->AddEnemy(transform);
 	}
 
 	// GPUパーティクル
@@ -240,6 +250,12 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 	if (isUpdate && !isHitStop)
 	{
 		player->Update(*camera, !onFade && isPlayerUpdate);
+	}
+
+	// エネミーマネージャー更新
+	if (isUpdate)
+	{
+		enemyManager->Update();
 	}
 
 	// ボス更新
@@ -286,14 +302,14 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 		{
 			if (player->IsAttackJudgment() && !isHitStop)
 			{
-				const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
-				const std::vector<Phoenix::FrameWork::CollisionData>* mannequinDatas = mannequin->GetCollisionDatas();
-				if (SphereVsSphere(playerDatas->at(player->GetAttackCollisionIndex()).pos, mannequinDatas->at(0).pos, playerDatas->at(player->GetAttackCollisionIndex()).radius, mannequinDatas->at(0).radius))
+				const std::vector<Phoenix::FrameWork::CollisionData> playerDatas = player->GetCollisionDatas();
+				const std::vector<Phoenix::FrameWork::CollisionData> mannequinDatas = mannequin->GetCollisionDatas();
+				if (SphereVsSphere(playerDatas.at(player->GetAttackCollisionIndex()).pos, mannequinDatas.at(0).pos, playerDatas.at(player->GetAttackCollisionIndex()).radius, mannequinDatas.at(0).radius))
 				{
 					Phoenix::Math::Vector3 pos;
 					Phoenix::Math::Vector3 normal;
-					Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(playerDatas->at(player->GetAttackCollisionIndex()).pos - mannequinDatas->at(0).pos);
-					pos = mannequinDatas->at(0).pos + dir * mannequinDatas->at(0).radius / 2.0f;
+					Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(playerDatas.at(player->GetAttackCollisionIndex()).pos - mannequinDatas.at(0).pos);
+					pos = mannequinDatas.at(0).pos + dir * mannequinDatas.at(0).radius / 2.0f;
 					normal = Phoenix::Math::Vector3Normalize(playerPos - mannequinPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
 
 					player->SetIsHit(true);
@@ -301,14 +317,16 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 
 					// Burst Particle.
 					{
-						playerHitParticle->Burst(100);
-						playerHitParticle->SetParticleLife(1.0f);
-						playerHitParticle->SetParticleSize(0.07f);
-						playerHitParticle->SetParticleScale(0.25f);
+						playerHitParticle->Burst(150);
+						playerHitParticle->SetParticleLife(1.5f);
+						playerHitParticle->SetParticleSize(0.004f);
+						playerHitParticle->SetParticleScale(1.0f);
 						playerHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
-						playerHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)
+						playerHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+						//playerHitParticle->SetParticleColor(Phoenix::Math::Color(40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+						//playerHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
 
-						particlePos = playerDatas->at(player->GetAttackCollisionIndex()).pos;
+						particlePos = playerDatas.at(player->GetAttackCollisionIndex()).pos;
 					}
 
 					// Set Point Light
@@ -364,7 +382,7 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 								cameraShakeCnt = 0;
 
-								shakeWidth = 0.75f;
+								shakeWidth = 0.55f;
 								shakeHeight = 0.0f;
 								cameraShakeMaxCnt = 10;
 
@@ -513,7 +531,7 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 			static Phoenix::f32 cameraLen = 6.0f;
 			if (len <= 5.0f)
 			{
-				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 7.5f, 0.05f);
+				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 8.5f, 0.05f);
 
 				enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
 				camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, 0.05f);
@@ -677,6 +695,10 @@ void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
 					{
 						currentShader->Draw(graphicsDevice, mannequin->GetWorldMatrix(), mannequin->GetModel());
 						currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+						for (auto enemy : enemyManager->GetEnemies())
+						{
+							currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
+						}
 					}
 					voidPS->DeactivatePS(graphicsDevice->GetDevice());
 					currentShader->End(graphicsDevice);
@@ -811,6 +833,13 @@ void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
 					currentShader->Draw(graphicsDevice, mannequin->GetWorldMatrix(), mannequin->GetModel());
 					currentShader->End(graphicsDevice);
 
+					currentShader->Begin(graphicsDevice, *camera);
+					for (auto enemy : enemyManager->GetEnemies())
+					{
+						currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
+					}
+					currentShader->End(graphicsDevice);
+
 					// Draw Effect.
 					{
 						Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
@@ -844,14 +873,23 @@ void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
 				Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
 				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Opaque), 0, 0xFFFFFFFF);
 
-				for (const auto data : *player->GetCollisionDatas())
+				for (const auto data : player->GetCollisionDatas())
 				{
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 				}
 
-				for (const auto data : *mannequin->GetCollisionDatas())
+				for (const auto data : mannequin->GetCollisionDatas())
 				{
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
+				}
+
+				for (auto enemy : enemyManager->GetEnemies())
+				{
+					const auto datas = *enemy->GetCollisionDatas();
+					for (const auto data : datas)
+					{
+						PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
+					}
 				}
 
 				PrimitiveRender(device, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(1.0f, 1.0f, 1.0f), true);
@@ -903,9 +941,9 @@ void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
 		}
 		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 
-		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+		//quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 
-		//toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
+		toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
 	}
 	else
 	{
@@ -978,6 +1016,9 @@ void SceneTutorial::GUI()
 		}
 		{
 			mannequin->GUI();
+		}
+		{
+			enemyManager->GUI();
 		}
 		if (ImGui::TreeNode("Camera"))
 		{

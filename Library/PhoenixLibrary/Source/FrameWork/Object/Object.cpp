@@ -100,9 +100,9 @@ namespace Phoenix
 		}
 
 		// アニメーションの読み込み
-		void ModelObject::LoadAnimation(const char* filename, s32 index)
+		s32 ModelObject::LoadAnimation(const char* filename, s32 index)
 		{
-			animator->LoadResource(resourceManamger.get(), filename, index);
+			return animator->LoadResource(resourceManamger.get(), filename, index);
 		}
 
 		void ModelObject::AddAnimationLayer(s32 setBaseAnimationIndex, const s8* beginNodeName, const s8* endNodeName)

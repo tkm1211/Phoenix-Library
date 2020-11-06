@@ -10,6 +10,7 @@ struct Particle
     float2 sizeBeginEnd;
     float life;
     uint colorMirror;
+    float4 motionVelocity;
 };
 
 struct ParticleCounters
