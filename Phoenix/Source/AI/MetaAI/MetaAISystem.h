@@ -6,7 +6,6 @@
 class IMetaAISystem
 {
 public:
-	IMetaAISystem() {}
 	virtual ~IMetaAISystem() {}
 
 public:

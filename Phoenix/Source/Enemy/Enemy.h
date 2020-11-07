@@ -5,11 +5,12 @@
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/Object/Object.h"
 #include "Phoenix/FrameWork/Component/Transform.h"
-#include "EnemyBattleState.h"
+#include "EnemyState.h"
+#include "../AI/StateMachine/BattleEnemyAI.h"
 
 
 class EnemyManager;
-class Enemy
+class Enemy : public std::enable_shared_from_this<Enemy>
 {
 private:
 	static constexpr Phoenix::s32 LifeRange = 50;
@@ -30,7 +31,8 @@ private:
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
 	std::unique_ptr<Phoenix::FrameWork::Transform> transform;
 	std::vector<Phoenix::FrameWork::CollisionData> collisionDatas;
-
+	std::map<EnemyMode, std::shared_ptr<AIBase>> enemyAIList;
+	std::shared_ptr<AIBase> currentAI;
 	std::weak_ptr<EnemyManager> owner;
 
 	Phoenix::s32 life = 0;

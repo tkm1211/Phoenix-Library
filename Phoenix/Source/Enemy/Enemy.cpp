@@ -52,6 +52,33 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		transform = std::make_unique<Phoenix::FrameWork::Transform>();
 	}
 
+	// AIの初期化
+	{
+		// 通常モードAI
+		//std::shared_ptr<OrdinaryAIEnemyAI> ordinaryAI = OrdinaryAIEnemyAI::Create();
+		{
+			//ordinaryAI->SetOwner(shared_from_this());
+		}
+
+		// バトルモードAI
+		std::shared_ptr<BattleEnemyAI> battleAI = BattleEnemyAI::Create();
+		{
+			battleAI->SetOwner(shared_from_this());
+		}
+
+		// AIの追加
+		{
+			//enemyAIList.insert(std::make_pair(EnemyMode::Ordinary, ordinaryAI));
+			enemyAIList.insert(std::make_pair(EnemyMode::Battle, battleAI));
+		}
+
+		// AIのセットアップ
+		for (const auto& [key, value] : enemyAIList)
+		{
+			value->SetUp();
+		}
+	}
+
 	// その他のパラメータ初期化
 	{
 		Initialize();
@@ -82,6 +109,11 @@ void Enemy::Initialize()
 // 終了化
 void Enemy::Finalize()
 {
+	for (const auto& [key, value] : enemyAIList)
+	{
+		value->CleanUp();
+	}
+
 	collisionDatas.clear();
 	transform.reset();
 	model.reset();
@@ -90,6 +122,11 @@ void Enemy::Finalize()
 // 更新
 void Enemy::Update()
 {
+	// AI更新
+	{
+		currentAI->Update();
+	}
+
 	// アニメーション更新
 	{
 		model->UpdateTransform(1 / 60.0f);

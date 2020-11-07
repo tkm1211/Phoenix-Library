@@ -20,26 +20,26 @@ namespace Meta
 
 	public:
 		BattleEnemySystem() {}
-		~BattleEnemySystem() {}
+		~BattleEnemySystem() override {}
 
 	public:
 		// 生成
 		static std::shared_ptr<BattleEnemySystem> Create();
 
 		// コンストラクタ
-		void Construct();
+		void Construct() override;
 
 		// 初期化
-		void Initialize();
+		void Initialize() override;
 
 		// 終了化
-		void Finalize();
+		void Finalize() override;
 
 		/// <summary>
 		/// 更新
 		/// </summary>
 		/// <param name="score"> : プレイヤー行動の合計スコア </param>
-		void Update(Phoenix::s32 score);
+		void Update(Phoenix::s32 score) override;
 
 		/// <summary>
 		/// 管理クラスの設定

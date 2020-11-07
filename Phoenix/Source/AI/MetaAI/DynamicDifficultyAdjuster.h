@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Phoenix/Math/PhoenixMath.h"
-#include "../../Enemy/EnemyBattleState.h"
+#include "../../Enemy/EnemyState.h"
 
 
 class DynamicDifficultyAdjuster
 {
 private:
-	EnenyBattleState ideaState = EnenyBattleState::NoneState;
+	BattleEnenyState ideaState = BattleEnenyState::NoneState;
 
 public:
 	DynamicDifficultyAdjuster() {}
@@ -33,5 +33,5 @@ public:
 	void Update(Phoenix::s32 skillLevel);
 
 	// エネミーステートの取得
-	EnenyBattleState GetEnenyBattleState();
+	BattleEnenyState GetBattleEnenyState();
 };

@@ -107,7 +107,7 @@ dcl_temps 8
 //   o1.x <- <main return value>.position.x; o1.y <- <main return value>.position.y; o1.z <- <main return value>.position.z; 
 //   o0.x <- <main return value>.sv_position.x; o0.y <- <main return value>.sv_position.y; o0.z <- <main return value>.sv_position.z; o0.w <- <main return value>.sv_position.w
 //
-#line 16 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\StandardVSSkin.hlsl"
+#line 16 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\StandardVSSkin.hlsl"
 nop 
 mov r0.xyzw, v0.xyzw
 mov r1.xyzw, v4.xyzw
@@ -116,13 +116,13 @@ mov r3.xyz, v1.xyzx
 mov r4.xyz, v2.xyzx
 mov r5.xy, v3.xyxx
 
-#line 61 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\CommonVS.hlsli"
+#line 61 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\CommonVS.hlsli"
 nop 
 mov r0.xyzw, r0.xyzw
 mov r1.xyzw, r1.xyzw
 mov r2.xyzw, r2.xyzw
 
-#line 8 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\Skinning.hlsli"
+#line 8 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\Skinning.hlsli"
 imul null, r5.z, v6.x, l(4)
 dp4 r6.x, r0.xyzw, cb2[r5.z + 0].xyzw
 dp4 r6.y, r0.xyzw, cb2[r5.z + 1].xyzw
@@ -188,7 +188,7 @@ add r0.xyz, r6.xyzx, r7.xyzx  // r0.x <- o.x; r0.y <- o.y; r0.z <- o.z
 #line 18
 mov r0.xyz, r0.xyzx  // r0.x <- <SkinningPosition return value>.x; r0.y <- <SkinningPosition return value>.y; r0.z <- <SkinningPosition return value>.z
 
-#line 61 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\CommonVS.hlsli"
+#line 61 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\CommonVS.hlsli"
 mov r0.xyz, r0.xyzx  // r0.x <- input.position.x; r0.y <- input.position.y; r0.z <- input.position.z
 
 #line 63
@@ -197,7 +197,7 @@ mov r3.xyz, r3.xyzx
 mov r1.xyzw, r1.xyzw
 mov r2.xyzw, r2.xyzw
 
-#line 23 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\Skinning.hlsli"
+#line 23 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\Skinning.hlsli"
 mov r3.w, l(0)
 mov r3.xyzw, r3.xyzw  // r3.x <- v.x; r3.y <- v.y; r3.z <- v.z; r3.w <- v.w
 
@@ -267,7 +267,7 @@ add r3.xyz, r3.xyzx, r6.xyzx  // r3.x <- o.x; r3.y <- o.y; r3.z <- o.z
 #line 34
 mov r3.xyz, r3.xyzx  // r3.x <- <SkinningVector return value>.x; r3.y <- <SkinningVector return value>.y; r3.z <- <SkinningVector return value>.z
 
-#line 63 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\CommonVS.hlsli"
+#line 63 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\CommonVS.hlsli"
 mov r3.xyz, r3.xyzx  // r3.x <- input.normal.x; r3.y <- input.normal.y; r3.z <- input.normal.z
 
 #line 66
@@ -276,7 +276,7 @@ mov r4.xyz, r4.xyzx
 mov r1.xyzw, r1.xyzw
 mov r2.xyzw, r2.xyzw
 
-#line 23 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\Skinning.hlsli"
+#line 23 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\Skinning.hlsli"
 mov r4.w, l(0)
 mov r4.xyzw, r4.xyzw  // r4.x <- v.x; r4.y <- v.y; r4.z <- v.z; r4.w <- v.w
 
@@ -346,7 +346,7 @@ add r1.xyz, r1.xyzx, r2.xyzx
 #line 34
 mov r1.xyz, r1.xyzx  // r1.x <- <SkinningVector return value>.x; r1.y <- <SkinningVector return value>.y; r1.z <- <SkinningVector return value>.z
 
-#line 66 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\CommonVS.hlsli"
+#line 66 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\CommonVS.hlsli"
 mov r1.xyz, r1.xyzx  // r1.x <- input.tangent.x; r1.y <- input.tangent.y; r1.z <- input.tangent.z
 
 #line 70
@@ -395,7 +395,7 @@ mov r3.xyz, r3.xyzx  // r3.x <- <VSCommon return value>.tangent.x; r3.y <- <VSCo
 mov r5.x, r5.x  // r5.x <- <VSCommon return value>.texcoord0.x
 mov r5.y, r5.y  // r5.y <- <VSCommon return value>.texcoord0.y
 
-#line 16 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\StandardVSSkin.hlsl"
+#line 16 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\StandardVSSkin.hlsl"
 mov o0.xyzw, r0.xyzw
 mov o5.xyzw, r1.xyzw
 mov o1.xyz, r2.xyzx
@@ -408,10 +408,10 @@ ret
 
 const BYTE StandardVSSkin[] =
 {
-     68,  88,  66,  67, 240, 198, 
-     33, 178, 143, 249, 122,  84, 
-    224,  24,  74, 156, 200,   9, 
-    204,  14,   1,   0,   0,   0, 
+     68,  88,  66,  67, 199, 115, 
+    141,  33,  48, 150, 181,  19, 
+     49,  85, 112, 230, 219, 100, 
+     60, 192,   1,   0,   0,   0, 
     220, 213,   0,   0,   6,   0, 
       0,   0,  56,   0,   0,   0, 
      56,   4,   0,   0,  68,   5, 
@@ -2194,11 +2194,11 @@ const BYTE StandardVSSkin[] =
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
-    148,  46,  49,   1,  67, 184, 
-    164,  95,   1,   0,   0,   0, 
-    114, 198,  62, 194,  76,  94, 
-    244,  79, 175,  69, 165, 169, 
-     21,  78, 214, 135,   0,   0, 
+    148,  46,  49,   1,  55,   2, 
+    166,  95,   1,   0,   0,   0, 
+     99,  70, 102,  96, 172,  72, 
+    151,  72, 177,  17, 203, 186, 
+    247, 212, 103,  19,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       1,   0,   0,   0,   1,   0, 
       0,   0,   0,   0,   0,   0, 
@@ -2283,7 +2283,7 @@ const BYTE StandardVSSkin[] =
       1,   0,   0,   0,  48,  40, 
       0,   0,   0,  68,  58,  92, 
      80, 104, 111, 101, 110, 105, 
-    120,  32,  80, 114, 111, 106, 
+    120,  95,  80, 114, 111, 106, 
     101,  99, 116,  92,  66,  79, 
      88,  69,  82,  92,  80, 114, 
     111, 106, 101,  99, 116,  92, 
@@ -2298,7 +2298,7 @@ const BYTE StandardVSSkin[] =
     110,  46, 104, 108, 115, 108, 
       0,   0, 100,  58,  92, 112, 
     104, 111, 101, 110, 105, 120, 
-     32, 112, 114, 111, 106, 101, 
+     95, 112, 114, 111, 106, 101, 
      99, 116,  92,  98, 111, 120, 
     101, 114,  92, 112, 114, 111, 
     106, 101,  99, 116,  92, 108, 
@@ -2312,7 +2312,7 @@ const BYTE StandardVSSkin[] =
     118, 115, 115, 107, 105, 110, 
      46, 104, 108, 115, 108,   0, 
      68,  58,  92,  80, 104, 111, 
-    101, 110, 105, 120,  32,  80, 
+    101, 110, 105, 120,  95,  80, 
     114, 111, 106, 101,  99, 116, 
      92,  66,  79,  88,  69,  82, 
      92,  80, 114, 111, 106, 101, 
@@ -2326,7 +2326,7 @@ const BYTE StandardVSSkin[] =
     111, 110,  86,  83,  46, 104, 
     108, 115, 108, 105,   0, 100, 
      58,  92, 112, 104, 111, 101, 
-    110, 105, 120,  32, 112, 114, 
+    110, 105, 120,  95, 112, 114, 
     111, 106, 101,  99, 116,  92, 
      98, 111, 120, 101, 114,  92, 
     112, 114, 111, 106, 101,  99, 
@@ -2340,7 +2340,7 @@ const BYTE StandardVSSkin[] =
     110, 118, 115,  46, 104, 108, 
     115, 108, 105,   0,  68,  58, 
      92,  80, 104, 111, 101, 110, 
-    105, 120,  32,  80, 114, 111, 
+    105, 120,  95,  80, 114, 111, 
     106, 101,  99, 116,  92,  66, 
      79,  88,  69,  82,  92,  80, 
     114, 111, 106, 101,  99, 116, 
@@ -2354,7 +2354,7 @@ const BYTE StandardVSSkin[] =
      67,  66,  46, 104, 108, 115, 
     108, 105,   0, 100,  58,  92, 
     112, 104, 111, 101, 110, 105, 
-    120,  32, 112, 114, 111, 106, 
+    120,  95, 112, 114, 111, 106, 
     101,  99, 116,  92,  98, 111, 
     120, 101, 114,  92, 112, 114, 
     111, 106, 101,  99, 116,  92, 
@@ -4160,7 +4160,7 @@ const BYTE StandardVSSkin[] =
      98,  46, 104, 108, 115, 108, 
     105,   0,  68,  58,  92,  80, 
     104, 111, 101, 110, 105, 120, 
-     32,  80, 114, 111, 106, 101, 
+     95,  80, 114, 111, 106, 101, 
      99, 116,  92,  66,  79,  88, 
      69,  82,  92,  80, 114, 111, 
     106, 101,  99, 116,  92,  76, 
@@ -4174,7 +4174,7 @@ const BYTE StandardVSSkin[] =
     121, 111, 117, 116,  46, 104, 
     108, 115, 108, 105,   0, 100, 
      58,  92, 112, 104, 111, 101, 
-    110, 105, 120,  32, 112, 114, 
+    110, 105, 120,  95, 112, 114, 
     111, 106, 101,  99, 116,  92, 
      98, 111, 120, 101, 114,  92, 
     112, 114, 111, 106, 101,  99, 
@@ -4189,7 +4189,7 @@ const BYTE StandardVSSkin[] =
     116,  46, 104, 108, 115, 108, 
     105,   0,  68,  58,  92,  80, 
     104, 111, 101, 110, 105, 120, 
-     32,  80, 114, 111, 106, 101, 
+     95,  80, 114, 111, 106, 101, 
      99, 116,  92,  66,  79,  88, 
      69,  82,  92,  80, 114, 111, 
     106, 101,  99, 116,  92,  76, 
@@ -4202,7 +4202,7 @@ const BYTE StandardVSSkin[] =
     105, 110, 110, 105, 110, 103, 
      46, 104, 108, 115, 108, 105, 
       0, 100,  58,  92, 112, 104, 
-    111, 101, 110, 105, 120,  32, 
+    111, 101, 110, 105, 120,  95, 
     112, 114, 111, 106, 101,  99, 
     116,  92,  98, 111, 120, 101, 
     114,  92, 112, 114, 111, 106, 
@@ -4328,8 +4328,8 @@ const BYTE StandardVSSkin[] =
      32,  32,  32,  32, 102, 108, 
     111,  97, 116,  32, 110,  49, 
      49,  32,  27, 226,  48,   1, 
-     48,   1,   0,   0,  27, 255, 
-    207, 147, 230, 179, 214,   1, 
+     48,   1,   0,   0,  64,  39, 
+    167,  62, 171, 180, 214,   1, 
       1,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
@@ -8178,23 +8178,23 @@ const BYTE StandardVSSkin[] =
     101, 110, 100, 105, 102,  10, 
      10,  35, 101, 110, 100, 105, 
     102,   0,  26,   0,   0,   0, 
-      0,   0,   0,   0, 178,   0, 
-      0,   0,   5,   1,   0,   0, 
-      0,   0,   0,   0,  85,   2, 
-      0,   0, 254,   1,   0,   0, 
-    172,   2,   0,   0, 255,   2, 
+    255,   2,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,  88,   1, 
-      0,   0, 171,   1,   0,   0, 
-      0,   0,   0,   0,   1,   0, 
+      0,   0,   0,   0,   0,   0, 
+      0,   0,  88,   1,   0,   0, 
+      1,   0,   0,   0, 171,   1, 
       0,   0,  90,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0, 
+    178,   0,   0,   0,   5,   1, 
+      0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,  82,   3, 
       0,   0,   0,   0,   0,   0, 
-    200,  23,   0,   0,   0,   0, 
+    200,  23,   0,   0, 254,   1, 
       0,   0,  89,   0,   0,   0, 
-      0,   0,   0,   0,  77,  27, 
+     85,   2,   0,   0,  77,  27, 
       0,   0, 128,  34,   0,   0, 
-    225,   4,   0,   0,   0,   0, 
+    225,   4,   0,   0, 172,   2, 
       0,   0,  16,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
@@ -8779,19 +8779,19 @@ const BYTE StandardVSSkin[] =
       1,   0,   0,   0,   0,   0, 
       0,   0,  28,  25,   0,   0, 
      32,   0,   0,  96,   0,   0, 
-    214, 135,   0,   0,   0,   0, 
+    103,  19,   0,   0,   0,   0, 
       0,   0,   0,   0,   2,   0, 
      13,   0,  44,  27,   0,   0, 
       0,   0,   0,   0,  40,  20, 
       0,   0,   5,   0,   0,   0, 
-    192, 183,  75,   3,   0,   0, 
+    152, 185, 107,   3,   0,   0, 
       0,   0,   0,   0,   0,   0, 
     109,  97, 105, 110,   0, 110, 
     111, 110, 101,   0,   0,   0, 
      45, 186,  46, 241,   1,   0, 
       0,   0,   0,   0,   0,   0, 
      28,  25,   0,   0,  32,   0, 
-      0,  96,   0,   0, 214, 135, 
+      0,  96,   0,   0, 103,  19, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   2,   0,   2,   0, 
       7,   0,   0,   0,   0,   0, 
@@ -8807,7 +8807,7 @@ const BYTE StandardVSSkin[] =
     254,   0,   0,   0,  85,   1, 
       0,   0,  68,  58,  92,  80, 
     104, 111, 101, 110, 105, 120, 
-     32,  80, 114, 111, 106, 101, 
+     95,  80, 114, 111, 106, 101, 
      99, 116,  92,  66,  79,  88, 
      69,  82,  92,  80, 114, 111, 
     106, 101,  99, 116,  92,  76, 
@@ -8821,7 +8821,7 @@ const BYTE StandardVSSkin[] =
      86,  83,  83, 107, 105, 110, 
      46, 104, 108, 115, 108,   0, 
      68,  58,  92,  80, 104, 111, 
-    101, 110, 105, 120,  32,  80, 
+    101, 110, 105, 120,  95,  80, 
     114, 111, 106, 101,  99, 116, 
      92,  66,  79,  88,  69,  82, 
      92,  80, 114, 111, 106, 101, 
@@ -8835,7 +8835,7 @@ const BYTE StandardVSSkin[] =
     111, 110,  86,  83,  46, 104, 
     108, 115, 108, 105,   0,  68, 
      58,  92,  80, 104, 111, 101, 
-    110, 105, 120,  32,  80, 114, 
+    110, 105, 120,  95,  80, 114, 
     111, 106, 101,  99, 116,  92, 
      66,  79,  88,  69,  82,  92, 
      80, 114, 111, 106, 101,  99, 
@@ -8849,7 +8849,7 @@ const BYTE StandardVSSkin[] =
     110,  67,  66,  46, 104, 108, 
     115, 108, 105,   0,  68,  58, 
      92,  80, 104, 111, 101, 110, 
-    105, 120,  32,  80, 114, 111, 
+    105, 120,  95,  80, 114, 111, 
     106, 101,  99, 116,  92,  66, 
      79,  88,  69,  82,  92,  80, 
     114, 111, 106, 101,  99, 116, 
@@ -8863,7 +8863,7 @@ const BYTE StandardVSSkin[] =
      76,  97, 121, 111, 117, 116, 
      46, 104, 108, 115, 108, 105, 
       0,  68,  58,  92,  80, 104, 
-    111, 101, 110, 105, 120,  32, 
+    111, 101, 110, 105, 120,  95, 
      80, 114, 111, 106, 101,  99, 
     116,  92,  66,  79,  88,  69, 
      82,  92,  80, 114, 111, 106, 
@@ -8936,10 +8936,10 @@ const BYTE StandardVSSkin[] =
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0, 148,  46,  49,   1, 
-     67, 184, 164,  95,   1,   0, 
-      0,   0, 114, 198,  62, 194, 
-     76,  94, 244,  79, 175,  69, 
-    165, 169,  21,  78, 214, 135, 
+     55,   2, 166,  95,   1,   0, 
+      0,   0,  99,  70, 102,  96, 
+    172,  72, 151,  72, 177,  17, 
+    203, 186, 247, 212, 103,  19, 
       1,   2,   0,   0,  47,  76, 
     105, 110, 107,  73, 110, 102, 
     111,   0,  47, 110,  97, 109, 
@@ -8949,7 +8949,7 @@ const BYTE StandardVSSkin[] =
     107,   0,  47, 115, 114,  99, 
      47, 102, 105, 108, 101, 115, 
      47, 100,  58,  92, 112, 104, 
-    111, 101, 110, 105, 120,  32, 
+    111, 101, 110, 105, 120,  95, 
     112, 114, 111, 106, 101,  99, 
     116,  92,  98, 111, 120, 101, 
     114,  92, 112, 114, 111, 106, 
@@ -8966,7 +8966,7 @@ const BYTE StandardVSSkin[] =
     115, 114,  99,  47, 102, 105, 
     108, 101, 115,  47, 100,  58, 
      92, 112, 104, 111, 101, 110, 
-    105, 120,  32, 112, 114, 111, 
+    105, 120,  95, 112, 114, 111, 
     106, 101,  99, 116,  92,  98, 
     111, 120, 101, 114,  92, 112, 
     114, 111, 106, 101,  99, 116, 
@@ -8982,7 +8982,7 @@ const BYTE StandardVSSkin[] =
      99,  47, 102, 105, 108, 101, 
     115,  47, 100,  58,  92, 112, 
     104, 111, 101, 110, 105, 120, 
-     32, 112, 114, 111, 106, 101, 
+     95, 112, 114, 111, 106, 101, 
      99, 116,  92,  98, 111, 120, 
     101, 114,  92, 112, 114, 111, 
     106, 101,  99, 116,  92, 108, 
@@ -8997,7 +8997,7 @@ const BYTE StandardVSSkin[] =
       0,  47, 115, 114,  99,  47, 
     102, 105, 108, 101, 115,  47, 
     100,  58,  92, 112, 104, 111, 
-    101, 110, 105, 120,  32, 112, 
+    101, 110, 105, 120,  95, 112, 
     114, 111, 106, 101,  99, 116, 
      92,  98, 111, 120, 101, 114, 
      92, 112, 114, 111, 106, 101, 
@@ -9014,7 +9014,7 @@ const BYTE StandardVSSkin[] =
      99,  47, 102, 105, 108, 101, 
     115,  47, 100,  58,  92, 112, 
     104, 111, 101, 110, 105, 120, 
-     32, 112, 114, 111, 106, 101, 
+     95, 112, 114, 111, 106, 101, 
      99, 116,  92,  98, 111, 120, 
     101, 114,  92, 112, 114, 111, 
     106, 101,  99, 116,  92, 108, 
@@ -9028,18 +9028,18 @@ const BYTE StandardVSSkin[] =
      46, 104, 108, 115, 108, 105, 
       0,   8,   0,   0,   0,  14, 
       0,   0,   0,   1,   0,   0, 
-      0, 240,  27,   0,   0,   0, 
-      0,   0,   0,  34,   0,   0, 
-      0,   8,   0,   0,   0,  10, 
+      0, 240,  43,   0,   0,   0, 
+      0,   0,   0,  65,   1,   0, 
+      0,  11,   0,   0,   0,  10, 
       0,   0,   0,   6,   0,   0, 
-      0, 133,   0,   0,   0,   9, 
+      0, 163,   1,   0,   0,  12, 
       0,   0,   0,   0,   0,   0, 
-      0,   5,   0,   0,   0, 163, 
-      1,   0,   0,  12,   0,   0, 
+      0,   5,   0,   0,   0, 227, 
+      0,   0,   0,  10,   0,   0, 
       0,  17,   0,   0,   0,   7, 
-      0,   0,   0, 227,   0,   0, 
-      0,  10,   0,   0,   0,  65, 
-      1,   0,   0,  11,   0,   0, 
+      0,   0,   0, 133,   0,   0, 
+      0,   9,   0,   0,   0,  34, 
+      0,   0,   0,   8,   0,   0, 
       0,   0,   0,   0,   0, 220, 
      81,  51,   1,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 

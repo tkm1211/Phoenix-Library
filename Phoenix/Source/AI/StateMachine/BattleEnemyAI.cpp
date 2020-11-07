@@ -1,0 +1,42 @@
+#include "BattleEnemyAI.h"
+#include "BattleEnemyState.h"
+#include "../../Enemy/Enemy.h"
+
+
+// 生成
+std::shared_ptr<BattleEnemyAI> BattleEnemyAI::Create()
+{
+	return std::make_shared<BattleEnemyAI>();
+}
+
+// ステートマシンのセットアップ
+void BattleEnemyAI::SetUp()
+{
+	AddState(AI::BattleEnemy::Idle::Create());
+	AddState(AI::BattleEnemy::Attack::Create());
+	AddState(AI::BattleEnemy::Dedge::Create());
+}
+
+// ステートマシンのクリーンアップ
+void BattleEnemyAI::CleanUp()
+{
+	Super::CleanUp();
+}
+
+// 更新
+void BattleEnemyAI::Update()
+{
+	if (currentState == nullptr) return;
+
+	BattleEnenyState nextState = currentState->Update();
+	if (nextState != BattleEnenyState::NoneState)
+	{
+		GoToState(nextState);
+	}
+}
+
+// エネミー設定
+void BattleEnemyAI::SetOwner(std::shared_ptr<Enemy> owner)
+{
+	this->owner = owner;
+}

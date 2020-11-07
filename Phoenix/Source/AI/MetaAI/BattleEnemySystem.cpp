@@ -46,7 +46,7 @@ namespace Meta
 	{
 		playerSkillAnalyzer->Update(score);
 		dynamicDifficultyAdjuster->Update(playerSkillAnalyzer->GetSkillLevel());
-		battleEnemyController->Update(dynamicDifficultyAdjuster->GetEnenyBattleState());
+		battleEnemyController->Update(dynamicDifficultyAdjuster->GetBattleEnenyState());
 	}
 
 	// ŠÇ—ƒNƒ‰ƒX‚Ìİ’è

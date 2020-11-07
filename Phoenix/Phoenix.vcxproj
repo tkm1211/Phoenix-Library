@@ -224,7 +224,8 @@
     <ClCompile Include="Source\AI\MetaAI\DynamicDifficultyAdjuster.cpp" />
     <ClCompile Include="Source\AI\MetaAI\MetaAI.cpp" />
     <ClCompile Include="Source\AI\MetaAI\PlayerSkillAnalyzer.cpp" />
-    <ClCompile Include="Source\AI\StateMachine\StateMachine.cpp" />
+    <ClCompile Include="Source\AI\StateMachine\BattleEnemyAI.cpp" />
+    <ClCompile Include="Source\AI\StateMachine\BattleEnemyState.cpp" />
     <ClCompile Include="Source\Boss\AIState\AvoidState.cpp" />
     <ClCompile Include="Source\Boss\AIState\DamageState.cpp" />
     <ClCompile Include="Source\Boss\AIState\JumpAttackState.cpp" />
@@ -264,6 +265,8 @@
     <ClInclude Include="Source\AI\MetaAI\MetaAISystem.h" />
     <ClInclude Include="Source\AI\MetaAI\MetaType.h" />
     <ClInclude Include="Source\AI\MetaAI\PlayerSkillAnalyzer.h" />
+    <ClInclude Include="Source\AI\StateMachine\BattleEnemyAI.h" />
+    <ClInclude Include="Source\AI\StateMachine\BattleEnemyState.h" />
     <ClInclude Include="Source\AI\StateMachine\StateMachine.h" />
     <ClInclude Include="Source\Boss\AI.h" />
     <ClInclude Include="Source\Boss\AIState\AIState.h" />
@@ -277,7 +280,7 @@
     <ClInclude Include="Source\Boss\Boss.h" />
     <ClInclude Include="Source\Boss\BossAI.h" />
     <ClInclude Include="Source\Enemy\Enemy.h" />
-    <ClInclude Include="Source\Enemy\EnemyBattleState.h" />
+    <ClInclude Include="Source\Enemy\EnemyState.h" />
     <ClInclude Include="Source\Enemy\EnemyManager.h" />
     <ClInclude Include="Source\Main.h" />
     <ClInclude Include="Source\Mannequin\Mannequin.h" />

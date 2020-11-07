@@ -30,8 +30,8 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	/// <param name="enenyBattleState"> : 分析したプレイヤーレベルから最適なエネミー行動 </param>
-	void Update(EnenyBattleState enenyBattleState);
+	/// <param name="battleEnenyState"> : 分析したプレイヤーレベルから最適なエネミー行動 </param>
+	void Update(BattleEnenyState battleEnenyState);
 
 	// エネミーマネージャー設定
 	void SetEnemyManager(std::shared_ptr<EnemyManager> enemyManager);

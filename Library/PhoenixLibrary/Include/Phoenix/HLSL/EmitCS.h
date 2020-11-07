@@ -129,7 +129,7 @@ dcl_thread_group 256, 1, 1
 // Initial variable locations:
 //   vThreadID.x <- DTid.x; vThreadID.y <- DTid.y; vThreadID.z <- DTid.z
 //
-#line 23 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
+#line 23 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
 mov r0.x, l(0)  // r0.x <- PARTICLECOUNTER_OFFSET_ALIVECOUNT
 
 #line 24
@@ -138,7 +138,7 @@ mov r0.y, l(4)  // r0.y <- PARTICLECOUNTER_OFFSET_DEADCOUNT
 #line 25
 mov r0.z, l(8)  // r0.z <- PARTICLECOUNTER_OFFSET_REALEMITCOUNT
 
-#line 13 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
+#line 13 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
 ld_raw_indexable(raw_buffer)(mixed,mixed,mixed,mixed) r0.z, r0.z, u4.xxxx
 mov r0.z, r0.z  // r0.z <- emitCount
 
@@ -173,7 +173,7 @@ if_nz r0.z
   mov r0.z, r0.z
   mov r1.xy, r1.xyxx
 
-#line 104 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
+#line 104 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
   dp2 r0.w, r1.xyxx, l(12.989800, 78.233002, 0.000000, 0.000000)
   mul r0.w, r0.w, r0.z
   sincos r0.w, null, r0.w
@@ -186,7 +186,7 @@ if_nz r0.z
 #line 106
   mov r0.w, r0.w  // r0.w <- <rand return value>
 
-#line 89 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
+#line 89 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
   mov r0.z, r0.z  // r0.z <- seed
   mov r1.z, l(-0.500000)
   add r0.w, r0.w, r1.z
@@ -207,7 +207,7 @@ if_nz r0.z
   nop 
   mov r0.z, r0.z
 
-#line 104 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
+#line 104 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
   dp2 r1.w, r1.xyxx, l(12.989800, 78.233002, 0.000000, 0.000000)
   mul r1.w, r0.z, r1.w
   sincos r1.w, null, r1.w
@@ -220,12 +220,12 @@ if_nz r0.z
 #line 106
   mov r5.x, r5.x  // r5.x <- <rand return value>
 
-#line 96 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
+#line 96 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
   mov r0.z, r0.z  // r0.z <- seed
   nop 
   mov r0.z, r0.z
 
-#line 104 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
+#line 104 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
   dp2 r1.w, r1.xyxx, l(12.989800, 78.233002, 0.000000, 0.000000)
   mul r1.w, r0.z, r1.w
   sincos r1.w, null, r1.w
@@ -238,12 +238,12 @@ if_nz r0.z
 #line 106
   mov r5.y, r5.y  // r5.y <- <rand return value>
 
-#line 96 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
+#line 96 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
   mov r0.z, r0.z  // r0.z <- seed
   nop 
   mov r0.z, r0.z
 
-#line 104 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
+#line 104 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
   dp2 r1.w, r1.xyxx, l(12.989800, 78.233002, 0.000000, 0.000000)
   mul r1.w, r0.z, r1.w
   sincos r1.w, null, r1.w
@@ -256,7 +256,7 @@ if_nz r0.z
 #line 106
   mov r5.z, r5.z  // r5.z <- <rand return value>
 
-#line 96 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
+#line 96 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
   mov r0.z, r0.z  // r0.z <- seed
   mov r6.xyz, l(-0.500000,-0.500000,-0.500000,-0.000000)
   add r5.xyz, r5.xyzx, r6.xyzx
@@ -268,7 +268,7 @@ if_nz r0.z
   nop 
   mov r0.z, r0.z
 
-#line 104 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
+#line 104 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
   dp2 r1.w, r1.xyxx, l(12.989800, 78.233002, 0.000000, 0.000000)
   mul r1.w, r0.z, r1.w
   sincos r1.w, null, r1.w
@@ -281,7 +281,7 @@ if_nz r0.z
 #line 106
   mov r1.w, r1.w  // r1.w <- <rand return value>
 
-#line 97 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
+#line 97 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
   mov r0.z, r0.z  // r0.z <- seed
   mov r2.w, l(-0.500000)
   add r1.w, r1.w, r2.w
@@ -292,7 +292,7 @@ if_nz r0.z
   nop 
   mov r0.z, r0.z
 
-#line 104 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
+#line 104 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
   dp2 r2.w, r1.xyxx, l(12.989800, 78.233002, 0.000000, 0.000000)
   mul r2.w, r0.z, r2.w
   sincos r2.w, null, r2.w
@@ -305,7 +305,7 @@ if_nz r0.z
 #line 106
   mov r2.w, r2.w  // r2.w <- <rand return value>
 
-#line 98 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
+#line 98 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
   mov r0.z, r0.z  // r0.z <- seed
   mov r3.w, l(-0.500000)
   add r2.w, r2.w, r3.w
@@ -327,7 +327,7 @@ if_nz r0.z
   nop 
   mov r0.z, r0.z
 
-#line 104 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
+#line 104 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
   dp2 r5.x, r1.xyxx, l(12.989800, 78.233002, 0.000000, 0.000000)
   mul r5.x, r0.z, r5.x
   sincos r5.x, null, r5.x
@@ -340,7 +340,7 @@ if_nz r0.z
 #line 106
   mov r5.x, r5.x  // r5.x <- <rand return value>
 
-#line 102 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
+#line 102 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
   mov r0.z, r0.z  // r0.z <- seed
   lt r5.x, l(0.500000), r5.x
   and r5.x, r5.x, l(1)
@@ -352,7 +352,7 @@ if_nz r0.z
   nop 
   mov r0.z, r0.z
 
-#line 104 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
+#line 104 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmittedParticle.hlsli"
   dp2 r1.x, r1.xyxx, l(12.989800, 78.233002, 0.000000, 0.000000)
   mul r0.z, r0.z, r1.x
   sincos r0.z, null, r0.z
@@ -362,7 +362,7 @@ if_nz r0.z
 #line 106
   mov r0.z, r0.z  // r0.z <- <rand return value>
 
-#line 103 "D:\Phoenix Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
+#line 103 "D:\Phoenix_Project\BOXER\Project\Library\PhoenixLibrary\Source\HLSL\EmittedParticle\EmitCS.hlsl"
   lt r0.z, r0.z, l(0.500000)
   and r0.z, r0.z, l(1)
   ishl r0.z, r0.z, l(30)
@@ -426,10 +426,10 @@ ret
 
 const BYTE EmitCS[] =
 {
-     68,  88,  66,  67, 140, 111, 
-     90,  30, 113, 194, 180, 135, 
-    246,  90, 249,  88, 186, 225, 
-    149,  40,   1,   0,   0,   0, 
+     68,  88,  66,  67, 182,  20, 
+    152,  88, 169, 254, 139,   0, 
+     85, 234,  10,  54, 124, 209, 
+    110,  73,   1,   0,   0,   0, 
       0, 190,   0,   0,   6,   0, 
       0,   0,  56,   0,   0,   0, 
      96,  13,   0,   0, 112,  13, 
@@ -2218,11 +2218,11 @@ const BYTE EmitCS[] =
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
-    148,  46,  49,   1,  19, 184, 
-    164,  95,   1,   0,   0,   0, 
-    234, 136, 187,  39, 151,  28, 
-     42,  77, 160, 205, 159, 240, 
-     39, 251, 189,   4,   0,   0, 
+    148,  46,  49,   1,  13,   2, 
+    166,  95,   1,   0,   0,   0, 
+    164,  30, 100,  73,  44, 222, 
+     94,  78, 191, 192,  85, 212, 
+    158, 135,  33,  59,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       1,   0,   0,   0,   1,   0, 
       0,   0,   0,   0,   0,   0, 
@@ -2402,9 +2402,9 @@ const BYTE EmitCS[] =
       3,   0, 153, 189,   3,   0, 
     125, 181,   2,   0,  49, 251, 
       3,   0, 140, 144,   3,   0, 
-     36, 208,   3,   0, 118, 199, 
-      0,   0, 111,  14,   1,   0, 
-     80, 185,   1,   0, 159, 200, 
+     90, 209,   3,   0, 118, 199, 
+      0,   0, 141, 144,   0,   0, 
+     80, 185,   1,   0, 214, 172, 
       1,   0, 134, 226,   2,   0, 
     100, 185,   1,   0,   0,  16, 
       0,   0,   0,   0,   0,   0, 
@@ -4013,7 +4013,7 @@ const BYTE EmitCS[] =
     254, 239, 254, 239,   1,   0, 
       0,   0,  67,  34,   0,   0, 
       0,  68,  58,  92,  80, 104, 
-    111, 101, 110, 105, 120,  32, 
+    111, 101, 110, 105, 120,  95, 
      80, 114, 111, 106, 101,  99, 
     116,  92,  66,  79,  88,  69, 
      82,  92,  80, 114, 111, 106, 
@@ -4030,7 +4030,7 @@ const BYTE EmitCS[] =
      83,  46, 104, 108, 115, 108, 
       0,   0, 100,  58,  92, 112, 
     104, 111, 101, 110, 105, 120, 
-     32, 112, 114, 111, 106, 101, 
+     95, 112, 114, 111, 106, 101, 
      99, 116,  92,  98, 111, 120, 
     101, 114,  92, 112, 114, 111, 
     106, 101,  99, 116,  92, 108, 
@@ -4046,7 +4046,7 @@ const BYTE EmitCS[] =
      99, 115,  46, 104, 108, 115, 
     108,   0,  68,  58,  92,  80, 
     104, 111, 101, 110, 105, 120, 
-     32,  80, 114, 111, 106, 101, 
+     95,  80, 114, 111, 106, 101, 
      99, 116,  92,  66,  79,  88, 
      69,  82,  92,  80, 114, 111, 
     106, 101,  99, 116,  92,  76, 
@@ -4063,7 +4063,7 @@ const BYTE EmitCS[] =
     116, 105,  99, 108, 101,  46, 
     104, 108, 115, 108, 105,   0, 
     100,  58,  92, 112, 104, 111, 
-    101, 110, 105, 120,  32, 112, 
+    101, 110, 105, 120,  95, 112, 
     114, 111, 106, 101,  99, 116, 
      92,  98, 111, 120, 101, 114, 
      92, 112, 114, 111, 106, 101, 
@@ -4096,8 +4096,8 @@ const BYTE EmitCS[] =
     114,  32,  58,  32, 114, 101, 
     103, 105, 115, 116, 101, 114, 
      40, 117,  27, 226,  48,   1, 
-    172,   0,   0,   0,  96,  96, 
-    249, 118, 230, 179, 214,   1, 
+    172,   0,   0,   0, 236,  92, 
+     96,  37, 171, 180, 214,   1, 
       1,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
@@ -5903,17 +5903,17 @@ const BYTE EmitCS[] =
      10,   0,  24,  21,  18,  16, 
       0,   0,   1,   0,   0,   2, 
      14,   0,  23,  21,   8,  16, 
-      0,   0,  27,   2,  80,   0, 
+      0,   0,  27,   2,  16,   3, 
       0,   0, 242, 241,  10,   0, 
      24,  21,  20,  16,   0,   0, 
       1,   0,   0,   2,  14,   0, 
      23,  21, 117,   0,   0,   0, 
-     27,   2,  80,   0,   0,   0, 
+     27,   2,  16,   3,   0,   0, 
     242, 241,  10,   0,  24,  21, 
      22,  16,   0,   0,   1,   0, 
       0,   2,  14,   0,  23,  21, 
     117,   0,   0,   0,  25,   2, 
-    208,   2,   0,   0, 242, 241, 
+    176,   3,   0,   0, 242, 241, 
      10,   0,  24,  21,  24,  16, 
       0,   0,   1,   0,   1,   0, 
      10,   0,  24,  21,  25,  16, 
@@ -7437,14 +7437,14 @@ const BYTE EmitCS[] =
     117, 114, 110,  32, 114, 101, 
     115, 117, 108, 116,  59,  13, 
      10, 125,   0,  11,   0,   0, 
-      0, 150,   1,   0,   0,  97, 
+      0,   0,   0,   0,   0,  97, 
       0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,  26, 
-     22,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0, 194, 
       0,   0,   0,  44,   1,   0, 
-      0,   1,   0,   0,   0,  98, 
-      0,   0,   0,   7,   0,   0, 
+      0,  98,   0,   0,   0,   1, 
+      0,   0,   0,  26,  22,   0, 
+      0,   0,   0,   0,   0, 150, 
+      1,   0,   0,   7,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
@@ -7939,7 +7939,7 @@ const BYTE EmitCS[] =
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,  32, 
+      0,   0,   0,   0,   0,   0, 
     255, 255, 255, 255,  26,   9, 
      47, 241,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
@@ -8120,12 +8120,12 @@ const BYTE EmitCS[] =
       0,   0,   1,   0,   0,   0, 
       0,   0,   0,   0, 212,  17, 
       0,   0,  32,   0,   0,  96, 
-      0,   0,   0,   0,   0,   0, 
+      0,   0,  33,  59,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       2,   0,  10,   0, 176,  21, 
       0,   0,   0,   0,   0,   0, 
     200,  16,   0,   0,   2,   0, 
-      0,   0, 160, 110, 123,   0, 
+      0,   0, 240, 132,  38,   3, 
       0,   0,   0,   0,   0,   0, 
       0,   0, 109,  97, 105, 110, 
       0, 110, 111, 110, 101,   0, 
@@ -8133,7 +8133,7 @@ const BYTE EmitCS[] =
       1,   0,   0,   0,   0,   0, 
       0,   0, 212,  17,   0,   0, 
      32,   0,   0,  96,   0,   0, 
-      0,   0,   0,   0,   0,   0, 
+     33,  59,   0,   0,   0,   0, 
       0,   0,   0,   0,   2,   0, 
       2,   0,   7,   0,   0,   0, 
       0,   0,   1,   0, 255, 255, 
@@ -8146,7 +8146,7 @@ const BYTE EmitCS[] =
       2,   0,   0,   0,   0,   0, 
      96,   0,   0,   0,  68,  58, 
      92,  80, 104, 111, 101, 110, 
-    105, 120,  32,  80, 114, 111, 
+    105, 120,  95,  80, 114, 111, 
     106, 101,  99, 116,  92,  66, 
      79,  88,  69,  82,  92,  80, 
     114, 111, 106, 101,  99, 116, 
@@ -8162,7 +8162,7 @@ const BYTE EmitCS[] =
     105, 116,  67,  83,  46, 104, 
     108, 115, 108,   0,  68,  58, 
      92,  80, 104, 111, 101, 110, 
-    105, 120,  32,  80, 114, 111, 
+    105, 120,  95,  80, 114, 111, 
     106, 101,  99, 116,  92,  66, 
      79,  88,  69,  82,  92,  80, 
     114, 111, 106, 101,  99, 116, 
@@ -8192,10 +8192,10 @@ const BYTE EmitCS[] =
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0, 148,  46,  49,   1, 
-     19, 184, 164,  95,   1,   0, 
-      0,   0, 234, 136, 187,  39, 
-    151,  28,  42,  77, 160, 205, 
-    159, 240,  39, 251, 189,   4, 
+     13,   2, 166,  95,   1,   0, 
+      0,   0, 164,  30, 100,  73, 
+     44, 222,  94,  78, 191, 192, 
+     85, 212, 158, 135,  33,  59, 
       2,   1,   0,   0,  47,  76, 
     105, 110, 107,  73, 110, 102, 
     111,   0,  47, 110,  97, 109, 
@@ -8205,7 +8205,7 @@ const BYTE EmitCS[] =
     107,   0,  47, 115, 114,  99, 
      47, 102, 105, 108, 101, 115, 
      47, 100,  58,  92, 112, 104, 
-    111, 101, 110, 105, 120,  32, 
+    111, 101, 110, 105, 120,  95, 
     112, 114, 111, 106, 101,  99, 
     116,  92,  98, 111, 120, 101, 
     114,  92, 112, 114, 111, 106, 
@@ -8223,7 +8223,7 @@ const BYTE EmitCS[] =
       0,  47, 115, 114,  99,  47, 
     102, 105, 108, 101, 115,  47, 
     100,  58,  92, 112, 104, 111, 
-    101, 110, 105, 120,  32, 112, 
+    101, 110, 105, 120,  95, 112, 
     114, 111, 106, 101,  99, 116, 
      92,  98, 111, 120, 101, 114, 
      92, 112, 114, 111, 106, 101, 
@@ -8241,15 +8241,15 @@ const BYTE EmitCS[] =
      99, 108, 101,  46, 104, 108, 
     115, 108, 105,   0,   5,   0, 
       0,   0,  10,   0,   0,   0, 
-      1,   0,   0,   0,  38,   3, 
+      1,   0,   0,   0, 167,   0, 
       0,   0,   0,   0,   0,   0, 
-     17,   0,   0,   0,   7,   0, 
-      0,   0,   0,   0,   0,   0, 
-      5,   0,   0,   0,  10,   0, 
-      0,   0,   6,   0,   0,   0, 
-    141,   0,   0,   0,   9,   0, 
-      0,   0,  34,   0,   0,   0, 
-      8,   0,   0,   0,   0,   0, 
+     34,   0,   0,   0,   8,   0, 
+      0,   0,  17,   0,   0,   0, 
+      7,   0,   0,   0,   0,   0, 
+      0,   0,   5,   0,   0,   0, 
+     10,   0,   0,   0,   6,   0, 
+      0,   0, 141,   0,   0,   0, 
+      9,   0,   0,   0,   0,   0, 
       0,   0, 220,  81,  51,   1, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 

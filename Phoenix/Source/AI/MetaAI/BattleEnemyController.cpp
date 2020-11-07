@@ -27,11 +27,11 @@ void BattleEnemyController::Finalize()
 }
 
 // çXêV
-void BattleEnemyController::Update(EnenyBattleState enenyBattleState)
+void BattleEnemyController::Update(BattleEnenyState battleEnenyState)
 {
-	switch (enenyBattleState)
+	switch (battleEnenyState)
 	{
-	case EnenyBattleState::Idle:
+	case BattleEnenyState::Idle:
 		if (0 < enemyManager->GetAliveEnemyCount())
 		{
 			if (0 < enemyManager->GetBattleEnemyCount())
@@ -42,7 +42,7 @@ void BattleEnemyController::Update(EnenyBattleState enenyBattleState)
 
 		break;
 
-	case EnenyBattleState::Attack:
+	case BattleEnenyState::Attack:
 
 		break;
 
