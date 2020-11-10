@@ -22,74 +22,105 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	// アニメーション読み込み
 	{
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardWalk\\Walking_With_Shopping_Bag.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardWalk\\Walking_With_Shopping_Bag.fbx", -1); // 1
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardRun\\Running.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardRun\\SlowRunning.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Roll\\Sprinting_Forward_Roll.fbx", -1);
-
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\LeftPunch\\Left_Punch_Begin.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\LeftPunch\\Left_Punch_End.fbx", -1);
-
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\RightPunch\\Righ_Punch_Begin.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\RightPunch\\Righ_Punch_End.fbx", -1);
-
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\TurnKick\\Turn_Kick_Begin.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\TurnKick\\Turn_Kick_01.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\TurnKick\\Turn_Kick_End.fbx", -1);
-
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1);
 		
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Idle\\Ready_Idle.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Idle\\Ready_Idle.fbx", -1); // 5
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Forward\\Walk_Forward.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Back\\Walk_Backward.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Right\\Walk_Right.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Left\\Walk_Left.fbx", -1);
 
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Forward\\Forward_Step.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Forward\\Forward_Step.fbx", -1); // 10
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Back\\Back_Step.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Right\\Right_Step.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Left\\Left_Step.fbx", -1);
 
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Punch\\RightPunch\\Righ_Punch_Begin.fbx", -1); // 14
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Punch\\RightPunch\\Righ_Punch_End.fbx", -1);
 
-		model->AddAnimationLayer(0);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Punch\\LeftPunch\\Left_Punch_Begin.fbx", -1); // 16
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Punch\\LeftPunch\\Left_Punch_End.fbx", -1);
 
-		model->AddAnimationLayer(1);
-		model->AddAnimationLayer(2);
-		model->AddAnimationLayer(3);
-		model->AddAnimationLayer(4);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Hook\\RightHook\\Hook_Punch_Right_Begin.fbx", -1); // 18
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Hook\\RightHook\\Hook_Punch_Right_End.fbx", -1);
 
-		model->AddAnimationLayer(5);
-		model->AddAnimationLayer(6);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Hook\\LeftHook\\Hook_Punch_Left_Begin.fbx", -1); // 20
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Hook\\LeftHook\\Hook_Punch_Left_End.fbx", -1);
 
-		model->AddAnimationLayer(7);
-		model->AddAnimationLayer(8);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Kick\\RightKick\\Roundhouse_Kick_Right_Begin.fbx", -1); // 22
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Kick\\RightKick\\Roundhouse_Kick_Right_End.fbx", -1);
 
-		model->AddAnimationLayer(9);
-		model->AddAnimationLayer(10);
-		model->AddAnimationLayer(11);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Kick\\LeftKick\\Roundhouse_Kick_Left_Begin.fbx", -1); // 24
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Kick\\LeftKick\\Roundhouse_Kick_Left_End.fbx", -1);
 
-		model->AddAnimationLayer(12);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\Punch\\Cross_Punch_Right.fbx", -1); // 26
 
-		model->AddAnimationLayer(13);
-		model->AddAnimationLayer(13, 56, 65); // 14
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\Hook\\Hook_Punch_Right.fbx", -1); // 27
 
-		model->AddAnimationLayer(18);
-		model->AddAnimationLayer(19);
-		model->AddAnimationLayer(20);
-		model->AddAnimationLayer(21);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Turn_Kick_Begin.fbx", -1); // 28
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Turn_Kick_01.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Turn_Kick_End.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // 31
 
 
-		model->AddBlendAnimationToLayer(14, 14, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
-		model->AddBlendAnimationToLayer(15, 14, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
-		model->AddBlendAnimationToLayer(16, 14, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
-		model->AddBlendAnimationToLayer(17, 14, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
+		model->AddAnimationLayer(0); // idle
+
+		model->AddAnimationLayer(1); // walk
+		model->AddAnimationLayer(2); // walk
+		model->AddAnimationLayer(3); // walk
+		model->AddAnimationLayer(4); // walk
+
+		model->AddAnimationLayer(5); // battle idle up
+		model->AddAnimationLayer(5, 56, 65); // battle idle down // anim num : 6
+
+		model->AddAnimationLayer(10); // dodge // layer num : 7
+		model->AddAnimationLayer(11); // dodge
+		model->AddAnimationLayer(12); // dodge
+		model->AddAnimationLayer(13); // dodge
+
+		model->AddAnimationLayer(14); // right punch begin
+		model->AddAnimationLayer(15); // right punch end
+
+		model->AddAnimationLayer(16); // left punch begin
+		model->AddAnimationLayer(17); // left punch end
+
+		model->AddAnimationLayer(18); // right hook begin
+		model->AddAnimationLayer(19); // right hook end
+
+		model->AddAnimationLayer(20); // left hook begin
+		model->AddAnimationLayer(21); // left hook end
+
+		model->AddAnimationLayer(22); // right kick begin
+		model->AddAnimationLayer(23); // right kick end
+
+		model->AddAnimationLayer(24); // left kick begin
+		model->AddAnimationLayer(25); // left kick end
+
+		model->AddAnimationLayer(26); // strong right punch
+
+		model->AddAnimationLayer(27); // strong right hook
+
+		model->AddAnimationLayer(28); // turn kick begin
+		model->AddAnimationLayer(29); // turn kick 
+		model->AddAnimationLayer(30); // turn kick end
+
+		model->AddAnimationLayer(31); // damage
+
+		model->AddBlendAnimationToLayer(7, 6, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(8, 6, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(9, 6, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
+		model->AddBlendAnimationToLayer(10, 6, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
 
 		model->AddBlendAnimationToLayer(static_cast<Phoenix::u32>(AnimationState::SlowRun), static_cast<Phoenix::u32>(AnimationState::Walk), Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
 	}
 
 	// コリジョン初期化
 	{
-		collisionDatas.resize(4);
+		collisionDatas.resize(5);
 
 		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 		collisionDatas.at(0).radius = 0.5f;
@@ -106,6 +137,10 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 		collisionDatas.at(3).radius = 0.25f;
 		collisionDatas.at(3).boneIndex = model->GetBoneIndex("RightFoot");
+
+		collisionDatas.at(4).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		collisionDatas.at(4).radius = 0.25f;
+		collisionDatas.at(4).boneIndex = model->GetBoneIndex("LeftFoot");
 	}
 
 	// UI生成
@@ -130,7 +165,10 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 			bool receptionStack,
 			Phoenix::f32 receptionBeginTime,
-			Phoenix::f32 receptionEndTime
+			Phoenix::f32 receptionEndTime,
+
+			AttackAnimationState weakDerivedAttackState,
+			AttackAnimationState strongDerivedAttackState
 		)
 		{
 			AttackData data;
@@ -150,6 +188,9 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			data.receptionBeginTime = receptionBeginTime == -1.0f ? -1.0f : receptionBeginTime / 60.0f;
 			data.receptionEndTime = receptionEndTime == -1.0f ? -1.0f : receptionEndTime / 60.0f;
 
+			data.weakDerivedAttackState = weakDerivedAttackState;
+			data.strongDerivedAttackState = strongDerivedAttackState;
+
 			return data;
 		};
 
@@ -162,8 +203,8 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 				// 入力キー設定
 				datas.SetKey(AttackKey::WeakAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack01, 7, 2.0f, -1.0f, -1.0f, 1, 13.0f, 23.0f, true, 13.0f, 23.0f));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack01, 8, 1.0f, 24.0f, 47.0f, 0, -1.0f, -1.0f, false, 24.0f, 47.0f));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack01, 11, 2.0f, -1.0f, -1.0f, 1, 13.0f, 23.0f, true, 13.0f, 23.0f, AttackAnimationState::Attack02, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack01, 12, 1.0f, 24.0f, 47.0f, 0, -1.0f, -1.0f, false, 24.0f, 47.0f, AttackAnimationState::Attack02, AttackAnimationState::End));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -175,8 +216,60 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 				// 入力キー設定
 				datas.SetKey(AttackKey::WeakAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack02, 5, 2.0f, -1.0f, -1.0f, 2, 10.0f, 20.0f, true, 15.0f, 20.0f));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack02, 6, 1.0f, 21.0f, 47.0f, 0, -1.0f, -1.0f, false, 21.0f, 47.0f));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack02, 13, 2.0f, -1.0f, -1.0f, 2, 10.0f, 20.0f, true, 15.0f, 20.0f, AttackAnimationState::Attack03, AttackAnimationState::Attack07));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack02, 14, 1.0f, 21.0f, 47.0f, 0, -1.0f, -1.0f, false, 21.0f, 47.0f, AttackAnimationState::Attack03, AttackAnimationState::Attack07));
+
+				attackDatasList.emplace_back(datas);
+			}
+
+			// 右フック
+			{
+				AttackDatas datas;
+
+				// 入力キー設定
+				datas.SetKey(AttackKey::WeakAttack);
+
+				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 15, 1.5f, 40.0f, -1.0f, 1, 46.0f, 72.0f, true, 46.0f, 72.0f, AttackAnimationState::Attack04, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 16, 1.0f, 73.0f, 130.0f, 0, -1.0f, -1.0f, false, 73.0f, 130.0f, AttackAnimationState::Attack04, AttackAnimationState::End));
+
+				attackDatasList.emplace_back(datas);
+			}
+
+			// 左フック
+			{
+				AttackDatas datas;
+
+				// 入力キー設定
+				datas.SetKey(AttackKey::WeakAttack);
+
+				datas.AddData(SetAttackData(AttackAnimationState::Attack04, 17, 1.5f, 40.0f, -1.0f, 2, 46.0f, 72.0f, true, 60.0f, 72.0f, AttackAnimationState::Attack05, AttackAnimationState::Attack08));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack04, 18, 1.0f, 73.0f, 130.0f, 0, -1.0f, -1.0f, false, 73.0f, 130.0f, AttackAnimationState::Attack05, AttackAnimationState::Attack08));
+
+				attackDatasList.emplace_back(datas);
+			}
+
+			// 右キック
+			{
+				AttackDatas datas;
+
+				// 入力キー設定
+				datas.SetKey(AttackKey::WeakAttack);
+
+				datas.AddData(SetAttackData(AttackAnimationState::Attack05, 19, 1.5f, 25.0f, -1.0f, 3, 50.0f, 60.0f, true, 50.0f, 60.0f, AttackAnimationState::Attack06, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack05, 20, 1.0f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, 61.0f, 150.0f, AttackAnimationState::Attack06, AttackAnimationState::End));
+
+				attackDatasList.emplace_back(datas);
+			}
+
+			// 左キック
+			{
+				AttackDatas datas;
+
+				// 入力キー設定
+				datas.SetKey(AttackKey::WeakAttack);
+
+				datas.AddData(SetAttackData(AttackAnimationState::Attack06, 21, 1.5f, 25.0f, -1.0f, 4, 50.0f, 60.0f, true, 50.0f, 60.0f, AttackAnimationState::End, AttackAnimationState::Attack09));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack06, 22, 1.0f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, 61.0f, 150.0f, AttackAnimationState::End, AttackAnimationState::Attack09));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -184,6 +277,34 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		// 強攻撃
 		{
+			// 強ストレート
+			{
+				AttackDatas datas;
+
+				// 入力キー設定
+				datas.SetKey(AttackKey::StrongAttack);
+
+				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 1.5f, 0.0f, 45.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 2.5f, 46.0f, 60.0f, 1, 50.0f, 60.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 1.5f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+
+				attackDatasList.emplace_back(datas);
+			}
+
+			// 強フック
+			{
+				AttackDatas datas;
+
+				// 入力キー設定
+				datas.SetKey(AttackKey::StrongAttack);
+
+				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 1.5f, 0.0f, 50.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 2.5f, 51.0f, 60.0f, 1, 51.0f, 60.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 1.5f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+
+				attackDatasList.emplace_back(datas);
+			}
+
 			// 回転キック
 			{
 				AttackDatas datas;
@@ -191,9 +312,9 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 				// 入力キー設定
 				datas.SetKey(AttackKey::StrongAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 9, 1.25f, -1.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 10, 2.0f, 25.0f, 46.0f, 3, 43.0f, 46.0f, false, -1.0f, -1.0f));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 11, 1.0f, 47.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 25, 1.25f, -1.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 26, 2.0f, 25.0f, 46.0f, 3, 43.0f, 46.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 27, 1.0f, 47.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -349,7 +470,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	sX = GetKeyState('A') < 0 ? -1.0f : sX;
 	sX = GetKeyState('D') < 0 ? 1.0f : sX;
 
-	if (GetKeyState('L') < 0)
+	if (xInput[0].bLBs || GetKeyState('L') < 0)
 	{
 		InEnemyTerritory(true);
 	}
@@ -429,7 +550,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		if (attackComboState == -1)
 		{
 			attackComboState = 0;
-			attackReceptionTimeCnt = 0.0f;
+			attackReceptionTimeCnt = attackDatasList.at(nextIndex).datas.at(attackComboState).playBeginTime != -1 ? attackDatasList.at(nextIndex).datas.at(attackComboState).playBeginTime : 0.0f;
 
 			receptionStack = false;
 			stackKey = AttackKey::None;
@@ -448,21 +569,22 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 			if (sY < 0.0f)
 			{
-				dedgeLayerIndex = 15;
+				dedgeLayerIndex = 11;
 			}
 			if (sY > 0.0f)
 			{
-				dedgeLayerIndex = 16;
+				dedgeLayerIndex = 12;
 			}
 			if (sX < 0.0f)
 			{
-				dedgeLayerIndex = 17;
+				dedgeLayerIndex = 13;
 			}
 			if (sX > 0.0f)
 			{
-				dedgeLayerIndex = 18;
+				dedgeLayerIndex = 14;
 			}
 
+			/*
 			//Phoenix::Math::Vector3 dir = targetPos - GetPosition();
 			//dir = Phoenix::Math::Vector3Normalize(dir);
 			//dir.y = 0.0f;
@@ -471,12 +593,13 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 			//Phoenix::Math::Vector3 f = { sinf(newRotateY),  0.0f, cosf(newRotateY) };
 
-			///*Phoenix::Math::Quaternion newQ = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), newRotateY);
+			//Phoenix::Math::Quaternion newQ = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), newRotateY);
 			//Phoenix::Math::Matrix newM = Phoenix::Math::MatrixRotationQuaternion(&newQ);
 			//Phoenix::Math::Vector3 newForward = Phoenix::Math::Vector3(newM._31, newM._32, newM._33);
-			//newForward.y = 0.0f;*/
+			//newForward.y = 0.0f;
 
-			//Phoenix::Math::Quaternion q = rotate/* * newQ*/;
+			//Phoenix::Math::Quaternion q = rotate;
+			//Phoenix::Math::Quaternion q = rotate // * newQ;
 			//Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&q);
 			//Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
 
@@ -515,7 +638,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 			//rotateY = newRotateY;
 
-			/*Phoenix::Math::Quaternion q = rotate * newRotateY;
+			Phoenix::Math::Quaternion q = rotate * newRotateY;
 			Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&q);
 			Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
 			Phoenix::Math::Vector3 up = Phoenix::Math::Vector3(matrix._21, matrix._22, matrix._23);
@@ -572,7 +695,35 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 						rotateY += 180.0f * 0.01745f;
 					}
 				}
-			}*/
+			}
+			*/
+		}
+	};
+
+	auto JudgeInput01 = [&](Phoenix::u32 index, Phoenix::u32 nextIndex)
+	{
+		if (!attackDatasList.at(index).datas.at(attackComboState).receptionStack)
+		{
+			if (attackDatasList.at(nextIndex).receptionKey == stackKey)
+			{
+				ChangeAnimation(index, nextIndex);
+			}
+		}
+	};
+
+	auto JudgeInput02 = [&](Phoenix::u32 index, Phoenix::u32 nextIndex, AttackKey key)
+	{
+		if (attackDatasList.at(nextIndex).receptionKey == key)
+		{
+			if (attackDatasList.at(index).datas.at(attackComboState).receptionStack)
+			{
+				receptionStack = true;
+				stackKey = key;
+			}
+			else
+			{
+				ChangeAnimation(index, nextIndex);
+			}
 		}
 	};
 
@@ -590,7 +741,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	}
 
 	// 攻撃ステートへ
-	if ((key != AttackKey::None) && isBattleMode && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
+	if ((key != AttackKey::None) /*&& isBattleMode*/ && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
 	{
 		if (attackState == AttackAnimationState::End)
 		{
@@ -598,7 +749,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			if (attackDatasList[0].receptionKey == key)
 			{
 				attackComboState = 0;
-				attackReceptionTimeCnt = 0.0f;
+				attackReceptionTimeCnt = attackDatasList.at(0).datas.at(0).playBeginTime != -1 ? attackDatasList.at(0).datas.at(0).playBeginTime : 0.0f;
 
 				ChangeAnimationState(AnimationState::Attack, 0.0f);
 				ChangeAttackAnimationState(attackDatasList.at(0).datas.at(0).animState, attackDatasList.at(0).datas.at(0).animIndex, attackDatasList.at(0).datas.at(0).playSpeed);
@@ -607,38 +758,31 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		else
 		{
 			Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
-			Phoenix::u32 nextIndex = index + 1;
+			Phoenix::u32 wearNextIndex = static_cast<Phoenix::u32>(attackDatasList.at(index).datas.at(attackComboState).weakDerivedAttackState);
+			Phoenix::u32 strongNextIndex = static_cast<Phoenix::u32>(attackDatasList.at(index).datas.at(attackComboState).strongDerivedAttackState);
+			Phoenix::u32 endIndex = static_cast<Phoenix::u32>(AttackAnimationState::End);
 
 			// 次の攻撃が発動するボタンの受付
 			if (receptionStack)
 			{
-				if (nextIndex < attackDatasList.size())
+				if (wearNextIndex < endIndex)
 				{
-					if (!attackDatasList.at(index).datas.at(attackComboState).receptionStack)
-					{
-						if (attackDatasList.at(nextIndex).receptionKey == stackKey)
-						{
-							ChangeAnimation(index, nextIndex);
-						}
-					}
+					JudgeInput01(index, wearNextIndex);
+				}
+				if (strongNextIndex < endIndex)
+				{
+					JudgeInput01(index, strongNextIndex);
 				}
 			}
 			else if (attackDatasList.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).receptionEndTime)
 			{
-				if (nextIndex < attackDatasList.size())
+				if (wearNextIndex < endIndex)
 				{
-					if (attackDatasList.at(nextIndex).receptionKey == key)
-					{
-						if (attackDatasList.at(index).datas.at(attackComboState).receptionStack)
-						{
-							receptionStack = true;
-							stackKey = key;
-						}
-						else
-						{
-							ChangeAnimation(index, nextIndex);
-						}
-					}
+					JudgeInput02(index, wearNextIndex, key);
+				}
+				if (strongNextIndex < endIndex)
+				{
+					JudgeInput02(index, strongNextIndex, key);
 				}
 			}
 		}
@@ -922,6 +1066,7 @@ void Player::AttackJudgment()
 		if (attackDatasList.at(index).datas.at(attackComboState).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).collisionEndTime)
 		{
 			Judgment(attackDatasList.at(index).datas.at(attackComboState).collisionNum);
+			attackPower = attackDatasList.at(index).receptionKey == AttackKey::WeakAttack ? 0 : 1;
 		}
 		else
 		{

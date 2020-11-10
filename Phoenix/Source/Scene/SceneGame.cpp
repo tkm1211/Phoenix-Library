@@ -393,38 +393,44 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					{
 						if (!isCameraShake)
 						{
-							if (player->GetAttackCollisionIndex() == 1)
+							if (player->GetAttackPower() == 0)
 							{
 								isCameraShake = true;
 								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 								cameraShakeCnt = 0;
 
-								shakeWidth = 0.0f;
-								shakeHeight = 0.15f;
+								if (player->GetAttackCollisionIndex() == 1 || player->GetAttackCollisionIndex() == 2)
+								{
+									shakeWidth = 0.0f;
+									shakeHeight = 0.15f;
+								}
+								else
+								{
+									shakeWidth = 0.15f;
+									shakeHeight = 0.0f;
+								}
+							
 								cameraShakeMaxCnt = 7;
 
 								SetXInputVibration(1.0f, 0.0f, 5);
 							}
-							else if (player->GetAttackCollisionIndex() == 2)
+							else if (player->GetAttackPower() == 1)
 							{
 								isCameraShake = true;
 								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 								cameraShakeCnt = 0;
 
-								shakeWidth = 0.15f;
-								shakeHeight = 0.0f;
-								cameraShakeMaxCnt = 7;
+								if (player->GetAttackCollisionIndex() == 1 || player->GetAttackCollisionIndex() == 2)
+								{
+									shakeWidth = 0.0f;
+									shakeHeight = 0.75f;
+								}
+								else
+								{
+									shakeWidth = 0.75f;
+									shakeHeight = 0.0f;
+								}
 
-								SetXInputVibration(0.0f, 1.0f, 5);
-							}
-							else if (player->GetAttackCollisionIndex() == 3)
-							{
-								isCameraShake = true;
-								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-								cameraShakeCnt = 0;
-
-								shakeWidth = 0.75f;
-								shakeHeight = 0.0f;
 								cameraShakeMaxCnt = 10;
 
 								SetXInputVibration(1.0f, 1.0f, 10);

@@ -107,8 +107,8 @@ void SceneTitle::Update(Phoenix::f32 elapsedTime)
 	if (isChangeScene)
 	{
 		if (dissolveThreshold <= 1.2f) dissolveThreshold += dissolveSpeed;
-		else sceneSystem->ChangeScene(SceneType::Tutorial, false, true);
-		//else sceneSystem->ChangeScene(SceneType::Game, false, true);
+		//else sceneSystem->ChangeScene(SceneType::Tutorial, false, true);
+		else sceneSystem->ChangeScene(SceneType::Game, false, true);
 		return;
 	}
 

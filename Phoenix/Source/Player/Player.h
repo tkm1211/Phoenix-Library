@@ -138,6 +138,14 @@ public:
 		Attack01,
 		Attack02,
 		Attack03,
+		Attack04,
+		Attack05,
+		Attack06,
+
+		Attack07,
+		Attack08,
+		Attack09,
+
 		End
 	};
 #endif
@@ -166,6 +174,9 @@ private:
 		bool receptionStack; // 次のアニメーションへ遷移するための入力受付をスタックするかどうか？
 		Phoenix::f32 receptionBeginTime; // 次のアニメーションへ遷移するための入力受付開始時間
 		Phoenix::f32 receptionEndTime; // 次のアニメーションへ遷移するための入力受付終了時間
+
+		AttackAnimationState weakDerivedAttackState; // 次の派生弱攻撃のステート
+		AttackAnimationState strongDerivedAttackState; // 次の派生強攻撃のステート
 	};
 
 	struct AttackDatas
@@ -255,6 +266,8 @@ private:
 	// コリジョンデータの要素数
 	Phoenix::u32 attackCollisionIndex = 0;
 
+	Phoenix::u32 attackPower = 0;
+
 	// 蓄積ダメージ
 	Phoenix::s32 accumulationDamege = 0;
 	Phoenix::s32 accumulationTimeCnt = 0;
@@ -342,7 +355,28 @@ public:
 	}
 	void InEnemyTerritory(bool inTerritory)
 	{
-		if (this->inTerritory != inTerritory) ChangeAnimationState(AnimationState::Idle, 0.0f);
+		if (this->inTerritory != inTerritory && animationState != AnimationState::Attack)
+		{
+			ChangeAnimationState(AnimationState::Idle, 0.0f);
+
+			Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
+			float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+
+			if (len <= 0)
+			{
+				dir.x = 0;
+				dir.z = 0;
+			}
+
+			float mag = 1 / len;
+
+			dir.x *= mag;
+			dir.z *= mag;
+
+			Phoenix::f32 angleY = atan2f(dir.x, dir.z);
+
+			newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
+		}
 		this->inTerritory = inTerritory;
 		SetBattleMode(inTerritory);
 	}
@@ -397,6 +431,7 @@ public:
 	Phoenix::Math::Quaternion GetRotate() { return rotate; }
 	Phoenix::f32 GetRadius() { return radius; }
 	Phoenix::s32 GetHP() { return life; }
+	Phoenix::u32 GetAttackPower() { return attackPower; }
 	AnimationState GetAnimationState() { return animationState; }
 	const std::vector<Phoenix::FrameWork::CollisionData> GetCollisionDatas() { return collisionDatas; }
 	bool IsAttackJudgment() { return isAttackJudgment; }
