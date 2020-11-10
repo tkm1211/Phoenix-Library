@@ -7,10 +7,20 @@ enum class EnemyMode
 	Battle,   // バトル
 };
 
-enum class BattleEnenyState
+enum class BattleEnemyState
 {
-	Idle,
-	Attack,
-	Dedge,
-	NoneState
+	NoneState, // なし
+	Idle,      // 待機
+	Attack,    // 攻撃
+	Dedge,     // 回避
+	Guard,     // ガード
+};
+
+enum class EnemyAttackState
+{
+	NoneState,
+	WeakRight,
+	WeakLeft,
+	StrongRight,
+	StrongLeft,
 };

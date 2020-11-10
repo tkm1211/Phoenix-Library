@@ -7,7 +7,7 @@
 class DynamicDifficultyAdjuster
 {
 private:
-	BattleEnenyState ideaState = BattleEnenyState::NoneState;
+	BattleEnemyState ideaState = BattleEnemyState::NoneState;
 
 public:
 	DynamicDifficultyAdjuster() {}
@@ -33,5 +33,5 @@ public:
 	void Update(Phoenix::s32 skillLevel);
 
 	// エネミーステートの取得
-	BattleEnenyState GetBattleEnenyState();
+	BattleEnemyState GetBattleEnemyState();
 };

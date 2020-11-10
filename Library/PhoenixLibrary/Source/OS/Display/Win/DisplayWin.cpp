@@ -168,7 +168,7 @@ namespace Phoenix
 				std::ostringstream outs;
 				outs.precision(6);
 				outs << "FPS : " << fps << " / " << "Frame Time : " << mspf << " (ms)";
-				//SetWindowTextA(hwnd, outs.str().c_str()); // TODO : Draw fps
+				SetWindowTextA(hwnd, outs.str().c_str()); // TODO : Draw fps
 
 				frames = 0;
 				timeTlapsed += 1.0f;

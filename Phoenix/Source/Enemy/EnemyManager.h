@@ -48,9 +48,14 @@ public:
 	// エネミー追加
 	void AddEnemy(Phoenix::FrameWork::Transform transform);
 
-public:
 	// エネミー生存最大数からカウントダウン
 	void SubAliveEnemyCount(Phoenix::s32 sub);
+
+	// 指定のエネミーに攻撃権を発行
+	void SetAttackRight(Phoenix::s32 enemyIndex);
+
+	// 指定のエネミーをバトルモードに変更
+	void SetBattleEnemy(Phoenix::s32 enemyIndex);
 
 public:
 	// エネミー達を取得

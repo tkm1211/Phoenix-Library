@@ -16,13 +16,13 @@ void DynamicDifficultyAdjuster::Construct()
 // 初期化
 void DynamicDifficultyAdjuster::Initialize()
 {
-	ideaState = BattleEnenyState::NoneState;
+	ideaState = BattleEnemyState::NoneState;
 }
 
 // 終了化
 void DynamicDifficultyAdjuster::Finalize()
 {
-	ideaState = BattleEnenyState::NoneState;
+	ideaState = BattleEnemyState::NoneState;
 }
 
 // 更新
@@ -30,16 +30,20 @@ void DynamicDifficultyAdjuster::Update(Phoenix::s32 skillLevel)
 {
 	if (skillLevel <= 10)
 	{
-		ideaState = BattleEnenyState::Idle;
+		ideaState = BattleEnemyState::Attack;
 	}
-	else if (skillLevel <= 50)
+	/*else if (skillLevel <= 30)
 	{
-		ideaState = BattleEnenyState::Attack;
+		
+	}*/
+	else
+	{
+		ideaState = BattleEnemyState::Attack;
 	}
 }
 
 // エネミーステートの取得
-BattleEnenyState DynamicDifficultyAdjuster::GetBattleEnenyState()
+BattleEnemyState DynamicDifficultyAdjuster::GetBattleEnemyState()
 {
 	return ideaState;
 }

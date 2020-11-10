@@ -5,10 +5,10 @@
 
 
 class Enemy;
-class BattleEnemyAI : public StateMachine<BattleEnenyState>, public AIBase
+class BattleEnemyAI : public StateMachine<BattleEnemyState>
 {
 private:
-	using Super = StateMachine<BattleEnenyState>;
+	using Super = StateMachine<BattleEnemyState>;
 
 private:
 	std::weak_ptr<Enemy> owner;
@@ -28,7 +28,7 @@ public:
 	void CleanUp() override;
 
 	// 更新
-	void Update() override;
+	BattleEnemyState Update() override;
 
 public:
 	// エネミー設定

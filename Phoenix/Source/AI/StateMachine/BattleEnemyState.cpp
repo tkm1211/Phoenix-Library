@@ -25,35 +25,55 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnenyState Idle::Update()
+		BattleEnemyState Idle::Update()
 		{
-			return BattleEnenyState::NoneState;
+			return BattleEnemyState::NoneState;
 		}
 #pragma endregion
 
 #pragma region Attack
 		// 生成
-		std::shared_ptr<Attack> Attack::Create()
+		std::shared_ptr<Attack> Attack::Create(std::shared_ptr<Enemy> owner)
 		{
-			return std::make_shared<Attack>();
+			return std::make_shared<Attack>(owner);
 		}
 
 		// 状態に入ったときに呼ばれる関数
 		void Attack::SetUp()
 		{
+			index = 0;
 
+			attackList.emplace_back(EnemyAttackState::WeakLeft);
+			attackList.emplace_back(EnemyAttackState::WeakRight);
+			attackList.emplace_back(EnemyAttackState::StrongLeft);
+			attackList.emplace_back(EnemyAttackState::StrongRight);
 		}
 
 		// 次の状態に移る前に呼ばれる関数
 		void Attack::CleanUp()
 		{
-
+			attackList.clear();
 		}
 
 		// 更新
-		BattleEnenyState Attack::Update()
+		BattleEnemyState Attack::Update()
 		{
-			return BattleEnenyState::NoneState;
+			if (owner->GetModel()->IsPlaying() || index == 0)
+			{
+				currentAttack = attackList.at(index);
+				++index;
+
+				if (attackList.size() <= index)
+				{
+					return BattleEnemyState::Idle;
+				}
+				else
+				{
+					owner->SetAttackState(currentAttack);
+				}
+			}
+
+			return BattleEnemyState::NoneState;
 		}
 #pragma endregion
 
@@ -77,9 +97,35 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnenyState Dedge::Update()
+		BattleEnemyState Dedge::Update()
 		{
-			return BattleEnenyState::NoneState;
+			return BattleEnemyState::NoneState;
+		}
+#pragma endregion
+
+#pragma region Guard
+		// 生成
+		std::shared_ptr<Guard> Guard::Create()
+		{
+			return std::make_shared<Guard>();
+		}
+
+		// 状態に入ったときに呼ばれる関数
+		void Guard::SetUp()
+		{
+
+		}
+
+		// 次の状態に移る前に呼ばれる関数
+		void Guard::CleanUp()
+		{
+
+		}
+
+		// 更新
+		BattleEnemyState Guard::Update()
+		{
+			return BattleEnemyState::NoneState;
 		}
 #pragma endregion
 	}

@@ -60,6 +60,10 @@ void EnemyManager::AddEnemy(Phoenix::FrameWork::Transform transform)
 			enemy->SetAlive(true);
 			enemy->SetTransform(transform);
 			enemy->SetOwner(shared_from_this());
+
+			++aliveEnemyCount;
+			++battleEnemyCount; // TODO : delete.
+
 			break;
 		}
 	}
@@ -69,6 +73,18 @@ void EnemyManager::AddEnemy(Phoenix::FrameWork::Transform transform)
 void EnemyManager::SubAliveEnemyCount(Phoenix::s32 sub)
 {
 	aliveEnemyCount -= sub;
+}
+
+// 指定のエネミーに攻撃権を発行
+void EnemyManager::SetAttackRight(Phoenix::s32 enemyIndex)
+{
+	enemies.at(enemyIndex)->SetAttackRight();
+}
+
+// 指定のエネミーをバトルモードに変更
+void EnemyManager::SetBattleEnemy(Phoenix::s32 enemyIndex)
+{
+	enemies.at(enemyIndex)->SetInBattle(true);
 }
 
 // GUI

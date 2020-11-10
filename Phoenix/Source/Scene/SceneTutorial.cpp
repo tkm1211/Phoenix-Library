@@ -12,6 +12,7 @@
 #include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
 #include "../Enemy/EnemyManager.h"
 #include "../Enemy/Enemy.h"
+#include "../AI/MetaAI/MetaType.h"
 
 
 void SceneTutorial::Construct(SceneSystem* sceneSystem)
@@ -35,6 +36,7 @@ void SceneTutorial::Construct(SceneSystem* sceneSystem)
 		player = commonData->player.get();
 		enemyManager = commonData->enemyManager.get();
 		mannequin = commonData->mannequin.get();
+		metaAI = commonData->metaAI.get();
 		uiSystem = commonData->uiSystem.get();
 		stageModel = commonData->stageModel.get();
 		bossStageModel = commonData->bossStageModel.get();
@@ -111,7 +113,7 @@ void SceneTutorial::Construct(SceneSystem* sceneSystem)
 	// スカイマップ
 	{
 		skyMap = Phoenix::FrameWork::SkyMap::Create();
-		skyMap->Initialize(graphicsDevice, "..\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Night MoonBurst\\NightMoonBurst.dds"); //Epic_BlueSunset\\Epic_BlueSunset03 //Night MoonBurst\\NightMoonBurst
+		skyMap->Initialize(graphicsDevice, "..\\Data\\Assets\\Texture\\SkyMap\\AllSkyFree\\Epic_BlueSunset\\Epic_BlueSunset03.dds"); //Epic_BlueSunset\\Epic_BlueSunset03 //Night MoonBurst\\NightMoonBurst
 	}
 
 	// トーンマップ
@@ -221,11 +223,15 @@ void SceneTutorial::Initialize()
 		cameraShakeCnt = 0;
 		cameraShakeMaxCnt = 0;
 
+		playerBehaviorScore = 0;
+		oldPlayerBehaviorScore = 0;
+
 		Phoenix::FrameWork::Transform transform;
-		transform.SetTranslate({ 0,0,75.0f });
+		transform.SetTranslate({ 0,0,65.0f });
 		transform.SetRotate({ 0,0,0,1 });
 		transform.SetScale({ 1.0f,1.0f,1.0f });
 		enemyManager->AddEnemy(transform);
+		enemyManager->SetBattleEnemy(0);
 	}
 
 	// GPUパーティクル
@@ -264,6 +270,11 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 		mannequin->Update(*camera, true);
 	}
 
+	if (isUpdate)
+	{
+		metaAI->Update();
+	}
+
 	// ゲームジャッジ
 	if (!onFade)
 	{
@@ -280,277 +291,12 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 
 	// 当たり判定
 	{
-		Phoenix::Math::Vector3 playerPos = player->GetPosition();
-		Phoenix::Math::Vector3 mannequinPos = mannequin->GetPosition();
-		Phoenix::f32 playerRadius = player->GetRadius();
-		Phoenix::f32 mannequinRadius = mannequin->GetRadius();
-
-		// 押し出し
-		if (SphereVsSphere(Phoenix::Math::Vector3(playerPos.x, playerPos.y + 0.5f, playerPos.z), Phoenix::Math::Vector3(mannequinPos.x, mannequinPos.y + 0.5f, mannequinPos.z), playerRadius, mannequinRadius))
-		{
-			Phoenix::Math::Vector3 pos;
-			Phoenix::Math::Vector3 dir = playerPos - mannequinPos;
-			dir = Phoenix::Math::Vector3Normalize(dir);
-			dir.y = 0.0f;
-
-			pos = Phoenix::Math::Vector3(mannequinPos.x, playerPos.y, mannequinPos.z) + dir * (playerRadius + mannequinRadius);
-			player->SetPosition(pos);
-			player->UpdateTrasform();
-		}
-
-		// ヒット
-		{
-			if (player->IsAttackJudgment() && !isHitStop)
-			{
-				const std::vector<Phoenix::FrameWork::CollisionData> playerDatas = player->GetCollisionDatas();
-				const std::vector<Phoenix::FrameWork::CollisionData> mannequinDatas = mannequin->GetCollisionDatas();
-				if (SphereVsSphere(playerDatas.at(player->GetAttackCollisionIndex()).pos, mannequinDatas.at(0).pos, playerDatas.at(player->GetAttackCollisionIndex()).radius, mannequinDatas.at(0).radius))
-				{
-					Phoenix::Math::Vector3 pos;
-					Phoenix::Math::Vector3 normal;
-					Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(playerDatas.at(player->GetAttackCollisionIndex()).pos - mannequinDatas.at(0).pos);
-					pos = mannequinDatas.at(0).pos + dir * mannequinDatas.at(0).radius / 2.0f;
-					normal = Phoenix::Math::Vector3Normalize(playerPos - mannequinPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
-
-					player->SetIsHit(true);
-					//boss->Damage(10);
-
-					// Burst Particle.
-					{
-						playerHitParticle->Burst(150);
-						playerHitParticle->SetParticleLife(1.5f);
-						playerHitParticle->SetParticleSize(0.004f);
-						playerHitParticle->SetParticleScale(1.0f);
-						playerHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
-						playerHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
-						//playerHitParticle->SetParticleColor(Phoenix::Math::Color(40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
-						//playerHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
-
-						particlePos = playerDatas.at(player->GetAttackCollisionIndex()).pos;
-					}
-
-					// Set Point Light
-					{
-						Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
-						point->position = Phoenix::Math::Vector4(particlePos, 0.0f);
-						point->color = Phoenix::Math::Vector4(50.0f, 50.0f, 50.0f, 1.0f);
-						point->distance = pointLightDistance;
-						point->decay = 1.0f;
-						grayScale = point->color.x;
-						playerAttackEndCount = 0.0f;
-						onPointLight = true;
-					}
-
-					// Set Hit Stop
-					if (player->GetAttackCollisionIndex() == 3)
-					{
-						isHitStop = true;
-						hitStopCnt = 0;
-					}
-
-					// Set Camera Shake
-					{
-						if (!isCameraShake)
-						{
-							if (player->GetAttackCollisionIndex() == 1)
-							{
-								isCameraShake = true;
-								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-								cameraShakeCnt = 0;
-
-								shakeWidth = 0.0f;
-								shakeHeight = 0.10f;
-								cameraShakeMaxCnt = 7;
-
-								SetXInputVibration(1.0f, 0.0f, 5);
-							}
-							else if (player->GetAttackCollisionIndex() == 2)
-							{
-								isCameraShake = true;
-								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-								cameraShakeCnt = 0;
-
-								shakeWidth = 0.10f;
-								shakeHeight = 0.0f;
-								cameraShakeMaxCnt = 7;
-
-								SetXInputVibration(0.0f, 1.0f, 5);
-							}
-							else if (player->GetAttackCollisionIndex() == 3)
-							{
-								isCameraShake = true;
-								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-								cameraShakeCnt = 0;
-
-								shakeWidth = 0.55f;
-								shakeHeight = 0.0f;
-								cameraShakeMaxCnt = 10;
-
-								SetXInputVibration(1.0f, 1.0f, 10);
-							}
-						}
-					}
-				}
-			}
-			else if (onPointLight && !isHitStop)
-			{
-				Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
-
-				if (playerAttackEndMaxCount <= playerAttackEndCount++)
-				{
-					point->position = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-					point->color = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-					point->distance = 0.0f;
-					point->decay = 0.0f;
-					playerAttackEndCount = 0.0f;
-					onPointLight = false;
-				}
-				else
-				{
-					//point->distance = pointLightDistance * ((playerAttackEndMaxCount - playerAttackEndCount) / playerAttackEndMaxCount);
-					
-					point->color.x -= grayScale / playerAttackEndMaxCount;
-					point->color.y -= grayScale / playerAttackEndMaxCount;
-					point->color.z -= grayScale / playerAttackEndMaxCount;
-				}
-			}
-
-			/*if (!player->Invincible() && !isHitStop)
-			{
-				const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
-				const std::vector<Phoenix::FrameWork::CollisionData>* mannequinDatas = mannequin->GetCollisionDatas();
-				if (!isCameraShake)
-				{
-					isCameraShake = true;
-					shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-					cameraShakeCnt = 0;
-
-					shakeWidth = 0.0f;
-					shakeHeight = 0.75f;
-					cameraShakeMaxCnt = 20;
-
-					petalParticle->Burst(50);
-					petalParticle->SetParticleLife(1.0f);
-					petalParticle->SetParticleSize(0.07f);
-					petalParticle->SetParticleScale(0.75f);
-					petalParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
-					petalParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)); // particleMainColor
-
-					soilParticle->Burst(50);
-					soilParticle->SetParticleLife(2.0f);
-					soilParticle->SetParticleSize(0.07f);
-					soilParticle->SetParticleScale(0.75f);
-					soilParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
-					soilParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)); // particleMainColor
-
-					jumpAttackParticlePos = bossPos;
-
-					SetXInputVibration(1.0f, 1.0f, 30);
-				}
-				if (SphereVsSphere(playerDatas->at(0).pos, bossDatas->at(boss->GetAttackCollisionIndex()).pos, playerDatas->at(0).radius, bossDatas->at(boss->GetAttackCollisionIndex()).radius))
-				{
-					Phoenix::Math::Vector3 normal;
-					normal = Phoenix::Math::Vector3Normalize(playerPos - bossPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
-
-					boss->SetIsHit(true);
-					player->Damage(10);
-
-					// Burst Particle.
-					if (!boss->IsJumpAttack())
-					{
-						bossHitParticle->Burst(100);
-						bossHitParticle->SetParticleLife(1.0f);
-						bossHitParticle->SetParticleSize(0.07f);
-						bossHitParticle->SetParticleScale(0.25f);
-						bossHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
-						bossHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor
-
-						bossHitParticlePos = bossPos + ((playerPos - bossPos) * 0.5f);
-						bossHitParticlePos.y = bossDatas->at(boss->GetAttackCollisionIndex()).pos.y;
-					}
-				}
-			}*/
-		}
-
-		playerPos = player->GetPosition();
-		Phoenix::f32 playerDis = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(playerPos.x, playerPos.z));
-		Phoenix::Math::Vector2 playerNormal = Phoenix::Math::Vector2Normalize(Phoenix::Math::Vector2(playerPos.x, playerPos.z));
-
-		if (playerPos.x <= -stageScale.x)
-		{
-			playerPos.x = -stageScale.x;
-		}
-		else if (stageScale.x <= playerPos.x)
-		{
-			playerPos.x = stageScale.x;
-		}
-		if (playerPos.z <= -stageScale.z)
-		{
-			playerPos.z = -stageScale.z;
-		}
-		else if (stageScale.z <= playerPos.z)
-		{
-			playerPos.z = stageScale.z;
-		}
-
-		player->SetPosition(playerPos);
+		JudgeHit();
 	}
 
 	// カメラ更新
 	{
-		if (xInput[0].bLBt && !isHitStop)
-		{
-#if 0
-			lockOnCamera = !lockOnCamera;
-#else
-			camera->SetTargetPos(mannequin->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
-			targetMarkUI->LockOnTarget();
-#endif
-		}
-
-		if (cameraFlg && !isHitStop)
-		{
-			static bool isInit = false;
-			if (!isInit)
-			{
-				camera->SetRotateX(0.0f);
-				camera->SetRotateY(-3.14f);
-				isInit = true;
-			}
-			camera->FreeCamera();
-		}
-		else
-		{
-			Phoenix::Math::Vector3 playerPos = player->GetPosition();
-			Phoenix::Math::Vector3 enemyPos = mannequin->GetPosition();
-
-			Phoenix::Math::Vector3 enemyToPlayerVec = enemyPos - playerPos;
-			Phoenix::f32 len = Phoenix::Math::Vector3Length(enemyToPlayerVec);
-
-			static Phoenix::f32 lerp = 1.0f;
-			static Phoenix::f32 cameraLen = 6.0f;
-			if (len <= 5.0f)
-			{
-				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 8.5f, 0.05f);
-
-				enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
-				camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, 0.05f);
-				player->InEnemyTerritory(true);
-				player->SetTargetPos(mannequin->GetPosition());
-				//player->Rotation(mannequin->GetPosition());
-				lerp = 0.01f;
-			}
-			else
-			{
-				lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f);
-				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f);
-
-				camera->ControllerCamera02(playerPos, Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, lerp);
-				player->InEnemyTerritory(false);
-				player->SetTargetPos(Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f));
-			}
-		}
-		//camera->Update();
+		UpdateCamera();
 	}
 
 	// UI更新
@@ -644,6 +390,323 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 
 		targetMarkUI->Update(Phoenix::Math::Vector2(screenPos.x, screenPos.y));
 	}*/
+
+	// メタAI通知
+	{
+		if (oldPlayerBehaviorScore < playerBehaviorScore)
+		{
+			metaAI->Sensor(static_cast<Phoenix::s32>(MetaType::Battle), playerBehaviorScore);
+		}
+
+		// 過去のスコア保存
+		oldPlayerBehaviorScore = playerBehaviorScore;
+
+		playerBehaviorScore -= 1;
+
+		if (playerBehaviorScore < 0)
+		{
+			playerBehaviorScore = 0;
+		}
+	}
+}
+
+void SceneTutorial::JudgeHit()
+{
+	Phoenix::Math::Vector3 playerPos = player->GetPosition();
+	Phoenix::Math::Vector3 mannequinPos = mannequin->GetPosition();
+	Phoenix::f32 playerRadius = player->GetRadius();
+	Phoenix::f32 mannequinRadius = mannequin->GetRadius();
+
+	// 押し出し
+	{
+		JudgeExtrude(playerPos, mannequinPos, playerRadius, mannequinRadius);
+	}
+
+	// ヒット
+	{
+		// プレイヤー攻撃
+		if (player->IsAttackJudgment() && !isHitStop)
+		{
+			const std::vector<Phoenix::FrameWork::CollisionData> playerDatas = player->GetCollisionDatas();
+			const std::vector<Phoenix::FrameWork::CollisionData> mannequinDatas = mannequin->GetCollisionDatas();
+			if (SphereVsSphere(playerDatas.at(player->GetAttackCollisionIndex()).pos, mannequinDatas.at(0).pos, playerDatas.at(player->GetAttackCollisionIndex()).radius, mannequinDatas.at(0).radius))
+			{
+				Phoenix::Math::Vector3 pos;
+				Phoenix::Math::Vector3 normal;
+				Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(playerDatas.at(player->GetAttackCollisionIndex()).pos - mannequinDatas.at(0).pos);
+				pos = mannequinDatas.at(0).pos + dir * mannequinDatas.at(0).radius / 2.0f;
+				normal = Phoenix::Math::Vector3Normalize(playerPos - mannequinPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
+
+				player->SetIsHit(true);
+				//boss->Damage(10);
+
+				playerBehaviorScore += 100;
+
+				// Burst Particle.
+				{
+					playerHitParticle->Burst(150);
+					playerHitParticle->SetParticleLife(1.5f);
+					playerHitParticle->SetParticleSize(0.004f);
+					playerHitParticle->SetParticleScale(1.0f);
+					playerHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
+					playerHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+					//playerHitParticle->SetParticleColor(Phoenix::Math::Color(40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+					//playerHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+
+					particlePos = playerDatas.at(player->GetAttackCollisionIndex()).pos;
+				}
+
+				// Set Point Light
+				{
+					Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
+					point->position = Phoenix::Math::Vector4(particlePos, 0.0f);
+					point->color = Phoenix::Math::Vector4(50.0f, 50.0f, 50.0f, 1.0f);
+					point->distance = pointLightDistance;
+					point->decay = 1.0f;
+					grayScale = point->color.x;
+					playerAttackEndCount = 0.0f;
+					onPointLight = true;
+				}
+
+				// Set Hit Stop
+				if (player->GetAttackCollisionIndex() == 3)
+				{
+					isHitStop = true;
+					hitStopCnt = 0;
+				}
+
+				// Set Camera Shake
+				{
+					if (!isCameraShake)
+					{
+						if (player->GetAttackCollisionIndex() == 1)
+						{
+							isCameraShake = true;
+							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+							cameraShakeCnt = 0;
+
+							shakeWidth = 0.0f;
+							shakeHeight = 0.10f;
+							cameraShakeMaxCnt = 7;
+
+							SetXInputVibration(1.0f, 0.0f, 5);
+						}
+						else if (player->GetAttackCollisionIndex() == 2)
+						{
+							isCameraShake = true;
+							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+							cameraShakeCnt = 0;
+
+							shakeWidth = 0.10f;
+							shakeHeight = 0.0f;
+							cameraShakeMaxCnt = 7;
+
+							SetXInputVibration(0.0f, 1.0f, 5);
+						}
+						else if (player->GetAttackCollisionIndex() == 3)
+						{
+							isCameraShake = true;
+							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+							cameraShakeCnt = 0;
+
+							shakeWidth = 0.55f;
+							shakeHeight = 0.0f;
+							cameraShakeMaxCnt = 10;
+
+							SetXInputVibration(1.0f, 1.0f, 10);
+						}
+					}
+				}
+			}
+		}
+		else if (onPointLight && !isHitStop)
+		{
+			Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
+
+			if (playerAttackEndMaxCount <= playerAttackEndCount++)
+			{
+				point->position = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+				point->color = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+				point->distance = 0.0f;
+				point->decay = 0.0f;
+				playerAttackEndCount = 0.0f;
+				onPointLight = false;
+			}
+			else
+			{
+				//point->distance = pointLightDistance * ((playerAttackEndMaxCount - playerAttackEndCount) / playerAttackEndMaxCount);
+
+				point->color.x -= grayScale / playerAttackEndMaxCount;
+				point->color.y -= grayScale / playerAttackEndMaxCount;
+				point->color.z -= grayScale / playerAttackEndMaxCount;
+			}
+		}
+
+		// エネミー攻撃
+		/*if (!player->Invincible() && !isHitStop)
+		{
+			const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = player->GetCollisionDatas();
+			const std::vector<Phoenix::FrameWork::CollisionData>* mannequinDatas = mannequin->GetCollisionDatas();
+			if (!isCameraShake)
+			{
+				isCameraShake = true;
+				shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+				cameraShakeCnt = 0;
+
+				shakeWidth = 0.0f;
+				shakeHeight = 0.75f;
+				cameraShakeMaxCnt = 20;
+
+				petalParticle->Burst(50);
+				petalParticle->SetParticleLife(1.0f);
+				petalParticle->SetParticleSize(0.07f);
+				petalParticle->SetParticleScale(0.75f);
+				petalParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+				petalParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)); // particleMainColor
+
+				soilParticle->Burst(50);
+				soilParticle->SetParticleLife(2.0f);
+				soilParticle->SetParticleSize(0.07f);
+				soilParticle->SetParticleScale(0.75f);
+				soilParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+				soilParticle->SetParticleColor(Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f)); // particleMainColor
+
+				jumpAttackParticlePos = bossPos;
+
+				SetXInputVibration(1.0f, 1.0f, 30);
+			}
+			if (SphereVsSphere(playerDatas->at(0).pos, bossDatas->at(boss->GetAttackCollisionIndex()).pos, playerDatas->at(0).radius, bossDatas->at(boss->GetAttackCollisionIndex()).radius))
+			{
+				Phoenix::Math::Vector3 normal;
+				normal = Phoenix::Math::Vector3Normalize(playerPos - bossPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
+
+				boss->SetIsHit(true);
+				player->Damage(10);
+
+				// Burst Particle.
+				if (!boss->IsJumpAttack())
+				{
+					bossHitParticle->Burst(100);
+					bossHitParticle->SetParticleLife(1.0f);
+					bossHitParticle->SetParticleSize(0.07f);
+					bossHitParticle->SetParticleScale(0.25f);
+					bossHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
+					bossHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor
+
+					bossHitParticlePos = bossPos + ((playerPos - bossPos) * 0.5f);
+					bossHitParticlePos.y = bossDatas->at(boss->GetAttackCollisionIndex()).pos.y;
+				}
+			}
+		}*/
+	}
+
+	playerPos = player->GetPosition();
+	Phoenix::f32 playerDis = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(playerPos.x, playerPos.z));
+	Phoenix::Math::Vector2 playerNormal = Phoenix::Math::Vector2Normalize(Phoenix::Math::Vector2(playerPos.x, playerPos.z));
+
+	if (playerPos.x <= -stageScale.x)
+	{
+		playerPos.x = -stageScale.x;
+	}
+	else if (stageScale.x <= playerPos.x)
+	{
+		playerPos.x = stageScale.x;
+	}
+	if (playerPos.z <= -stageScale.z)
+	{
+		playerPos.z = -stageScale.z;
+	}
+	else if (stageScale.z <= playerPos.z)
+	{
+		playerPos.z = stageScale.z;
+	}
+
+	player->SetPosition(playerPos);
+}
+
+void SceneTutorial::JudgeExtrude(Phoenix::Math::Vector3 playerPos, Phoenix::Math::Vector3 enemyPos, Phoenix::f32 playerRadius, Phoenix::f32 enemyRadius)
+{
+	if (SphereVsSphere(Phoenix::Math::Vector3(playerPos.x, playerPos.y + 0.5f, playerPos.z), Phoenix::Math::Vector3(enemyPos.x, enemyPos.y + 0.5f, enemyPos.z), playerRadius, enemyRadius))
+	{
+		Phoenix::Math::Vector3 pos;
+		Phoenix::Math::Vector3 dir = playerPos - enemyPos;
+		dir = Phoenix::Math::Vector3Normalize(dir);
+		dir.y = 0.0f;
+
+		pos = Phoenix::Math::Vector3(enemyPos.x, playerPos.y, enemyPos.z) + dir * (playerRadius + enemyRadius);
+		player->SetPosition(pos);
+		player->UpdateTrasform();
+	}
+}
+
+void SceneTutorial::UpdateCamera()
+{
+	if (xInput[0].bLBt && !isHitStop)
+	{
+#if 0
+		lockOnCamera = !lockOnCamera;
+#else
+		camera->SetTargetPos(mannequin->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f));
+		targetMarkUI->LockOnTarget();
+#endif
+	}
+
+	if (cameraFlg && !isHitStop)
+	{
+		static bool isInit = false;
+		if (!isInit)
+		{
+			camera->SetRotateX(0.0f);
+			camera->SetRotateY(-3.14f);
+			isInit = true;
+		}
+		camera->FreeCamera();
+	}
+	else
+	{
+		//inTerritory = false;
+
+		/*for (const auto& enemy : enemyManager->GetEnemies())
+		{
+			if (enemy->GetAlive())
+			{
+				UpdateGameCamera(player->GetPosition(), enemy->GetTransform().GetTranslate());
+			}
+		}*/
+
+		UpdateGameCamera(player->GetPosition(), mannequin->GetPosition());
+	}
+	//camera->Update();
+}
+
+void SceneTutorial::UpdateGameCamera(Phoenix::Math::Vector3 playerPos, Phoenix::Math::Vector3 enemyPos)
+{
+	Phoenix::Math::Vector3 enemyToPlayerVec = enemyPos - playerPos;
+	Phoenix::f32 len = Phoenix::Math::Vector3Length(enemyToPlayerVec);
+
+	static Phoenix::f32 lerp = 1.0f;
+	static Phoenix::f32 cameraLen = 6.0f;
+	if (len <= 5.0f)
+	{
+		cameraLen = Phoenix::Math::f32Lerp(cameraLen, 8.5f, 0.05f);
+
+		enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
+		camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, 0.05f);
+		player->InEnemyTerritory(true);
+		player->SetTargetPos(mannequin->GetPosition());
+		lerp = 0.01f;
+
+		inTerritory = true;
+	}
+	else/* if (!inTerritory)*/
+	{
+		lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f);
+		cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f);
+
+		camera->ControllerCamera02(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, lerp);
+		player->InEnemyTerritory(false);
+		player->SetTargetPos(Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f));
+	}
 }
 
 void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
@@ -695,10 +758,13 @@ void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
 					{
 						currentShader->Draw(graphicsDevice, mannequin->GetWorldMatrix(), mannequin->GetModel());
 						currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
-						for (auto enemy : enemyManager->GetEnemies())
+						/*for (auto enemy : enemyManager->GetEnemies())
 						{
-							currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
-						}
+							if (enemy->GetAlive())
+							{
+								currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
+							}
+						}*/
 					}
 					voidPS->DeactivatePS(graphicsDevice->GetDevice());
 					currentShader->End(graphicsDevice);
@@ -833,12 +899,15 @@ void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
 					currentShader->Draw(graphicsDevice, mannequin->GetWorldMatrix(), mannequin->GetModel());
 					currentShader->End(graphicsDevice);
 
-					currentShader->Begin(graphicsDevice, *camera);
+					/*currentShader->Begin(graphicsDevice, *camera);
 					for (auto enemy : enemyManager->GetEnemies())
 					{
-						currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
+						if (enemy->GetAlive())
+						{
+							currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
+						}
 					}
-					currentShader->End(graphicsDevice);
+					currentShader->End(graphicsDevice);*/
 
 					// Draw Effect.
 					{

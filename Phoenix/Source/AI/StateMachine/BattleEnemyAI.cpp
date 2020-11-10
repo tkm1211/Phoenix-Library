@@ -13,8 +13,9 @@ std::shared_ptr<BattleEnemyAI> BattleEnemyAI::Create()
 void BattleEnemyAI::SetUp()
 {
 	AddState(AI::BattleEnemy::Idle::Create());
-	AddState(AI::BattleEnemy::Attack::Create());
+	AddState(AI::BattleEnemy::Attack::Create(owner.lock()));
 	AddState(AI::BattleEnemy::Dedge::Create());
+	AddState(AI::BattleEnemy::Guard::Create());
 }
 
 // ステートマシンのクリーンアップ
@@ -24,15 +25,18 @@ void BattleEnemyAI::CleanUp()
 }
 
 // 更新
-void BattleEnemyAI::Update()
+BattleEnemyState BattleEnemyAI::Update()
 {
-	if (currentState == nullptr) return;
+	if (currentState == nullptr) return BattleEnemyState::NoneState;
 
-	BattleEnenyState nextState = currentState->Update();
-	if (nextState != BattleEnenyState::NoneState)
+	BattleEnemyState nextState = currentState->Update();
+	if (nextState != BattleEnemyState::NoneState)
 	{
 		GoToState(nextState);
+		return nextState;
 	}
+
+	return BattleEnemyState::NoneState;
 }
 
 // エネミー設定

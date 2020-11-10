@@ -1,5 +1,6 @@
 #include "BattleEnemyController.h"
 #include "../../Enemy/EnemyManager.h"
+#include "../../Enemy/Enemy.h"
 
 
 // ê∂ê¨
@@ -27,22 +28,48 @@ void BattleEnemyController::Finalize()
 }
 
 // çXêV
-void BattleEnemyController::Update(BattleEnenyState battleEnenyState)
+void BattleEnemyController::Update(BattleEnemyState battleEnemyState)
 {
-	switch (battleEnenyState)
-	{
-	case BattleEnenyState::Idle:
-		if (0 < enemyManager->GetAliveEnemyCount())
-		{
-			if (0 < enemyManager->GetBattleEnemyCount())
-			{
+	if (enemyManager->GetAliveEnemyCount() <= 0) return;
+	if (enemyManager->GetBattleEnemyCount() <= 0) return;
 
+	bool inBattle = false;
+	bool attackRight = true;
+	Phoenix::s32 index = 0;
+	std::vector<Phoenix::s32> indices;
+
+	switch (battleEnemyState)
+	{
+	case BattleEnemyState::Idle:
+
+		break;
+
+	case BattleEnemyState::Attack:
+		for (const auto& enemy : enemyManager->GetEnemies())
+		{
+			if (!enemy->GetAlive()) continue;
+			if (!enemy->GetInBattle()) continue;
+
+			if (enemy->GetBattleState() == BattleEnemyState::Attack)
+			{
+				attackRight = false;
 			}
+
+			inBattle = true;
+
+			indices.emplace_back(index);
+			++index;
+		}
+
+		if (attackRight && inBattle)
+		{
+			Phoenix::s32 r = rand() % static_cast<Phoenix::s32>(indices.size());
+			enemyManager->SetAttackRight(indices.at(r));
 		}
 
 		break;
 
-	case BattleEnenyState::Attack:
+	case BattleEnemyState::Dedge:
 
 		break;
 

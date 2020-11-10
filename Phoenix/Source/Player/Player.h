@@ -29,6 +29,57 @@ static bool CircleVsCircle(Phoenix::Math::Vector2 pos1, Phoenix::Math::Vector2 p
 	else return false;
 }
 
+static float GetSqDistancePoint2Segment(Phoenix::Math::Vector3 point, Phoenix::Math::Vector3 seg_start, Phoenix::Math::Vector3 seg_end)
+{
+	const float eqsilon = 1.0e-5f;	// 誤差吸収用の微小な値
+
+	// 線分の始点から終点へのベクトル
+	Phoenix::Math::Vector3 segment_sub = Phoenix::Math::Vector3(seg_end.x - seg_start.x, seg_end.y - seg_start.y, seg_end.z - seg_start.z);
+
+	// 線分の始点から点へのベクトル
+	Phoenix::Math::Vector3 segment_point = Phoenix::Math::Vector3(point.x - seg_start.x, point.y - seg_start.y, point.z - seg_start.z);
+
+	// 射影ベクトル
+	Phoenix::Math::Vector3 cross_point;
+
+	// 2ベクトルの内積
+	float dot = (segment_sub.x * segment_point.x) + (segment_sub.y * segment_point.y) + (segment_sub.z * segment_point.z);
+	if (dot < eqsilon)
+	{// 内積が負なら、線分の始点が最近傍
+		return ((segment_point.x * segment_point.x) + (segment_point.y * segment_point.y) + (segment_point.z * segment_point.z));
+	}
+
+	// 点から線分の終点へのベクトル
+	segment_point = Phoenix::Math::Vector3(seg_end.x - point.x, seg_end.y - point.y, seg_end.z - point.z);
+
+	// 2ベクトルの内積
+	dot = (segment_sub.x * segment_point.x) + (segment_sub.y * segment_point.y) + (segment_sub.z * segment_point.z);
+	if (dot < eqsilon)
+	{// 内積が負なら、線分の終点が最近傍
+		return ((segment_point.x * segment_point.x) + (segment_point.y * segment_point.y) + (segment_point.z * segment_point.z));
+	}
+
+	// 上記のどちらにも該当しない場合、線分上に落とした射影が最近傍
+	// (本来ならサインで求めるが、外積の大きさ/線分のベクトルの大きさで求まる)
+	cross_point.x = segment_sub.y * segment_point.z - segment_sub.z * segment_point.y;
+	cross_point.y = segment_sub.z * segment_point.x - segment_sub.x * segment_point.z;
+	cross_point.z = segment_sub.x * segment_point.y - segment_sub.y * segment_point.x;
+	return (((cross_point.x * cross_point.x) + (cross_point.y * cross_point.y) + (cross_point.z * cross_point.z))
+		/ ((segment_sub.x * segment_sub.x) + (segment_sub.y * segment_sub.y) + (segment_sub.z * segment_sub.z)));
+}
+static bool SphereVsCapsule(Phoenix::Math::Vector3 sphere, Phoenix::Math::Vector3 capsule1, Phoenix::Math::Vector3 capsule2, float sphereRadius, float capsuleRadius)
+{
+	// 球の中心とカプセルの線分の距離（の二乗）を計算
+	float dis = GetSqDistancePoint2Segment(sphere, capsule1, capsule2);
+
+	// 距離（の二乗）が半径の和（の二乗）より小さければ当たっている
+	float radius = sphereRadius + capsuleRadius;
+
+	if (radius * radius < dis) return false;
+
+	return true;
+}
+
 class Player
 {
 public:
@@ -133,31 +184,31 @@ private:
 	};
 
 private:
-	/*static constexpr*/ Phoenix::f32 WalkSpeed = 0.021f;
-	/*static constexpr*/ Phoenix::f32 BattleWalkSpeed = 0.0105f;
-	/*static constexpr*/ Phoenix::f32 RunSpeed = 0.18f;
-	/*static constexpr*/ Phoenix::f32 SlowRunSpeed = 0.09f;
-	/*static constexpr*/ Phoenix::f32 BattleSlowRunSpeed = 0.045f;
-	/*static constexpr*/ Phoenix::f32 RollSpeed = 0.15f;
-	/*static constexpr*/ Phoenix::f32 DedgeSpeed = 0.05f;
-	/*static constexpr*/ Phoenix::f32 KnockBackSpeed = -0.03f;
-	/*static constexpr*/ Phoenix::f32 KnockBackDownSpeed = 0.0003f;
-	/*static constexpr*/ Phoenix::f32 Attack03Speed = 0.1f;
-	/*static constexpr*/ Phoenix::f32 AnimationSpeed30 = 30.0f; // 0.03333333f
-	/*static constexpr*/ Phoenix::f32 AnimationSpeed45 = 45.0f; // 0.02222222f
-	/*static constexpr*/ Phoenix::f32 AnimationSpeed60 = 60.0f; // 0.01666667f
-	/*static constexpr*/ Phoenix::f32 Attack01AnimationSpeed = 1.75f;
-	/*static constexpr*/ Phoenix::f32 Attack02AnimationSpeed = 2.0f;
-	/*static constexpr*/ Phoenix::f32 Attack03AnimationSpeed = 1.75f;
-	/*static constexpr*/ Phoenix::f32 Attack04AnimationSpeed = 1.15f;
-	/*static constexpr*/ Phoenix::f32 Attack05AnimationSpeed = 1.0f;
-	/*static constexpr*/ Phoenix::f32 Attack06AnimationSpeed = 1.0f;
-	/*static constexpr*/ Phoenix::f32 Attack01ReceptionStartTime = 1.3333332f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
-	/*static constexpr*/ Phoenix::f32 Attack02ReceptionStartTime = 2.2f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
-	/*static constexpr*/ Phoenix::f32 Attack01MoveSpeed = 0.5f;
-	/*static constexpr*/ Phoenix::s32 MaxLife = 100; // TODO : 調整必須
-	/*static constexpr*/ Phoenix::s32 AccumulationMaxDamege = 10; // TODO : 調整必須
-	/*static constexpr*/ Phoenix::s32 AccumulationTime = 60;
+	static constexpr Phoenix::f32 WalkSpeed = 0.021f;
+	static constexpr Phoenix::f32 BattleWalkSpeed = 0.0105f;
+	static constexpr Phoenix::f32 RunSpeed = 0.18f;
+	static constexpr Phoenix::f32 SlowRunSpeed = 0.09f;
+	static constexpr Phoenix::f32 BattleSlowRunSpeed = 0.045f;
+	static constexpr Phoenix::f32 RollSpeed = 0.15f;
+	static constexpr Phoenix::f32 DedgeSpeed = 0.05f;
+	static constexpr Phoenix::f32 KnockBackSpeed = -0.03f;
+	static constexpr Phoenix::f32 KnockBackDownSpeed = 0.0003f;
+	static constexpr Phoenix::f32 Attack03Speed = 0.1f;
+	static constexpr Phoenix::f32 AnimationSpeed30 = 30.0f; // 0.03333333f
+	static constexpr Phoenix::f32 AnimationSpeed45 = 45.0f; // 0.02222222f
+	static constexpr Phoenix::f32 AnimationSpeed60 = 60.0f; // 0.01666667f
+	static constexpr Phoenix::f32 Attack01AnimationSpeed = 1.75f;
+	static constexpr Phoenix::f32 Attack02AnimationSpeed = 2.0f;
+	static constexpr Phoenix::f32 Attack03AnimationSpeed = 1.75f;
+	static constexpr Phoenix::f32 Attack04AnimationSpeed = 1.15f;
+	static constexpr Phoenix::f32 Attack05AnimationSpeed = 1.0f;
+	static constexpr Phoenix::f32 Attack06AnimationSpeed = 1.0f;
+	static constexpr Phoenix::f32 Attack01ReceptionStartTime = 1.3333332f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
+	static constexpr Phoenix::f32 Attack02ReceptionStartTime = 2.2f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
+	static constexpr Phoenix::f32 Attack01MoveSpeed = 0.5f;
+	static constexpr Phoenix::s32 MaxLife = 100; // TODO : 調整必須
+	static constexpr Phoenix::s32 AccumulationMaxDamege = 10; // TODO : 調整必須
+	static constexpr Phoenix::s32 AccumulationTime = 60;
 
 private:
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
@@ -168,12 +219,12 @@ private:
 	//Phoenix::Math::Vector3 rotate;
 	Phoenix::Math::Quaternion rotate;
 	Phoenix::Math::Vector3 scale;
-	Phoenix::f32 radius;
-	Phoenix::f32 speed;
+	Phoenix::f32 radius = 0.0f;
+	Phoenix::f32 speed = 0.0f;
 
 	//Phoenix::Math::Vector3 newRotate;
 	Phoenix::Math::Quaternion newRotate;
-	Phoenix::f32 rotateY;
+	Phoenix::f32 rotateY = 0.0f;
 
 	AnimationState animationState;
 	AttackAnimationState attackState;
@@ -222,6 +273,9 @@ private:
 	// 入力スタック
 	bool receptionStack = false;
 	AttackKey stackKey = AttackKey::None;
+
+	// 行動スコア
+	Phoenix::s32 behaviorScore = 0;
 
 public:
 	Player() :
@@ -351,6 +405,8 @@ public:
 	PlayerUI* GetUI() { return ui.get(); }
 	bool IsAttack() { return isAttack; }
 	bool IsDamage() { return animationState == AnimationState::Damage; }
+
+	bool OnEnemyTerritory() { return inTerritory; }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 	void SetIsHit(bool isHit) { this->isHit = isHit; }

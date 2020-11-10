@@ -248,6 +248,7 @@ void Player::Initialize()
 		isBattleMode = false;
 		receptionStack = false;
 		stackKey = AttackKey::None;
+		behaviorScore = 0;
 	}
 }
 
@@ -347,6 +348,15 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	sY = GetKeyState('S') < 0 ? 1.0f : sY;
 	sX = GetKeyState('A') < 0 ? -1.0f : sX;
 	sX = GetKeyState('D') < 0 ? 1.0f : sX;
+
+	if (GetKeyState('L') < 0)
+	{
+		InEnemyTerritory(true);
+	}
+	else
+	{
+		InEnemyTerritory(false);
+	}
 
 	// ブレンドレート計算
 	{
@@ -997,10 +1007,10 @@ void Player::GUI()
 		if (ImGui::TreeNode("Speed"))
 		{
 			ImGui::Text("speed : %f", speed);
-			ImGui::DragFloat("WalkSpeed", &WalkSpeed, 0.1f);
+			/*ImGui::DragFloat("WalkSpeed", &WalkSpeed, 0.1f);
 			ImGui::DragFloat("RunSpeed", &RunSpeed, 0.1f);
 			ImGui::DragFloat("RollSpeed", &RollSpeed, 0.1f);
-			ImGui::DragFloat("KnockBackSpeed", &KnockBackSpeed, 0.1f);
+			ImGui::DragFloat("KnockBackSpeed", &KnockBackSpeed, 0.1f);*/
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Bone"))

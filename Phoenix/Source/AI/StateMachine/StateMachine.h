@@ -58,7 +58,7 @@ public:
 	}
 
 	// 更新
-	virtual void Update() = 0;
+	virtual T Update() = 0;
 
 public:
 	/// <summary>
@@ -82,11 +82,11 @@ public:
 	/// 現在のステートID取得
 	/// </summary>
 	/// <returns> 現在のステートID </returns>
-	std::optional<const T&> GetCurrentStateName() const
+	T GetCurrentStateName() const
 	{
 		if (currentState == nullptr)
 		{
-			return -1;
+			return static_cast<T>(-1);
 		}
 
 		return currentState->GetID();
@@ -112,17 +112,4 @@ public:
 		currentState = stateList[nextStateID];
 		currentState->SetUp();
 	}
-};
-
-class AIBase
-{
-public:
-	// セットアップ
-	virtual void SetUp() = 0;
-
-	// クリーンアップ
-	virtual void CleanUp() = 0;
-
-	// 更新
-	virtual void Update() = 0;
 };

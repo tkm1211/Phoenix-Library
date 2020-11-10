@@ -54,28 +54,19 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	// AIの初期化
 	{
+		currentMode = EnemyMode::Battle;
+
 		// 通常モードAI
-		//std::shared_ptr<OrdinaryAIEnemyAI> ordinaryAI = OrdinaryAIEnemyAI::Create();
+		//ordinaryAI = OrdinaryAIEnemyAI::Create();
 		{
 			//ordinaryAI->SetOwner(shared_from_this());
 		}
 
 		// バトルモードAI
-		std::shared_ptr<BattleEnemyAI> battleAI = BattleEnemyAI::Create();
+		battleAI = BattleEnemyAI::Create();
 		{
 			battleAI->SetOwner(shared_from_this());
-		}
-
-		// AIの追加
-		{
-			//enemyAIList.insert(std::make_pair(EnemyMode::Ordinary, ordinaryAI));
-			enemyAIList.insert(std::make_pair(EnemyMode::Battle, battleAI));
-		}
-
-		// AIのセットアップ
-		for (const auto& [key, value] : enemyAIList)
-		{
-			value->SetUp();
+			battleAI->SetUp();
 		}
 	}
 
@@ -95,6 +86,11 @@ void Enemy::Initialize()
 		model->SetLoopAnimation(true);
 	}
 
+	// AI
+	{
+		battleAI->GoToState(BattleEnemyState::Idle);
+	}
+
 	// パラメーター
 	{
 		enable = false;
@@ -109,10 +105,7 @@ void Enemy::Initialize()
 // 終了化
 void Enemy::Finalize()
 {
-	for (const auto& [key, value] : enemyAIList)
-	{
-		value->CleanUp();
-	}
+	battleAI.reset();
 
 	collisionDatas.clear();
 	transform.reset();
@@ -124,7 +117,36 @@ void Enemy::Update()
 {
 	// AI更新
 	{
-		currentAI->Update();
+		BattleEnemyState nextBattleState = BattleEnemyState::NoneState;
+
+		switch (currentMode)
+		{
+		case EnemyMode::Ordinary:
+			break;
+
+		case EnemyMode::Battle:
+			nextBattleState = battleAI->Update();
+			if (nextBattleState != BattleEnemyState::NoneState)
+			{
+				changeAnimation = true;
+				changeState = nextBattleState;
+				battleAI->GoToState(nextBattleState);
+			}
+
+			break;
+
+		default: break;
+		}
+	}
+
+	// アニメーションの切り替え
+	{
+		ChangeAnimation();
+	}
+
+	// 攻撃アニメーションの切り替え
+	{
+		ChangeAttackAnimation();
 	}
 
 	// アニメーション更新
@@ -161,10 +183,14 @@ void Enemy::Update()
 	}
 }
 
-// 描画
-void Enemy::Draw()
+// UI更新
+void Enemy::UpdateUI()
 {
+
 }
+
+// 描画
+void Enemy::Draw() {}
 
 // GUI
 void Enemy::GUI(Phoenix::s32 index)
@@ -193,6 +219,7 @@ void Enemy::SetAlive(bool alive)
 void Enemy::SetInBattle(bool inBattle)
 {
 	this->inBattle = inBattle;
+	currentMode = inBattle ? EnemyMode::Battle : EnemyMode::Ordinary;
 }
 
 // トランスフォームの設定
@@ -203,10 +230,114 @@ void Enemy::SetTransform(Phoenix::FrameWork::Transform transform)
 	this->transform->SetScale(transform.GetScale());
 }
 
+// トランスレートの設定
+void Enemy::SetTranslate(Phoenix::Math::Vector3 translate)
+{
+	this->transform->SetTranslate(translate);
+}
+
 // エネミーマネージャーの設定
 void Enemy::SetOwner(std::shared_ptr<EnemyManager> owner)
 {
 	this->owner = owner;
+}
+
+// 攻撃権を発行
+void Enemy::SetAttackRight()
+{
+	battleAI->GoToState(BattleEnemyState::Attack);
+}
+
+// 攻撃ステートを変更
+void Enemy::SetAttackState(EnemyAttackState state)
+{
+	changeAttackAnimation = true;
+	changeAttackState = state;
+}
+
+// アニメーションを移行
+void Enemy::ChangeAnimation()
+{
+	if (!changeAnimation) return;
+
+	switch (changeState)
+	{
+	case BattleEnemyState::Idle:
+		model->PlayAnimation(0, 1);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(true);
+		break;
+
+	case BattleEnemyState::Attack: break;
+
+	case BattleEnemyState::Dedge:
+		model->PlayAnimation(0, 1);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+		break;
+
+	case BattleEnemyState::Guard:
+		model->PlayAnimation(0, 1);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+		break;
+
+	case BattleEnemyState::NoneState: break;
+
+	default: break;
+	}
+
+	changeAnimation = false;
+	changeState = BattleEnemyState::NoneState;
+}
+
+// 攻撃ステートを移行
+void Enemy::ChangeAttackAnimation()
+{
+	if (!changeAttackAnimation) return;
+
+	switch (changeAttackState)
+	{
+	case EnemyAttackState::WeakRight:
+		model->PlayAnimation(0, 1);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+
+		break;
+
+	case EnemyAttackState::WeakLeft:
+		model->PlayAnimation(0, 1);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+
+		break;
+
+	case EnemyAttackState::StrongRight:
+		model->PlayAnimation(0, 1);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+
+		break;
+
+	case EnemyAttackState::StrongLeft:
+		model->PlayAnimation(0, 1);
+		model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+
+		break;
+
+	case EnemyAttackState::NoneState: break;
+
+	default: break;
+	}
+
+	changeAttackAnimation = false;
+	changeAttackState = EnemyAttackState::NoneState;
+}
+
+void Enemy::Damage(int damage)
+{
+	life -= damage;
 }
 
 // 有効フラグ取得
@@ -231,4 +362,10 @@ bool Enemy::GetInBattle()
 Phoenix::FrameWork::Transform Enemy::GetTransform()
 {
 	return *transform.get();
+}
+
+// バトルモードのステート取得
+BattleEnemyState Enemy::GetBattleState()
+{
+	return battleAI->GetCurrentStateName();
 }

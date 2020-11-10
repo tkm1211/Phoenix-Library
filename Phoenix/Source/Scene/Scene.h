@@ -5,6 +5,7 @@
 #include "../Boss/Boss.h"
 #include "../Enemy/EnemyManager.h"
 #include "../Mannequin/Mannequin.h"
+#include "../AI/MetaAI/MetaAI.h"
 #include "../UI/UISystem.h"
 #include "../UI/TargetMarkUI.h"
 #include "../Primitive/GeometricPrimitive.h"
@@ -116,6 +117,7 @@ private:
 	Player* player = nullptr;
 	EnemyManager* enemyManager = nullptr;
 	Mannequin* mannequin = nullptr;
+	MetaAI* metaAI = nullptr;
 	UISystem* uiSystem = nullptr;
 	TargetMarkUI* targetMarkUI = nullptr;
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
@@ -220,6 +222,12 @@ private: // Debug
 
 	Phoenix::f32 adjustY = 1.25f;
 
+	// 行動スコア
+	Phoenix::s32 playerBehaviorScore = 0;
+	Phoenix::s32 oldPlayerBehaviorScore = 0;
+	Phoenix::s32 WeakAttackScore = 10;
+	Phoenix::s32 StrongAttackScore = 30;
+
 	bool cameraFlg = false;
 	bool lockOnCamera = false;
 	bool isHitCollision = false;
@@ -235,6 +243,8 @@ private: // Debug
 	bool onPointLight = false;
 
 	bool isDrawUI = false;
+
+	bool inTerritory = false;
 
 private:
 	struct DissolveCB
@@ -261,6 +271,11 @@ public:
 	void GUI() override;
 
 private:
+	void JudgeHit();
+	void JudgeExtrude(Phoenix::Math::Vector3 playerPos, Phoenix::Math::Vector3 enemyPos, Phoenix::f32 playerRadius, Phoenix::f32 enemyRadius);
+	void UpdateCamera();
+	void UpdateGameCamera(Phoenix::Math::Vector3 playerPos, Phoenix::Math::Vector3 enemyPos);
+
 	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale, bool isBox = false);
 	Phoenix::Math::Vector3 WorldToScreen(const Phoenix::Math::Vector3& worldPosition);
 };
@@ -278,7 +293,9 @@ private:
 private:
 	// 共通データのアドレス
 	Player* player = nullptr;
-	Boss* boss = nullptr;
+	//Boss* boss = nullptr;
+	EnemyManager* enemyManager = nullptr;
+	MetaAI* metaAI = nullptr;
 	UISystem* uiSystem = nullptr;
 	TargetMarkUI* targetMarkUI = nullptr;
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
@@ -341,6 +358,7 @@ private:
 
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
+	std::shared_ptr<GeometricPrimitive> cylinderPrimitive;
 	Phoenix::Math::Vector2 texSize;
 
 	Phoenix::Math::Vector3 tempCameraFouce = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
@@ -374,6 +392,7 @@ private: // Debug
 
 	Phoenix::f32 playerAttackEndCount;
 	Phoenix::f32 playerAttackEndMaxCount = 30;
+	Phoenix::f32 grayScale;
 
 	Phoenix::f32 pointLightDistance = 0.95f;
 
@@ -427,6 +446,7 @@ public:
 
 private:
 	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale);
+	void CylinderPrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 cp1Translate, Phoenix::Math::Vector3 cp2Translate, Phoenix::Math::Vector3 cyilinderTranslate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale, Phoenix::Math::Vector3 cyilinderScale);
 	Phoenix::Math::Vector3 WorldToScreen(const Phoenix::Math::Vector3& worldPosition);
 };
 
