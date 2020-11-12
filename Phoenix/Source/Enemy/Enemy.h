@@ -10,6 +10,7 @@
 
 
 class EnemyManager;
+class Player;
 class Enemy : public std::enable_shared_from_this<Enemy>
 {
 private:
@@ -35,6 +36,9 @@ private:
 
 	// マネージャー
 	std::weak_ptr<EnemyManager> owner;
+
+	// プレイヤー
+	std::shared_ptr<Player> player;
 
 	// アニメーション
 	bool changeAnimation = false;
@@ -62,7 +66,10 @@ private:
 
 public:
 	Enemy() {}
-	~Enemy() { Finalize(); }
+	~Enemy()
+	{
+		//Finalize();
+	}
 
 public:
 	// 生成
@@ -116,6 +123,9 @@ public:
 
 	// 攻撃ステートを変更
 	void SetAttackState(EnemyAttackState state);
+
+	// プレイヤーを設定
+	void SetPlayer(std::shared_ptr<Player> player);
 
 	// アニメーションを移行
 	void ChangeAnimation();

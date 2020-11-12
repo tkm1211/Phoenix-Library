@@ -356,6 +356,12 @@ private:
 	Phoenix::f32 vibrationLeft = 0.0f;
 	Phoenix::s32 vibrationMaxCnt = 0;
 
+	// 行動スコア
+	Phoenix::s32 playerBehaviorScore = 0;
+	Phoenix::s32 oldPlayerBehaviorScore = 0;
+	Phoenix::s32 WeakAttackScore = 10;
+	Phoenix::s32 StrongAttackScore = 30;
+
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
 	std::shared_ptr<GeometricPrimitive> cylinderPrimitive;

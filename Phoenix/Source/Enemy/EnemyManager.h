@@ -8,6 +8,7 @@
 
 
 class Enemy;
+class Player;
 class EnemyManager : public std::enable_shared_from_this<EnemyManager>
 {
 private:
@@ -18,9 +19,14 @@ private:
 	Phoenix::s32 aliveEnemyCount = 0;
 	Phoenix::s32 battleEnemyCount = 0;
 
+	std::shared_ptr<Player> player;
+
 public:
 	EnemyManager() {}
-	~EnemyManager() {}
+	~EnemyManager()
+	{
+		Finalize(); 
+	}
 
 public:
 	// 生成
@@ -56,6 +62,9 @@ public:
 
 	// 指定のエネミーをバトルモードに変更
 	void SetBattleEnemy(Phoenix::s32 enemyIndex);
+
+	// プレイヤーを設定
+	void SetPlayer(std::shared_ptr<Player> player);
 
 public:
 	// エネミー達を取得

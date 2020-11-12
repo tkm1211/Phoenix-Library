@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/Object/Object.h"
@@ -289,6 +290,8 @@ private:
 
 	// 行動スコア
 	Phoenix::s32 behaviorScore = 0;
+	Phoenix::s32 WeakAttackScore = 10;
+	Phoenix::s32 StrongAttackScore = 30;
 
 public:
 	Player() :
@@ -302,12 +305,13 @@ public:
 		animationSpeed(0.0f),
 		radius(0.0f)
 	{}
-	~Player() {}
+	~Player() { Finalize(); }
 
 public:
 	static std::unique_ptr<Player> Create();
 	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 	void Initialize();
+	void Finalize();
 	void Update(Phoenix::Graphics::Camera& camera, bool onControl);
 	void UpdateTrasform();
 	void UpdateUI();
@@ -432,6 +436,7 @@ public:
 	Phoenix::f32 GetRadius() { return radius; }
 	Phoenix::s32 GetHP() { return life; }
 	Phoenix::u32 GetAttackPower() { return attackPower; }
+	Phoenix::s32 GetScore() { return behaviorScore; }
 	AnimationState GetAnimationState() { return animationState; }
 	const std::vector<Phoenix::FrameWork::CollisionData> GetCollisionDatas() { return collisionDatas; }
 	bool IsAttackJudgment() { return isAttackJudgment; }

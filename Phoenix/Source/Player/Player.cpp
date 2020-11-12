@@ -110,10 +110,10 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		model->AddAnimationLayer(31); // damage
 
-		model->AddBlendAnimationToLayer(7, 6, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
-		model->AddBlendAnimationToLayer(8, 6, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
-		model->AddBlendAnimationToLayer(9, 6, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
-		model->AddBlendAnimationToLayer(10, 6, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
+		model->AddBlendAnimationToLayer(6, 6, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(7, 6, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(8, 6, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
+		model->AddBlendAnimationToLayer(9, 6, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
 
 		model->AddBlendAnimationToLayer(static_cast<Phoenix::u32>(AnimationState::SlowRun), static_cast<Phoenix::u32>(AnimationState::Walk), Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
 	}
@@ -284,9 +284,9 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 				// 入力キー設定
 				datas.SetKey(AttackKey::StrongAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 1.5f, 0.0f, 45.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 1.75f, 0.0f, 45.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
 				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 2.5f, 46.0f, 60.0f, 1, 50.0f, 60.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 1.5f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 1.5f, 61.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -299,8 +299,8 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 				datas.SetKey(AttackKey::StrongAttack);
 
 				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 1.5f, 0.0f, 50.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 2.5f, 51.0f, 60.0f, 1, 51.0f, 60.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 1.5f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 2.5f, 51.0f, 70.0f, 1, 51.0f, 70.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 1.5f, 71.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -312,7 +312,7 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 				// 入力キー設定
 				datas.SetKey(AttackKey::StrongAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 25, 1.25f, -1.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
+				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 25, 1.05f, -1.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
 				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 26, 2.0f, 25.0f, 46.0f, 3, 43.0f, 46.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
 				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 27, 1.0f, 47.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
 
@@ -373,9 +373,24 @@ void Player::Initialize()
 	}
 }
 
+void Player::Finalize()
+{
+	attackDatasList.clear();
+}
+
 void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl)
 {
 	bool isAccumulationDamege = false;
+
+	// スコア計算
+	{
+		behaviorScore -= 1;
+
+		if (behaviorScore < 0)
+		{
+			behaviorScore = 0;
+		}
+	}
 
 	// 蓄積ダメージの確認
 	{
@@ -394,8 +409,6 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl)
 
 	// アニメーション更新
 	{
-		model->UpdateTransform(1 / 60.0f);
-
 		if (isBattleMode)
 		{
 			model->SetBlendRate(Phoenix::Math::Vector3(blendRate.x, -blendRate.y, 0.0f));
@@ -404,6 +417,8 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl)
 		{
 			model->SetBlendRate(blendRate.z);
 		}
+
+		model->UpdateTransform(1 / 60.0f);
 	}
 
 	// ワールド行列を作成
@@ -569,19 +584,19 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 			if (sY < 0.0f)
 			{
-				dedgeLayerIndex = 11;
+				dedgeLayerIndex = 7;
 			}
 			if (sY > 0.0f)
 			{
-				dedgeLayerIndex = 12;
+				dedgeLayerIndex = 8;
 			}
 			if (sX < 0.0f)
 			{
-				dedgeLayerIndex = 13;
+				dedgeLayerIndex = 9;
 			}
 			if (sX > 0.0f)
 			{
-				dedgeLayerIndex = 14;
+				dedgeLayerIndex = 10;
 			}
 
 			/*
@@ -812,6 +827,18 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		}
 	}
 
+	if (isChangeAnimation && isAttack)
+	{
+		if (key == AttackKey::WeakAttack)
+		{
+			behaviorScore += WeakAttackScore;
+		}
+		else if (key == AttackKey::StrongAttack)
+		{
+			behaviorScore += StrongAttackScore;
+		}
+	}
+
 	// 攻撃ステート以外
 	if (!isAttack)
 	{
@@ -936,14 +963,14 @@ void Player::ChangeAnimation()
 	case AnimationState::Idle:
 		if (isBattleMode)
 		{
-			model->PlayAnimation(13, 1, 0.2f);
-			model->UpdateTransform(1 / 60.0f);
+			model->PlayAnimation(5, 1, 0.2f);
+			//model->UpdateTransform(1 / 60.0f);
 			model->SetLoopAnimation(true);
 		}
 		else
 		{
 			model->PlayAnimation(animationNum, 1, 0.1f);
-			model->UpdateTransform(1 / 60.0f);
+			//model->UpdateTransform(1 / 60.0f);
 			model->SetLoopAnimation(true);
 		}
 		break;
@@ -951,29 +978,29 @@ void Player::ChangeAnimation()
 	case AnimationState::Walk:
 		if (isBattleMode)
 		{
-			model->PlayAnimation(13, 1, 0.2f);
-			model->PlayBlendAnimation(14, 1, 0.2f);
-			model->UpdateTransform(1 / 60.0f);
+			model->PlayAnimation(5, 1, 0.2f);
+			model->PlayBlendAnimation(6, 1, 0.2f);
+			//model->UpdateTransform(1 / 60.0f);
 			model->SetLoopAnimation(true);
 			model->SetBlendLoopAnimation(true);
 		}
 		else
 		{
 			model->PlayAnimation(animationNum, 1, 0.2f);
-			model->UpdateTransform(1 / 60.0f);
+			//model->UpdateTransform(1 / 60.0f);
 			model->SetLoopAnimation(true);
 		}
 		break;
 
 	case AnimationState::Run:
 		model->PlayAnimation(animationNum, 1, 0.2f);
-		model->UpdateTransform(1 / 60.0f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
 		break;
 
 	case AnimationState::Roll:
 		model->PlayAnimation(animationNum, 1, 0.2f);
-		model->UpdateTransform(1 / 60.0f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(1.5f);
 		break;
@@ -984,13 +1011,13 @@ void Player::ChangeAnimation()
 
 	case AnimationState::Damage:
 		model->PlayAnimation(animationNum, 1, 0.2f);
-		model->UpdateTransform(1 / 60.0f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		break;
 
 	case AnimationState::Dedge:
 		model->PlayAnimation(dedgeLayerIndex, 0, 0.2f);
-		model->UpdateTransform(1 / 60.0f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(1.85f);
 
@@ -1022,8 +1049,12 @@ void Player::ChangeAttackAnimation(Phoenix::u32 animationNum)
 	Phoenix::f32 beginTime = attackDatasList.at(index).datas.at(attackComboState).playBeginTime;
 	Phoenix::f32 endTime = attackDatasList.at(index).datas.at(attackComboState).playEndTime;
 
-	model->PlayAnimation(animIndex, 0, 0.2f);
-	model->UpdateTransform(1 / 60.0f);
+	if (index == 6 || index == 7)
+	{
+		model->PlayAnimation(animIndex, 1, 0.2f);
+	}
+	else model->PlayAnimation(animIndex, 0, 0.2f);
+	//model->UpdateTransform(1 / 60.0f);
 	model->SetLoopAnimation(false);
 	model->SetSpeed(animationSpeed);
 

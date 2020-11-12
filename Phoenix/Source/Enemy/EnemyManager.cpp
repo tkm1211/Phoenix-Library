@@ -1,5 +1,6 @@
 #include "EnemyManager.h"
 #include "Enemy.h"
+#include "../Player/Player.h"
 
 
 // 生成
@@ -31,6 +32,11 @@ void EnemyManager::Initialize()
 // 終了化
 void EnemyManager::Finalize()
 {
+	for (auto& enemy : enemies)
+	{
+		enemy->Finalize();
+		enemy.reset();
+	}
 	enemies.clear();
 }
 
@@ -60,6 +66,7 @@ void EnemyManager::AddEnemy(Phoenix::FrameWork::Transform transform)
 			enemy->SetAlive(true);
 			enemy->SetTransform(transform);
 			enemy->SetOwner(shared_from_this());
+			enemy->SetPlayer(player);
 
 			++aliveEnemyCount;
 			++battleEnemyCount; // TODO : delete.
@@ -85,6 +92,12 @@ void EnemyManager::SetAttackRight(Phoenix::s32 enemyIndex)
 void EnemyManager::SetBattleEnemy(Phoenix::s32 enemyIndex)
 {
 	enemies.at(enemyIndex)->SetInBattle(true);
+}
+
+// プレイヤーを設定
+void EnemyManager::SetPlayer(std::shared_ptr<Player> player)
+{
+	this->player = player;
 }
 
 // GUI

@@ -11,6 +11,7 @@
 #include "../Source/Graphics/Texture/Win/DirectX11/TextureDX11.h"
 #include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
 #include "../Enemy/Enemy.h"
+#include "../AI/MetaAI/MetaType.h"
 
 
 void SceneGame::Construct(SceneSystem* sceneSystem)
@@ -239,6 +240,11 @@ void SceneGame::Initialize()
 		shakeHeight = 0.0f;
 		cameraShakeCnt = 0;
 		cameraShakeMaxCnt = 0;
+
+		playerBehaviorScore = 0;
+		oldPlayerBehaviorScore = 0;
+		WeakAttackScore = 10;
+		StrongAttackScore = 30;
 	}
 
 	// エネミー追加
@@ -398,17 +404,9 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 								isCameraShake = true;
 								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 								cameraShakeCnt = 0;
-
-								if (player->GetAttackCollisionIndex() == 1 || player->GetAttackCollisionIndex() == 2)
-								{
-									shakeWidth = 0.0f;
-									shakeHeight = 0.15f;
-								}
-								else
-								{
-									shakeWidth = 0.15f;
-									shakeHeight = 0.0f;
-								}
+								
+								shakeWidth = 0.0f;
+								shakeHeight = 0.15f;
 							
 								cameraShakeMaxCnt = 7;
 
@@ -420,16 +418,8 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 								cameraShakeCnt = 0;
 
-								if (player->GetAttackCollisionIndex() == 1 || player->GetAttackCollisionIndex() == 2)
-								{
-									shakeWidth = 0.0f;
-									shakeHeight = 0.75f;
-								}
-								else
-								{
-									shakeWidth = 0.75f;
-									shakeHeight = 0.0f;
-								}
+								shakeWidth = 0.0f;
+								shakeHeight = 0.5f;
 
 								cameraShakeMaxCnt = 10;
 
@@ -674,6 +664,26 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 		targetMarkUI->Update(Phoenix::Math::Vector2(screenPos.x, screenPos.y));
 	}*/
+
+	// メタAI通知
+	{
+		playerBehaviorScore = player->GetScore();
+
+		if (oldPlayerBehaviorScore < playerBehaviorScore)
+		{
+			metaAI->Sensor(static_cast<Phoenix::s32>(MetaType::Battle), playerBehaviorScore);
+
+			// 過去のスコア保存
+			oldPlayerBehaviorScore = playerBehaviorScore;
+		}
+		else if (playerBehaviorScore - oldPlayerBehaviorScore  <= -10)
+		{
+			metaAI->Sensor(static_cast<Phoenix::s32>(MetaType::Battle), playerBehaviorScore);
+
+			// 過去のスコア保存
+			oldPlayerBehaviorScore = playerBehaviorScore;
+		}
+	}
 }
 
 void SceneGame::Draw(Phoenix::f32 elapsedTime)

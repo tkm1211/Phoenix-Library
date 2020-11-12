@@ -16,9 +16,11 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 
 	boss = Boss::Create();
 	boss->Construct(graphicsDevice, player.get());
-
+	
+	// TODO : ƒƒ‚ƒŠƒŠ[ƒN‚ ‚è
 	enemyManager = EnemyManager::Create();
 	enemyManager->Construct(graphicsDevice);
+	enemyManager->SetPlayer(player);
 
 	mannequin = Mannequin::Create();
 	mannequin->Construct(graphicsDevice);

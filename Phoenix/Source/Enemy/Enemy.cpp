@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "EnemyManager.h"
+#include "../Player/Player.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
 
 
@@ -16,14 +17,38 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	{
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		model->Initialize(graphicsDevice);
-		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Enemy\\Idle\\Idle.fbx"); // "..\\Data\\Assets\\Model\\Enemy\\Idle\\Idle.fbx"  // "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Roaring.fbx"
-		model->AddAnimationLayer(0);
+		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Enemy\\Enemy\\Idle\\Ready_Idle.fbx"); // "..\\Data\\Assets\\Model\\Enemy\\Idle\\Idle.fbx"  // "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Roaring.fbx"
 	}
 
 	// アニメーション読み込み
 	{
-		//model->LoadAnimation("..\\Data\\Assets\\Model\\Boss\\Mutant\\Run\\Mutant_Run.fbx", -1);
-		//model->AddAnimationLayer(1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Forward\\Walk_Forward.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Back\\Walk_Backward.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Right\\Walk_Right.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Left\\Walk_Left.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Run\\Running.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Dedge\\Back_Step.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Cross_Punch.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Punching.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Hook_Punch.fbx", -1);
+
+		model->AddAnimationLayer(0); // 0
+		model->AddAnimationLayer(0, 56, 65); // 1
+
+		model->AddAnimationLayer(5); // 2
+		model->AddAnimationLayer(6); // 3
+
+		model->AddAnimationLayer(7); // 4
+		model->AddAnimationLayer(8); // 5
+		model->AddAnimationLayer(9); // 6
+
+		model->AddBlendAnimationToLayer(1, 1, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(2, 1, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
+		model->AddBlendAnimationToLayer(3, 1, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
+		model->AddBlendAnimationToLayer(4, 1, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
 	}
 
 	// コリジョン初期化
@@ -105,6 +130,7 @@ void Enemy::Initialize()
 // 終了化
 void Enemy::Finalize()
 {
+	battleAI->CleanUp();
 	battleAI.reset();
 
 	collisionDatas.clear();
@@ -115,6 +141,9 @@ void Enemy::Finalize()
 // 更新
 void Enemy::Update()
 {
+	if (!enable) return;
+	if (!alive) return;
+
 	// AI更新
 	{
 		BattleEnemyState nextBattleState = BattleEnemyState::NoneState;
@@ -137,6 +166,33 @@ void Enemy::Update()
 
 		default: break;
 		}
+	}
+
+	// 回転
+	{
+		Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(player->GetPosition() - GetPosition());
+		float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+
+		if (len <= 0)
+		{
+			dir.x = 0;
+			dir.z = 0;
+		}
+
+		float mag = 1 / len;
+
+		dir.x *= mag;
+		dir.z *= mag;
+
+		Phoenix::f32 angleY = atan2f(dir.x, dir.z);
+
+		Phoenix::Math::Quaternion newRotate;
+		newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
+
+		Phoenix::Math::Quaternion rotate = transform->GetRotate();
+		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f);
+
+		transform->SetRotate(rotate);
 	}
 
 	// アニメーションの切り替え
@@ -176,6 +232,8 @@ void Enemy::Update()
 	// ライフが０ならマネージャーの生存エネミーカウントを下げる
 	if (life <= 0)
 	{
+		enable = false;
+		alive = false;
 		if (std::shared_ptr<EnemyManager> manager = owner.lock())
 		{
 			manager->SubAliveEnemyCount(1);
@@ -255,6 +313,12 @@ void Enemy::SetAttackState(EnemyAttackState state)
 	changeAttackState = state;
 }
 
+// プレイヤーを設定
+void Enemy::SetPlayer(std::shared_ptr<Player> player)
+{
+	this->player = player;
+}
+
 // アニメーションを移行
 void Enemy::ChangeAnimation()
 {
@@ -263,22 +327,22 @@ void Enemy::ChangeAnimation()
 	switch (changeState)
 	{
 	case BattleEnemyState::Idle:
-		model->PlayAnimation(0, 1);
-		model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(0, 1, 0.2f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
 		break;
 
 	case BattleEnemyState::Attack: break;
 
 	case BattleEnemyState::Dedge:
-		model->PlayAnimation(0, 1);
-		model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(3, 1, 0.2f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		break;
 
 	case BattleEnemyState::Guard:
-		model->PlayAnimation(0, 1);
-		model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(0, 1, 0.2f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		break;
 
@@ -299,30 +363,34 @@ void Enemy::ChangeAttackAnimation()
 	switch (changeAttackState)
 	{
 	case EnemyAttackState::WeakRight:
-		model->PlayAnimation(0, 1);
-		model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(4, 1, 0.2f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		model->SetSpeed(2.0f);
 
 		break;
 
 	case EnemyAttackState::WeakLeft:
-		model->PlayAnimation(0, 1);
-		model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(5, 1, 0.2f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		model->SetSpeed(2.0f);
 
 		break;
 
 	case EnemyAttackState::StrongRight:
-		model->PlayAnimation(0, 1);
-		model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(6, 1, 0.2f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		model->SetSpeed(2.0f);
 
 		break;
 
 	case EnemyAttackState::StrongLeft:
-		model->PlayAnimation(0, 1);
-		model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(7, 1, 0.2f);
+		//model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
+		model->SetSpeed(2.0f);
 
 		break;
 
@@ -337,7 +405,7 @@ void Enemy::ChangeAttackAnimation()
 
 void Enemy::Damage(int damage)
 {
-	life -= damage;
+	//life -= damage;
 }
 
 // 有効フラグ取得

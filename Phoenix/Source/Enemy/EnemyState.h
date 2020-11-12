@@ -19,6 +19,7 @@ enum class BattleEnemyState
 enum class EnemyAttackState
 {
 	NoneState,
+
 	WeakRight,
 	WeakLeft,
 	StrongRight,

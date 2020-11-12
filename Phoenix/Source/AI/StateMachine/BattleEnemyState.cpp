@@ -43,10 +43,10 @@ namespace AI
 		{
 			index = 0;
 
-			attackList.emplace_back(EnemyAttackState::WeakLeft);
 			attackList.emplace_back(EnemyAttackState::WeakRight);
-			attackList.emplace_back(EnemyAttackState::StrongLeft);
+			attackList.emplace_back(EnemyAttackState::WeakLeft);
 			attackList.emplace_back(EnemyAttackState::StrongRight);
+			//attackList.emplace_back(EnemyAttackState::StrongLeft);
 		}
 
 		// ŽŸ‚Ìó‘Ô‚ÉˆÚ‚é‘O‚ÉŒÄ‚Î‚ê‚éŠÖ”
@@ -58,19 +58,17 @@ namespace AI
 		// XV
 		BattleEnemyState Attack::Update()
 		{
-			if (owner->GetModel()->IsPlaying() || index == 0)
+			if (!owner->GetModel()->IsPlaying() || index == 0)
 			{
-				currentAttack = attackList.at(index);
-				++index;
-
 				if (attackList.size() <= index)
 				{
 					return BattleEnemyState::Idle;
 				}
-				else
-				{
-					owner->SetAttackState(currentAttack);
-				}
+
+				currentAttack = attackList.at(index);
+				++index;
+
+				owner->SetAttackState(currentAttack);
 			}
 
 			return BattleEnemyState::NoneState;

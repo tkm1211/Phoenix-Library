@@ -11,7 +11,7 @@ private:
 	using Super = StateMachine<BattleEnemyState>;
 
 private:
-	std::weak_ptr<Enemy> owner;
+	std::shared_ptr<Enemy> owner;
 
 public:
 	BattleEnemyAI() {}
