@@ -41,11 +41,11 @@ void EnemyManager::Finalize()
 }
 
 // 更新
-void EnemyManager::Update()
+void EnemyManager::Update(bool onControl)
 {
 	for (auto enemy : enemies)
 	{
-		enemy->Update();
+		enemy->Update(onControl);
 	}
 }
 
@@ -62,8 +62,10 @@ void EnemyManager::AddEnemy(Phoenix::FrameWork::Transform transform)
 	{
 		if (!enemy->GetEnable())
 		{
+			enemy->Initialize();
 			enemy->SetEnable(true);
 			enemy->SetAlive(true);
+			enemy->SetDeath(false);
 			enemy->SetTransform(transform);
 			enemy->SetOwner(shared_from_this());
 			enemy->SetPlayer(player);
@@ -76,6 +78,18 @@ void EnemyManager::AddEnemy(Phoenix::FrameWork::Transform transform)
 	}
 }
 
+// エネミー達解除
+void EnemyManager::ResetEnemies()
+{
+	for (auto enemy : enemies)
+	{
+		enemy->SetEnable(false);
+		enemy->SetAlive(false);
+		enemy->SetDeath(false);
+		enemy->SetState(BattleEnemyState::Idle);
+	}
+}
+
 // エネミー生存最大数からカウントダウン
 void EnemyManager::SubAliveEnemyCount(Phoenix::s32 sub)
 {
@@ -83,9 +97,9 @@ void EnemyManager::SubAliveEnemyCount(Phoenix::s32 sub)
 }
 
 // 指定のエネミーに攻撃権を発行
-void EnemyManager::SetAttackRight(Phoenix::s32 enemyIndex)
+bool EnemyManager::SetAttackRight(Phoenix::s32 enemyIndex, bool stackAttackRight)
 {
-	enemies.at(enemyIndex)->SetAttackRight();
+	return enemies.at(enemyIndex)->SetAttackRight(stackAttackRight);
 }
 
 // 指定のエネミーをバトルモードに変更

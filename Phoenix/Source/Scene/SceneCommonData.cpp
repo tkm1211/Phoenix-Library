@@ -2,6 +2,7 @@
 #include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
 #include "../AI/MetaAI/BattleEnemySystem.h"
 #include "../AI/MetaAI/MetaType.h"
+#include "../Enemy/Enemy.h"
 
 
 std::shared_ptr<SceneCommonData> SceneCommonData::Create()
@@ -17,7 +18,6 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	boss = Boss::Create();
 	boss->Construct(graphicsDevice, player.get());
 	
-	// TODO : ƒƒ‚ƒŠƒŠ[ƒN‚ ‚è
 	enemyManager = EnemyManager::Create();
 	enemyManager->Construct(graphicsDevice);
 	enemyManager->SetPlayer(player);
@@ -38,8 +38,7 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	uiSystem = UISystem::Create();
 	{
 		uiSystem->AddUI(player->GetUI());
-		uiSystem->AddUI(boss->GetUI());
-		uiSystem->AddUI(targetMarkUI.get());
+		uiSystem->AddUI(enemyManager->GetEnemies().at(0)->GetUI()); // TODO : delete.
 	}
 	uiSystem->Initialize(graphicsDevice);
 
@@ -81,7 +80,10 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	se = Phoenix::FrameWork::CXAudio2::Create();
 	se->Load(L"..\\Data\\Assets\\Audio\\SE\\Player\\Walk\\walk.wav", 0);
 
-	avoidUI = Phoenix::Graphics::ITexture::Create();
+	operatorUI = Phoenix::Graphics::ITexture::Create();
+	operatorUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\operator.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+
+	/*avoidUI = Phoenix::Graphics::ITexture::Create();
 	attackUI = Phoenix::Graphics::ITexture::Create();
 	runUI = Phoenix::Graphics::ITexture::Create();
 	targetUI = Phoenix::Graphics::ITexture::Create();
@@ -89,5 +91,5 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	avoidUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\Avoid.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 	attackUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\Attack.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 	runUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\Run.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
-	targetUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\Target.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+	targetUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\Target.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));*/
 }

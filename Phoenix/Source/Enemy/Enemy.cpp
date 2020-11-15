@@ -31,6 +31,11 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Dedge\\Back_Step.fbx", -1);
 
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit_Big.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Death\\Dying_Backwards.fbx", -1);
+
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Cross_Punch.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Punching.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Hook_Punch.fbx", -1);
@@ -43,7 +48,12 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		model->AddAnimationLayer(7); // 4
 		model->AddAnimationLayer(8); // 5
+
 		model->AddAnimationLayer(9); // 6
+
+		model->AddAnimationLayer(10); // 7
+		model->AddAnimationLayer(11); // 8
+		model->AddAnimationLayer(12); // 9
 
 		model->AddBlendAnimationToLayer(1, 1, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
 		model->AddBlendAnimationToLayer(2, 1, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
@@ -72,9 +82,77 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		collisionDatas.at(3).boneIndex = model->GetBoneIndex("RightFoot");
 	}
 
+	// アタックデータ生成
+	{
+		auto SetAttackData = [&]
+		(
+			EnemyAttackState animState,
+			Phoenix::s32 animIndex,
+
+			Phoenix::f32 playSpeed,
+			Phoenix::f32 playBeginTime,
+			Phoenix::f32 playEndTime,
+
+			Phoenix::s32 collisionNum,
+			Phoenix::f32 collisionBeginTime,
+			Phoenix::f32 collisionEndTime
+		)
+		{
+			AttackData data;
+
+			data.animState = animState;
+			data.animIndex = animIndex;
+
+			data.playSpeed = playSpeed;
+			data.playBeginTime = playBeginTime == -1.0f ? -1.0f : playBeginTime / 60.0f;
+			data.playEndTime = playEndTime == -1.0f ? -1.0f : playEndTime / 60.0f;
+
+			data.collisionNum = collisionNum;
+			data.collisionBeginTime = collisionBeginTime == -1.0f ? -1.0f : collisionBeginTime / 60.0f;
+			data.collisionEndTime = collisionEndTime == -1.0f ? -1.0f : collisionEndTime / 60.0f;
+
+			return data;
+		};
+
+		// 弱攻撃
+		{
+			// 右ストレート
+			{
+				AttackDatas datas;
+
+				datas.AddData(SetAttackData(EnemyAttackState::WeakRight, 7, 2.0f, -1.0f, -1.0f, 1, 56.0f, 71.0f));
+
+				attackDatasList.emplace_back(datas);
+			}
+
+			// 左ストレート
+			{
+				AttackDatas datas;
+
+				datas.AddData(SetAttackData(EnemyAttackState::WeakLeft, 8, 2.0f, -1.0f, -1.0f, 2, 20.0f, 40.0f));
+
+				attackDatasList.emplace_back(datas);
+			}
+
+			// 右フック
+			{
+				AttackDatas datas;
+
+				datas.AddData(SetAttackData(EnemyAttackState::StrongRight, 9, 2.0f, -1.0f, -1.0f, 1, 60.0f, 72.0f));
+
+				attackDatasList.emplace_back(datas);
+			}
+		}
+	}
+
 	// トランスフォームの初期化
 	{
 		transform = std::make_unique<Phoenix::FrameWork::Transform>();
+	}
+
+	// UI生成
+	{
+		ui = BossUI::Create();
 	}
 
 	// AIの初期化
@@ -120,10 +198,25 @@ void Enemy::Initialize()
 	{
 		enable = false;
 		alive = false;
+		death = false;
 		inBattle = false;
+
+		newRotate = Phoenix::Math::Quaternion::Zero;
 
 		life = LifeRange;
 		radius = 0.5f;
+
+		attackReceptionTimeCnt = 0.0f;
+		attackAnimationSpeed = 0.0f;
+
+		distanceToPlayer = 0.0f;
+
+		moveSpeed = 0.0f;
+
+		moveX = 0.0f;
+		moveY = 0.0f;
+
+		currentAttackState = EnemyAttackState::NoneState;
 	}
 }
 
@@ -139,10 +232,46 @@ void Enemy::Finalize()
 }
 
 // 更新
-void Enemy::Update()
+void Enemy::Update(bool onControl)
 {
+	// ライフが０ならマネージャーの生存エネミーカウントを下げる
+	if (life <= 0 && alive)
+	{
+		alive = false;
+		if (std::shared_ptr<EnemyManager> manager = owner.lock())
+		{
+			manager->SubAliveEnemyCount(1);
+		}
+
+		SetState(BattleEnemyState::Death);
+		ChangeAnimation();
+	}
+
+	// 死亡アニメーション終了時に存在を消す
+	if (!alive)
+	{
+		if (!model->IsPlaying())
+		{
+			death = true;
+		}
+		else
+		{
+			model->UpdateTransform(1 / 60.0f);
+		}
+	}
+
 	if (!enable) return;
 	if (!alive) return;
+	if (death) return;
+	if (!onControl)
+	{
+		if (!model->IsPlaying())
+		{
+			SetState(BattleEnemyState::Idle);
+		}
+		model->UpdateTransform(1 / 60.0f);
+		return;
+	}
 
 	// AI更新
 	{
@@ -155,11 +284,33 @@ void Enemy::Update()
 
 		case EnemyMode::Battle:
 			nextBattleState = battleAI->Update();
-			if (nextBattleState != BattleEnemyState::NoneState)
+			if (nextBattleState == BattleEnemyState::Idle && stackAttackRight)
+			{
+				stackAttackRight = false;
+				if (battleAI->GetCurrentStateName() == BattleEnemyState::Attack)
+				{
+					battleAI->GoToState(BattleEnemyState::Idle);
+				}
+				else
+				{
+					battleAI->GoToState(BattleEnemyState::Attack);
+				}
+				SetMoveInput(0.0f, 0.0f);
+				SetMoveSpeed(0.0f);
+			}
+			else if (nextBattleState == BattleEnemyState::Attack)
+			{
+				battleAI->GoToState(BattleEnemyState::Attack);
+				SetMoveInput(0.0f, 0.0f);
+				SetMoveSpeed(0.0f);
+			}
+			else if (nextBattleState != BattleEnemyState::NoneState)
 			{
 				changeAnimation = true;
 				changeState = nextBattleState;
 				battleAI->GoToState(nextBattleState);
+				SetMoveInput(0.0f, 0.0f);
+				SetMoveSpeed(0.0f);
 			}
 
 			break;
@@ -170,29 +321,54 @@ void Enemy::Update()
 
 	// 回転
 	{
-		Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(player->GetPosition() - GetPosition());
-		float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
-
-		if (len <= 0)
+		if (battleAI->GetCurrentStateName() == BattleEnemyState::Idle || battleAI->GetCurrentStateName() == BattleEnemyState::Walk || battleAI->GetCurrentStateName() == BattleEnemyState::Run)
 		{
-			dir.x = 0;
-			dir.z = 0;
+			UpdateNewRotate();
 		}
-
-		float mag = 1 / len;
-
-		dir.x *= mag;
-		dir.z *= mag;
-
-		Phoenix::f32 angleY = atan2f(dir.x, dir.z);
-
-		Phoenix::Math::Quaternion newRotate;
-		newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
 
 		Phoenix::Math::Quaternion rotate = transform->GetRotate();
 		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f);
 
 		transform->SetRotate(rotate);
+	}
+
+	// 移動
+	if (0.0f < moveSpeed) // 0以下の時に計算をしても意味が無いので分岐している。
+	{
+		Phoenix::f32 cameraY = 0.0f;
+		{
+			Phoenix::Math::Vector3 dir = transform->GetTranslate() - player->GetPosition();
+			dir.y = 0.0f;
+			dir = Phoenix::Math::Vector3Normalize(dir);
+
+			cameraY = atan2f(dir.x, dir.z);
+		}
+
+		Phoenix::f32 rotateY = 0.0f;
+		{
+			float len = sqrtf(moveX * moveX + moveY * moveY);
+
+			if (len <= 0)
+			{
+				moveX = 0;
+				moveY = 0;
+			}
+
+			float mag = 1 / len;
+
+			moveX *= mag;
+			moveY *= mag;
+
+			rotateY = cameraY + atan2f(moveX, moveY);
+		}
+
+		Phoenix::Math::Vector3 pos = transform->GetTranslate();
+		{
+			pos.x += sinf(rotateY) * moveSpeed;
+			pos.z += cosf(rotateY) * moveSpeed;
+		}
+
+		transform->SetTranslate(pos);
 	}
 
 	// アニメーションの切り替え
@@ -207,7 +383,13 @@ void Enemy::Update()
 
 	// アニメーション更新
 	{
+		if (battleAI->GetCurrentStateName() == BattleEnemyState::Walk)
+		{
+			model->SetBlendRate(Phoenix::Math::Vector3(-moveX, moveY, 0.0f));
+		}
+
 		model->UpdateTransform(1 / 60.0f);
+		attackReceptionTimeCnt += (1 / 60.0f) * attackAnimationSpeed;
 	}
 
 	// トランスフォーム更新
@@ -229,22 +411,119 @@ void Enemy::Update()
 		}
 	}
 
-	// ライフが０ならマネージャーの生存エネミーカウントを下げる
-	if (life <= 0)
+	// プレイヤーとの距離計測
 	{
-		enable = false;
-		alive = false;
-		if (std::shared_ptr<EnemyManager> manager = owner.lock())
-		{
-			manager->SubAliveEnemyCount(1);
-		}
+		DistanceMeasurement();
+	}
+
+	// アタック判定中
+	{
+		AttackJudgment();
 	}
 }
 
 // UI更新
 void Enemy::UpdateUI()
 {
+	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
+	hp = hp <= 0 ? 0 : hp;
 
+	ui->Update((hp / LifeRange) * 100.0f);
+}
+
+// 攻撃判定
+void Enemy::AttackJudgment()
+{
+	if (battleAI->GetCurrentStateName() == BattleEnemyState::Attack)
+	{
+		auto Judgment = [&](Phoenix::s32 index)
+		{
+			if (isHit)
+			{
+				isAttackJudgment = false;
+				return;
+			}
+
+			isAttackJudgment = true;
+			attackCollisionIndex = index;
+		};
+		auto NoJudgment = [&]()
+		{
+			isAttackJudgment = false;
+			isHit = false;
+			attackCollisionIndex = -1;
+		};
+
+		//Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
+
+		//// 当たり判定
+		//if (attackDatasList.at(index).datas.at(attackComboState).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).collisionEndTime)
+		//{
+		//	Judgment(attackDatasList.at(index).datas.at(attackComboState).collisionNum);
+		//	attackPower = attackDatasList.at(index).receptionKey == AttackKey::WeakAttack ? 0 : 1;
+		//}
+		//else
+		//{
+		//	NoJudgment();
+		//}
+
+		bool hit = false;
+		for (const auto& data : attackDatasList)
+		{
+			if (currentAttackState == data.datas.at(0).animState)
+			{
+				if (data.datas.at(0).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= data.datas.at(0).collisionEndTime)
+				{
+					hit = true;
+					Judgment(data.datas.at(0).collisionNum);
+					if (currentAttackState == EnemyAttackState::WeakRight || currentAttackState == EnemyAttackState::WeakLeft)
+					{
+						attackPower = 0;
+					}
+					else if (currentAttackState == EnemyAttackState::StrongRight || currentAttackState == EnemyAttackState::StrongLeft)
+					{
+						attackPower = 1;
+					}
+				}
+			}
+		}
+		if (!hit)
+		{
+			NoJudgment();
+		}
+	}
+	else
+	{
+		isAttackJudgment = false;
+	}
+}
+
+// プレイヤーとの距離継続
+void Enemy::DistanceMeasurement()
+{
+	distanceToPlayer = Phoenix::Math::Vector3Length(player->GetPosition() - transform->GetTranslate());
+}
+
+// 新たな回転値の更新
+void Enemy::UpdateNewRotate()
+{
+	Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(player->GetPosition() - GetPosition());
+	float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+
+	if (len <= 0)
+	{
+		dir.x = 0;
+		dir.z = 0;
+	}
+
+	float mag = 1 / len;
+
+	dir.x *= mag;
+	dir.z *= mag;
+
+	Phoenix::f32 angleY = atan2f(dir.x, dir.z);
+
+	newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
 }
 
 // 描画
@@ -273,6 +552,12 @@ void Enemy::SetAlive(bool alive)
 	this->alive = alive;
 }
 
+// 死亡フラグ設定
+void Enemy::SetDeath(bool death)
+{
+	this->death = death;
+}
+
 // 戦闘中フラグ設定
 void Enemy::SetInBattle(bool inBattle)
 {
@@ -294,16 +579,41 @@ void Enemy::SetTranslate(Phoenix::Math::Vector3 translate)
 	this->transform->SetTranslate(translate);
 }
 
+// 新たな回転値を設定
+void Enemy::SetNewRotate(Phoenix::Math::Quaternion newRotate)
+{
+	this->newRotate = newRotate;
+}
+
 // エネミーマネージャーの設定
 void Enemy::SetOwner(std::shared_ptr<EnemyManager> owner)
 {
 	this->owner = owner;
 }
 
-// 攻撃権を発行
-void Enemy::SetAttackRight()
+// ステートを変更
+void Enemy::SetState(BattleEnemyState state)
 {
-	battleAI->GoToState(BattleEnemyState::Attack);
+	changeAnimation = true;
+	changeState = state;
+
+	battleAI->GoToState(state);
+}
+
+// 攻撃権を発行
+bool Enemy::SetAttackRight(bool stackAttackRight)
+{
+	if (battleAI->GetCurrentStateName() == BattleEnemyState::Idle)
+	{
+		battleAI->GoToState(BattleEnemyState::Attack);
+		return true;
+	}
+	else if (stackAttackRight)
+	{
+		this->stackAttackRight = stackAttackRight;
+	}
+
+	return false;
 }
 
 // 攻撃ステートを変更
@@ -311,12 +621,36 @@ void Enemy::SetAttackState(EnemyAttackState state)
 {
 	changeAttackAnimation = true;
 	changeAttackState = state;
+	currentAttackState = state;
+
+	for (const auto& data : attackDatasList)
+	{
+		if (state == data.datas.at(0).animState)
+		{
+			attackAnimationSpeed = data.datas.at(0).playSpeed;
+		}
+	}
+	attackReceptionTimeCnt = 0.0f;
 }
 
 // プレイヤーを設定
 void Enemy::SetPlayer(std::shared_ptr<Player> player)
 {
 	this->player = player;
+	DistanceMeasurement();
+}
+
+// 移動スピード設定
+void Enemy::SetMoveSpeed(Phoenix::f32 speed)
+{
+	moveSpeed = speed;
+}
+
+// 移動方向の指定
+void Enemy::SetMoveInput(Phoenix::f32 moveX, Phoenix::f32 moveY)
+{
+	this->moveX = moveX;
+	this->moveY = moveY;
 }
 
 // アニメーションを移行
@@ -328,21 +662,47 @@ void Enemy::ChangeAnimation()
 	{
 	case BattleEnemyState::Idle:
 		model->PlayAnimation(0, 1, 0.2f);
-		//model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(true);
+		break;
+
+	case BattleEnemyState::Walk:
+		model->PlayAnimation(0, 1, 0.2f);
+		model->PlayBlendAnimation(1, 1, 0.2f);
+		model->SetLoopAnimation(true);
+		model->SetBlendLoopAnimation(true);
+		break;
+
+	case BattleEnemyState::Run:
+		model->PlayAnimation(2, 1, 0.2f);
 		model->SetLoopAnimation(true);
 		break;
 
 	case BattleEnemyState::Attack: break;
 
 	case BattleEnemyState::Dedge:
-		model->PlayAnimation(3, 1, 0.2f);
-		//model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(3, 0, 0.2f);
+		model->SetLoopAnimation(false);
+		model->SetSpeed(2.0f);
+		break;
+
+	case BattleEnemyState::DamageSmall:
+		model->PlayAnimation(4, 1, 0.2f);
+		model->SetLoopAnimation(false);
+		model->SetEndTime(43.0f / 60.0f);
+		break;
+
+	case BattleEnemyState::DamageBig:
+		model->PlayAnimation(5, 1, 0.2f);
 		model->SetLoopAnimation(false);
 		break;
 
 	case BattleEnemyState::Guard:
 		model->PlayAnimation(0, 1, 0.2f);
-		//model->UpdateTransform(1 / 60.0f);
+		model->SetLoopAnimation(false);
+		break;
+
+	case BattleEnemyState::Death:
+		model->PlayAnimation(6, 1, 0.2f);
 		model->SetLoopAnimation(false);
 		break;
 
@@ -363,34 +723,30 @@ void Enemy::ChangeAttackAnimation()
 	switch (changeAttackState)
 	{
 	case EnemyAttackState::WeakRight:
-		model->PlayAnimation(4, 1, 0.2f);
-		//model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(7, 1, 0.2f);
 		model->SetLoopAnimation(false);
-		model->SetSpeed(2.0f);
+		model->SetSpeed(attackAnimationSpeed);
 
 		break;
 
 	case EnemyAttackState::WeakLeft:
-		model->PlayAnimation(5, 1, 0.2f);
-		//model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(8, 1, 0.2f);
 		model->SetLoopAnimation(false);
-		model->SetSpeed(2.0f);
+		model->SetSpeed(attackAnimationSpeed);
 
 		break;
 
 	case EnemyAttackState::StrongRight:
-		model->PlayAnimation(6, 1, 0.2f);
-		//model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(9, 1, 0.2f);
 		model->SetLoopAnimation(false);
-		model->SetSpeed(2.0f);
+		model->SetSpeed(attackAnimationSpeed);
 
 		break;
 
 	case EnemyAttackState::StrongLeft:
-		model->PlayAnimation(7, 1, 0.2f);
-		//model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(10, 1, 0.2f);
 		model->SetLoopAnimation(false);
-		model->SetSpeed(2.0f);
+		model->SetSpeed(attackAnimationSpeed);
 
 		break;
 
@@ -405,7 +761,29 @@ void Enemy::ChangeAttackAnimation()
 
 void Enemy::Damage(int damage)
 {
-	//life -= damage;
+	if (battleAI->GetCurrentStateName() == BattleEnemyState::Dedge) return;
+
+	life -= damage;
+	if (damage <= 10)
+	{
+		battleAI->GoToState(BattleEnemyState::DamageSmall);
+
+		SetMoveInput(0.0f, 0.0f);
+		SetMoveSpeed(0.0f);
+
+		changeAnimation = true;
+		changeState = BattleEnemyState::DamageSmall;
+	}
+	else if (damage <= 20)
+	{
+		battleAI->GoToState(BattleEnemyState::DamageBig);
+
+		SetMoveInput(0.0f, 0.0f);
+		SetMoveSpeed(0.0f);
+
+		changeAnimation = true;
+		changeState = BattleEnemyState::DamageBig;
+	}
 }
 
 // 有効フラグ取得
@@ -418,6 +796,12 @@ bool Enemy::GetEnable()
 bool Enemy::GetAlive()
 {
 	return alive;
+}
+
+// 死亡フラグ取得
+bool Enemy::GetDeath()
+{
+	return death;
 }
 
 // 戦闘中フラグ取得
@@ -436,4 +820,26 @@ Phoenix::FrameWork::Transform Enemy::GetTransform()
 BattleEnemyState Enemy::GetBattleState()
 {
 	return battleAI->GetCurrentStateName();
+}
+
+// プレイヤーの戦闘エリアに侵入したか
+bool Enemy::InBattleTerritory()
+{
+	if (distanceToPlayer <= 5.0f)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+// プレイヤーに攻撃が当たる距離に入っているか？
+bool Enemy::InDistanceHitByAttack()
+{
+	if (distanceToPlayer <= 1.5f)
+	{
+		return true;
+	}
+
+	return false;
 }

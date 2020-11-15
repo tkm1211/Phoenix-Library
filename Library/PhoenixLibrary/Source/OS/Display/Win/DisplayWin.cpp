@@ -95,12 +95,26 @@ namespace Phoenix
 			PAD.InitInputDevice();
 
 #if !(defined(DEBUG) | defined(_DEBUG))
+			HMONITOR hMonitor;
+			MONITORINFOEX  MonitorInfoEx;
+			POINT pt = { 1920, 1080 };
+
+			//ptで指定した部分のモニターのハンドルを取得する
+			hMonitor = MonitorFromPoint(pt, MONITOR_DEFAULTTOPRIMARY);
+
+			//モニター情報を取得する
+			MonitorInfoEx.cbSize = sizeof(MonitorInfoEx);
+			GetMonitorInfo(hMonitor, &MonitorInfoEx);
+
+			int x = MonitorInfoEx.rcMonitor.left;
+			int y = MonitorInfoEx.rcMonitor.top;
+			int w = MonitorInfoEx.rcMonitor.right;
+			int h = MonitorInfoEx.rcMonitor.bottom;
+
 			SetMenu(hwnd, NULL);	//メニューを隠す
 			SetWindowLong(hwnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);//ウィンドウのスタイルを変更
-			MoveWindow(hwnd, GetSystemMetrics(SM_XVIRTUALSCREEN),
-				GetSystemMetrics(SM_YVIRTUALSCREEN),
-				GetSystemMetrics(SM_CXVIRTUALSCREEN),
-				GetSystemMetrics(SM_CYVIRTUALSCREEN), TRUE);
+
+			MoveWindow(hwnd, x, y, w, h, TRUE);
 #endif
 
 			return true;

@@ -13,8 +13,12 @@ std::shared_ptr<BattleEnemyAI> BattleEnemyAI::Create()
 void BattleEnemyAI::SetUp()
 {
 	AddState(AI::BattleEnemy::Idle::Create());
+	AddState(AI::BattleEnemy::Walk::Create(owner));
+	AddState(AI::BattleEnemy::Run::Create(owner));
 	AddState(AI::BattleEnemy::Attack::Create(owner));
-	AddState(AI::BattleEnemy::Dedge::Create());
+	AddState(AI::BattleEnemy::Dedge::Create(owner));
+	AddState(AI::BattleEnemy::DamageSmall::Create(owner));
+	AddState(AI::BattleEnemy::DamageBig::Create(owner));
 	AddState(AI::BattleEnemy::Guard::Create());
 }
 

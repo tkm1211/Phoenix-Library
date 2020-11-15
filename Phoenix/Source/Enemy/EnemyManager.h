@@ -42,7 +42,7 @@ public:
 	void Finalize();
 
 	// 更新
-	void Update();
+	void Update(bool onControl);
 
 	// 描画
 	void Draw();
@@ -54,11 +54,14 @@ public:
 	// エネミー追加
 	void AddEnemy(Phoenix::FrameWork::Transform transform);
 
+	// エネミー達解除
+	void ResetEnemies();
+
 	// エネミー生存最大数からカウントダウン
 	void SubAliveEnemyCount(Phoenix::s32 sub);
 
 	// 指定のエネミーに攻撃権を発行
-	void SetAttackRight(Phoenix::s32 enemyIndex);
+	bool SetAttackRight(Phoenix::s32 enemyIndex, bool stackAttackRight);
 
 	// 指定のエネミーをバトルモードに変更
 	void SetBattleEnemy(Phoenix::s32 enemyIndex);

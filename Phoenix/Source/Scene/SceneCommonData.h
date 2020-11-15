@@ -72,10 +72,11 @@ public:
 	std::shared_ptr<Phoenix::FrameWork::CXAudio2> se;
 
 	// Tutorial
-	std::shared_ptr<Phoenix::Graphics::ITexture> avoidUI;
+	std::shared_ptr<Phoenix::Graphics::ITexture> operatorUI;
+	/*std::shared_ptr<Phoenix::Graphics::ITexture> avoidUI;
 	std::shared_ptr<Phoenix::Graphics::ITexture> attackUI;
 	std::shared_ptr<Phoenix::Graphics::ITexture> runUI;
-	std::shared_ptr<Phoenix::Graphics::ITexture> targetUI;
+	std::shared_ptr<Phoenix::Graphics::ITexture> targetUI;*/
 
 public:
 	SceneCommonData() {}

@@ -249,6 +249,8 @@ void SceneGame::Initialize()
 
 	// エネミー追加
 	{
+		enemyManager->ResetEnemies();
+
 		Phoenix::FrameWork::Transform transform;
 		transform.SetTranslate({ 0,0,0 });
 		transform.SetRotate({ 0,0,0,1 });
@@ -275,6 +277,7 @@ void SceneGame::Initialize()
 void SceneGame::Update(Phoenix::f32 elapsedTime)
 {
 	bool onFade = sceneSystem->GetOnFade();
+	bool onControl = player->GetAlive();
 
 	// プレイヤー更新
 	Phoenix::Math::Vector3 oldPlayerPos = player->GetPosition();
@@ -284,27 +287,42 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 	}
 
 	// メタAI
+	if (!onFade && onControl)
 	{
 		metaAI->Update();
 	}
 
 	// エネミー更新
 	{
-		enemyManager->Update();
+		enemyManager->Update(onControl);
 	}
 
 	// ゲームジャッジ
 	if (!onFade)
 	{
-		if (player->GetHP() <= 0)
+		if (player->GetDeath())
 		{
 			sceneSystem->ChangeScene(SceneType::GameOver, false, true);
 		}
 
-		/*if (boss->GetHP() <= 0)
+		Phoenix::s32 enable = 0;
+		Phoenix::s32 alive = 0;
+		Phoenix::s32 death = 0;
+		for (const auto& enemy : enemyManager->GetEnemies())
+		{
+			if (enemy->GetEnable()) ++enable;
+			else continue;
+
+			if (!enemy->GetAlive()) ++alive;
+			else continue;
+
+			if (enemy->GetDeath()) ++death;
+		}
+
+		if (enable == alive && alive == death && death == enable && enable != 0)
 		{
 			sceneSystem->ChangeScene(SceneType::GameClear, false, true);
-		}*/
+		}
 	}
 
 	// 当たり判定
@@ -329,7 +347,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 				player->UpdateTrasform();
 			}
 
-			if (player->IsAttackJudgment() && !isHitStop)
+			if (player->IsAttackJudgment() && !isHitStop && enemy->GetBattleState() != BattleEnemyState::Dedge)
 			{
 				const std::vector<Phoenix::FrameWork::CollisionData> playerDatas = player->GetCollisionDatas();
 				const std::vector<Phoenix::FrameWork::CollisionData>* enemyDatas = enemy->GetCollisionDatas();
@@ -347,7 +365,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					normal = Phoenix::Math::Vector3Normalize(playerPos - enemyPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
 
 					player->SetIsHit(true);
-					enemy->Damage(10);
+					enemy->Damage(player->GetAttackDamage());
 
 					// Burst Particle.
 					{
@@ -429,52 +447,71 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					}
 				}
 			}
-			else if (onPointLight && !isHitStop)
-			{
-				Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
-
-				if (playerAttackEndMaxCount <= playerAttackEndCount++)
-				{
-					point->position = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-					point->color = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-					point->distance = 0.0f;
-					point->decay = 0.0f;
-					playerAttackEndCount = 0.0f;
-					onPointLight = false;
-				}
-				else
-				{
-					//point->distance = pointLightDistance * ((playerAttackEndMaxCount - playerAttackEndCount) / playerAttackEndMaxCount);
-
-					point->color.x -= grayScale / playerAttackEndMaxCount;
-					point->color.y -= grayScale / playerAttackEndMaxCount;
-					point->color.z -= grayScale / playerAttackEndMaxCount;
-				}
-			}
 
 			if (enemy->IsAttackJudgment() && !player->Invincible() && !isHitStop)
 			{
-				const std::vector<Phoenix::FrameWork::CollisionData>* playerDatas = &player->GetCollisionDatas();
+				const std::vector<Phoenix::FrameWork::CollisionData> playerDatas = player->GetCollisionDatas();
 				const std::vector<Phoenix::FrameWork::CollisionData>* enemyDatas = enemy->GetCollisionDatas();
-				if (SphereVsSphere(playerDatas->at(0).pos, enemyDatas->at(enemy->GetAttackCollisionIndex()).pos, playerDatas->at(0).radius, enemyDatas->at(enemy->GetAttackCollisionIndex()).radius))
+
+				Phoenix::Math::Vector3 cp1 = Phoenix::Math::Vector3(playerDatas.at(0).pos.x, playerDatas.at(0).pos.y - 1.0f, playerDatas.at(0).pos.z);
+				Phoenix::Math::Vector3 cp2 = Phoenix::Math::Vector3(playerDatas.at(0).pos.x, playerDatas.at(0).pos.y + 1.0f, playerDatas.at(0).pos.z);
+
+				//if (SphereVsSphere(playerDatas.at(player->GetAttackCollisionIndex()).pos, enemyDatas->at(0).pos, playerDatas.at(player->GetAttackCollisionIndex()).radius, enemyDatas->at(0).radius))
+				if (SphereVsCapsule(enemyDatas->at(enemy->GetAttackCollisionIndex()).pos, cp1, cp2, enemyDatas->at(enemy->GetAttackCollisionIndex()).radius, playerDatas.at(0).radius))
 				{
 					Phoenix::Math::Vector3 normal;
-					normal = Phoenix::Math::Vector3Normalize(playerPos - enemyPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
+					normal = Phoenix::Math::Vector3Normalize(enemyPos - playerPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
 
 					enemy->SetIsHit(true);
-					player->Damage(10);
+					player->Damage(10, enemy->GetAttackPower());
 
 					// Burst Particle.
 					{
-						bossHitParticle->Burst(100);
-						bossHitParticle->SetParticleLife(1.0f);
-						bossHitParticle->SetParticleSize(0.07f);
-						bossHitParticle->SetParticleScale(0.25f);
+						bossHitParticle->Burst(150);
+						bossHitParticle->SetParticleLife(1.5f);
+						bossHitParticle->SetParticleSize(0.004f);
+						bossHitParticle->SetParticleScale(1.0f);
 						bossHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
-						bossHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor
+						//bossHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+						bossHitParticle->SetParticleColor(Phoenix::Math::Color(100.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+						//bossHitParticle->SetParticleColor(Phoenix::Math::Color(40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+						//bossHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
 
 						bossHitParticlePos = enemyPos + ((playerPos - enemyPos) * 0.5f);
 						bossHitParticlePos.y = enemyDatas->at(enemy->GetAttackCollisionIndex()).pos.y;
+					}
+
+					// Set Camera Shake
+					{
+						if (!isCameraShake)
+						{
+							if (enemy->GetAttackPower() == 0)
+							{
+								isCameraShake = true;
+								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+								cameraShakeCnt = 0;
+
+								shakeWidth = 0.0f;
+								shakeHeight = 0.075f;
+
+								cameraShakeMaxCnt = 7;
+
+								SetXInputVibration(1.0f, 0.0f, 5);
+							}
+							else if (enemy->GetAttackPower() == 1)
+							{
+								isCameraShake = true;
+								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+								cameraShakeCnt = 0;
+
+								shakeWidth = 0.0f;
+								shakeHeight = 0.35f;
+
+								cameraShakeMaxCnt = 10;
+
+								SetXInputVibration(1.0f, 1.0f, 10);
+							}
+						}
 					}
 				}
 			}
@@ -493,6 +530,29 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		{
 			player->SetPosition(Phoenix::Math::Vector3(playerNormal.x * stageRadius, playerPos.y, playerNormal.y * stageRadius));
 
+		}
+
+		if (onPointLight && !isHitStop)
+		{
+			Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
+
+			if (playerAttackEndMaxCount <= playerAttackEndCount++)
+			{
+				point->position = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+				point->color = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+				point->distance = 0.0f;
+				point->decay = 0.0f;
+				playerAttackEndCount = 0.0f;
+				onPointLight = false;
+			}
+			else
+			{
+				//point->distance = pointLightDistance * ((playerAttackEndMaxCount - playerAttackEndCount) / playerAttackEndMaxCount);
+
+				point->color.x -= grayScale / playerAttackEndMaxCount;
+				point->color.y -= grayScale / playerAttackEndMaxCount;
+				point->color.z -= grayScale / playerAttackEndMaxCount;
+			}
 		}
 	}
 
@@ -544,12 +604,12 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 						enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
 						camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, 0.05f);
-						//player->InEnemyTerritory(true);
-						player->SetTargetPos(enemyPos);
 						lerp = 0.01f;
 
 						inTerritory = true;
 					}
+
+					player->SetTargetPos(enemyPos);
 				}
 			}
 
@@ -559,8 +619,6 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f);
 
 				camera->ControllerCamera02(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, lerp);
-				//player->InEnemyTerritory(false);
-				player->SetTargetPos(Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f));
 			}
 		}
 		//camera->Update();
@@ -800,7 +858,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 						//currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
 						for (const auto& enemy : enemyManager->GetEnemies())
 						{
-							if (enemy->GetAlive())
+							if (enemy->GetEnable())
 							{
 								currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
 							}
@@ -1049,7 +1107,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 					currentShader->Begin(graphicsDevice, *camera);
 					for (const auto& enemy : enemyManager->GetEnemies())
 					{
-						if (enemy->GetAlive())
+						if (enemy->GetEnable())
 						{
 							currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
 						}
@@ -1068,9 +1126,26 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 				Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
 				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Opaque), 0, 0xFFFFFFFF);
 
+				Phoenix::s32 cnt = 0;
 				for(const auto data : player->GetCollisionDatas())
 				{
-					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
+					if (cnt++ == 0)
+					{
+						CylinderPrimitiveRender
+						(
+							device,
+							Phoenix::Math::Vector3(data.pos.x, data.pos.y - 1.0f, data.pos.z),
+							Phoenix::Math::Vector3(data.pos.x, data.pos.y + 1.0f, data.pos.z),
+							Phoenix::Math::Vector3(data.pos.x, data.pos.y, data.pos.z),
+							Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f),
+							Phoenix::Math::Vector3(data.radius, data.radius, data.radius),
+							Phoenix::Math::Vector3(data.radius, data.radius + 0.5f, data.radius)
+						);
+					}
+					else
+					{
+						PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
+					}
 				}
 
 				for (const auto& enemy : enemyManager->GetEnemies())
@@ -1078,7 +1153,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 					Phoenix::s32 cnt = 0;
 					for (const auto data : *enemy->GetCollisionDatas())
 					{
-						if (enemy->GetAlive())
+						if (enemy->GetEnable())
 						{
 							if (cnt++ == 0)
 							{
@@ -1193,12 +1268,14 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 #if 1
 		if (isDrawUI) uiSystem->Draw(graphicsDevice);
 
-		float w = 480.0f * 0.5f;
+		quad->Draw(graphicsDevice, commonData->operatorUI.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
+
+		/*float w = 480.0f * 0.5f;
 		float h = 270.0f * 0.5f;
 		quad->Draw(graphicsDevice, commonData->avoidUI.get(), Phoenix::Math::Vector2(w * 0.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
 		quad->Draw(graphicsDevice, commonData->attackUI.get(), Phoenix::Math::Vector2(w * 1.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
 		quad->Draw(graphicsDevice, commonData->runUI.get(), Phoenix::Math::Vector2(w * 2.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
-		quad->Draw(graphicsDevice, commonData->targetUI.get(), Phoenix::Math::Vector2(w * 3.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
+		quad->Draw(graphicsDevice, commonData->targetUI.get(), Phoenix::Math::Vector2(w * 3.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));*/
 #endif
 	}
 	

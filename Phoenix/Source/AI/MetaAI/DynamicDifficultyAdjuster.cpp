@@ -28,14 +28,22 @@ void DynamicDifficultyAdjuster::Finalize()
 // çXêV
 void DynamicDifficultyAdjuster::Update(Phoenix::s32 skillLevel)
 {
-	if (skillLevel <= 10)
+	if (0 < skillLevel && skillLevel <= 10)
 	{
-		ideaState = BattleEnemyState::Attack;
+		Phoenix::s32 percent = rand() % 100;
+		if (percent < 65)
+		{
+			ideaState = BattleEnemyState::Idle;
+		}
+		else if (percent < 100)
+		{
+			ideaState = BattleEnemyState::Dedge;
+		}
 	}
-	/*else if (skillLevel <= 30)
+	else if (skillLevel < 0)
 	{
-		
-	}*/
+		ideaState = BattleEnemyState::Run;
+	}
 	else
 	{
 		ideaState = BattleEnemyState::Attack;

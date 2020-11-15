@@ -107,7 +107,8 @@ public:
 		Roll,
 		Attack,
 		Damage,
-		Dedge
+		Dedge,
+		Death,
 	};
 #endif
 
@@ -202,7 +203,7 @@ private:
 	static constexpr Phoenix::f32 SlowRunSpeed = 0.09f;
 	static constexpr Phoenix::f32 BattleSlowRunSpeed = 0.045f;
 	static constexpr Phoenix::f32 RollSpeed = 0.15f;
-	static constexpr Phoenix::f32 DedgeSpeed = 0.05f;
+	static constexpr Phoenix::f32 DedgeSpeed = 0.1f;
 	static constexpr Phoenix::f32 KnockBackSpeed = -0.03f;
 	static constexpr Phoenix::f32 KnockBackDownSpeed = 0.0003f;
 	static constexpr Phoenix::f32 Attack03Speed = 0.1f;
@@ -247,6 +248,8 @@ private:
 
 	bool isChangeAnimation;
 	bool isAttack;
+	bool alive = false;
+	bool death = false;
 	float attackReceptionTimeCnt;
 	float animationSpeed;
 
@@ -261,17 +264,24 @@ private:
 	// アタックの判定中か？
 	bool isAttackJudgment = false;
 
+	// アタックダメージ数
+	Phoenix::s32 attackDamage = 0;
+
 	// 回避の無敵中か？
 	bool invincible = false;
 
 	// コリジョンデータの要素数
 	Phoenix::u32 attackCollisionIndex = 0;
 
+	// 攻撃の威力
 	Phoenix::u32 attackPower = 0;
 
 	// 蓄積ダメージ
 	Phoenix::s32 accumulationDamege = 0;
 	Phoenix::s32 accumulationTimeCnt = 0;
+
+	// ダメージの威力
+	Phoenix::u32 damagePower = 0;
 
 	// ブレンド
 	Phoenix::Math::Vector3 blendRate = { 0.0f, 0.0f, 0.0f };
@@ -290,8 +300,8 @@ private:
 
 	// 行動スコア
 	Phoenix::s32 behaviorScore = 0;
-	Phoenix::s32 WeakAttackScore = 10;
-	Phoenix::s32 StrongAttackScore = 30;
+	const Phoenix::s32 WeakAttackScore = 100;
+	const Phoenix::s32 StrongAttackScore = 300;
 
 public:
 	Player() :
@@ -320,7 +330,7 @@ public:
 	void ChangeAttackAnimation(Phoenix::u32 animationNum);
 	void AttackJudgment();
 	void GUI();
-	void Damage(int damage);
+	void Damage(int damage, Phoenix::u32 damagePower);
 	bool AccumulationDamege();
 	void Rotation(Phoenix::Math::Vector3 targetPos)
 	{
@@ -437,6 +447,7 @@ public:
 	Phoenix::s32 GetHP() { return life; }
 	Phoenix::u32 GetAttackPower() { return attackPower; }
 	Phoenix::s32 GetScore() { return behaviorScore; }
+	Phoenix::s32 GetAttackDamage() { return attackDamage; }
 	AnimationState GetAnimationState() { return animationState; }
 	const std::vector<Phoenix::FrameWork::CollisionData> GetCollisionDatas() { return collisionDatas; }
 	bool IsAttackJudgment() { return isAttackJudgment; }
@@ -445,6 +456,9 @@ public:
 	PlayerUI* GetUI() { return ui.get(); }
 	bool IsAttack() { return isAttack; }
 	bool IsDamage() { return animationState == AnimationState::Damage; }
+
+	bool GetAlive() { return alive; }
+	bool GetDeath() { return death; }
 
 	bool OnEnemyTerritory() { return inTerritory; }
 

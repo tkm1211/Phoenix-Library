@@ -9,11 +9,16 @@ enum class EnemyMode
 
 enum class BattleEnemyState
 {
-	NoneState, // なし
-	Idle,      // 待機
-	Attack,    // 攻撃
-	Dedge,     // 回避
-	Guard,     // ガード
+	NoneState,   // なし
+	Idle,        // 待機
+	Walk,        // 歩き
+	Run,         // 走り
+	Attack,      // 攻撃
+	Dedge,       // 回避
+	DamageSmall, // 小ダメージ
+	DamageBig,   // 大ダメージ
+	Guard,       // ガード
+	Death,       // 死亡
 };
 
 enum class EnemyAttackState

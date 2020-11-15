@@ -31,6 +31,93 @@ namespace AI
 		}
 #pragma endregion
 
+#pragma region Walk
+		// 生成
+		std::shared_ptr<Walk> Walk::Create(std::shared_ptr<Enemy> owner)
+		{
+			return std::make_shared<Walk>(owner);
+		}
+
+		// 状態に入ったときに呼ばれる関数
+		void Walk::SetUp()
+		{
+			moveX = 0.0f;
+
+			Phoenix::s32 judge = rand() % 2;
+
+			if (judge)
+			{
+				moveX = -1.0f;
+			}
+			else
+			{
+				moveX = 1.0f;
+			}
+		}
+
+		// 次の状態に移る前に呼ばれる関数
+		void Walk::CleanUp()
+		{
+
+		}
+
+		// 更新
+		BattleEnemyState Walk::Update()
+		{
+			if (owner->InDistanceHitByAttack())
+			{
+				owner->SetMoveInput(0.0f, 0.0f);
+				owner->SetMoveSpeed(0.0f);
+				return BattleEnemyState::Attack;
+			}
+			else if (!owner->InBattleTerritory())
+			{
+				owner->SetMoveInput(0.0f, 0.0f);
+				owner->SetMoveSpeed(0.0f);
+				return BattleEnemyState::Run;
+			}
+
+			owner->SetMoveInput(moveX, -1.0f);
+			owner->SetMoveSpeed(Speed);
+			return BattleEnemyState::NoneState;
+		}
+#pragma endregion
+
+#pragma region Run
+		// 生成
+		std::shared_ptr<Run> Run::Create(std::shared_ptr<Enemy> owner)
+		{
+			return std::make_shared<Run>(owner);
+		}
+
+		// 状態に入ったときに呼ばれる関数
+		void Run::SetUp()
+		{
+
+		}
+
+		// 次の状態に移る前に呼ばれる関数
+		void Run::CleanUp()
+		{
+
+		}
+
+		// 更新
+		BattleEnemyState Run::Update()
+		{
+			if (owner->InDistanceHitByAttack())
+			{
+				owner->SetMoveInput(0.0f, 0.0f);
+				owner->SetMoveSpeed(0.0f);
+				return BattleEnemyState::Walk;
+			}
+
+			owner->SetMoveInput(0.0f, -1.0f);
+			owner->SetMoveSpeed(Speed);
+			return BattleEnemyState::NoneState;
+		}
+#pragma endregion
+
 #pragma region Attack
 		// 生成
 		std::shared_ptr<Attack> Attack::Create(std::shared_ptr<Enemy> owner)
@@ -69,6 +156,7 @@ namespace AI
 				++index;
 
 				owner->SetAttackState(currentAttack);
+				owner->UpdateNewRotate();
 			}
 
 			return BattleEnemyState::NoneState;
@@ -77,9 +165,9 @@ namespace AI
 
 #pragma region Dedge
 		// 生成
-		std::shared_ptr<Dedge> Dedge::Create()
+		std::shared_ptr<Dedge> Dedge::Create(std::shared_ptr<Enemy> owner)
 		{
-			return std::make_shared<Dedge>();
+			return std::make_shared<Dedge>(owner);
 		}
 
 		// 状態に入ったときに呼ばれる関数
@@ -97,6 +185,79 @@ namespace AI
 		// 更新
 		BattleEnemyState Dedge::Update()
 		{
+			if (!owner->GetModel()->IsPlaying())
+			{
+				owner->SetMoveInput(0.0f, 0.0f);
+				owner->SetMoveSpeed(0.0f);
+
+				return BattleEnemyState::Idle;
+			}
+
+			owner->SetMoveInput(0.0f, 1.0f);
+			owner->SetMoveSpeed(Speed);
+
+			return BattleEnemyState::NoneState;
+		}
+#pragma endregion
+
+#pragma region DamageSmall
+		// 生成
+		std::shared_ptr<DamageSmall> DamageSmall::Create(std::shared_ptr<Enemy> owner)
+		{
+			return std::make_shared<DamageSmall>(owner);
+		}
+
+		// 状態に入ったときに呼ばれる関数
+		void DamageSmall::SetUp()
+		{
+
+		}
+
+		// 次の状態に移る前に呼ばれる関数
+		void DamageSmall::CleanUp()
+		{
+
+		}
+
+		// 更新
+		BattleEnemyState DamageSmall::Update()
+		{
+			if (!owner->GetModel()->IsPlaying())
+			{
+				return BattleEnemyState::Idle;
+			}
+
+			return BattleEnemyState::NoneState;
+		}
+#pragma endregion
+
+#pragma region DamageBig
+		// 生成
+		std::shared_ptr<DamageBig> DamageBig::Create(std::shared_ptr<Enemy> owner)
+		{
+			return std::make_shared<DamageBig>(owner);
+		}
+
+		// 状態に入ったときに呼ばれる関数
+		void DamageBig::SetUp()
+		{
+
+		}
+
+		// 次の状態に移る前に呼ばれる関数
+		void DamageBig::CleanUp()
+		{
+
+		}
+
+		// 更新
+		BattleEnemyState DamageBig::Update()
+		{
+			if (!owner->GetModel()->IsPlaying())
+			{
+				return BattleEnemyState::Idle;
+			}
+
 			return BattleEnemyState::NoneState;
 		}
 #pragma endregion

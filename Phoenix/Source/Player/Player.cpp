@@ -64,7 +64,10 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Turn_Kick_01.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Turn_Kick_End.fbx", -1);
 
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // 31
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit_Small.fbx", -1); // 31
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // 32
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Death\\Dying.fbx", -1); // 33
 
 
 		model->AddAnimationLayer(0); // idle
@@ -82,10 +85,10 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->AddAnimationLayer(12); // dodge
 		model->AddAnimationLayer(13); // dodge
 
-		model->AddAnimationLayer(14); // right punch begin
+		model->AddAnimationLayer(14); // right punch begin // 11
 		model->AddAnimationLayer(15); // right punch end
 
-		model->AddAnimationLayer(16); // left punch begin
+		model->AddAnimationLayer(16); // left punch begin 
 		model->AddAnimationLayer(17); // left punch end
 
 		model->AddAnimationLayer(18); // right hook begin
@@ -108,7 +111,10 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->AddAnimationLayer(29); // turn kick 
 		model->AddAnimationLayer(30); // turn kick end
 
-		model->AddAnimationLayer(31); // damage
+		model->AddAnimationLayer(31); // damage small
+		model->AddAnimationLayer(32); // damage big
+
+		model->AddAnimationLayer(33); // dying
 
 		model->AddBlendAnimationToLayer(6, 6, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
 		model->AddBlendAnimationToLayer(7, 6, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
@@ -350,7 +356,7 @@ void Player::Initialize()
 		//rotate = { 0,180.0f * 0.01745f,0 };
 		rotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), 180.0f * 0.01745f);
 		scale = { 1,1,1 };
-		radius = 0.5f;
+		radius = 0.35f;
 	}
 
 	// パラメーターの初期化
@@ -359,6 +365,8 @@ void Player::Initialize()
 		isHit = false;
 		invincible = false;
 		isAttackJudgment = false;
+		alive = true;
+		death = false;
 		attackCollisionIndex = -1;
 		accumulationDamege = 0;
 		accumulationTimeCnt = 0;
@@ -370,6 +378,7 @@ void Player::Initialize()
 		receptionStack = false;
 		stackKey = AttackKey::None;
 		behaviorScore = 0;
+		attackDamage = 0;
 	}
 }
 
@@ -380,16 +389,38 @@ void Player::Finalize()
 
 void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl)
 {
+	// ライフが０ならマネージャーの生存エネミーカウントを下げる
+	if (life <= 0 && alive)
+	{
+		alive = false;
+		ChangeAnimationState(AnimationState::Death);
+		ChangeAnimation();
+	}
+
+	// 死亡アニメーション終了時に存在を消す
+	if (!alive)
+	{
+		if (!model->IsPlaying())
+		{
+			death = true;
+		}
+		else
+		{
+			model->UpdateTransform(1 / 60.0f);
+		}
+
+		return;
+	}
+
 	bool isAccumulationDamege = false;
 
 	// スコア計算
 	{
-		behaviorScore -= 1;
-
-		if (behaviorScore < 0)
+		Phoenix::f32 score = static_cast<Phoenix::f32>(behaviorScore);
 		{
-			behaviorScore = 0;
+			score = Phoenix::Math::f32Lerp(score, 0.0f, 0.05f);
 		}
+		behaviorScore = static_cast<Phoenix::s32>(score);
 	}
 
 	// 蓄積ダメージの確認
@@ -411,7 +442,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl)
 	{
 		if (isBattleMode)
 		{
-			model->SetBlendRate(Phoenix::Math::Vector3(blendRate.x, -blendRate.y, 0.0f));
+			model->SetBlendRate(Phoenix::Math::Vector3(-blendRate.x, blendRate.y, 0.0f));
 		}
 		else
 		{
@@ -1010,8 +1041,15 @@ void Player::ChangeAnimation()
 		break;
 
 	case AnimationState::Damage:
-		model->PlayAnimation(animationNum, 1, 0.2f);
-		//model->UpdateTransform(1 / 60.0f);
+		if (damagePower == 0)
+		{
+			model->PlayAnimation(28, 1, 0.2f);
+			model->SetEndTime(43.0f / 60.0f);
+		}
+		else if (damagePower == 1)
+		{
+			model->PlayAnimation(29, 1, 0.2f);
+		}
 		model->SetLoopAnimation(false);
 		break;
 
@@ -1033,6 +1071,11 @@ void Player::ChangeAnimation()
 		{
 			model->SetSpeed(1.5f);
 		}*/
+		break;
+
+	case AnimationState::Death:
+		model->PlayAnimation(30, 1, 0.2f);
+		model->SetLoopAnimation(false);
 		break;
 	
 	default: break;
@@ -1097,7 +1140,21 @@ void Player::AttackJudgment()
 		if (attackDatasList.at(index).datas.at(attackComboState).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).collisionEndTime)
 		{
 			Judgment(attackDatasList.at(index).datas.at(attackComboState).collisionNum);
-			attackPower = attackDatasList.at(index).receptionKey == AttackKey::WeakAttack ? 0 : 1;
+			if (attackDatasList.at(index).receptionKey == AttackKey::WeakAttack)
+			{
+				attackPower = 0;
+				attackDamage = 10;
+			}
+			else if (attackDatasList.at(index).receptionKey == AttackKey::StrongAttack)
+			{
+				attackPower = 1;
+				attackDamage = 20;
+			}
+			else
+			{
+				attackPower = 0;
+				attackDamage = 0;
+			}
 		}
 		else
 		{
@@ -1110,10 +1167,11 @@ void Player::AttackJudgment()
 	}
 }
 
-void Player::Damage(int damage)
+void Player::Damage(int damage, Phoenix::u32 damagePower)
 {
 	life -= damage;
 	accumulationDamege += damage;
+	this->damagePower = damagePower;
 }
 
 bool Player::AccumulationDamege()

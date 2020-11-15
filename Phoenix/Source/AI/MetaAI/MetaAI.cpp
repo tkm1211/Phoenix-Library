@@ -37,6 +37,15 @@ void MetaAI::Finalize()
 // 更新
 void MetaAI::Update()
 {
+	if (500 <= notUpdatedTime)
+	{
+		systems[0]->Update(score);
+		notUpdatedTime = 0;
+	}
+	else if (100 <= notUpdatedTime++)
+	{
+		systems[0]->Update(-10);
+	}
 	if (!canUpdate || type == -1) return;
 
 	systems[type]->Update(score);
@@ -45,6 +54,7 @@ void MetaAI::Update()
 	type = -1;
 	previousScore = score;
 	score = 0;
+	notUpdatedTime = 0;
 }
 
 // ゲームからメタAIを起動する関数
@@ -53,4 +63,5 @@ void MetaAI::Sensor(Phoenix::s32 type, Phoenix::s32 score)
 	canUpdate = true;
 	this->type = type;
 	this->score = score;
+	notUpdatedTime = 0;
 }

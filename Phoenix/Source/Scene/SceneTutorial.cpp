@@ -250,6 +250,7 @@ void SceneTutorial::Initialize()
 void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 {
 	bool onFade = sceneSystem->GetOnFade();
+	bool onControl = player->GetAlive();
 
 	// プレイヤー更新
 	Phoenix::Math::Vector3 oldPlayerPos = player->GetPosition();
@@ -261,7 +262,7 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 	// エネミーマネージャー更新
 	if (isUpdate)
 	{
-		enemyManager->Update();
+		enemyManager->Update(onControl);
 	}
 
 	// ボス更新

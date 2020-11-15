@@ -17,6 +17,8 @@ private:
 	Phoenix::s32 score = 0;
 	Phoenix::s32 previousScore = 0;
 
+	Phoenix::s32 notUpdatedTime = 0;
+
 public:
 	MetaAI() {}
 	~MetaAI() {}
