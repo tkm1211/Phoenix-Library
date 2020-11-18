@@ -5,6 +5,7 @@
 #include "Phoenix/Math/PhoenixMath.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/FrameWork/Component/Transform.h"
+#include "../UI/EnemiesUI.h"
 
 
 class Enemy;
@@ -20,6 +21,7 @@ private:
 	Phoenix::s32 battleEnemyCount = 0;
 
 	std::shared_ptr<Player> player;
+	std::shared_ptr<EnemiesUI> enemiesUI;
 
 public:
 	EnemyManager() {}
@@ -43,6 +45,9 @@ public:
 
 	// 更新
 	void Update(bool onControl);
+
+	// UI更新
+	void UpdateUI(Phoenix::s32 index);
 
 	// 描画
 	void Draw();
@@ -81,4 +86,7 @@ public:
 
 	// バトル中のエネミー最大数
 	Phoenix::s32 GetBattleEnemyCount();
+
+	// エネミーUIを取得
+	std::shared_ptr<EnemiesUI> GetEnemiesUI();
 };

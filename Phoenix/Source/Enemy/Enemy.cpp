@@ -152,7 +152,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	// UI生成
 	{
-		ui = BossUI::Create();
+		ui = EnemyUI::Create();
 	}
 
 	// AIの初期化
@@ -204,7 +204,7 @@ void Enemy::Initialize()
 		newRotate = Phoenix::Math::Quaternion::Zero;
 
 		life = LifeRange;
-		radius = 0.5f;
+		radius = 0.75f;
 
 		attackReceptionTimeCnt = 0.0f;
 		attackAnimationSpeed = 0.0f;
@@ -308,7 +308,10 @@ void Enemy::Update(bool onControl)
 			{
 				changeAnimation = true;
 				changeState = nextBattleState;
-				battleAI->GoToState(nextBattleState);
+				if (battleAI->GetCurrentStateName() != nextBattleState)
+				{
+					battleAI->GoToState(nextBattleState);
+				}
 				SetMoveInput(0.0f, 0.0f);
 				SetMoveSpeed(0.0f);
 			}
@@ -394,7 +397,7 @@ void Enemy::Update(bool onControl)
 
 	// トランスフォーム更新
 	{
-		transform->Update();
+		UpdateTrasform();
 	}
 
 	// コリジョン更新
@@ -420,6 +423,12 @@ void Enemy::Update(bool onControl)
 	{
 		AttackJudgment();
 	}
+}
+
+// トランスフォーム更新
+void Enemy::UpdateTrasform()
+{
+	transform->Update();
 }
 
 // UI更新
@@ -498,7 +507,7 @@ void Enemy::AttackJudgment()
 	}
 }
 
-// プレイヤーとの距離継続
+// プレイヤーとの距離計測
 void Enemy::DistanceMeasurement()
 {
 	distanceToPlayer = Phoenix::Math::Vector3Length(player->GetPosition() - transform->GetTranslate());
@@ -766,20 +775,20 @@ void Enemy::Damage(int damage)
 	life -= damage;
 	if (damage <= 10)
 	{
-		battleAI->GoToState(BattleEnemyState::DamageSmall);
-
 		SetMoveInput(0.0f, 0.0f);
 		SetMoveSpeed(0.0f);
+
+		battleAI->GoToState(BattleEnemyState::DamageSmall);
 
 		changeAnimation = true;
 		changeState = BattleEnemyState::DamageSmall;
 	}
 	else if (damage <= 20)
 	{
-		battleAI->GoToState(BattleEnemyState::DamageBig);
-
 		SetMoveInput(0.0f, 0.0f);
 		SetMoveSpeed(0.0f);
+
+		battleAI->GoToState(BattleEnemyState::DamageBig);
 
 		changeAnimation = true;
 		changeState = BattleEnemyState::DamageBig;

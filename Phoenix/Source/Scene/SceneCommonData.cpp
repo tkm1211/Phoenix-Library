@@ -38,7 +38,7 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	uiSystem = UISystem::Create();
 	{
 		uiSystem->AddUI(player->GetUI());
-		uiSystem->AddUI(enemyManager->GetEnemies().at(0)->GetUI()); // TODO : delete.
+		uiSystem->AddUI(enemyManager->GetEnemiesUI());
 	}
 	uiSystem->Initialize(graphicsDevice);
 

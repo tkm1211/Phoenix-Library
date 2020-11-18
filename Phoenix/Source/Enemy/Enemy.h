@@ -7,14 +7,14 @@
 #include "Phoenix/FrameWork/Component/Transform.h"
 #include "EnemyState.h"
 #include "../AI/StateMachine/BattleEnemyAI.h"
-#include "../UI/BossUI.h"
+#include "../UI/EnemyUI.h"
 
 
 class EnemyManager;
 class Player;
 class Enemy : public std::enable_shared_from_this<Enemy>
 {
-private:
+public:
 	static constexpr Phoenix::s32 LifeRange = 1000;
 
 public:
@@ -48,12 +48,13 @@ public:
 			datas.emplace_back(data);
 		}
 	};
+
 private:
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
 	std::unique_ptr<Phoenix::FrameWork::Transform> transform;
 	std::vector<Phoenix::FrameWork::CollisionData> collisionDatas;
 	std::vector<AttackDatas> attackDatasList;
-	std::shared_ptr<BossUI> ui;
+	std::shared_ptr<EnemyUI> ui;
 
 	// AI
 	EnemyMode currentMode = EnemyMode::Ordinary;
@@ -71,7 +72,6 @@ private:
 	bool changeAttackAnimation = false;
 	BattleEnemyState changeState = BattleEnemyState::NoneState;
 	EnemyAttackState changeAttackState = EnemyAttackState::NoneState;
-
 	EnemyAttackState currentAttackState = EnemyAttackState::NoneState;
 
 	// パラメーター
@@ -139,6 +139,9 @@ public:
 	// 更新
 	void Update(bool onControl);
 
+	// トランスフォーム更新
+	void UpdateTrasform();
+
 	// UI更新
 	void UpdateUI();
 
@@ -157,7 +160,7 @@ public:
 	// 攻撃判定
 	void AttackJudgment();
 
-	// プレイヤーとの距離継続
+	// プレイヤーとの距離計測
 	void DistanceMeasurement();
 
 	// 新たな回転値の更新
@@ -231,6 +234,9 @@ public:
 	// 攻撃の威力の取得
 	Phoenix::u32 GetAttackPower() { return attackPower; }
 
+	// 移動スピード取得
+	Phoenix::f32 GetMoveSpeed() { return moveSpeed; }
+
 	// バトルモードのステート取得
 	BattleEnemyState GetBattleState();
 
@@ -254,5 +260,7 @@ public:
 
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
 
-	BossUI* GetUI() { return ui.get(); }
+	std::shared_ptr<EnemyUI> GetUI() { return ui; }
+
+	Phoenix::s32 GetLife() { return life; }
 };

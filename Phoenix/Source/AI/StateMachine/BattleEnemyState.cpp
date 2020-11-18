@@ -68,7 +68,8 @@ namespace AI
 			{
 				owner->SetMoveInput(0.0f, 0.0f);
 				owner->SetMoveSpeed(0.0f);
-				return BattleEnemyState::Attack;
+				//return BattleEnemyState::Attack;
+				return BattleEnemyState::Idle;
 			}
 			else if (!owner->InBattleTerritory())
 			{
@@ -109,7 +110,7 @@ namespace AI
 			{
 				owner->SetMoveInput(0.0f, 0.0f);
 				owner->SetMoveSpeed(0.0f);
-				return BattleEnemyState::Walk;
+				return BattleEnemyState::Idle;
 			}
 
 			owner->SetMoveInput(0.0f, -1.0f);
@@ -157,7 +158,13 @@ namespace AI
 
 				owner->SetAttackState(currentAttack);
 				owner->UpdateNewRotate();
+				owner->SetMoveSpeed(Speed);
 			}
+
+			Phoenix::f32 speed = owner->GetMoveSpeed();
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+			owner->SetMoveSpeed(speed);
+			owner->SetMoveInput(0.0f, 1.0f);
 
 			return BattleEnemyState::NoneState;
 		}
@@ -173,7 +180,7 @@ namespace AI
 		// ó‘Ô‚É“ü‚Á‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éŠÖ”
 		void Dedge::SetUp()
 		{
-
+			owner->SetMoveSpeed(Speed);
 		}
 
 		// ŽŸ‚Ìó‘Ô‚ÉˆÚ‚é‘O‚ÉŒÄ‚Î‚ê‚éŠÖ”
@@ -193,8 +200,13 @@ namespace AI
 				return BattleEnemyState::Idle;
 			}
 
-			owner->SetMoveInput(0.0f, 1.0f);
-			owner->SetMoveSpeed(Speed);
+			Phoenix::s32 input = rand() % 2;
+			if (input) owner->SetMoveInput(1.0f, 0.0f);
+			else if (!input) owner->SetMoveInput(-1.0f, 0.0f);
+
+			Phoenix::f32 speed = owner->GetMoveSpeed();
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+			owner->SetMoveSpeed(speed);
 
 			return BattleEnemyState::NoneState;
 		}
@@ -210,7 +222,7 @@ namespace AI
 		// ó‘Ô‚É“ü‚Á‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éŠÖ”
 		void DamageSmall::SetUp()
 		{
-
+			owner->SetMoveSpeed(Speed);
 		}
 
 		// ŽŸ‚Ìó‘Ô‚ÉˆÚ‚é‘O‚ÉŒÄ‚Î‚ê‚éŠÖ”
@@ -227,6 +239,11 @@ namespace AI
 				return BattleEnemyState::Idle;
 			}
 
+			Phoenix::f32 speed = owner->GetMoveSpeed();
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+			owner->SetMoveSpeed(speed);
+			owner->SetMoveInput(0.0f, 1.0f);
+
 			return BattleEnemyState::NoneState;
 		}
 #pragma endregion
@@ -241,7 +258,7 @@ namespace AI
 		// ó‘Ô‚É“ü‚Á‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éŠÖ”
 		void DamageBig::SetUp()
 		{
-
+			owner->SetMoveSpeed(Speed);
 		}
 
 		// ŽŸ‚Ìó‘Ô‚ÉˆÚ‚é‘O‚ÉŒÄ‚Î‚ê‚éŠÖ”
@@ -257,6 +274,11 @@ namespace AI
 			{
 				return BattleEnemyState::Idle;
 			}
+
+			Phoenix::f32 speed = owner->GetMoveSpeed();
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+			owner->SetMoveSpeed(speed);
+			owner->SetMoveInput(0.0f, 1.0f);
 
 			return BattleEnemyState::NoneState;
 		}

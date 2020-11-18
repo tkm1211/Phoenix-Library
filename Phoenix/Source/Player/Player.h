@@ -108,6 +108,7 @@ public:
 		Attack,
 		Damage,
 		Dedge,
+		Guard,
 		Death,
 	};
 #endif
@@ -203,7 +204,7 @@ private:
 	static constexpr Phoenix::f32 SlowRunSpeed = 0.09f;
 	static constexpr Phoenix::f32 BattleSlowRunSpeed = 0.045f;
 	static constexpr Phoenix::f32 RollSpeed = 0.15f;
-	static constexpr Phoenix::f32 DedgeSpeed = 0.1f;
+	static constexpr Phoenix::f32 DedgeSpeed = 0.075f;
 	static constexpr Phoenix::f32 KnockBackSpeed = -0.03f;
 	static constexpr Phoenix::f32 KnockBackDownSpeed = 0.0003f;
 	static constexpr Phoenix::f32 Attack03Speed = 0.1f;
@@ -218,7 +219,7 @@ private:
 	static constexpr Phoenix::f32 Attack06AnimationSpeed = 1.0f;
 	static constexpr Phoenix::f32 Attack01ReceptionStartTime = 1.3333332f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
 	static constexpr Phoenix::f32 Attack02ReceptionStartTime = 2.2f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
-	static constexpr Phoenix::f32 Attack01MoveSpeed = 0.5f;
+	static constexpr Phoenix::f32 Attack01MoveSpeed = 0.1f;
 	static constexpr Phoenix::s32 MaxLife = 100; // TODO : 調整必須
 	static constexpr Phoenix::s32 AccumulationMaxDamege = 10; // TODO : 調整必須
 	static constexpr Phoenix::s32 AccumulationTime = 60;
@@ -453,7 +454,7 @@ public:
 	bool IsAttackJudgment() { return isAttackJudgment; }
 	bool Invincible() { return invincible; }
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
-	PlayerUI* GetUI() { return ui.get(); }
+	std::shared_ptr<PlayerUI> GetUI() { return ui; }
 	bool IsAttack() { return isAttack; }
 	bool IsDamage() { return animationState == AnimationState::Damage; }
 

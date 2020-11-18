@@ -7,7 +7,7 @@ std::unique_ptr<UISystem> UISystem::Create()
 	return std::make_unique<UISystem>();
 }
 
-void UISystem::AddUI(UI* addUI)
+void UISystem::AddUI(std::shared_ptr<UI> addUI)
 {
 	ui.emplace_back(addUI);
 }
@@ -17,7 +17,7 @@ void UISystem::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	quad = Phoenix::FrameWork::Quad::Create();
 	quad->Initialize(graphicsDevice);
 
-	for (UI* it : ui)
+	for (const auto& it : ui)
 	{
 		it->Initialize(graphicsDevice);
 	}
@@ -25,7 +25,7 @@ void UISystem::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 void UISystem::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
-	for (UI* it : ui)
+	for (const auto& it : ui)
 	{
 		it->Draw(graphicsDevice, quad.get());
 	}

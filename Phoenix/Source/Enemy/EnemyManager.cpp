@@ -1,6 +1,7 @@
 #include "EnemyManager.h"
 #include "Enemy.h"
 #include "../Player/Player.h"
+//#include "../UI/EnemiesUI.h"
 
 
 // 生成
@@ -19,6 +20,9 @@ void EnemyManager::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		enemy = std::make_shared<Enemy>();
 		enemy->Construct(graphicsDevice);
 	}
+
+	enemiesUI = EnemiesUI::Create();
+	enemiesUI->Initialize(graphicsDevice, EnemyRange);
 
 	aliveEnemyCount = 0;
 }
@@ -49,6 +53,23 @@ void EnemyManager::Update(bool onControl)
 	}
 }
 
+// UI更新
+void EnemyManager::UpdateUI(Phoenix::s32 index)
+{
+	if (index <= -1 || enemies.size() <= index)
+	{
+		enemiesUI->Update(index, 0.0f);
+		return;
+	}
+
+	Phoenix::s32 life = enemies.at(index)->GetLife();
+
+	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
+	hp = hp <= 0 ? 0 : hp;
+
+	enemiesUI->Update(index, (hp / enemies.at(index)->LifeRange) * 100.0f);
+}
+
 // 描画
 void EnemyManager::Draw()
 {
@@ -58,6 +79,7 @@ void EnemyManager::Draw()
 // エネミー追加
 void EnemyManager::AddEnemy(Phoenix::FrameWork::Transform transform)
 {
+	Phoenix::s32 index = 0;
 	for (auto enemy : enemies)
 	{
 		if (!enemy->GetEnable())
@@ -70,11 +92,15 @@ void EnemyManager::AddEnemy(Phoenix::FrameWork::Transform transform)
 			enemy->SetOwner(shared_from_this());
 			enemy->SetPlayer(player);
 
+			enemiesUI->AddUI(index, enemy->GetUI());
+
 			++aliveEnemyCount;
 			++battleEnemyCount; // TODO : delete.
 
 			break;
 		}
+
+		++index;
 	}
 }
 
@@ -156,4 +182,10 @@ Phoenix::s32 EnemyManager::GetAliveEnemyCount()
 Phoenix::s32 EnemyManager::GetBattleEnemyCount()
 {
 	return battleEnemyCount;
+}
+
+// エネミーUIを取得
+std::shared_ptr<EnemiesUI> EnemyManager::GetEnemiesUI()
+{
+	return enemiesUI;
 }

@@ -37,6 +37,7 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState)
 	bool attackRight = true;
 	Phoenix::s32 index = 0;
 	std::vector<Phoenix::s32> indices;
+	const auto& enemies = enemyManager->GetEnemies();
 
 	switch (battleEnemyState)
 	{
@@ -45,7 +46,7 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState)
 		break;
 
 	case BattleEnemyState::Run:
-		for (const auto& enemy : enemyManager->GetEnemies())
+		for (const auto& enemy : enemies)
 		{
 			if (!enemy->GetAlive()) continue;
 			if (!enemy->GetInBattle()) continue;
@@ -65,7 +66,7 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState)
 		break;
 
 	case BattleEnemyState::Attack:
-		for (const auto& enemy : enemyManager->GetEnemies())
+		for (const auto& enemy : enemies)
 		{
 			if (!enemy->GetAlive()) continue;
 			if (!enemy->GetInBattle()) continue;
@@ -84,13 +85,16 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState)
 		if (attackRight && inBattle)
 		{
 			Phoenix::s32 r = rand() % static_cast<Phoenix::s32>(indices.size());
-			enemyManager->SetAttackRight(indices.at(r), (enemyManager->GetAliveEnemyCount() == 1));
+			if (enemies.at(r)->InBattleTerritory())
+			{
+				enemyManager->SetAttackRight(indices.at(r), (enemyManager->GetAliveEnemyCount() == 1));
+			}
 		}
 
 		break;
 
 	case BattleEnemyState::Dedge:
-		for (const auto& enemy : enemyManager->GetEnemies())
+		for (const auto& enemy : enemies)
 		{
 			if (!enemy->GetAlive()) continue;
 			if (!enemy->GetInBattle()) continue;

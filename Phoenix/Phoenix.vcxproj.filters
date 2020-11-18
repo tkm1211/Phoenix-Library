@@ -153,6 +153,12 @@
     <ClCompile Include="Source\AI\StateMachine\BattleEnemyAI.cpp">
       <Filter>Source\AI\StateMachine</Filter>
     </ClCompile>
+    <ClCompile Include="Source\UI\EnemiesUI.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\EnemyUI.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -269,6 +275,12 @@
     </ClInclude>
     <ClInclude Include="Source\AI\StateMachine\BattleEnemyAI.h">
       <Filter>Source\AI\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\EnemiesUI.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\EnemyUI.h">
+      <Filter>Source\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

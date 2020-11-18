@@ -23,6 +23,8 @@ void MetaAI::Initialize()
 	{
 		value->Initialize();
 	}
+
+	notUpdatedTime = 0;
 }
 
 // èIóπâª
@@ -37,7 +39,7 @@ void MetaAI::Finalize()
 // çXêV
 void MetaAI::Update()
 {
-	if (500 <= notUpdatedTime)
+	/*if (500 <= notUpdatedTime)
 	{
 		systems[0]->Update(score);
 		notUpdatedTime = 0;
@@ -45,7 +47,14 @@ void MetaAI::Update()
 	else if (100 <= notUpdatedTime++)
 	{
 		systems[0]->Update(-10);
+	}*/
+
+	if (100 <= notUpdatedTime++)
+	{
+		systems[0]->Update(-10);
+		notUpdatedTime = 0;
 	}
+
 	if (!canUpdate || type == -1) return;
 
 	systems[type]->Update(score);

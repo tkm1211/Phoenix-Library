@@ -67,7 +67,9 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit_Small.fbx", -1); // 31
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // 32
 
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Death\\Dying.fbx", -1); // 33
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Guard\\Ready_Idle.fbx", -1); // 33
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Death\\Dying.fbx", -1); // 34
 
 
 		model->AddAnimationLayer(0); // idle
@@ -114,7 +116,9 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->AddAnimationLayer(31); // damage small
 		model->AddAnimationLayer(32); // damage big
 
-		model->AddAnimationLayer(33); // dying
+		model->AddAnimationLayer(33); // guard
+
+		model->AddAnimationLayer(34); // dying
 
 		model->AddBlendAnimationToLayer(6, 6, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
 		model->AddBlendAnimationToLayer(7, 6, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
@@ -516,7 +520,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	sX = GetKeyState('A') < 0 ? -1.0f : sX;
 	sX = GetKeyState('D') < 0 ? 1.0f : sX;
 
-	if (xInput[0].bLBs || GetKeyState('L') < 0)
+	if (xInput[0].bRBs || GetKeyState('L') < 0)
 	{
 		InEnemyTerritory(true);
 	}
@@ -581,8 +585,60 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		}
 		else
 		{
-			newRotate = rotate;
 			newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
+		}
+	};
+
+	auto RotatePlayerToAttack = [&]()
+	{
+		Phoenix::Math::Vector3 dir = targetPos - pos;
+		dir = Phoenix::Math::Vector3Normalize(dir);
+		dir.y = 0.0f;
+
+		Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+		Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
+		forward.y = 0.0f;
+
+		/*{
+			Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&newRotate);
+			Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
+			forward.y = 0.0f;
+
+			Phoenix::f32 angle;
+			angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
+
+			if (1e-8f < fabs(angle))
+			{
+				angle /= 0.01745f;
+			}
+		}*/
+
+		Phoenix::f32 angle;
+		angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
+
+		if (1e-8f < fabs(angle))
+		{
+			angle /= 0.01745f;
+
+			if (angle <= 45.0f)
+			{
+				float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+
+				if (len <= 0)
+				{
+					dir.x = 0;
+					dir.z = 0;
+				}
+
+				float mag = 1 / len;
+
+				dir.x *= mag;
+				dir.z *= mag;
+
+				Phoenix::f32 angleY = atan2f(dir.x, dir.z);
+
+				newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
+			}
 		}
 	};
 
@@ -603,6 +659,16 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 			ChangeAnimationState(AnimationState::Attack, 0.0f);
 			ChangeAttackAnimationState(attackDatasList.at(nextIndex).datas.at(attackComboState).animState, attackDatasList.at(nextIndex).datas.at(attackComboState).animIndex, attackDatasList.at(nextIndex).datas.at(attackComboState).playSpeed);
+		
+			speed = Attack01MoveSpeed;
+
+			if (sX != 0.0f || sY != 0.0f)
+			{
+				UpdateRotateY();
+				RotatePlayer(rotateY);
+			}
+
+			RotatePlayerToAttack();
 		}
 	};
 
@@ -613,21 +679,27 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			UpdateRotateY();
 			RotatePlayer(rotateY);
 
-			if (sY < 0.0f)
+			if (fabsf(sX) <= fabsf(sY))
 			{
-				dedgeLayerIndex = 7;
+				if (sY < 0.0f)
+				{
+					dedgeLayerIndex = 7;
+				}
+				if (sY > 0.0f)
+				{
+					dedgeLayerIndex = 8;
+				}
 			}
-			if (sY > 0.0f)
+			else if (fabsf(sX) <= fabsf(sY))
 			{
-				dedgeLayerIndex = 8;
-			}
-			if (sX < 0.0f)
-			{
-				dedgeLayerIndex = 9;
-			}
-			if (sX > 0.0f)
-			{
-				dedgeLayerIndex = 10;
+				if (sX < 0.0f)
+				{
+					dedgeLayerIndex = 9;
+				}
+				if (sX > 0.0f)
+				{
+					dedgeLayerIndex = 10;
+				}
 			}
 
 			/*
@@ -799,6 +871,16 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 				ChangeAnimationState(AnimationState::Attack, 0.0f);
 				ChangeAttackAnimationState(attackDatasList.at(0).datas.at(0).animState, attackDatasList.at(0).datas.at(0).animIndex, attackDatasList.at(0).datas.at(0).playSpeed);
+
+				speed = Attack01MoveSpeed;
+
+				if (sX != 0.0f || sY != 0.0f)
+				{
+					UpdateRotateY();
+					RotatePlayer(rotateY);
+				}
+
+				RotatePlayerToAttack();
 			}
 		}
 		else
@@ -916,10 +998,10 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 					{
 						ChangeAnimationState(AnimationState::Walk, WalkSpeed);
 					}
-					if ((xInput[0].bRBs || GetKeyState(VK_SHIFT) < 0) && animationState != AnimationState::Run)
+					/*if ((xInput[0].bRBs || GetKeyState(VK_SHIFT) < 0) && animationState != AnimationState::Run)
 					{
 						ChangeAnimationState(AnimationState::Run, RunSpeed);
-					}
+					}*/
 				}
 			}
 			// 待機ステートへ
@@ -975,10 +1057,24 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 					pos.z += cosf(rotateY) * (speed + (SlowRunSpeed * blendRate.z));
 				}
 			}
-			else
+			else if (animationState != AnimationState::Attack)
 			{
 				pos.x += sinf(rotateY) * speed;
 				pos.z += cosf(rotateY) * speed;
+			}
+		}
+
+		if (animationState == AnimationState::Attack)
+		{
+			if (isAttack && 0.0f < speed)
+			{
+				Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+				Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
+
+				pos.x += forward.x * speed;
+				pos.z += forward.z * speed;
+
+				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
 			}
 		}
 	}
@@ -1073,8 +1169,13 @@ void Player::ChangeAnimation()
 		}*/
 		break;
 
-	case AnimationState::Death:
+	case AnimationState::Guard:
 		model->PlayAnimation(30, 1, 0.2f);
+		model->SetLoopAnimation(false);
+		break;
+
+	case AnimationState::Death:
+		model->PlayAnimation(31, 1, 0.2f);
 		model->SetLoopAnimation(false);
 		break;
 	

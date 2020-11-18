@@ -10,7 +10,7 @@
 class UISystem
 {
 private:
-	std::vector<UI*> ui;
+	std::vector<std::shared_ptr<UI>> ui;
 	std::shared_ptr<Phoenix::FrameWork::Quad> quad;
 
 public:
@@ -20,7 +20,7 @@ public:
 public:
 	static std::unique_ptr<UISystem> Create();
 
-	void AddUI(UI* addUI);
+	void AddUI(std::shared_ptr<UI> addUI);
 
 	void Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 

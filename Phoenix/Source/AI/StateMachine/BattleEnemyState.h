@@ -104,6 +104,9 @@ namespace AI
 		class Attack : public State<BattleEnemyState>
 		{
 		private:
+			static constexpr Phoenix::f32 Speed = 0.025f;
+
+		private:
 			std::shared_ptr<Enemy> owner;
 
 			Phoenix::s32 index = 0;
@@ -136,7 +139,7 @@ namespace AI
 		class Dedge : public State<BattleEnemyState>
 		{
 		private:
-			static constexpr Phoenix::f32 Speed = 0.025f;
+			static constexpr Phoenix::f32 Speed = 0.05f;
 
 		private:
 			std::shared_ptr<Enemy> owner;
@@ -167,6 +170,9 @@ namespace AI
 		class DamageSmall : public State<BattleEnemyState>
 		{
 		private:
+			static constexpr Phoenix::f32 Speed = 0.1f;
+
+		private:
 			std::shared_ptr<Enemy> owner;
 
 		public:
@@ -194,6 +200,9 @@ namespace AI
 #pragma region DamageBig
 		class DamageBig : public State<BattleEnemyState>
 		{
+		private:
+			static constexpr Phoenix::f32 Speed = 0.1f;
+
 		private:
 			std::shared_ptr<Enemy> owner;
 
