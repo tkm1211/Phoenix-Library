@@ -13,7 +13,10 @@ namespace AI
 		class Idle : public State<BattleEnemyState>
 		{
 		private:
+			const Phoenix::s32 MaxCount = 100;
 
+		private:
+			Phoenix::s32 timeCounter = 0;
 
 		public:
 			Idle() : State<BattleEnemyState>(BattleEnemyState::Idle) {}
@@ -104,7 +107,7 @@ namespace AI
 		class Attack : public State<BattleEnemyState>
 		{
 		private:
-			static constexpr Phoenix::f32 Speed = 0.025f;
+			static constexpr Phoenix::f32 Speed = 0.1f;
 
 		private:
 			std::shared_ptr<Enemy> owner;
@@ -241,6 +244,34 @@ namespace AI
 		public:
 			// 生成
 			static std::shared_ptr<Guard> Create();
+
+			// 状態に入ったときに呼ばれる関数
+			void SetUp() override;
+
+			// 次の状態に移る前に呼ばれる関数
+			void CleanUp() override;
+
+			/// <summary>
+			/// 更新
+			/// </summary>
+			/// <returns> 次の移行するステートID </returns>
+			BattleEnemyState Update() override;
+		};
+#pragma endregion
+
+#pragma region Death
+		class Death : public State<BattleEnemyState>
+		{
+		private:
+
+
+		public:
+			Death() : State<BattleEnemyState>(BattleEnemyState::Death) {}
+			~Death() {}
+
+		public:
+			// 生成
+			static std::shared_ptr<Death> Create();
 
 			// 状態に入ったときに呼ばれる関数
 			void SetUp() override;

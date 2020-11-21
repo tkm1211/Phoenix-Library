@@ -17,6 +17,7 @@ void DynamicDifficultyAdjuster::Construct()
 void DynamicDifficultyAdjuster::Initialize()
 {
 	ideaState = BattleEnemyState::NoneState;
+	notUpdatedTime = 0;
 }
 
 // èIóπâª
@@ -26,9 +27,22 @@ void DynamicDifficultyAdjuster::Finalize()
 }
 
 // çXêV
-void DynamicDifficultyAdjuster::Update(Phoenix::s32 skillLevel)
+void DynamicDifficultyAdjuster::Update(Phoenix::s32 skillLevel, bool downScore)
 {
-	if (0 < skillLevel && skillLevel <= 10)
+	if (skillLevel <= 0)
+	{
+		if (downScore)
+		{
+			ideaState = BattleEnemyState::Attack;
+		}
+		if (100 <= notUpdatedTime++)
+		{
+			//ideaState = BattleEnemyState::Run;
+			ideaState = BattleEnemyState::Attack;
+			notUpdatedTime = 0;
+		}
+	}
+	else if (0 < skillLevel && skillLevel <= 10)
 	{
 		Phoenix::s32 percent = rand() % 100;
 		if (percent < 95)
@@ -39,14 +53,6 @@ void DynamicDifficultyAdjuster::Update(Phoenix::s32 skillLevel)
 		{
 			ideaState = BattleEnemyState::Dedge;
 		}
-	}
-	else if (skillLevel < 0)
-	{
-		ideaState = BattleEnemyState::Run;
-	}
-	else
-	{
-		ideaState = BattleEnemyState::Attack;
 	}
 }
 

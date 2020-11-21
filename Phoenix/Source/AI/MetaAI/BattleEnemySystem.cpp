@@ -45,7 +45,7 @@ namespace Meta
 	void BattleEnemySystem::Update(Phoenix::s32 score)
 	{
 		playerSkillAnalyzer->Update(score);
-		dynamicDifficultyAdjuster->Update(playerSkillAnalyzer->GetSkillLevel());
+		dynamicDifficultyAdjuster->Update(playerSkillAnalyzer->GetSkillLevel(), playerSkillAnalyzer->GetDownScore());
 		battleEnemyController->Update(dynamicDifficultyAdjuster->GetBattleEnemyState());
 	}
 

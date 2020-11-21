@@ -102,6 +102,9 @@
     <ClInclude Include="..\..\..\Include\Phoenix\OS\HighResolutionTimer.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\StartUp.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\OS\Main\Win\MainWin.cpp">

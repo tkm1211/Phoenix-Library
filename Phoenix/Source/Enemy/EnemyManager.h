@@ -12,7 +12,7 @@ class Enemy;
 class Player;
 class EnemyManager : public std::enable_shared_from_this<EnemyManager>
 {
-private:
+public:
 	static constexpr Phoenix::s32 EnemyRange = 5;
 
 private:

@@ -192,9 +192,12 @@ namespace Phoenix
 		void AnimationData::Clip::GetScale(s32 nodeID, f32 seconds, Math::Vector3& value, s32& keyID) const
 		{
 			const Node& node = nodes.at(nodeID);
+			
+			if (node.scaleKeys.size() <= keyID) return;
 
 			f32 lerpRate;
 			GetKeyInfo(seconds, keyID, lerpRate, node.scaleKeys);
+
 			if (Math::Equal(lerpRate, 0.0f))
 			{
 				value = node.scaleKeys.at(keyID).value;
@@ -209,6 +212,8 @@ namespace Phoenix
 		void AnimationData::Clip::GetRotate(s32 nodeID, f32 seconds, Math::Quaternion& value, s32& keyID) const
 		{
 			const Node& node = nodes.at(nodeID);
+
+			if (node.rotateKeys.size() <= keyID) return;
 
 			f32 lerpRate;
 			GetKeyInfo(seconds, keyID, lerpRate, node.rotateKeys);
@@ -227,6 +232,8 @@ namespace Phoenix
 		void AnimationData::Clip::GetTranslate(s32 nodeID, f32 seconds, Math::Vector3& value, s32& keyID) const
 		{
 			const Node& node = nodes.at(nodeID);
+
+			if (node.translateKeys.size() <= keyID) return;
 
 			f32 lerpRate;
 			GetKeyInfo(seconds, keyID, lerpRate, node.translateKeys);

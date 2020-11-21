@@ -10,6 +10,11 @@ private:
 	Phoenix::s32 playerSkillLevelRange = 10;
 	Phoenix::s32 levelUpExperiencePoint = 10;
 
+	Phoenix::s32 oldPlayerSkillLevel = 1;
+	Phoenix::s32 oldPlayerScore = 0;
+
+	bool downScore = false;
+
 public:
 	PlayerSkillAnalyzer() {}
 	~PlayerSkillAnalyzer() {}
@@ -35,4 +40,7 @@ public:
 
 	// 分析したプレイヤーレベルの取得
 	Phoenix::s32 GetSkillLevel();
+
+	// 分析したプレイヤーレベルが下がっているか取得
+	bool GetDownScore();
 };

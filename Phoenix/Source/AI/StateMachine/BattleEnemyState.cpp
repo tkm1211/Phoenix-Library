@@ -15,7 +15,8 @@ namespace AI
 		// 状態に入ったときに呼ばれる関数
 		void Idle::SetUp()
 		{
-
+			canChangeState = false;
+			timeCounter = 0;
 		}
 
 		// 次の状態に移る前に呼ばれる関数
@@ -27,6 +28,12 @@ namespace AI
 		// 更新
 		BattleEnemyState Idle::Update()
 		{
+			if (MaxCount <= timeCounter++)
+			{
+				canChangeState = true;
+				timeCounter = 0;
+			}
+
 			return BattleEnemyState::NoneState;
 		}
 #pragma endregion
@@ -106,7 +113,7 @@ namespace AI
 		// 更新
 		BattleEnemyState Run::Update()
 		{
-			if (owner->InDistanceHitByAttack())
+			if (owner->InBattleTerritory())
 			{
 				owner->SetMoveInput(0.0f, 0.0f);
 				owner->SetMoveSpeed(0.0f);
@@ -164,7 +171,7 @@ namespace AI
 			Phoenix::f32 speed = owner->GetMoveSpeed();
 			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
 			owner->SetMoveSpeed(speed);
-			owner->SetMoveInput(0.0f, 1.0f);
+			owner->SetMoveInput(0.0f, -1.0f);
 
 			return BattleEnemyState::NoneState;
 		}
@@ -200,9 +207,13 @@ namespace AI
 				return BattleEnemyState::Idle;
 			}
 
+#if 0
 			Phoenix::s32 input = rand() % 2;
 			if (input) owner->SetMoveInput(1.0f, 0.0f);
 			else if (!input) owner->SetMoveInput(-1.0f, 0.0f);
+#else
+			owner->SetMoveInput(0.0f, 1.0f);
+#endif
 
 			Phoenix::f32 speed = owner->GetMoveSpeed();
 			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
@@ -305,6 +316,32 @@ namespace AI
 
 		// 更新
 		BattleEnemyState Guard::Update()
+		{
+			return BattleEnemyState::NoneState;
+		}
+#pragma endregion
+
+#pragma region Death
+		// 生成
+		std::shared_ptr<Death> Death::Create()
+		{
+			return std::make_shared<Death>();
+		}
+
+		// 状態に入ったときに呼ばれる関数
+		void Death::SetUp()
+		{
+
+		}
+
+		// 次の状態に移る前に呼ばれる関数
+		void Death::CleanUp()
+		{
+
+		}
+
+		// 更新
+		BattleEnemyState Death::Update()
 		{
 			return BattleEnemyState::NoneState;
 		}

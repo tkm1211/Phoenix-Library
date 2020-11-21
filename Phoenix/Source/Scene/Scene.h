@@ -341,7 +341,7 @@ private:
 	// ヒットストップ
 	bool isHitStop = false;
 	Phoenix::s32 hitStopCnt = 0;
-	Phoenix::s32 hitStopMaxCnt = 2;
+	Phoenix::s32 hitStopMaxCnt = 1;
 
 	// カメラシェイク
 	bool isCameraShake = false;

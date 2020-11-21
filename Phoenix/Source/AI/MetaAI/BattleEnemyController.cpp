@@ -18,7 +18,8 @@ void BattleEnemyController::Construct()
 // 初期化
 void BattleEnemyController::Initialize()
 {
-
+	notAttack = false;
+	notAttackTime = 0;
 }
 
 // 終了化
@@ -33,16 +34,38 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState)
 	if (enemyManager->GetAliveEnemyCount() <= 0) return;
 	if (enemyManager->GetBattleEnemyCount() <= 0) return;
 
-	bool inBattle = false;
+	//bool inBattle = false;
 	bool attackRight = true;
-	Phoenix::s32 index = 0;
+	bool dedgeRight = true;
+
+	Phoenix::s32 index = -1;
+	Phoenix::s32 nearEnemyIndex = -1;
 	std::vector<Phoenix::s32> indices;
+
+	Phoenix::f32 len = 0.0f;
+
 	const auto& enemies = enemyManager->GetEnemies();
 
 	switch (battleEnemyState)
 	{
 	case BattleEnemyState::Idle:
+		for (const auto& enemy : enemies)
+		{
+			if (!enemy->GetAlive()) continue;
+			if (!enemy->GetInBattle()) continue;
 
+			if (enemy->GetBattleState() == BattleEnemyState::Idle)
+			{
+				if (enemy->InBattleTerritory())
+				{
+					enemy->SetState(BattleEnemyState::Walk);
+				}
+				else
+				{
+					enemy->SetState(BattleEnemyState::Run);
+				}
+			}
+		}
 		break;
 
 	case BattleEnemyState::Run:
@@ -68,26 +91,58 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState)
 	case BattleEnemyState::Attack:
 		for (const auto& enemy : enemies)
 		{
+			++index;
+
 			if (!enemy->GetAlive()) continue;
 			if (!enemy->GetInBattle()) continue;
+			if (enemy->GetBattleState() == BattleEnemyState::DamageSmall) continue;
+			if (enemy->GetBattleState() == BattleEnemyState::DamageBig) continue;
+
+			if (enemy->GetBattleState() == BattleEnemyState::Idle)
+			{
+				if (!enemy->InDistanceHitByAttack())
+				{
+					if (enemy->InBattleTerritory())
+					{
+						enemy->SetState(BattleEnemyState::Walk);
+						continue;
+					}
+					else
+					{
+						enemy->SetState(BattleEnemyState::Run);
+						continue;
+					}
+				}
+			}
 
 			if (enemy->GetBattleState() == BattleEnemyState::Attack)
 			{
 				attackRight = false;
 			}
 
-			inBattle = true;
+			//inBattle = true;
+
+			if (!enemy->InBattleTerritory()) continue;
 
 			indices.emplace_back(index);
-			++index;
 		}
 
-		if (attackRight && inBattle)
+		if (!notAttack && attackRight /*&& inBattle*/ && 0 < indices.size())
 		{
+			// TODO : Idleステートの時に再抽選
 			Phoenix::s32 r = rand() % static_cast<Phoenix::s32>(indices.size());
 			if (enemies.at(r)->InBattleTerritory())
 			{
+				notAttack = true;
 				enemyManager->SetAttackRight(indices.at(r), (enemyManager->GetAliveEnemyCount() == 1));
+			}
+		}
+		else if (notAttack)
+		{
+			if (10 <= notAttackTime++)
+			{
+				notAttack = false;
+				notAttackTime = 0;
 			}
 		}
 
@@ -96,16 +151,36 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState)
 	case BattleEnemyState::Dedge:
 		for (const auto& enemy : enemies)
 		{
+			++index;
+
 			if (!enemy->GetAlive()) continue;
 			if (!enemy->GetInBattle()) continue;
+			if (!enemy->InBattleTerritory()) continue;
+			if (!enemy->JudgePlayerAttackRange()) continue;
+
+			if (enemy->GetBattleState() == BattleEnemyState::Dedge)
+			{
+				dedgeRight = false;
+			}
 
 			if (enemy->GetBattleState() != BattleEnemyState::Dedge
 			 && enemy->GetBattleState() != BattleEnemyState::DamageSmall
 			 && enemy->GetBattleState() != BattleEnemyState::DamageBig
 			 && enemy->GetBattleState() != BattleEnemyState::Attack)
 			{
-				enemy->SetState(BattleEnemyState::Dedge);
+				Phoenix::f32 dis = enemy->GetDistanceToPlayer();
+
+				if (dis < len || len == 0.0f)
+				{
+					nearEnemyIndex = index;
+					len = dis;
+				}
 			}
+		}
+
+		if (dedgeRight && 0 <= nearEnemyIndex && nearEnemyIndex < enemies.size())
+		{
+			enemies.at(nearEnemyIndex)->SetState(BattleEnemyState::Dedge);
 		}
 		break;
 

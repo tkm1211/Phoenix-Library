@@ -6,6 +6,7 @@
 #include "../../ExternalLibrary/ImGui/Include/imgui_internal.h"
 #include "Phoenix/FrameWork/Input/InputDevice.h"
 #include "Phoenix/FND/Util.h"
+#include "Phoenix/OS//StartUp.h"
 
 
 void SceneTitle::Construct(SceneSystem* sceneSystem)
@@ -234,7 +235,6 @@ void SceneTitle::GUI()
 #if	defined(PHOENIX_TARGET_DEBUG)
 	ImGui::Begin("Title");
 	{
-		ImGui::Text("test");
 		if (ImGui::Button("Chage Scene Game"))
 		{
 			sceneSystem->ChangeScene(SceneType::Game, false, true);
@@ -242,6 +242,10 @@ void SceneTitle::GUI()
 		if (ImGui::Button("Chage Scene Event"))
 		{
 			sceneSystem->ChangeScene(SceneType::Event, false, true);
+		}
+		if (ImGui::Button("Open Model Viewer"))
+		{
+			Phoenix::OS::StartUp(L"..\\PhoenixTool\\ModelViewer\\ModelViewer\\bin\\x64\\Debug\\ModelViewer.exe");
 		}
 		//if (ImGui::Button("play"))
 		//{

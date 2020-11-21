@@ -426,7 +426,7 @@ void SceneTutorial::JudgeHit()
 	// ヒット
 	{
 		// プレイヤー攻撃
-		if (player->IsAttackJudgment() && !isHitStop)
+		if (player->IsAttackJudgment().at(0) && !isHitStop)
 		{
 			const std::vector<Phoenix::FrameWork::CollisionData> playerDatas = player->GetCollisionDatas();
 			const std::vector<Phoenix::FrameWork::CollisionData> mannequinDatas = mannequin->GetCollisionDatas();

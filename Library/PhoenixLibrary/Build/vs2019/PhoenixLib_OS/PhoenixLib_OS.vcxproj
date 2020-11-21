@@ -27,6 +27,7 @@
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Path.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Resource.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\ResourceManager.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\OS\StartUp.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Stream.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\OS\Thread.h" />
     <ClInclude Include="..\..\..\Source\OS\CriticalSection\Win\CriticalSectionWin.h" />

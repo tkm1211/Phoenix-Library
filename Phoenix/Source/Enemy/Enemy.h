@@ -15,7 +15,7 @@ class Player;
 class Enemy : public std::enable_shared_from_this<Enemy>
 {
 public:
-	static constexpr Phoenix::s32 LifeRange = 1000;
+	static constexpr Phoenix::s32 LifeRange = 300;
 
 public:
 	enum class TypeTag
@@ -163,6 +163,9 @@ public:
 	// プレイヤーとの距離計測
 	void DistanceMeasurement();
 
+	// プレイヤーの攻撃視野にいるか判定
+	bool JudgePlayerAttackRange();
+
 	// 新たな回転値の更新
 	void UpdateNewRotate();
 
@@ -195,7 +198,7 @@ public:
 	void SetOwner(std::shared_ptr<EnemyManager> owner);
 
 	// ステートを変更
-	void SetState(BattleEnemyState state);
+	void SetState(BattleEnemyState state, bool forcedChange = false);
 
 	// 攻撃権を発行
 	bool SetAttackRight(bool stackAttackRight);
@@ -236,6 +239,9 @@ public:
 
 	// 移動スピード取得
 	Phoenix::f32 GetMoveSpeed() { return moveSpeed; }
+
+	// プレイヤーとの距離を取得
+	Phoenix::f32 GetDistanceToPlayer() { return distanceToPlayer; }
 
 	// バトルモードのステート取得
 	BattleEnemyState GetBattleState();

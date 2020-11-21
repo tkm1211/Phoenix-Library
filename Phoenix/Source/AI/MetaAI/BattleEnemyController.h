@@ -10,6 +10,9 @@ class BattleEnemyController
 private:
 	std::shared_ptr<EnemyManager> enemyManager;
 
+	bool notAttack = false;
+	Phoenix::s32 notAttackTime = 0;
+
 public:
 	BattleEnemyController() {}
 	~BattleEnemyController() {}

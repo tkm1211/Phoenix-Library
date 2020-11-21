@@ -148,6 +148,9 @@ public:
 		Attack07,
 		Attack08,
 		Attack09,
+		Attack10,
+		Attack11,
+		Attack12,
 
 		End
 	};
@@ -178,6 +181,9 @@ private:
 		Phoenix::f32 receptionBeginTime; // 次のアニメーションへ遷移するための入力受付開始時間
 		Phoenix::f32 receptionEndTime; // 次のアニメーションへ遷移するための入力受付終了時間
 
+		Phoenix::f32 dedgeReceptionBeginTime; // 回避へ遷移するための入力受付開始時間
+		Phoenix::f32 dedgeReceptionEndTime; // 回避へ遷移するための入力受付終了時間
+
 		AttackAnimationState weakDerivedAttackState; // 次の派生弱攻撃のステート
 		AttackAnimationState strongDerivedAttackState; // 次の派生強攻撃のステート
 	};
@@ -204,7 +210,7 @@ private:
 	static constexpr Phoenix::f32 SlowRunSpeed = 0.09f;
 	static constexpr Phoenix::f32 BattleSlowRunSpeed = 0.045f;
 	static constexpr Phoenix::f32 RollSpeed = 0.15f;
-	static constexpr Phoenix::f32 DedgeSpeed = 0.075f;
+	static constexpr Phoenix::f32 DedgeSpeed = 0.15f;
 	static constexpr Phoenix::f32 KnockBackSpeed = -0.03f;
 	static constexpr Phoenix::f32 KnockBackDownSpeed = 0.0003f;
 	static constexpr Phoenix::f32 Attack03Speed = 0.1f;
@@ -220,6 +226,8 @@ private:
 	static constexpr Phoenix::f32 Attack01ReceptionStartTime = 1.3333332f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
 	static constexpr Phoenix::f32 Attack02ReceptionStartTime = 2.2f; // Goalは、Animationの時間の長さから取得 // 20 * 0.0166666667f;
 	static constexpr Phoenix::f32 Attack01MoveSpeed = 0.1f;
+	static constexpr Phoenix::f32 WeakAttackCollisionRadius = 0.25f;
+	static constexpr Phoenix::f32 StrongAttackCollisionRadius = 0.75f;
 	static constexpr Phoenix::s32 MaxLife = 100; // TODO : 調整必須
 	static constexpr Phoenix::s32 AccumulationMaxDamege = 10; // TODO : 調整必須
 	static constexpr Phoenix::s32 AccumulationTime = 60;
@@ -260,10 +268,12 @@ private:
 	Phoenix::s32 life = 0;
 
 	// アタックが当たったか？
-	bool isHit = false;
+	//bool isHit = false;
+	std::vector<bool> isHit;
 
 	// アタックの判定中か？
-	bool isAttackJudgment = false;
+	//bool isAttackJudgment = false;
+	std::vector<bool> isAttackJudgment;
 
 	// アタックダメージ数
 	Phoenix::s32 attackDamage = 0;
@@ -450,8 +460,10 @@ public:
 	Phoenix::s32 GetScore() { return behaviorScore; }
 	Phoenix::s32 GetAttackDamage() { return attackDamage; }
 	AnimationState GetAnimationState() { return animationState; }
+	bool GetDodging() { return (animationState == AnimationState::Dedge); }
 	const std::vector<Phoenix::FrameWork::CollisionData> GetCollisionDatas() { return collisionDatas; }
-	bool IsAttackJudgment() { return isAttackJudgment; }
+	//bool IsAttackJudgment() { return isAttackJudgment; }
+	std::vector<bool> IsAttackJudgment() { return isAttackJudgment; }
 	bool Invincible() { return invincible; }
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
 	std::shared_ptr<PlayerUI> GetUI() { return ui; }
@@ -464,7 +476,8 @@ public:
 	bool OnEnemyTerritory() { return inTerritory; }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
-	void SetIsHit(bool isHit) { this->isHit = isHit; }
+	//void SetIsHit(bool isHit) { this->isHit = isHit; }
+	void SetIsHit(Phoenix::s32 index) { isHit.at(index) = true; }
 
 	void SetBattleMode(bool isBattleMode) { this->isBattleMode = isBattleMode; }
 	void SetTargetPos(Phoenix::Math::Vector3 targetPos) { this->targetPos = targetPos; }

@@ -243,7 +243,7 @@ void Enemy::Update(bool onControl)
 			manager->SubAliveEnemyCount(1);
 		}
 
-		SetState(BattleEnemyState::Death);
+		SetState(BattleEnemyState::Death, true);
 		ChangeAnimation();
 	}
 
@@ -513,6 +513,34 @@ void Enemy::DistanceMeasurement()
 	distanceToPlayer = Phoenix::Math::Vector3Length(player->GetPosition() - transform->GetTranslate());
 }
 
+// プレイヤーの攻撃視野にいるか判定
+bool Enemy::JudgePlayerAttackRange()
+{
+	Phoenix::Math::Vector3 dir = GetPosition() - player->GetPosition();
+	dir = Phoenix::Math::Vector3Normalize(dir);
+	dir.y = 0.0f;
+
+	Phoenix::Math::Quaternion rotate = player->GetRotate();
+	Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+	Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
+	forward.y = 0.0f;
+
+	Phoenix::f32 angle;
+	angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
+
+	if (1e-8f < fabs(angle))
+	{
+		angle /= 0.01745f;
+
+		if (angle <= 45.0f)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 // 新たな回転値の更新
 void Enemy::UpdateNewRotate()
 {
@@ -601,12 +629,15 @@ void Enemy::SetOwner(std::shared_ptr<EnemyManager> owner)
 }
 
 // ステートを変更
-void Enemy::SetState(BattleEnemyState state)
+void Enemy::SetState(BattleEnemyState state, bool forcedChange)
 {
-	changeAnimation = true;
-	changeState = state;
+	Phoenix::s32 check = battleAI->GoToState(state, forcedChange);
 
-	battleAI->GoToState(state);
+	if (check != -1)
+	{
+		changeAnimation = true;
+		changeState = state;
+	}
 }
 
 // 攻撃権を発行
@@ -614,7 +645,7 @@ bool Enemy::SetAttackRight(bool stackAttackRight)
 {
 	if (battleAI->GetCurrentStateName() == BattleEnemyState::Idle)
 	{
-		battleAI->GoToState(BattleEnemyState::Attack);
+		battleAI->GoToState(BattleEnemyState::Attack, true);
 		return true;
 	}
 	else if (stackAttackRight)
@@ -778,7 +809,7 @@ void Enemy::Damage(int damage)
 		SetMoveInput(0.0f, 0.0f);
 		SetMoveSpeed(0.0f);
 
-		battleAI->GoToState(BattleEnemyState::DamageSmall);
+		battleAI->GoToState(BattleEnemyState::DamageSmall, true);
 
 		changeAnimation = true;
 		changeState = BattleEnemyState::DamageSmall;
@@ -788,7 +819,7 @@ void Enemy::Damage(int damage)
 		SetMoveInput(0.0f, 0.0f);
 		SetMoveSpeed(0.0f);
 
-		battleAI->GoToState(BattleEnemyState::DamageBig);
+		battleAI->GoToState(BattleEnemyState::DamageBig), true;
 
 		changeAnimation = true;
 		changeState = BattleEnemyState::DamageBig;

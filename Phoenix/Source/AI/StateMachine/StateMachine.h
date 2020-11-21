@@ -12,6 +12,9 @@ class State
 private:
 	T id;
 
+protected:
+	bool canChangeState = true; // 基本は、いつでもステート移行できるようにしておく
+
 public:
 	State() = delete;
 	explicit State(T id) : id(id) {}
@@ -33,6 +36,9 @@ public:
 public:
 	// ステートID取得
 	const T& GetID() { return id; }
+
+	// ステートの移行ができるか？
+	bool CanChangeState() { return canChangeState; }
 };
 
 template <class T>
@@ -96,20 +102,31 @@ public:
 	/// 指定のステートへ移行
 	/// </summary>
 	/// <param name="nextStateID"> 移行先のステートID </param>
-	void GoToState(T nextStateID)
+	/// <param name="forcedChange"> 強制的にステート移行する </param>
+	/// <returns> ステート移行成功 : 0, ステート移行失敗 : -1 </returns>
+	Phoenix::s32 GoToState(T nextStateID, bool forcedChange = false)
 	{
 		auto it = stateList.find(nextStateID);
 		if (it == stateList.end())
 		{
-			return;
+			return -1;
 		}
 
 		if (currentState != nullptr)
 		{
-			currentState->CleanUp();
+			if (!currentState->CanChangeState() && !forcedChange)
+			{
+				return -1;
+			}
+			else
+			{
+				currentState->CleanUp();
+			}
 		}
 
 		currentState = stateList[nextStateID];
 		currentState->SetUp();
+
+		return 0;
 	}
 };

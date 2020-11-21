@@ -20,6 +20,7 @@ void BattleEnemyAI::SetUp()
 	AddState(AI::BattleEnemy::DamageSmall::Create(owner));
 	AddState(AI::BattleEnemy::DamageBig::Create(owner));
 	AddState(AI::BattleEnemy::Guard::Create());
+	AddState(AI::BattleEnemy::Death::Create());
 }
 
 // ステートマシンのクリーンアップ

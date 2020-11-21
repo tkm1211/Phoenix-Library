@@ -17,6 +17,7 @@ void PlayerSkillAnalyzer::Construct()
 void PlayerSkillAnalyzer::Initialize()
 {
 	playerSkillLevel = 1;
+	downScore = false;
 }
 
 // 終了化
@@ -28,16 +29,26 @@ void PlayerSkillAnalyzer::Finalize()
 // 更新
 void PlayerSkillAnalyzer::Update(Phoenix::s32 score)
 {
+	downScore = (score - oldPlayerScore) < 0 ? true : false;
 	playerSkillLevel = score / levelUpExperiencePoint;
 
 	if (playerSkillLevelRange <= playerSkillLevel)
 	{
 		playerSkillLevel = playerSkillLevelRange;
 	}
+
+	oldPlayerSkillLevel = playerSkillLevel;
+	oldPlayerScore = score;
 }
 
 // 分析したプレイヤーレベルの取得
 Phoenix::s32 PlayerSkillAnalyzer::GetSkillLevel()
 {
 	return playerSkillLevel;
+}
+
+// 分析したプレイヤーレベルが下がっているか取得
+bool PlayerSkillAnalyzer::GetDownScore()
+{
+	return downScore;
 }
