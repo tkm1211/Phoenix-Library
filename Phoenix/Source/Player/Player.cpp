@@ -1,9 +1,22 @@
 #include "Player.h"
+#include <fstream>
+#include <cereal/cereal.hpp>
+#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/types/memory.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/base_class.hpp>
+#include <cereal/types/string.hpp>
+#include <cereal/types/polymorphic.hpp>
 #include "Phoenix/FrameWork/Renderer/ModelRenderer.h"
 #include "Phoenix/FrameWork/Shader/BasicShader.h"
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
 #include "../Enemy/EnemyManager.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
+
+CEREAL_CLASS_VERSION(Player::AttackDataList, 1)
+CEREAL_CLASS_VERSION(Player::AttackDatas, 1)
+CEREAL_CLASS_VERSION(Player::AttackData, 1)
 
 
 std::unique_ptr<Player> Player::Create()
@@ -169,223 +182,230 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	// アタックデータ生成
 	{
-		auto SetAttackData = [&]
-		(
-			AttackAnimationState animState,
-			Phoenix::s32 animIndex,
+		/*//auto SetAttackData = [&]
+		//(
+		//	Phoenix::s32 animState,
+		//	Phoenix::s32 animIndex,
 
-			Phoenix::f32 playSpeed,
-			Phoenix::f32 playBeginTime,
-			Phoenix::f32 playEndTime,
+		//	Phoenix::f32 playSpeed,
+		//	Phoenix::f32 playBeginTime,
+		//	Phoenix::f32 playEndTime,
 
-			Phoenix::s32 collisionNum,
-			Phoenix::f32 collisionBeginTime,
-			Phoenix::f32 collisionEndTime,
+		//	Phoenix::s32 collisionNum,
+		//	Phoenix::f32 collisionBeginTime,
+		//	Phoenix::f32 collisionEndTime,
 
-			bool receptionStack,
-			Phoenix::f32 receptionBeginTime,
-			Phoenix::f32 receptionEndTime,
+		//	bool receptionStack,
+		//	Phoenix::f32 receptionBeginTime,
+		//	Phoenix::f32 receptionEndTime,
 
-			Phoenix::f32 dedgeReceptionBeginTime,
-			Phoenix::f32 dedgeReceptionEndTime,
+		//	Phoenix::f32 dedgeReceptionBeginTime,
+		//	Phoenix::f32 dedgeReceptionEndTime,
 
-			AttackAnimationState weakDerivedAttackState,
-			AttackAnimationState strongDerivedAttackState
-		)
-		{
-			AttackData data;
+		//	Phoenix::s32 weakDerivedAttackState,
+		//	Phoenix::s32 strongDerivedAttackState
+		//)
+		//{
+		//	AttackData data;
 
-			data.animState = animState;
-			data.animIndex = animIndex;
+		//	data.animState = animState;
+		//	data.animIndex = animIndex;
 
-			data.playSpeed = playSpeed;
-			data.playBeginTime = playBeginTime == -1.0f ? -1.0f : playBeginTime / 60.0f;
-			data.playEndTime = playEndTime == -1.0f ? -1.0f : playEndTime / 60.0f;
+		//	data.playSpeed = playSpeed;
+		//	data.playBeginTime = playBeginTime == -1.0f ? -1.0f : playBeginTime / 60.0f;
+		//	data.playEndTime = playEndTime == -1.0f ? -1.0f : playEndTime / 60.0f;
 
-			data.collisionNum = collisionNum;
-			data.collisionBeginTime = collisionBeginTime == -1.0f ? -1.0f : collisionBeginTime / 60.0f;
-			data.collisionEndTime = collisionEndTime == -1.0f ? -1.0f : collisionEndTime / 60.0f;
+		//	data.collisionNum = collisionNum;
+		//	data.collisionBeginTime = collisionBeginTime == -1.0f ? -1.0f : collisionBeginTime / 60.0f;
+		//	data.collisionEndTime = collisionEndTime == -1.0f ? -1.0f : collisionEndTime / 60.0f;
 
-			data.receptionStack = receptionStack;
-			data.receptionBeginTime = receptionBeginTime == -1.0f ? -1.0f : receptionBeginTime / 60.0f;
-			data.receptionEndTime = receptionEndTime == -1.0f ? -1.0f : receptionEndTime / 60.0f;
+		//	data.receptionStack = receptionStack;
+		//	data.receptionBeginTime = receptionBeginTime == -1.0f ? -1.0f : receptionBeginTime / 60.0f;
+		//	data.receptionEndTime = receptionEndTime == -1.0f ? -1.0f : receptionEndTime / 60.0f;
 
-			data.dedgeReceptionBeginTime = dedgeReceptionBeginTime == -1.0f ? -1.0f : dedgeReceptionBeginTime / 60.0f;
-			data.dedgeReceptionEndTime = dedgeReceptionEndTime == -1.0f ? -1.0f : dedgeReceptionEndTime / 60.0f;
+		//	data.dedgeReceptionBeginTime = dedgeReceptionBeginTime == -1.0f ? -1.0f : dedgeReceptionBeginTime / 60.0f;
+		//	data.dedgeReceptionEndTime = dedgeReceptionEndTime == -1.0f ? -1.0f : dedgeReceptionEndTime / 60.0f;
 
-			data.weakDerivedAttackState = weakDerivedAttackState;
-			data.strongDerivedAttackState = strongDerivedAttackState;
+		//	data.weakDerivedAttackState = weakDerivedAttackState;
+		//	data.strongDerivedAttackState = strongDerivedAttackState;
 
-			return data;
-		};
+		//	return data;
+		//};
 
-		// 弱攻撃
-		{
-			// 右ストレート
-			{
-				AttackDatas datas;
+		//// 弱攻撃
+		//{
+		//	// 右ストレート
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::WeakAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::WeakAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack01, 11, 2.0f, -1.0f, -1.0f, 1, 13.0f, 23.0f, true, 13.0f, 23.0f, 13.0f, 23.0f, AttackAnimationState::Attack02, AttackAnimationState::Attack08));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack01, 12, 1.0f, 24.0f, 47.0f, 0, -1.0f, -1.0f, false, 24.0f, 47.0f, 24.0f, 47.0f, AttackAnimationState::Attack02, AttackAnimationState::Attack08));
+		//		datas.AddData(SetAttackData(0, 11, 2.0f, -1.0f, -1.0f, 1, 13.0f, 23.0f, true,  13.0f, 23.0f, 13.0f, 23.0f, 1, 7));
+		//		datas.AddData(SetAttackData(0, 12, 1.0f, 24.0f, 47.0f, 0, -1.0f, -1.0f, false, 24.0f, 47.0f, 24.0f, 47.0f, 1, 7));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 左ストレート
-			{
-				AttackDatas datas;
+		//	// 左ストレート
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::WeakAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::WeakAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack02, 13, 2.0f, -1.0f, -1.0f, 2, 10.0f, 20.0f, true, 15.0f, 20.0f, 15.0f, 20.0f, AttackAnimationState::Attack03, AttackAnimationState::Attack07));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack02, 14, 1.0f, 21.0f, 47.0f, 0, -1.0f, -1.0f, false, 21.0f, 47.0f, 21.0f, 47.0f, AttackAnimationState::Attack03, AttackAnimationState::Attack07));
+		//		datas.AddData(SetAttackData(1, 13, 2.0f, -1.0f, -1.0f, 2, 10.0f, 20.0f, true,  15.0f, 20.0f, 15.0f, 20.0f, 2, 6));
+		//		datas.AddData(SetAttackData(1, 14, 1.0f, 21.0f, 47.0f, 0, -1.0f, -1.0f, false, 21.0f, 47.0f, 21.0f, 47.0f, 2, 6));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 右フック
-			{
-				AttackDatas datas;
+		//	// 右フック
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::WeakAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::WeakAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 15, 1.5f, 40.0f, -1.0f, 1, 46.0f, 72.0f, true, 46.0f, 72.0f, 46.0f, 72.0f, AttackAnimationState::Attack04, AttackAnimationState::Attack10));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack03, 16, 1.0f, 73.0f, 130.0f, 0, -1.0f, -1.0f, false, 73.0f, 130.0f, 73.0f, 130.0f, AttackAnimationState::Attack04, AttackAnimationState::Attack10));
+		//		datas.AddData(SetAttackData(2, 15, 1.5f, 40.0f, -1.0f,  1, 46.0f, 72.0f, true,  46.0f, 72.0f,  46.0f, 72.0f,  3, 9));
+		//		datas.AddData(SetAttackData(2, 16, 1.0f, 73.0f, 130.0f, 0, -1.0f, -1.0f, false, 73.0f, 130.0f, 73.0f, 130.0f, 3, 9));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 左フック
-			{
-				AttackDatas datas;
+		//	// 左フック
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::WeakAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::WeakAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack04, 17, 1.5f, 40.0f, -1.0f, 2, 46.0f, 72.0f, true, 60.0f, 72.0f, 60.0f, 72.0f, AttackAnimationState::Attack05, AttackAnimationState::Attack09));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack04, 18, 1.0f, 73.0f, 130.0f, 0, -1.0f, -1.0f, false, 73.0f, 130.0f, 73.0f, 130.0f, AttackAnimationState::Attack05, AttackAnimationState::Attack09));
+		//		datas.AddData(SetAttackData(3, 17, 1.5f, 40.0f, -1.0f,  2, 46.0f, 72.0f, true,  60.0f, 72.0f,  60.0f, 72.0f,  4, 8));
+		//		datas.AddData(SetAttackData(3, 18, 1.0f, 73.0f, 130.0f, 0, -1.0f, -1.0f, false, 73.0f, 130.0f, 73.0f, 130.0f, 4, 8));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 右キック
-			{
-				AttackDatas datas;
+		//	// 右キック
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::WeakAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::WeakAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack05, 19, 1.5f, 25.0f, -1.0f, 3, 50.0f, 60.0f, true, 50.0f, 60.0f, 50.0f, 60.0f, AttackAnimationState::Attack06, AttackAnimationState::Attack12));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack05, 20, 1.0f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, 61.0f, 150.0f, 61.0f, 150.0f, AttackAnimationState::Attack06, AttackAnimationState::Attack12));
+		//		datas.AddData(SetAttackData(4, 19, 1.5f, 25.0f, -1.0f,  3, 50.0f, 60.0f, true,  50.0f, 60.0f,  50.0f, 60.0f,  5, 11));
+		//		datas.AddData(SetAttackData(4, 20, 1.0f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, 61.0f, 150.0f, 61.0f, 150.0f, 5, 11));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 左キック
-			{
-				AttackDatas datas;
+		//	// 左キック
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::WeakAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::WeakAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack06, 21, 1.5f, 25.0f, -1.0f, 4, 50.0f, 60.0f, true, 50.0f, 60.0f, 50.0f, 60.0f, AttackAnimationState::End, AttackAnimationState::Attack11));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack06, 22, 1.0f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, 61.0f, 150.0f, 61.0f, 150.0f, AttackAnimationState::End, AttackAnimationState::Attack11));
+		//		datas.AddData(SetAttackData(5, 21, 1.5f, 25.0f, -1.0f,  4, 50.0f, 60.0f, true,  50.0f, 60.0f,  50.0f, 60.0f,  -1, 10));
+		//		datas.AddData(SetAttackData(5, 22, 1.0f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, 61.0f, 150.0f, 61.0f, 150.0f, -1, 10));
 
-				attackDatasList.emplace_back(datas);
-			}
-		}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
+		//}
 
-		// 強攻撃
-		{
-			// 右強ストレート
-			{
-				AttackDatas datas;
+		//// 強攻撃
+		//{
+		//	// 右強ストレート
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::StrongAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::StrongAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 1.75f, 0.0f, 45.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 2.5f, 46.0f, 60.0f, 1, 50.0f, 60.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack07, 23, 1.5f, 61.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 115.0f, 120.0f, AttackAnimationState::End, AttackAnimationState::End));
+		//		datas.AddData(SetAttackData(6, 23, 1.75f, 0.0f, 45.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(6, 23, 2.5f, 46.0f, 60.0f, 1, 50.0f, 60.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(6, 23, 1.5f, 61.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 115.0f, 120.0f, -1, -1));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 左強ストレート
-			{
-				AttackDatas datas;
+		//	// 左強ストレート
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::StrongAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::StrongAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 1.75f, 0.0f, 45.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 2.5f, 46.0f, 60.0f, 2, 50.0f, 60.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack08, 24, 1.5f, 61.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 115.0f, 120.0f, AttackAnimationState::End, AttackAnimationState::End));
+		//		datas.AddData(SetAttackData(7, 24, 1.75f, 0.0f, 45.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(7, 24, 2.5f, 46.0f, 60.0f, 2, 50.0f, 60.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(7, 24, 1.5f, 61.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 115.0f, 120.0f, -1, -1));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 右強フック
-			{
-				AttackDatas datas;
+		//	// 右強フック
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::StrongAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::StrongAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 25, 1.5f, 0.0f, 50.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 25, 2.5f, 51.0f, 70.0f, 1, 51.0f, 70.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack09, 25, 1.5f, 71.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 125.0f, 130.0f, AttackAnimationState::End, AttackAnimationState::End));
+		//		datas.AddData(SetAttackData(8, 25, 1.5f, 0.0f,  50.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(8, 25, 2.5f, 51.0f, 70.0f, 1, 51.0f, 70.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(8, 25, 1.5f, 71.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 125.0f, 130.0f, -1, -1));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 左強フック
-			{
-				AttackDatas datas;
+		//	// 左強フック
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::StrongAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::StrongAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack10, 26, 1.5f, 0.0f, 50.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack10, 26, 2.5f, 51.0f, 70.0f, 2, 51.0f, 70.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack10, 26, 1.5f, 71.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 125.0f, 130.0f, AttackAnimationState::End, AttackAnimationState::End));
+		//		datas.AddData(SetAttackData(9, 26, 1.5f, 0.0f,  50.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(9, 26, 2.5f, 51.0f, 70.0f, 2, 51.0f, 70.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(9, 26, 1.5f, 71.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 125.0f, 130.0f, -1, -1));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 右回転キック
-			{
-				AttackDatas datas;
+		//	// 右回転キック
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::StrongAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::StrongAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack11, 27, 1.05f, -1.0f, 24.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack11, 28, 2.0f, 25.0f, 46.0f, 3, 25.0f, 46.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack11, 29, 1.0f, 47.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 95.0f, 100.0f, AttackAnimationState::End, AttackAnimationState::End));
+		//		datas.AddData(SetAttackData(10, 27, 1.05f, -1.0f, 24.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(10, 28, 2.0f, 25.0f,  46.0f, 3, 25.0f, 46.0f, false, -1.0f, -1.0f, -1.0f, -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(10, 29, 1.0f, 47.0f,  -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 95.0f, 100.0f, -1, -1));
 
-				attackDatasList.emplace_back(datas);
-			}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
 
-			// 左回転キック
-			{
-				AttackDatas datas;
+		//	// 左回転キック
+		//	{
+		//		AttackDatas datas;
 
-				// 入力キー設定
-				datas.SetKey(AttackKey::StrongAttack);
+		//		// 入力キー設定
+		//		datas.SetKey(AttackKey::StrongAttack);
 
-				datas.AddData(SetAttackData(AttackAnimationState::Attack12, 30, 1.05f, -1.0f, 24.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack12, 30, 2.0f, 25.0f, 46.0f, 4, 25.0f, 46.0f, false, -1.0f, -1.0f, -1.0f, -1.0f, AttackAnimationState::End, AttackAnimationState::End));
-				datas.AddData(SetAttackData(AttackAnimationState::Attack12, 30, 1.0f, 47.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 95.0f, 100.0f, AttackAnimationState::End, AttackAnimationState::End));
+		//		datas.AddData(SetAttackData(11, 30, 1.05f, -1.0f, 24.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(11, 30, 2.0f,  25.0f, 46.0f, 4, 25.0f, 46.0f, false, -1.0f, -1.0f, -1.0f, -1.0f,  -1, -1));
+		//		datas.AddData(SetAttackData(11, 30, 1.0f,  47.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 95.0f, 100.0f, -1, -1));
 
-				attackDatasList.emplace_back(datas);
-			}
-		}
+		//		attackDatasList.attackDatas.emplace_back(datas);
+		//	}
+		//}*/
+
+		const char* fullPass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
+
+		Player::AttackDataList data;
+		Player::AttackDataList::Deserialize(data, fullPass);
+
+		SetAttackDatasList(data);
 	}
 
 	// エネミーヒット
@@ -409,7 +429,7 @@ void Player::Initialize()
 	// アニメーションパラメーターの設定
 	{
 		animationState = AnimationState::Idle;
-		attackState = AttackAnimationState::End;
+		attackState = -1;
 		isChangeAnimation = false;
 		isAttack = false;
 		speed = 0.0f;
@@ -461,15 +481,79 @@ void Player::Initialize()
 			judge = false;
 		}
 	}
+
+	{
+		HANDLE hFile;
+		FILETIME ftFileTime, ftLocalFileTime;
+
+		const wchar_t* fullPass = Phoenix::OS::Path::GetFullPathW(L"..\\Data\\Document\\Player\\AttackDatas.atk");
+		hFile = CreateFile(fullPass, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+		if (hFile != INVALID_HANDLE_VALUE)
+		{
+			GetFileTime(hFile, NULL, NULL, &ftFileTime);
+			FileTimeToLocalFileTime(&ftFileTime, &ftLocalFileTime);
+			FileTimeToSystemTime(&ftLocalFileTime, &stFileTime);
+
+			CloseHandle(hFile);
+		}
+	}
 }
 
 void Player::Finalize()
 {
-	attackDatasList.clear();
+	attackDatasList.attackDatas.clear();
 }
 
-void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl)
+void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, bool attackLoad)
 {
+	if (attackLoad)
+	{
+		HANDLE hFile;
+
+		const wchar_t* fullPass = Phoenix::OS::Path::GetFullPathW(L"..\\Data\\Document\\Player\\AttackDatas.atk");
+		hFile = CreateFile(fullPass, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+		if (hFile != INVALID_HANDLE_VALUE)
+		{
+			FILETIME ftFileTime, ftLocalFileTime;
+			SYSTEMTIME newSTFileTime;
+
+			newSTFileTime.wYear = 0;
+			newSTFileTime.wMonth = 0;
+			newSTFileTime.wDay = 0;
+			newSTFileTime.wHour = 0;
+			newSTFileTime.wMinute = 0;
+			newSTFileTime.wSecond = 0;
+
+			bool check = GetFileTime(hFile, NULL, NULL, &ftFileTime);
+			CloseHandle(hFile);
+
+			if (check)
+			{
+				FileTimeToLocalFileTime(&ftFileTime, &ftLocalFileTime);
+				FileTimeToSystemTime(&ftLocalFileTime, &newSTFileTime);
+
+				if (stFileTime.wYear != newSTFileTime.wYear
+					|| stFileTime.wMonth != newSTFileTime.wMonth
+					|| stFileTime.wDay != newSTFileTime.wDay
+					|| stFileTime.wHour != newSTFileTime.wHour
+					|| stFileTime.wMinute != newSTFileTime.wMinute
+					|| stFileTime.wSecond != newSTFileTime.wSecond)
+				{
+					const char* fullPass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
+
+					Player::AttackDataList data;
+					Player::AttackDataList::Deserialize(data, fullPass);
+
+					SetAttackDatasList(data);
+
+					stFileTime = newSTFileTime;
+				}
+			}
+		}
+	}
+
 	// ライフが０ならマネージャーの生存エネミーカウントを下げる
 	if (life <= 0 && alive)
 	{
@@ -721,7 +805,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 	auto ChangeAnimation = [&](Phoenix::u32 index, Phoenix::u32 nextIndex)
 	{
-		if (attackDatasList.at(index).datas.size() - 1 <= attackComboState)
+		if (attackDatasList.attackDatas.at(index).datas.size() - 1 <= attackComboState)
 		{
 			attackComboState = -1;
 		}
@@ -729,13 +813,13 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		if (attackComboState == -1)
 		{
 			attackComboState = 0;
-			attackReceptionTimeCnt = attackDatasList.at(nextIndex).datas.at(attackComboState).playBeginTime != -1 ? attackDatasList.at(nextIndex).datas.at(attackComboState).playBeginTime : 0.0f;
+			attackReceptionTimeCnt = attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playBeginTime != -1 ? attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playBeginTime : 0.0f;
 
 			receptionStack = false;
 			stackKey = AttackKey::None;
 
 			ChangeAnimationState(AnimationState::Attack, 0.0f);
-			ChangeAttackAnimationState(attackDatasList.at(nextIndex).datas.at(attackComboState).animState, attackDatasList.at(nextIndex).datas.at(attackComboState).animIndex, attackDatasList.at(nextIndex).datas.at(attackComboState).playSpeed);
+			ChangeAttackAnimationState(attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).animState, attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).animIndex, attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playSpeed);
 		
 			speed = Attack01MoveSpeed;
 
@@ -907,22 +991,22 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		}
 	};
 
-	auto JudgeInput01 = [&](Phoenix::u32 index, Phoenix::u32 nextIndex)
+	auto JudgeInput01 = [&](Phoenix::s32 index, Phoenix::s32 nextIndex)
 	{
-		if (!attackDatasList.at(index).datas.at(attackComboState).receptionStack)
+		if (!attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionStack)
 		{
-			if (attackDatasList.at(nextIndex).receptionKey == stackKey)
+			if (attackDatasList.attackDatas.at(nextIndex).receptionKey == stackKey)
 			{
 				ChangeAnimation(index, nextIndex);
 			}
 		}
 	};
 
-	auto JudgeInput02 = [&](Phoenix::u32 index, Phoenix::u32 nextIndex, AttackKey key)
+	auto JudgeInput02 = [&](Phoenix::s32 index, Phoenix::s32 nextIndex, AttackKey key)
 	{
-		if (attackDatasList.at(nextIndex).receptionKey == key)
+		if (attackDatasList.attackDatas.at(nextIndex).receptionKey == key)
 		{
-			if (attackDatasList.at(index).datas.at(attackComboState).receptionStack)
+			if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionStack)
 			{
 				receptionStack = true;
 				stackKey = key;
@@ -948,18 +1032,18 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	}
 
 	// 攻撃ステートへ
-	if ((key != AttackKey::None) /*&& isBattleMode*/ && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
+	if ((key != AttackKey::None) && 0 < attackDatasList.attackDatas.size() && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
 	{
-		if (attackState == AttackAnimationState::End)
+		if (attackState == -1)
 		{
 			// 弱攻撃からスタートするため
-			if (attackDatasList[0].receptionKey == key)
+			if (attackDatasList.attackDatas.at(0).receptionKey == key && 0 < attackDatasList.attackDatas.at(0).datas.size())
 			{
 				attackComboState = 0;
-				attackReceptionTimeCnt = attackDatasList.at(0).datas.at(0).playBeginTime != -1 ? attackDatasList.at(0).datas.at(0).playBeginTime : 0.0f;
+				attackReceptionTimeCnt = attackDatasList.attackDatas.at(0).datas.at(0).playBeginTime != -1 ? attackDatasList.attackDatas.at(0).datas.at(0).playBeginTime : 0.0f;
 
 				ChangeAnimationState(AnimationState::Attack, 0.0f);
-				ChangeAttackAnimationState(attackDatasList.at(0).datas.at(0).animState, attackDatasList.at(0).datas.at(0).animIndex, attackDatasList.at(0).datas.at(0).playSpeed);
+				ChangeAttackAnimationState(attackDatasList.attackDatas.at(0).datas.at(0).animState, attackDatasList.attackDatas.at(0).datas.at(0).animIndex, attackDatasList.attackDatas.at(0).datas.at(0).playSpeed);
 
 				speed = Attack01MoveSpeed;
 
@@ -972,32 +1056,32 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 				RotatePlayerToAttack();
 			}
 		}
-		else
+		else if (0 < attackDatasList.attackDatas.at(attackState).datas.size())
 		{
-			Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
-			Phoenix::u32 wearNextIndex = static_cast<Phoenix::u32>(attackDatasList.at(index).datas.at(attackComboState).weakDerivedAttackState);
-			Phoenix::u32 strongNextIndex = static_cast<Phoenix::u32>(attackDatasList.at(index).datas.at(attackComboState).strongDerivedAttackState);
-			Phoenix::u32 endIndex = static_cast<Phoenix::u32>(AttackAnimationState::End);
+			Phoenix::s32 index = attackState;
+			Phoenix::s32 wearNextIndex = attackDatasList.attackDatas.at(index).datas.at(attackComboState).weakDerivedAttackState;
+			Phoenix::s32 strongNextIndex = attackDatasList.attackDatas.at(index).datas.at(attackComboState).strongDerivedAttackState;
+			Phoenix::s32 endIndex = static_cast<Phoenix::s32>(attackDatasList.attackDatas.size());
 
 			// 次の攻撃が発動するボタンの受付
 			if (receptionStack)
 			{
-				if (wearNextIndex < endIndex)
+				if (wearNextIndex < endIndex && 0 <= wearNextIndex)
 				{
 					JudgeInput01(index, wearNextIndex);
 				}
-				if (strongNextIndex < endIndex)
+				if (strongNextIndex < endIndex && 0 <= strongNextIndex)
 				{
 					JudgeInput01(index, strongNextIndex);
 				}
 			}
-			else if (attackDatasList.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).receptionEndTime)
+			else if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionEndTime)
 			{
-				if (wearNextIndex < endIndex)
+				if (wearNextIndex < endIndex && 0 <= wearNextIndex)
 				{
 					JudgeInput02(index, wearNextIndex, key);
 				}
-				if (strongNextIndex < endIndex)
+				if (strongNextIndex < endIndex && 0 <= strongNextIndex)
 				{
 					JudgeInput02(index, strongNextIndex, key);
 				}
@@ -1006,19 +1090,19 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	}
 	else if ((animationState == AnimationState::Attack) && !model->IsPlaying())
 	{
-		Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
+		Phoenix::s32 index = attackState;
 
-		if (0 <= attackComboState && attackComboState < attackDatasList.at(index).datas.size() - 1)
+		if (0 <= attackComboState && attackComboState < attackDatasList.attackDatas.at(index).datas.size() - 1)
 		{
 			++attackComboState;
 
 			ChangeAnimationState(AnimationState::Attack, 0.0f);
-			ChangeAttackAnimationState(attackDatasList.at(index).datas.at(attackComboState).animState, attackDatasList.at(index).datas.at(attackComboState).animIndex, attackDatasList.at(index).datas.at(attackComboState).playSpeed);
+			ChangeAttackAnimationState(attackDatasList.attackDatas.at(index).datas.at(attackComboState).animState, attackDatasList.attackDatas.at(index).datas.at(attackComboState).animIndex, attackDatasList.attackDatas.at(index).datas.at(attackComboState).playSpeed);
 		}
 		else
 		{
 			ChangeAnimationState(AnimationState::Idle, 0.0f);
-			ChangeAttackAnimationState(AttackAnimationState::End, -1, 0.0f);
+			ChangeAttackAnimationState(-1, -1, 0.0f);
 
 			isAttack = false;
 			attackReceptionTimeCnt = 0.0f;
@@ -1108,13 +1192,13 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			// 回避ステートへ
 			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
 			{
-				Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
+				Phoenix::s32 index = attackState;
 
 				// 次の攻撃が発動するボタンの受付
-				if (attackDatasList.at(index).datas.at(attackComboState).dedgeReceptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).dedgeReceptionEndTime)
+				if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionEndTime)
 				{
 					ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
-					ChangeAttackAnimationState(AttackAnimationState::End, -1, 0.0f);
+					ChangeAttackAnimationState(-1, -1, 0.0f);
 
 					isAttack = false;
 					attackReceptionTimeCnt = 0.0f;
@@ -1270,11 +1354,11 @@ void Player::ChangeAnimation()
 
 void Player::ChangeAttackAnimation(Phoenix::u32 animationNum)
 {
-	Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
-	Phoenix::u32 animIndex = static_cast<Phoenix::u32>(attackDatasList.at(index).datas.at(attackComboState).animIndex);
-	Phoenix::f32 animationSpeed = attackDatasList.at(index).datas.at(attackComboState).playSpeed;
-	Phoenix::f32 beginTime = attackDatasList.at(index).datas.at(attackComboState).playBeginTime;
-	Phoenix::f32 endTime = attackDatasList.at(index).datas.at(attackComboState).playEndTime;
+	Phoenix::s32 index = attackState;
+	Phoenix::u32 animIndex = static_cast<Phoenix::u32>(attackDatasList.attackDatas.at(index).datas.at(attackComboState).animIndex);
+	Phoenix::f32 animationSpeed = attackDatasList.attackDatas.at(index).datas.at(attackComboState).playSpeed;
+	Phoenix::f32 beginTime = attackDatasList.attackDatas.at(index).datas.at(attackComboState).playBeginTime;
+	Phoenix::f32 endTime = attackDatasList.attackDatas.at(index).datas.at(attackComboState).playEndTime;
 
 	if (index == 6 || index == 7 || index == 8 || index == 9 || index == 11)
 	{
@@ -1324,19 +1408,19 @@ void Player::AttackJudgment()
 			attackCollisionIndex = -1;
 		};
 
-		Phoenix::u32 index = static_cast<Phoenix::u32>(attackState);
+		Phoenix::s32 index = attackState;
 
 		// 当たり判定
-		if (attackDatasList.at(index).datas.at(attackComboState).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.at(index).datas.at(attackComboState).collisionEndTime)
+		if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionEndTime)
 		{
-			Judgment(attackDatasList.at(index).datas.at(attackComboState).collisionNum);
-			if (attackDatasList.at(index).receptionKey == AttackKey::WeakAttack)
+			Judgment(attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionNum);
+			if (attackDatasList.attackDatas.at(index).receptionKey == AttackKey::WeakAttack)
 			{
 				attackPower = 0;
 				attackDamage = 10;
 				collisionDatas.at(attackCollisionIndex).radius = WeakAttackCollisionRadius;
 			}
-			else if (attackDatasList.at(index).receptionKey == AttackKey::StrongAttack)
+			else if (attackDatasList.attackDatas.at(index).receptionKey == AttackKey::StrongAttack)
 			{
 				attackPower = 1;
 				attackDamage = 20;
@@ -1383,7 +1467,7 @@ bool Player::AccumulationDamege()
 				isChangeAnimation = true;
 				speed = 0.0f;
 				animationState = AnimationState::Idle;
-				attackState = AttackAnimationState::End;
+				attackState = -1;
 			}
 		}
 		else
@@ -1421,6 +1505,15 @@ void Player::GUI()
 
 	if (ImGui::TreeNode("Player"))
 	{
+		/*if (ImGui::Button("Load Attack Data"))
+		{
+			const char* fullPass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
+
+			Player::AttackDataList data;
+			Player::AttackDataList::Deserialize(data, fullPass);
+
+			SetAttackDatasList(data);
+		}*/
 		if (ImGui::TreeNode("Prameter"))
 		{
 			ImGui::Text("HP : %d", life);
@@ -1478,6 +1571,111 @@ void Player::GUI()
 				ImGui::TreePop();
 			}
 		}
+		/*if (ImGui::TreeNode("Pass"))
+		{
+			HANDLE hFile;
+			FILETIME ftFileTime, ftLocalFileTime;
+			SYSTEMTIME newSTFileTime;
+
+			const wchar_t* fullPass = Phoenix::OS::Path::GetFullPathW(L"..\\Data\\Document\\Player\\AttackDatas.atk");
+			hFile = CreateFile(fullPass, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+			GetFileTime(hFile, NULL, NULL, &ftFileTime);
+			FileTimeToLocalFileTime(&ftFileTime, &ftLocalFileTime);
+			FileTimeToSystemTime(&ftLocalFileTime, &newSTFileTime);
+			CloseHandle(hFile);
+
+			ImGui::Text("%d", stFileTime.wYear);
+			ImGui::Text("%d", stFileTime.wMonth);
+			ImGui::Text("%d", stFileTime.wDay);
+			ImGui::Text("%d", stFileTime.wHour);
+			ImGui::Text("%d", stFileTime.wMinute);
+			ImGui::Text("%d", stFileTime.wSecond);
+
+			ImGui::Text("%d", newSTFileTime.wYear);
+			ImGui::Text("%d", newSTFileTime.wMonth);
+			ImGui::Text("%d", newSTFileTime.wDay);
+			ImGui::Text("%d", newSTFileTime.wHour);
+			ImGui::Text("%d", newSTFileTime.wMinute);
+			ImGui::Text("%d", newSTFileTime.wSecond);
+			ImGui::TreePop();
+		}*/
 		ImGui::TreePop();
 	}
+}
+
+template<class Archive>
+void Player::AttackData::serialize(Archive& archive, Phoenix::u32 version)
+{
+	archive
+	(
+		CEREAL_NVP(animState),
+		CEREAL_NVP(animIndex),
+
+		CEREAL_NVP(playSpeed),
+		CEREAL_NVP(playBeginTime),
+		CEREAL_NVP(playEndTime),
+
+		CEREAL_NVP(collisionNum),
+		CEREAL_NVP(collisionBeginTime),
+		CEREAL_NVP(collisionEndTime),
+
+		CEREAL_NVP(receptionStack),
+		CEREAL_NVP(receptionBeginTime),
+		CEREAL_NVP(receptionEndTime),
+
+		CEREAL_NVP(dedgeReceptionBeginTime),
+		CEREAL_NVP(dedgeReceptionEndTime),
+
+		CEREAL_NVP(weakDerivedAttackState),
+		CEREAL_NVP(strongDerivedAttackState)
+	);
+}
+
+template<class Archive>
+void Player::AttackDatas::serialize(Archive& archive, Phoenix::u32 version)
+{
+	archive
+	(
+		CEREAL_NVP(receptionKey),
+		CEREAL_NVP(datas)
+	);
+}
+
+template<class Archive>
+void Player::AttackDataList::serialize(Archive& archive, Phoenix::u32 version)
+{
+	archive
+	(
+		CEREAL_NVP(attackDatas)
+	);
+}
+
+// シリアライズ
+void Player::AttackDataList::Serialize(const Player::AttackDataList& data, const char* filename)
+{
+	// バイナリ
+	{
+		std::ofstream stream(filename, std::ios::binary);
+		if (stream.is_open())
+		{
+			cereal::BinaryOutputArchive archive(stream);
+
+			archive(CEREAL_NVP(data));
+		}
+	}
+}
+
+// デシリアライズ
+bool Player::AttackDataList::Deserialize(Player::AttackDataList& data, const char* filename)
+{
+	std::ifstream stream(filename, std::ios::binary);
+	if (stream.is_open())
+	{
+		cereal::BinaryInputArchive archive(stream);
+
+		archive(CEREAL_NVP(data));
+	}
+
+	return true;
 }

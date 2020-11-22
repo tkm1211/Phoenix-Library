@@ -20,7 +20,7 @@ namespace Phoenix
 		{
 		public:
 			// ¶¬
-			static std::unique_ptr<IGraphicsDevice> Create();
+			static std::shared_ptr<IGraphicsDevice> Create();
 
 			// ‰Šú‰»
 			virtual bool Initialize(OS::IDisplay* display) = 0;

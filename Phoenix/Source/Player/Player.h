@@ -136,7 +136,7 @@ public:
 		End
 	};
 #else
-	enum class AttackAnimationState
+	/*enum class AttackAnimationState
 	{
 		Attack01,
 		Attack02,
@@ -153,7 +153,7 @@ public:
 		Attack12,
 
 		End
-	};
+	};*/
 #endif
 
 	enum class AttackKey
@@ -163,10 +163,10 @@ public:
 		None
 	};
 
-private:
+public:
 	struct AttackData
 	{
-		AttackAnimationState animState; // アニメーションステート
+		Phoenix::s32 animState; // アニメーションステート
 		Phoenix::s32 animIndex; // アニメーションレイヤーの番号
 
 		Phoenix::f32 playSpeed; // 再生スピード
@@ -184,8 +184,11 @@ private:
 		Phoenix::f32 dedgeReceptionBeginTime; // 回避へ遷移するための入力受付開始時間
 		Phoenix::f32 dedgeReceptionEndTime; // 回避へ遷移するための入力受付終了時間
 
-		AttackAnimationState weakDerivedAttackState; // 次の派生弱攻撃のステート
-		AttackAnimationState strongDerivedAttackState; // 次の派生強攻撃のステート
+		Phoenix::s32 weakDerivedAttackState; // 次の派生弱攻撃のステート
+		Phoenix::s32 strongDerivedAttackState; // 次の派生強攻撃のステート
+
+		template<class Archive>
+		void serialize(Archive& archive, Phoenix::u32 version);
 	};
 
 	struct AttackDatas
@@ -201,6 +204,23 @@ private:
 		{
 			datas.emplace_back(data);
 		}
+
+		template<class Archive>
+		void serialize(Archive& archive, Phoenix::u32 version);
+	};
+
+	struct AttackDataList
+	{
+		std::vector<AttackDatas> attackDatas;
+
+		template<class Archive>
+		void serialize(Archive& archive, Phoenix::u32 version);
+
+		// シリアライズ
+		static void Serialize(const AttackDataList& data, const char* filename);
+
+		// デシリアライズ
+		static bool Deserialize(AttackDataList& data, const char* filename);
 	};
 
 private:
@@ -249,11 +269,11 @@ private:
 	Phoenix::f32 rotateY = 0.0f;
 
 	AnimationState animationState;
-	AttackAnimationState attackState;
+	Phoenix::s32 attackState;
 	Phoenix::s32 attackComboState = -1;
 	Phoenix::s32 currentAttackAnimIndex = -1;
 	//std::vector<AttackData> attackDatas;
-	std::vector<AttackDatas> attackDatasList;
+	AttackDataList attackDatasList;
 
 	bool isChangeAnimation;
 	bool isAttack;
@@ -314,26 +334,28 @@ private:
 	const Phoenix::s32 WeakAttackScore = 100;
 	const Phoenix::s32 StrongAttackScore = 300;
 
+	SYSTEMTIME stFileTime;
+
 public:
 	Player() :
 		worldMatrix(Phoenix::Math::MatrixIdentity()), 
 		speed(0.0f), 
 		animationState(AnimationState::Idle),
-		attackState(AttackAnimationState::End), 
+		attackState(-1), 
 		isChangeAnimation(false), 
 		isAttack(false),
 		attackReceptionTimeCnt(0.0f), 
 		animationSpeed(0.0f),
 		radius(0.0f)
 	{}
-	~Player() { Finalize(); }
+	~Player() { /*Finalize();*/ }
 
 public:
 	static std::unique_ptr<Player> Create();
 	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 	void Initialize();
 	void Finalize();
-	void Update(Phoenix::Graphics::Camera& camera, bool onControl);
+	void Update(Phoenix::Graphics::Camera& camera, bool onControl, bool attackLoad = true);
 	void UpdateTrasform();
 	void UpdateUI();
 	void Control(Phoenix::Graphics::Camera& camera);
@@ -416,7 +438,7 @@ public:
 	};
 
 	// 攻撃アニメーション変更
-	void ChangeAttackAnimationState(AttackAnimationState state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed)
+	void ChangeAttackAnimationState(Phoenix::s32 state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed)
 	{
 		isAttack = true;
 
@@ -460,6 +482,7 @@ public:
 	Phoenix::s32 GetScore() { return behaviorScore; }
 	Phoenix::s32 GetAttackDamage() { return attackDamage; }
 	AnimationState GetAnimationState() { return animationState; }
+	AttackDataList& GetAttackDatasList() { return attackDatasList; }
 	bool GetDodging() { return (animationState == AnimationState::Dedge); }
 	const std::vector<Phoenix::FrameWork::CollisionData> GetCollisionDatas() { return collisionDatas; }
 	//bool IsAttackJudgment() { return isAttackJudgment; }
@@ -481,4 +504,5 @@ public:
 
 	void SetBattleMode(bool isBattleMode) { this->isBattleMode = isBattleMode; }
 	void SetTargetPos(Phoenix::Math::Vector3 targetPos) { this->targetPos = targetPos; }
+	void SetAttackDatasList(AttackDataList data) { attackDatasList = data; }
 };

@@ -236,7 +236,6 @@
     <ClInclude Include="Source\Mannequin\Mannequin.h">
       <Filter>Source\Mannequin</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h" />
     <ClInclude Include="Source\AI\MetaAI\MetaAI.h">
       <Filter>Source\AI\MetaAI</Filter>
     </ClInclude>
@@ -282,11 +281,18 @@
     <ClInclude Include="Source\UI\EnemyUI.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Phoenix1.rc" />
+    <Image Include="..\Data\Assets\Texture\Icon\Icon.ico">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\Data\Assets\Texture\Icon\Icon.ico" />
+    <ResourceCompile Include="Phoenix1.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@
 #include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
 #include "../Enemy/Enemy.h"
 #include "../AI/MetaAI/MetaType.h"
+#include "Phoenix/OS/StartUp.h"
 
 
 void SceneGame::Construct(SceneSystem* sceneSystem)
@@ -1605,6 +1606,12 @@ void SceneGame::GUI()
 	ImGui::Begin("Game");
 	{
 		ImGui::Text("%d", hit);
+		if (ImGui::Button("Open Player Editor"))
+		{
+			Phoenix::OS::StartUp(L"..\\Tool\\PlayerEditor.exe");
+			isPlayerUpdate = false;
+			isBossUpdate = false;
+		}
 		ImGui::Checkbox("Update", &isUpdate);
 		ImGui::Checkbox("PlayerUpdate", &isPlayerUpdate);
 		ImGui::Checkbox("BossUpdate", &isBossUpdate);

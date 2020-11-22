@@ -6,7 +6,6 @@
 #include "../../ExternalLibrary/ImGui/Include/imgui_internal.h"
 #include "Phoenix/FrameWork/Input/InputDevice.h"
 #include "Phoenix/FND/Util.h"
-#include "Phoenix/OS//StartUp.h"
 
 
 void SceneTitle::Construct(SceneSystem* sceneSystem)
@@ -243,10 +242,10 @@ void SceneTitle::GUI()
 		{
 			sceneSystem->ChangeScene(SceneType::Event, false, true);
 		}
-		if (ImGui::Button("Open Model Viewer"))
+		/*if (ImGui::Button("Open Player Editor"))
 		{
-			Phoenix::OS::StartUp(L"..\\PhoenixTool\\ModelViewer\\ModelViewer\\bin\\x64\\Debug\\ModelViewer.exe");
-		}
+			Phoenix::OS::StartUp(L"..\\Tool\\PlayerEditor\\Phoenix_Tool.exe");
+		}*/
 		//if (ImGui::Button("play"))
 		//{
 		//	// エフェクトの再生

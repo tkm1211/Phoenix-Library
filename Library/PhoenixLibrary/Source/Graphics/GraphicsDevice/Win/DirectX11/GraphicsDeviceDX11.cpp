@@ -8,9 +8,9 @@ namespace Phoenix
 	namespace Graphics
 	{
 		// ¶¬
-		std::unique_ptr<IGraphicsDevice> IGraphicsDevice::Create()
+		std::shared_ptr<IGraphicsDevice> IGraphicsDevice::Create()
 		{
-			return std::make_unique<GraphicsDeviceDX11>();
+			return std::make_shared<GraphicsDeviceDX11>();
 		}
 
 		// ‰Šú‰»
