@@ -15,7 +15,7 @@ class Player;
 class Enemy : public std::enable_shared_from_this<Enemy>
 {
 public:
-	static constexpr Phoenix::s32 LifeRange = 300;
+	static constexpr Phoenix::s32 LifeRange = 150;
 
 public:
 	enum class TypeTag
@@ -143,7 +143,7 @@ public:
 	void UpdateTrasform();
 
 	// UIçXêV
-	void UpdateUI();
+	void UpdateUI(Phoenix::Math::Vector2 pos);
 
 	// ï`âÊ
 	void Draw();
@@ -269,4 +269,6 @@ public:
 	std::shared_ptr<EnemyUI> GetUI() { return ui; }
 
 	Phoenix::s32 GetLife() { return life; }
+
+	bool UnderAttack() { return battleAI->GetCurrentStateName() == BattleEnemyState::Attack; }
 };

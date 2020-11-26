@@ -43,6 +43,9 @@
     <Filter Include="Source\AI\StateMachine">
       <UniqueIdentifier>{0b005f4b-a378-4c45-900b-c83da9cbf080}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Sound">
+      <UniqueIdentifier>{a29b933a-4376-4b15-a396-23f150476f8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -158,6 +161,9 @@
     </ClCompile>
     <ClCompile Include="Source\UI\EnemyUI.cpp">
       <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Sound\SoundSystem.cpp">
+      <Filter>Source\Sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="resource1.h">
       <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Sound\SoundSystem.h">
+      <Filter>Source\Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

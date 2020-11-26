@@ -166,26 +166,26 @@ public:
 public:
 	struct AttackData
 	{
-		Phoenix::s32 animState; // アニメーションステート
-		Phoenix::s32 animIndex; // アニメーションレイヤーの番号
+		Phoenix::s32 animState = -1; // アニメーションステート
+		Phoenix::s32 animIndex = -1; // アニメーションレイヤーの番号
 
-		Phoenix::f32 playSpeed; // 再生スピード
-		Phoenix::f32 playBeginTime; // 再生開始時間（再生フレーム）
-		Phoenix::f32 playEndTime; // 再生終了時間（再生フレーム）
+		Phoenix::f32 playSpeed = 1.0f; // 再生スピード
+		Phoenix::f32 playBeginTime = -1.0f; // 再生開始時間（再生フレーム）
+		Phoenix::f32 playEndTime = -1.0f; // 再生終了時間（再生フレーム）
 
-		Phoenix::s32 collisionNum; // 当たり判定の番号
-		Phoenix::f32 collisionBeginTime; // 当たり判定開始時間（再生フレーム）
-		Phoenix::f32 collisionEndTime; // 当たり判定終了時間（再生フレーム）
+		Phoenix::s32 collisionNum = -1; // 当たり判定の番号
+		Phoenix::f32 collisionBeginTime = -1.0f; // 当たり判定開始時間（再生フレーム）
+		Phoenix::f32 collisionEndTime = -1.0f; // 当たり判定終了時間（再生フレーム）
 
-		bool receptionStack; // 次のアニメーションへ遷移するための入力受付をスタックするかどうか？
-		Phoenix::f32 receptionBeginTime; // 次のアニメーションへ遷移するための入力受付開始時間
-		Phoenix::f32 receptionEndTime; // 次のアニメーションへ遷移するための入力受付終了時間
+		bool receptionStack = false; // 次のアニメーションへ遷移するための入力受付をスタックするかどうか？
+		Phoenix::f32 receptionBeginTime = -1.0f; // 次のアニメーションへ遷移するための入力受付開始時間
+		Phoenix::f32 receptionEndTime = -1.0f; // 次のアニメーションへ遷移するための入力受付終了時間
 
-		Phoenix::f32 dedgeReceptionBeginTime; // 回避へ遷移するための入力受付開始時間
-		Phoenix::f32 dedgeReceptionEndTime; // 回避へ遷移するための入力受付終了時間
+		Phoenix::f32 dedgeReceptionBeginTime = -1.0f; // 回避へ遷移するための入力受付開始時間
+		Phoenix::f32 dedgeReceptionEndTime = -1.0f; // 回避へ遷移するための入力受付終了時間
 
-		Phoenix::s32 weakDerivedAttackState; // 次の派生弱攻撃のステート
-		Phoenix::s32 strongDerivedAttackState; // 次の派生強攻撃のステート
+		Phoenix::s32 weakDerivedAttackState = -1; // 次の派生弱攻撃のステート
+		Phoenix::s32 strongDerivedAttackState = -1; // 次の派生強攻撃のステート
 
 		template<class Archive>
 		void serialize(Archive& archive, Phoenix::u32 version);
@@ -193,7 +193,7 @@ public:
 
 	struct AttackDatas
 	{
-		AttackKey receptionKey; // 入力キー
+		AttackKey receptionKey = AttackKey::WeakAttack; // 入力キー
 		std::vector<AttackData> datas;
 
 		void SetKey(AttackKey key)

@@ -21,6 +21,7 @@ void SceneTitle::Construct(SceneSystem* sceneSystem)
 		pbrShader = commonData->pbrShader.get();
 		pbrSkinShader = commonData->pbrSkinShader.get();
 		camera = commonData->camera.get();
+		soundSystem = commonData->soundSystem.get();
 	}
 
 	// フレームバッファ
@@ -94,6 +95,11 @@ void SceneTitle::Initialize()
 	{
 		isChangeScene = false;
 	}
+
+	// 再生
+	{
+		soundSystem->Play(SoundType::BGM_Title);
+	}
 }
 
 void SceneTitle::Update(Phoenix::f32 elapsedTime)
@@ -114,6 +120,7 @@ void SceneTitle::Update(Phoenix::f32 elapsedTime)
 
 	if ((GetKeyState(VK_SPACE) & 1) || xInput[0].bAt || xInput[0].bBt || xInput[0].bXt || xInput[0].bYt || xInput[0].bRBt || xInput[0].bLBt || xInput[0].bRTt || xInput[0].bLTt || xInput[0].bSTARTt || xInput[0].bBACKt)
 	{
+		soundSystem->Stop(SoundType::BGM_Title);
 		isChangeScene = true;
 		dissolveThreshold = 0.5f;
 	}

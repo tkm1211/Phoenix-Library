@@ -84,31 +84,24 @@ void PlayerEditor::GUI()
 		// メインメニューを表示している時の処理をここに書きます。
 		if (ImGui::BeginMenu(u8"ファイル"))
 		{
-#pragma region New Level
-			if (ImGui::MenuItem(u8"新規作成", u8"Ctrl+Shift+N"))
+#pragma region New File
+			if (ImGui::MenuItem(u8"新規作成"/*, u8"Ctrl+Shift+N"*/))
 			{
-				Player::AttackDataList data;
-				player->SetAttackDatasList(data);
+				NewFile();
 			}
 #pragma endregion
 
-#pragma region Open Level
-			if (ImGui::MenuItem(u8"ファイルを開く", u8"Ctrl+O"))
+#pragma region Open File
+			if (ImGui::MenuItem(u8"ファイルを開く"/*, u8"Ctrl+O"*/))
 			{
-				const char* fullPass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
-
-				Player::AttackDataList data;
-				Player::AttackDataList::Deserialize(data, fullPass);
-
-				player->SetAttackDatasList(data);
+				OpenFile();
 			}
 #pragma endregion
 
-#pragma region Save Level
-			if (ImGui::MenuItem(u8"ファイルを保存", u8"Ctrl+Shift+S"))
+#pragma region Save File
+			if (ImGui::MenuItem(u8"ファイルを保存"/*, u8"Ctrl+Shift+S"*/))
 			{
-				const char* fullPass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
-				Player::AttackDataList::Serialize(player->GetAttackDatasList(), fullPass);
+				SaveFile();
 			}
 #pragma endregion
 
@@ -143,6 +136,13 @@ void PlayerEditor::GUI()
 					}
 
 					++count;
+				}
+
+				if (ImGui::Button("AddAttack"))
+				{
+					Player::AttackDatas datas;
+					list.attackDatas.emplace_back(datas);
+					selected.emplace_back(false);
 				}
 
 				ImGui::EndTabItem();
@@ -224,6 +224,26 @@ void PlayerEditor::GUI()
 						++count;
 					}
 
+					if (ImGui::Button("AddAttackData"))
+					{
+						Phoenix::s32 state = -1;
+						for (auto& attack : list.attackDatas)
+						{
+							for (auto& data : attack.datas)
+							{
+								if (state <= data.animState)
+								{
+									state = data.animState;
+								}
+							}
+						}
+						
+						Player::AttackData data;
+						data.animState = state + 1;
+
+						attack.datas.emplace_back(data);
+					}
+
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
@@ -240,4 +260,29 @@ void PlayerEditor::ResetSelected()
 	{
 		selected.at(i) = false;
 	}
+}
+
+// 新規作成
+void PlayerEditor::NewFile()
+{
+	Player::AttackDataList data;
+	player->SetAttackDatasList(data);
+}
+
+// ファイルを開く
+void PlayerEditor::OpenFile()
+{
+	const char* fullPass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
+
+	Player::AttackDataList data;
+	Player::AttackDataList::Deserialize(data, fullPass);
+
+	player->SetAttackDatasList(data);
+}
+
+// ファイルを保存
+void PlayerEditor::SaveFile()
+{
+	const char* fullPass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
+	Player::AttackDataList::Serialize(player->GetAttackDatasList(), fullPass);
 }

@@ -46,6 +46,7 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		camera = commonData->camera.get();
 		targetMark = commonData->targetMark.get();
 		targetMarkUI = commonData->targetMarkUI.get();
+		soundSystem = commonData->soundSystem.get();
 	}
 
 	// フレームバッファ
@@ -308,7 +309,16 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 	Phoenix::Math::Vector3 oldPlayerPos = player->GetPosition();
 	if (isUpdate && !isHitStop)
 	{
-		player->Update(*camera, !onFade && isPlayerUpdate);
+		Phoenix::s32 alive = 0;
+		for (const auto& enemy : enemyManager->GetEnemies())
+		{
+			if (enemy->GetEnable() && enemy->GetAlive())
+			{
+				++alive;
+			}
+		}
+
+		player->Update(*camera, !onFade && isPlayerUpdate /*&& (alive != 0)*/);
 	}
 
 	// メタAI
@@ -381,26 +391,55 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					Phoenix::Math::Vector3 pos;
 					Phoenix::Math::Vector3 dir;
 
-					// enemy01
+					if (enemies.at(i)->UnderAttack())
 					{
-						dir = enemy01Pos - centerOfGravity;
-						dir = Phoenix::Math::Vector3Normalize(dir);
-						dir.y = 0.0f;
+						// enemy02
+						{
+							dir = enemy02Pos - enemy01Pos;
+							dir = Phoenix::Math::Vector3Normalize(dir);
+							dir.y = 0.0f;
 
-						pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (enemy01Radius);
-						enemies.at(i)->SetTranslate(pos);
-						enemies.at(i)->UpdateTrasform();
+							pos = Phoenix::Math::Vector3(enemy01Pos.x, enemy01Pos.y, enemy01Pos.z) + dir * (enemy02Radius + enemy01Radius);
+							enemies.at(j)->SetTranslate(pos);
+							enemies.at(j)->UpdateTrasform();
+						}
 					}
-
-					// enemy02
+					else if (enemies.at(j)->UnderAttack())
 					{
-						dir = enemy02Pos - centerOfGravity;
-						dir = Phoenix::Math::Vector3Normalize(dir);
-						dir.y = 0.0f;
+						// enemy01
+						{
+							dir = enemy01Pos - enemy02Pos;
+							dir = Phoenix::Math::Vector3Normalize(dir);
+							dir.y = 0.0f;
 
-						pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (enemy02Radius);
-						enemies.at(j)->SetTranslate(pos);
-						enemies.at(j)->UpdateTrasform();
+							pos = Phoenix::Math::Vector3(enemy02Pos.x, enemy02Pos.y, enemy02Pos.z) + dir * (enemy01Radius + enemy02Radius);
+							enemies.at(i)->SetTranslate(pos);
+							enemies.at(i)->UpdateTrasform();
+						}
+					}
+					else
+					{
+						// enemy01
+						{
+							dir = enemy01Pos - centerOfGravity;
+							dir = Phoenix::Math::Vector3Normalize(dir);
+							dir.y = 0.0f;
+
+							pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (enemy01Radius);
+							enemies.at(i)->SetTranslate(pos);
+							enemies.at(i)->UpdateTrasform();
+						}
+
+						// enemy02
+						{
+							dir = enemy02Pos - centerOfGravity;
+							dir = Phoenix::Math::Vector3Normalize(dir);
+							dir.y = 0.0f;
+
+							pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (enemy02Radius);
+							enemies.at(j)->SetTranslate(pos);
+							enemies.at(j)->UpdateTrasform();
+						}
 					}
 				}
 			}
@@ -703,6 +742,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 	// カメラ更新
 	Phoenix::s32 nearEnemyIndex = -1;
+	Phoenix::s32 nearIndex = -1;
 	Phoenix::s32 drawEnemyUIIndex = -1;
 	{
 		/*if ((xInput[0].bLBt || GetAsyncKeyState('Q') & 1) && !isHitStop)
@@ -737,6 +777,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			static Phoenix::f32 cameraLen = 6.0f;
 
 			Phoenix::f32 nearEnemyLen = -1.0f;
+			Phoenix::f32 nearLen = -1.0f;
 			Phoenix::s32 enemyCount = 0;
 			Phoenix::Math::Vector3 nearEnemyPos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 			Phoenix::Math::Vector3 centerOfGravity = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
@@ -751,12 +792,15 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					Phoenix::Math::Vector3 enemyToPlayerVec = enemyPos - playerPos;
 					Phoenix::f32 len = Phoenix::Math::Vector3Length(enemyToPlayerVec);
 
-					//if (len <= 5.0f)
+					if (nearIndex == -1 || len < nearLen)
+					{
+						nearLen = len;
+						nearIndex = count;
+					}
 					if (enemy->InDistanceHitByAttack())
 					{
 						if (nearEnemyIndex == -1 || len < nearEnemyLen)
 						{
-							nearEnemyLen = len;
 							nearEnemyIndex = count;
 							nearEnemyPos = enemy->GetPosition();
 						}
@@ -774,7 +818,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
 			Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
 			forward.y = 0.0f;
-			if (nearEnemyIndex != -1 && nearEnemyLen != -1.0f)
+			if (nearEnemyIndex != -1)
 			{
 				Phoenix::Math::Vector3 dir = nearEnemyPos - player->GetPosition();
 				dir = Phoenix::Math::Vector3Normalize(dir);
@@ -794,9 +838,9 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					}
 				}
 			}
-			else
+			else if (0 <= nearIndex)
 			{
-				player->SetTargetPos(player->GetPosition() + forward * 1.0f);
+				player->SetTargetPos(enemyManager->GetEnemies().at(nearIndex)->GetPosition());
 			}
 
 			if (inTerritory)
@@ -831,7 +875,11 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 		for (const auto& enemy : enemyManager->GetEnemies())
 		{
-			enemy->UpdateUI();
+			Phoenix::Math::Vector3 pos = enemy->GetPosition();
+			pos.y += 2.15f;
+
+			Phoenix::Math::Vector3 screenPos = WorldToScreen(pos);
+			enemy->UpdateUI(Phoenix::Math::Vector2(screenPos.x, screenPos.y));
 		}
 	}
 

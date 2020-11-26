@@ -51,6 +51,19 @@ void EnemiesUI::AddUI(Phoenix::s32 index, std::shared_ptr<EnemyUI> ui)
 
 void EnemiesUI::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::FrameWork::Quad* quad)
 {
+	for (const auto& ui : uiList)
+	{
+		if (!ui->GetExit()) continue;
+
+		Phoenix::Math::Vector2 size = ui->GetSize() / 5.0f;
+		Phoenix::Math::Vector2 hpTexPos = ui->GetHPTexPos();
+		Phoenix::Math::Vector2 pos = ui->GetPos();
+		pos.x -= (EnemyUI::SizeWidth / 5.0f) / 2.0f;
+	
+		quad->Draw(graphicsDevice, hpBack.get(), pos.x, pos.y, EnemyUI::SizeWidth / 5.0f, EnemyUI::SizeHeigth / 5.0f);
+		quad->Draw(graphicsDevice, hp.get(), pos, size, Phoenix::Math::Vector2(0.0f, 0.0f), hpTexPos);
+	}
+
 	if (currentIndex <= -1 || uiList.size() <= currentIndex) return;
 
 	Phoenix::Math::Vector2 size = uiList.at(currentIndex)->GetSize();

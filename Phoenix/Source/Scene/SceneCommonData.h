@@ -8,6 +8,7 @@
 #include "../AI/MetaAI/MetaAI.h"
 #include "../UI/UISystem.h"
 #include "../UI/TargetMarkUI.h"
+#include "../Sound/SoundSystem.h"
 #include "Phoenix/Types.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Camera.h"
@@ -70,6 +71,9 @@ public:
 	// BGM + SE
 	std::shared_ptr<Phoenix::FrameWork::CXAudio2> bgm;
 	std::shared_ptr<Phoenix::FrameWork::CXAudio2> se;
+
+	// Sound
+	std::shared_ptr<SoundSystem<SoundType>> soundSystem;
 
 	// Tutorial
 	std::shared_ptr<Phoenix::Graphics::ITexture> operatorUI;

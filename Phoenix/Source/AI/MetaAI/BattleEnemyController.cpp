@@ -114,24 +114,28 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState)
 					}
 				}
 			}
-
-			if (enemy->GetBattleState() == BattleEnemyState::Attack)
+			else if (enemy->GetBattleState() == BattleEnemyState::Attack)
 			{
 				attackRight = false;
 			}
 
-			//inBattle = true;
-
 			if (!enemy->InBattleTerritory()) continue;
 
-			indices.emplace_back(index);
+			if (enemy->GetBattleState() == BattleEnemyState::Idle || enemy->GetBattleState() == BattleEnemyState::Walk || enemy->GetBattleState() == BattleEnemyState::Run)
+			{
+				indices.emplace_back(index);
+			}
 		}
 
-		if (!notAttack && attackRight /*&& inBattle*/ && 0 < indices.size())
+		if (/*!notAttack && */attackRight /*&& inBattle*/ && 0 < indices.size())
 		{
 			// TODO : Idleステートの時に再抽選
 			Phoenix::s32 r = rand() % static_cast<Phoenix::s32>(indices.size());
-			if (enemies.at(r)->InBattleTerritory())
+			/*if (enemies.at(indices.at(r))->GetBattleState() == BattleEnemyState::DamageSmall || enemies.at(indices.at(r))->GetBattleState() == BattleEnemyState::DamageBig)
+			{
+				attackRight = attackRight;
+			}*/
+			if (enemies.at(indices.at(r))->InBattleTerritory())
 			{
 				notAttack = true;
 				enemyManager->SetAttackRight(indices.at(r), (enemyManager->GetAliveEnemyCount() == 1));

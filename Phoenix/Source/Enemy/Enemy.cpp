@@ -284,7 +284,7 @@ void Enemy::Update(bool onControl)
 
 		case EnemyMode::Battle:
 			nextBattleState = battleAI->Update();
-			if (nextBattleState == BattleEnemyState::Idle && stackAttackRight)
+			/*if (nextBattleState == BattleEnemyState::Idle && stackAttackRight)
 			{
 				stackAttackRight = false;
 				if (battleAI->GetCurrentStateName() == BattleEnemyState::Attack)
@@ -304,13 +304,12 @@ void Enemy::Update(bool onControl)
 				SetMoveInput(0.0f, 0.0f);
 				SetMoveSpeed(0.0f);
 			}
-			else if (nextBattleState != BattleEnemyState::NoneState)
+			else */
+			if (nextBattleState != BattleEnemyState::NoneState)
 			{
-				changeAnimation = true;
-				changeState = nextBattleState;
 				if (battleAI->GetCurrentStateName() != nextBattleState)
 				{
-					battleAI->GoToState(nextBattleState);
+					SetState(nextBattleState);
 				}
 				SetMoveInput(0.0f, 0.0f);
 				SetMoveSpeed(0.0f);
@@ -432,12 +431,14 @@ void Enemy::UpdateTrasform()
 }
 
 // UIçXêV
-void Enemy::UpdateUI()
+void Enemy::UpdateUI(Phoenix::Math::Vector2 pos)
 {
 	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
 	hp = hp <= 0 ? 0 : hp;
 
 	ui->Update((hp / LifeRange) * 100.0f);
+	ui->SetExit(alive);
+	ui->SetPos(pos);
 }
 
 // çUåÇîªíË
@@ -744,6 +745,8 @@ void Enemy::ChangeAnimation()
 	case BattleEnemyState::Death:
 		model->PlayAnimation(6, 1, 0.2f);
 		model->SetLoopAnimation(false);
+		model->SetBeginTime(55.0f / 60.0f);
+		model->SetCurrentTime(42.0f / 60.0f);
 		break;
 
 	case BattleEnemyState::NoneState: break;
@@ -819,7 +822,7 @@ void Enemy::Damage(int damage)
 		SetMoveInput(0.0f, 0.0f);
 		SetMoveSpeed(0.0f);
 
-		battleAI->GoToState(BattleEnemyState::DamageBig), true;
+		battleAI->GoToState(BattleEnemyState::DamageBig, true);
 
 		changeAnimation = true;
 		changeState = BattleEnemyState::DamageBig;

@@ -47,4 +47,19 @@ public:
 	/// 選択リセット
 	/// </summary>
 	void ResetSelected();
+
+	/// <summary>
+	/// 新規作成
+	/// </summary>
+	void NewFile();
+
+	/// <summary>
+	/// ファイルを開く
+	/// </summary>
+	void OpenFile();
+
+	/// <summary>
+	/// ファイルを保存
+	/// </summary>
+	void SaveFile();
 };

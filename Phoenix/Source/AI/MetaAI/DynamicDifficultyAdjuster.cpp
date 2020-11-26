@@ -42,6 +42,10 @@ void DynamicDifficultyAdjuster::Update(Phoenix::s32 skillLevel, bool downScore)
 			notUpdatedTime = 0;
 		}
 	}
+	else if (10 < skillLevel)
+	{
+		ideaState = BattleEnemyState::Attack;
+	}
 	else if (0 < skillLevel && skillLevel <= 10)
 	{
 		Phoenix::s32 percent = rand() % 100;

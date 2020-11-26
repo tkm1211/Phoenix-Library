@@ -233,6 +233,7 @@ namespace AI
 		// ó‘Ô‚É“ü‚Á‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éŠÖ”
 		void DamageSmall::SetUp()
 		{
+			canChangeState = false;
 			owner->SetMoveSpeed(Speed);
 		}
 
@@ -247,6 +248,7 @@ namespace AI
 		{
 			if (!owner->GetModel()->IsPlaying())
 			{
+				canChangeState = true;
 				return BattleEnemyState::Idle;
 			}
 
@@ -269,6 +271,7 @@ namespace AI
 		// ó‘Ô‚É“ü‚Á‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éŠÖ”
 		void DamageBig::SetUp()
 		{
+			canChangeState = false;
 			owner->SetMoveSpeed(Speed);
 		}
 
@@ -283,6 +286,7 @@ namespace AI
 		{
 			if (!owner->GetModel()->IsPlaying())
 			{
+				canChangeState = true;
 				return BattleEnemyState::Idle;
 			}
 

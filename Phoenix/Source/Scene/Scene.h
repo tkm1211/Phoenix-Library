@@ -9,6 +9,7 @@
 #include "../UI/UISystem.h"
 #include "../UI/TargetMarkUI.h"
 #include "../Primitive/GeometricPrimitive.h"
+#include "../Sound/SoundSystem.h"
 #include "Phoenix/Types.h"
 #include "Phoenix/OS/Display.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
@@ -62,6 +63,7 @@ private:
 	Phoenix::FrameWork::IShader* pbrShader = nullptr;
 	Phoenix::FrameWork::IShader* pbrSkinShader = nullptr;
 	Phoenix::Graphics::Camera* camera = nullptr;
+	SoundSystem<SoundType>* soundSystem = nullptr;
 
 	// フレームバッファ
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[3];
@@ -298,6 +300,7 @@ private:
 	MetaAI* metaAI = nullptr;
 	UISystem* uiSystem = nullptr;
 	TargetMarkUI* targetMarkUI = nullptr;
+	SoundSystem<SoundType>* soundSystem = nullptr;
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
 	Phoenix::FrameWork::ModelObject* bossStageModel = nullptr;
 	Phoenix::FrameWork::IShader* basicShader = nullptr;

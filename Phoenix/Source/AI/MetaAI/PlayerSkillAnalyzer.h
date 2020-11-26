@@ -7,7 +7,7 @@ class PlayerSkillAnalyzer
 {
 private:
 	Phoenix::s32 playerSkillLevel = 1;
-	Phoenix::s32 playerSkillLevelRange = 10;
+	Phoenix::s32 playerSkillLevelRange = 100;
 	Phoenix::s32 levelUpExperiencePoint = 10;
 
 	Phoenix::s32 oldPlayerSkillLevel = 1;

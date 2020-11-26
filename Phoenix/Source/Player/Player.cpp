@@ -668,8 +668,6 @@ void Player::UpdateUI()
 
 void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player control
 {
-	if (animationState == AnimationState::Damage && model->IsPlaying()) return;
-
 	Phoenix::f32 sX = 0.0f;
 	Phoenix::f32 sY = 0.0f;
 
@@ -680,27 +678,6 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	sY = GetKeyState('S') < 0 ? 1.0f : sY;
 	sX = GetKeyState('A') < 0 ? -1.0f : sX;
 	sX = GetKeyState('D') < 0 ? 1.0f : sX;
-
-	if (xInput[0].bRBs || GetKeyState('L') < 0)
-	{
-		InEnemyTerritory(true);
-	}
-	else
-	{
-		InEnemyTerritory(false);
-	}
-
-	// ブレンドレート計算
-	{
-		if (isBattleMode)
-		{
-			blendRate.x = sX;
-			blendRate.y = sY;
-		}
-
-		blendRate.z = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(sX, sY));
-		blendRate.z = 1.0f <= blendRate.z ? 1.0f : blendRate.z;
-	}
 
 	// プレイヤーの最終方向を決定する角度を計算
 	auto UpdateRotateY = [&](Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::f32 cameraRotateY)
@@ -820,7 +797,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 			ChangeAnimationState(AnimationState::Attack, 0.0f);
 			ChangeAttackAnimationState(attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).animState, attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).animIndex, attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playSpeed);
-		
+
 			speed = Attack01MoveSpeed;
 
 			if (sX != 0.0f || sY != 0.0f)
@@ -1017,6 +994,43 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			}
 		}
 	};
+
+	// ダメージ中に回避に遷移
+	if (animationState == AnimationState::Damage && model->IsPlaying())
+	{
+		// 回避ステートへ
+		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && model->GetLastTime() <= (15.0f / 60.0f))
+		{
+			ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
+			JudgeDedgeIndex();
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	// ロックオン
+	if (xInput[0].bRBs || GetKeyState('L') < 0)
+	{
+		InEnemyTerritory(true);
+	}
+	else
+	{
+		InEnemyTerritory(false);
+	}
+
+	// ブレンドレート計算
+	{
+		if (isBattleMode)
+		{
+			blendRate.x = sX;
+			blendRate.y = sY;
+		}
+
+		blendRate.z = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(sX, sY));
+		blendRate.z = 1.0f <= blendRate.z ? 1.0f : blendRate.z;
+	}
 
 	// 攻撃キーの入力確認
 	AttackKey key = AttackKey::None;
@@ -1484,6 +1498,9 @@ bool Player::AccumulationDamege()
 		isAttack = false;
 		speed = 0.0f;
 		animationState = AnimationState::Damage;
+
+		attackState = -1;
+		attackReceptionTimeCnt = 0;
 
 		accumulationDamege = 0;
 		accumulationTimeCnt = 0;

@@ -38,7 +38,7 @@ BattleEnemyState BattleEnemyAI::Update()
 	BattleEnemyState nextState = currentState->Update();
 	if (nextState != BattleEnemyState::NoneState)
 	{
-		GoToState(nextState);
+		owner->SetState(nextState);
 		return nextState;
 	}
 

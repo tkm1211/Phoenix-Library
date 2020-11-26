@@ -80,6 +80,36 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	se = Phoenix::FrameWork::CXAudio2::Create();
 	se->Load(L"..\\Data\\Assets\\Audio\\SE\\Player\\Walk\\walk.wav", 0);
 
+	soundSystem = SoundSystem<SoundType>::Create();
+
+	// 読み込み
+	{
+		Phoenix::s32 loadTypeNum = 0; // コピペミスを防ぐため
+
+		// BGM
+		loadTypeNum = 0;
+		{
+		}
+
+		// Loop BGM
+		loadTypeNum = 1;
+		{
+			soundSystem->AddSound(SoundType::BGM_Title, L"..\\Data\\Assets\\Audio\\BGM\\Title.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::BGM_Game, L"..\\Data\\Assets\\Audio\\BGM\\GameMain.wav", loadTypeNum);
+		}
+
+		// SE
+		loadTypeNum = 0;
+		{
+			soundSystem->AddSound(SoundType::SE_Player_Walk, L"..\\Data\\Assets\\Audio\\SE\\Player\\Walk\\walk.wav", loadTypeNum);
+		}
+
+		// Loop SE
+		loadTypeNum = 1;
+		{
+		}
+	}
+
 	operatorUI = Phoenix::Graphics::ITexture::Create();
 	operatorUI->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\operator.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 
