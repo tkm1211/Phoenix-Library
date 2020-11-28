@@ -18,6 +18,12 @@ private:
 	std::shared_ptr<Phoenix::FrameWork::IShader> pbrShader;
 	std::vector<bool> selected;
 	Phoenix::s32 currentAttackNum = -1;
+	std::vector<bool> helpOpen;
+	Phoenix::s32 keyCount = 0;
+
+	bool saveExit = false;
+	bool saveCheck = false;
+	Phoenix::s32 saveCount = 0;
 
 public:
 	PlayerEditor() {}
@@ -57,6 +63,11 @@ public:
 	/// ファイルを開く
 	/// </summary>
 	void OpenFile();
+
+	/// <summary>
+	/// ファイルを保存確認
+	/// </summary>
+	void SaveCheck();
 
 	/// <summary>
 	/// ファイルを保存

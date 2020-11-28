@@ -252,7 +252,6 @@
     <ClCompile Include="Source\Scene\SceneSystem.cpp" />
     <ClCompile Include="Source\Scene\SceneTitle.cpp" />
     <ClCompile Include="Source\Scene\SceneTutorial.cpp" />
-    <ClCompile Include="Source\Sound\SoundSystem.cpp" />
     <ClCompile Include="Source\UI\BossUI.cpp" />
     <ClCompile Include="Source\UI\EnemiesUI.cpp" />
     <ClCompile Include="Source\UI\EnemyUI.cpp" />

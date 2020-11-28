@@ -1054,7 +1054,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			if (attackDatasList.attackDatas.at(0).receptionKey == key && 0 < attackDatasList.attackDatas.at(0).datas.size())
 			{
 				attackComboState = 0;
-				attackReceptionTimeCnt = attackDatasList.attackDatas.at(0).datas.at(0).playBeginTime != -1 ? attackDatasList.attackDatas.at(0).datas.at(0).playBeginTime : 0.0f;
+				attackReceptionTimeCnt = 0.0f < attackDatasList.attackDatas.at(0).datas.at(0).playBeginTime ? attackDatasList.attackDatas.at(0).datas.at(0).playBeginTime : 0.0f;
 
 				ChangeAnimationState(AnimationState::Attack, 0.0f);
 				ChangeAttackAnimationState(attackDatasList.attackDatas.at(0).datas.at(0).animState, attackDatasList.attackDatas.at(0).datas.at(0).animIndex, attackDatasList.attackDatas.at(0).datas.at(0).playSpeed);
@@ -1089,7 +1089,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 					JudgeInput01(index, strongNextIndex);
 				}
 			}
-			else if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionEndTime)
+			else if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionEndTime)
 			{
 				if (wearNextIndex < endIndex && 0 <= wearNextIndex)
 				{
@@ -1209,7 +1209,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 				Phoenix::s32 index = attackState;
 
 				// Ÿ‚ÌUŒ‚‚ª”­“®‚·‚éƒ{ƒ^ƒ“‚Ìó•t
-				if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionEndTime)
+				if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionEndTime)
 				{
 					ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
 					ChangeAttackAnimationState(-1, -1, 0.0f);
@@ -1374,20 +1374,23 @@ void Player::ChangeAttackAnimation(Phoenix::u32 animationNum)
 	Phoenix::f32 beginTime = attackDatasList.attackDatas.at(index).datas.at(attackComboState).playBeginTime;
 	Phoenix::f32 endTime = attackDatasList.attackDatas.at(index).datas.at(attackComboState).playEndTime;
 
-	if (index == 6 || index == 7 || index == 8 || index == 9 || index == 11)
+	if (11 <= animIndex && animIndex <= 22 || 27 <= animIndex && animIndex <= 29)
+	{
+		model->PlayAnimation(animIndex, 0, 0.2f);
+	}
+	else
 	{
 		model->PlayAnimation(animIndex, 1, 0.2f);
 	}
-	else model->PlayAnimation(animIndex, 0, 0.2f);
 	model->SetLoopAnimation(false);
 	model->SetSpeed(animationSpeed);
 
-	if (beginTime != -1.0f)
+	if (0.0f <= beginTime)
 	{
 		model->SetBeginTime(beginTime);
 		model->SetCurrentTime(beginTime);
 	}
-	if (endTime != -1.0f)
+	if (0.0f < endTime)
 	{
 		model->SetEndTime(endTime);
 	}
@@ -1425,7 +1428,7 @@ void Player::AttackJudgment()
 		Phoenix::s32 index = attackState;
 
 		// “–‚½‚è”»’è
-		if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt <= attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionEndTime)
+		if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionEndTime)
 		{
 			Judgment(attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionNum);
 			if (attackDatasList.attackDatas.at(index).receptionKey == AttackKey::WeakAttack)
