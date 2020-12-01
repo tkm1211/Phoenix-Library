@@ -92,7 +92,7 @@ void Boss::Initialize()
 {
 	// 待機モーション開始
 	{
-		model->PlayAnimation(0, 1);
+		model->PlayAnimation(0, 0, 1);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(2.0f);

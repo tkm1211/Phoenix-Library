@@ -91,6 +91,9 @@
     <Filter Include="Source\Actor">
       <UniqueIdentifier>{d87dd28b-1201-4e3c-b0fb-4fdbc6d7d771}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\StateMachine">
+      <UniqueIdentifier>{bf37f27e-91cb-481f-9b86-0e5e44657a5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -176,6 +179,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\System\SceneSystem.h">
       <Filter>Include\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\StateMachine\StateMachine.h">
+      <Filter>Include\StateMachine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

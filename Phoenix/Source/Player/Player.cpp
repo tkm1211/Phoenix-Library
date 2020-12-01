@@ -35,12 +35,13 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	}
 
 	// アニメーション読み込み
+	Phoenix::s32 beginIndex, endIndex;
 	{
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardWalk\\Walking_With_Shopping_Bag.fbx", -1); // 1
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardRun\\Running.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\FowardRun\\SlowRunning.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Roll\\Sprinting_Forward_Roll.fbx", -1);
-		
+
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Idle\\Ready_Idle.fbx", -1); // 5
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Forward\\Walk_Forward.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Walk\\Back\\Walk_Backward.fbx", -1);
@@ -52,7 +53,7 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Right\\Right_Step.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Dodge\\Left\\Left_Step.fbx", -1);
 
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Punch\\RightPunch\\Righ_Punch_Begin.fbx", -1); // 14
+		beginIndex = model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Punch\\RightPunch\\Righ_Punch_Begin.fbx", -1); // 14
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Punch\\RightPunch\\Righ_Punch_End.fbx", -1);
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Weak\\Punch\\LeftPunch\\Left_Punch_Begin.fbx", -1); // 16
@@ -80,7 +81,7 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Turn_Kick_01.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Turn_Kick_End.fbx", -1);
 
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Mma_Kick.fbx", -1); // 33
+		endIndex = model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Mma_Kick.fbx", -1); // 33
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit_Small.fbx", -1); // 34
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // 35
@@ -89,7 +90,7 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Death\\Dying.fbx", -1); // 37
 
-
+		/*
 		model->AddAnimationLayer(0); // idle
 
 		model->AddAnimationLayer(1); // walk
@@ -130,7 +131,7 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->AddAnimationLayer(29); // strong left hook
 
 		model->AddAnimationLayer(30); // turn right kick begin // 27
-		model->AddAnimationLayer(31); // turn right kick 
+		model->AddAnimationLayer(31); // turn right kick
 		model->AddAnimationLayer(32); // turn right kick end
 
 		model->AddAnimationLayer(33); // turn left kick // 30
@@ -147,7 +148,61 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->AddBlendAnimationToLayer(8, 6, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
 		model->AddBlendAnimationToLayer(9, 6, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
 
-		model->AddBlendAnimationToLayer(static_cast<Phoenix::u32>(AnimationState::SlowRun), static_cast<Phoenix::u32>(AnimationState::Walk), Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
+		model->AddBlendAnimationToLayer(static_cast<Phoenix::u32>(AnimationState::SlowRun), static_cast<Phoenix::u32>(AnimationState::Walk), Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));*/
+
+		// レイヤー追加
+		Phoenix::s32 layerNum = 0;
+		{
+			layerNum = model->AddAnimationLayer();
+			layerIndexList.insert(std::make_pair(LayerType::Base, layerNum));
+
+			layerNum = model->AddAnimationLayer(56, 65);
+			layerIndexList.insert(std::make_pair(LayerType::LowerBody, layerNum));
+		}
+
+		// ステート追加
+		Phoenix::s32 stateNum = 0;
+		{
+			auto AddState = [&](StateType type, Phoenix::u32 animationIndex, Phoenix::u32 layerIndex)
+			{
+				stateNum = model->AddAnimationStateToLayer(animationIndex, layerIndex);
+				stateIndexList.insert(std::make_pair(type, stateNum));
+			};
+
+			// ベースレイヤーにステート追加
+			layerNum = layerIndexList.at(LayerType::Base);
+			{
+				for (Phoenix::s32 i = beginIndex; i <= endIndex; ++i)
+				{
+					model->AddAnimationStateToLayer(i, layerNum);
+				}
+
+				AddState(StateType::Idle, 0, layerNum);
+				AddState(StateType::BattleIdle, 5, layerNum);
+				AddState(StateType::DamageSmall, 34, layerNum);
+				AddState(StateType::DamageBig, 35, layerNum);
+				AddState(StateType::ForwardDedge, 10, layerNum);
+				AddState(StateType::BackDedge, 11, layerNum);
+				AddState(StateType::RightDedge, 12, layerNum);
+				AddState(StateType::LeftDedge, 13, layerNum);
+				AddState(StateType::Death, 37, layerNum);
+
+				Phoenix::s32 blendTreeIndex = model->AddBlendTreeToLayer(layerNum);
+				model->AddBlendAnimationStateToBlendTree(1, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(3, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f), layerNum, blendTreeIndex);
+			}
+
+			// 下半身レイヤーにブレンドツリー追加
+			layerNum = layerIndexList.at(LayerType::LowerBody);
+			{
+				Phoenix::s32 blendTreeIndex = model->AddBlendTreeToLayer(layerNum);
+				model->AddBlendAnimationStateToBlendTree(5, Phoenix::Math::Vector3( 0.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(6, Phoenix::Math::Vector3( 0.0f,  1.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(7, Phoenix::Math::Vector3( 0.0f, -1.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(8, Phoenix::Math::Vector3( 1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(9, Phoenix::Math::Vector3(-1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+			}
+		}
 	}
 
 	// コリジョン初期化
@@ -439,7 +494,7 @@ void Player::Initialize()
 
 	// 待機モーション開始
 	{
-		model->PlayAnimation(0, 1);
+		model->PlayAnimation(layerIndexList.at(LayerType::Base), stateIndexList.at(StateType::Idle), 1);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
 		//model->PauseAnimation(true);
@@ -821,22 +876,22 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			{
 				if (sY < 0.0f)
 				{
-					dedgeLayerIndex = 7;
+					dedgeLayerIndex = stateIndexList.at(StateType::ForwardDedge);
 				}
 				if (sY > 0.0f)
 				{
-					dedgeLayerIndex = 8;
+					dedgeLayerIndex = stateIndexList.at(StateType::BackDedge);
 				}
 			}
 			else if (fabsf(sY) <= fabsf(sX))
 			{
 				if (sX < 0.0f)
 				{
-					dedgeLayerIndex = 9;
+					dedgeLayerIndex = stateIndexList.at(StateType::RightDedge);
 				}
 				if (sX > 0.0f)
 				{
-					dedgeLayerIndex = 10;
+					dedgeLayerIndex = stateIndexList.at(StateType::LeftDedge);
 				}
 			}
 
@@ -964,7 +1019,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 
 			UpdateRotateY(0.0f, 1.0f, fictitiousCameraRotateY);
 			RotatePlayer(rotateY, true);
-			dedgeLayerIndex = 8;
+			dedgeLayerIndex = stateIndexList.at(StateType::BackDedge);
 		}
 	};
 
@@ -1272,17 +1327,20 @@ void Player::ChangeAnimation()
 	if (!isChangeAnimation) return;
 
 	Phoenix::u32 animationNum = static_cast<Phoenix::u32>(animationState);
+	Phoenix::s32 baseLayerIndex = layerIndexList.at(LayerType::Base);
+	Phoenix::s32 lowerBodyLayerIndex = layerIndexList.at(LayerType::LowerBody);
+
 	switch (animationState)
 	{
 	case AnimationState::Idle:
 		if (isBattleMode)
 		{
-			model->PlayAnimation(5, 1, 0.2f);
+			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::BattleIdle), stateIndexList.at(StateType::BattleIdle), 0.2f);
 			model->SetLoopAnimation(true);
 		}
 		else
 		{
-			model->PlayAnimation(animationNum, 1, 0.1f);
+			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Idle), 1, 0.1f);
 			model->SetLoopAnimation(true);
 		}
 		break;
@@ -1290,73 +1348,43 @@ void Player::ChangeAnimation()
 	case AnimationState::Walk:
 		if (isBattleMode)
 		{
-			model->PlayAnimation(5, 1, 0.2f);
-			model->PlayBlendAnimation(6, 1, 0.2f);
+			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::BattleIdle), 1, 0.2f);
+			model->SimultaneousPlayBlendTreeAniamation(lowerBodyLayerIndex, 0, 1, 0.2f);
 			model->SetLoopAnimation(true);
 			model->SetBlendLoopAnimation(true);
 		}
 		else
 		{
-			model->PlayAnimation(animationNum, 1, 0.2f);
+			model->PlayBlendTreeAnimation(baseLayerIndex, 0, 1, 0.2f);
 			model->SetLoopAnimation(true);
 		}
 		break;
 
-	case AnimationState::Run:
-		model->PlayAnimation(animationNum, 1, 0.2f);
-		model->SetLoopAnimation(true);
-		break;
-
-	case AnimationState::Roll:
-		model->PlayAnimation(animationNum, 1, 0.2f);
-		model->SetLoopAnimation(false);
-		model->SetSpeed(1.5f);
-		break;
-
 	case AnimationState::Attack:
-		ChangeAttackAnimation(animationNum);
+		ChangeAttackAnimation(baseLayerIndex);
 		break;
 
 	case AnimationState::Damage:
 		if (damagePower == 0)
 		{
-			model->PlayAnimation(31, 1, 0.2f);
+			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::DamageSmall), 1, 0.2f);
 			model->SetEndTime(43.0f / 60.0f);
 		}
 		else if (damagePower == 1)
 		{
-			model->PlayAnimation(32, 1, 0.2f);
+			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::DamageBig), 1, 0.2f);
 		}
 		model->SetLoopAnimation(false);
 		break;
 
 	case AnimationState::Dedge:
-		model->PlayAnimation(dedgeLayerIndex, 0, 0.2f);
-		//model->UpdateTransform(1 / 60.0f);
+		model->PlayAnimation(baseLayerIndex, dedgeLayerIndex, 0, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(2.25f);
-
-		/*if (dedgeLayerIndex == 15)
-		{
-			model->SetSpeed(1.85f);
-		}
-		else if(dedgeLayerIndex == 16)
-		{
-			model->SetSpeed(1.75f);
-		}
-		else
-		{
-			model->SetSpeed(1.5f);
-		}*/
-		break;
-
-	case AnimationState::Guard:
-		model->PlayAnimation(33, 1, 0.2f);
-		model->SetLoopAnimation(false);
 		break;
 
 	case AnimationState::Death:
-		model->PlayAnimation(34, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Death), 1, 0.2f);
 		model->SetLoopAnimation(false);
 		break;
 	
@@ -1366,7 +1394,7 @@ void Player::ChangeAnimation()
 	isChangeAnimation = false;
 }
 
-void Player::ChangeAttackAnimation(Phoenix::u32 animationNum)
+void Player::ChangeAttackAnimation(Phoenix::s32 layerIndex)
 {
 	Phoenix::s32 index = attackState;
 	Phoenix::u32 animIndex = static_cast<Phoenix::u32>(attackDatasList.attackDatas.at(index).datas.at(attackComboState).animIndex);
@@ -1374,13 +1402,13 @@ void Player::ChangeAttackAnimation(Phoenix::u32 animationNum)
 	Phoenix::f32 beginTime = attackDatasList.attackDatas.at(index).datas.at(attackComboState).playBeginTime;
 	Phoenix::f32 endTime = attackDatasList.attackDatas.at(index).datas.at(attackComboState).playEndTime;
 
-	if (11 <= animIndex && animIndex <= 22 || 27 <= animIndex && animIndex <= 29)
+	if (0 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 18)
 	{
-		model->PlayAnimation(animIndex, 0, 0.2f);
+		model->PlayAnimation(layerIndex, animIndex, 0, 0.2f);
 	}
 	else
 	{
-		model->PlayAnimation(animIndex, 1, 0.2f);
+		model->PlayAnimation(layerIndex, animIndex, 1, 0.2f);
 	}
 	model->SetLoopAnimation(false);
 	model->SetSpeed(animationSpeed);
@@ -1564,33 +1592,33 @@ void Player::GUI()
 			//ImGui::ListBox("ListBox\n(single select)", &boneIndex, model->GetBoneNames().data(), model->GetBoneNames().size(), 4);
 			ImGui::TreePop();
 		}
-		if (ImGui::TreeNode("Animation"))
-		{
-			ImGui::InputInt("AnimClip", &animClip);
-			ImGui::Text("Len : %f", model->GetLength());
-			ImGui::Text("RunLen : %f", attackReceptionTimeCnt);
-			if (ImGui::Button("Play"))
-			{
-				model->PlayAnimation(0, animClip);
-			}
-			if (ImGui::Button("LoopPlay"))
-			{
-				model->SetLoopAnimation(true);
-			}
-			ImGui::TreePop();
+		//if (ImGui::TreeNode("Animation"))
+		//{
+		//	ImGui::InputInt("AnimClip", &animClip);
+		//	ImGui::Text("Len : %f", model->GetLength());
+		//	ImGui::Text("RunLen : %f", attackReceptionTimeCnt);
+		//	if (ImGui::Button("Play"))
+		//	{
+		//		model->PlayAnimation(0, animClip);
+		//	}
+		//	if (ImGui::Button("LoopPlay"))
+		//	{
+		//		model->SetLoopAnimation(true);
+		//	}
+		//	ImGui::TreePop();
 
-			if (ImGui::TreeNode("Blend"))
-			{
-				ImGui::DragFloat("Rate", &blendRate.x, 0.01f, 0.0f, 1.0f);
-				if (ImGui::Button("PlayBlendAnim"))
-				{
-					isChangeAnimation = true;
-					//speed = WalkSpeed;
-					animationState = AnimationState::Walk;
-				}
-				ImGui::TreePop();
-			}
-		}
+		//	if (ImGui::TreeNode("Blend"))
+		//	{
+		//		ImGui::DragFloat("Rate", &blendRate.x, 0.01f, 0.0f, 1.0f);
+		//		if (ImGui::Button("PlayBlendAnim"))
+		//		{
+		//			isChangeAnimation = true;
+		//			//speed = WalkSpeed;
+		//			animationState = AnimationState::Walk;
+		//		}
+		//		ImGui::TreePop();
+		//	}
+		//}
 		/*if (ImGui::TreeNode("Pass"))
 		{
 			HANDLE hFile;

@@ -98,7 +98,7 @@ void SceneTitle::Initialize()
 
 	// 再生
 	{
-		soundSystem->Play(SoundType::BGM_Title);
+		soundSystem->Play(SoundType::BGM_Title, true);
 	}
 }
 
@@ -108,19 +108,27 @@ void SceneTitle::Update(Phoenix::f32 elapsedTime)
 	//camera->FreeCamera();
 	camera->Update();
 
+	// サウンド更新
+	{
+		soundSystem->Update();
+	}
+
 	if (sceneSystem->GetOnFade()) return;
 
 	if (isChangeScene)
 	{
 		if (dissolveThreshold <= 1.2f) dissolveThreshold += dissolveSpeed;
 		//else sceneSystem->ChangeScene(SceneType::Tutorial, false, true);
-		else sceneSystem->ChangeScene(SceneType::Game, false, true);
+		else
+		{
+			sceneSystem->ChangeScene(SceneType::Game, false, true);
+			soundSystem->Stop(SoundType::BGM_Title, true);
+		}
 		return;
 	}
 
 	if ((GetKeyState(VK_SPACE) & 1) || xInput[0].bAt || xInput[0].bBt || xInput[0].bXt || xInput[0].bYt || xInput[0].bRBt || xInput[0].bLBt || xInput[0].bRTt || xInput[0].bLTt || xInput[0].bSTARTt || xInput[0].bBACKt)
 	{
-		soundSystem->Stop(SoundType::BGM_Title);
 		isChangeScene = true;
 		dissolveThreshold = 0.5f;
 	}

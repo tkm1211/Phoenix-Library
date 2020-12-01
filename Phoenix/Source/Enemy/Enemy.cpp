@@ -21,6 +21,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	}
 
 	// アニメーション読み込み
+	Phoenix::s32 beginIndex, endIndex;
 	{
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Forward\\Walk_Forward.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Back\\Walk_Backward.fbx", -1);
@@ -36,11 +37,11 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Death\\Dying_Backwards.fbx", -1);
 
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Cross_Punch.fbx", -1);
+		beginIndex = model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Cross_Punch.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Punching.fbx", -1);
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Hook_Punch.fbx", -1);
+		endIndex = model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Hook_Punch.fbx", -1);
 
-		model->AddAnimationLayer(0); // 0
+		/*model->AddAnimationLayer(0); // 0
 		model->AddAnimationLayer(0, 56, 65); // 1
 
 		model->AddAnimationLayer(5); // 2
@@ -58,7 +59,53 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->AddBlendAnimationToLayer(1, 1, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
 		model->AddBlendAnimationToLayer(2, 1, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
 		model->AddBlendAnimationToLayer(3, 1, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
-		model->AddBlendAnimationToLayer(4, 1, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
+		model->AddBlendAnimationToLayer(4, 1, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));*/
+
+		Phoenix::s32 layerNum = 0;
+		{
+			layerNum = model->AddAnimationLayer();
+			layerIndexList.insert(std::make_pair(LayerType::Base, layerNum));
+
+			layerNum = model->AddAnimationLayer(56, 65);
+			layerIndexList.insert(std::make_pair(LayerType::LowerBody, layerNum));
+		}
+
+		// ステート追加
+		Phoenix::s32 stateNum = 0;
+		{
+			auto AddState = [&](StateType type, Phoenix::u32 animationIndex, Phoenix::u32 layerIndex)
+			{
+				stateNum = model->AddAnimationStateToLayer(animationIndex, layerIndex);
+				stateIndexList.insert(std::make_pair(type, stateNum));
+			};
+
+			// ベースレイヤーにステート追加
+			layerNum = layerIndexList.at(LayerType::Base);
+			{
+				for (Phoenix::s32 i = beginIndex; i <= endIndex; ++i)
+				{
+					model->AddAnimationStateToLayer(i, layerNum);
+				}
+
+				AddState(StateType::Idle, 0, layerNum);
+				AddState(StateType::Run, 5, layerNum);
+				AddState(StateType::DamageSmall, 7, layerNum);
+				AddState(StateType::DamageBig, 8, layerNum);
+				AddState(StateType::Dedge, 6, layerNum);
+				AddState(StateType::Death, 9, layerNum);
+			}
+
+			// 下半身レイヤーにブレンドツリー追加
+			layerNum = layerIndexList.at(LayerType::LowerBody);
+			{
+				Phoenix::s32 blendTreeIndex = model->AddBlendTreeToLayer(layerNum);
+				model->AddBlendAnimationStateToBlendTree(0, Phoenix::Math::Vector3( 0.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(1, Phoenix::Math::Vector3( 0.0f,  1.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(2, Phoenix::Math::Vector3( 0.0f, -1.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(3, Phoenix::Math::Vector3( 1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(4, Phoenix::Math::Vector3(-1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+			}
+		}
 	}
 
 	// コリジョン初期化
@@ -184,7 +231,7 @@ void Enemy::Initialize()
 {
 	// 待機モーション開始
 	{
-		model->PlayAnimation(0, 1);
+		model->PlayAnimation(layerIndexList.at(LayerType::Base), stateIndexList.at(StateType::Idle), 1);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
 	}
@@ -699,51 +746,54 @@ void Enemy::ChangeAnimation()
 {
 	if (!changeAnimation) return;
 
+	Phoenix::s32 baseLayerIndex = layerIndexList.at(LayerType::Base);
+	Phoenix::s32 lowerBodyLayerIndex = layerIndexList.at(LayerType::LowerBody);
+
 	switch (changeState)
 	{
 	case BattleEnemyState::Idle:
-		model->PlayAnimation(0, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Idle), 1, 0.2f);
 		model->SetLoopAnimation(true);
 		break;
 
 	case BattleEnemyState::Walk:
-		model->PlayAnimation(0, 1, 0.2f);
-		model->PlayBlendAnimation(1, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Idle), 1, 0.2f);
+		model->SimultaneousPlayBlendTreeAniamation(lowerBodyLayerIndex, 0, 1, 0.2f);
 		model->SetLoopAnimation(true);
 		model->SetBlendLoopAnimation(true);
 		break;
 
 	case BattleEnemyState::Run:
-		model->PlayAnimation(2, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Run), 1, 0.2f);
 		model->SetLoopAnimation(true);
 		break;
 
 	case BattleEnemyState::Attack: break;
 
 	case BattleEnemyState::Dedge:
-		model->PlayAnimation(3, 0, 0.2f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Dedge), 0, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(2.0f);
 		break;
 
 	case BattleEnemyState::DamageSmall:
-		model->PlayAnimation(4, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::DamageSmall), 1, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetEndTime(43.0f / 60.0f);
 		break;
 
 	case BattleEnemyState::DamageBig:
-		model->PlayAnimation(5, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::DamageBig), 1, 0.2f);
 		model->SetLoopAnimation(false);
 		break;
 
 	case BattleEnemyState::Guard:
-		model->PlayAnimation(0, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, 0, 1, 0.2f);
 		model->SetLoopAnimation(false);
 		break;
 
 	case BattleEnemyState::Death:
-		model->PlayAnimation(6, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Death), 1, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetBeginTime(55.0f / 60.0f);
 		model->SetCurrentTime(42.0f / 60.0f);
@@ -763,31 +813,33 @@ void Enemy::ChangeAttackAnimation()
 {
 	if (!changeAttackAnimation) return;
 
+	Phoenix::s32 baseLayerIndex = layerIndexList.at(LayerType::Base);
+
 	switch (changeAttackState)
 	{
 	case EnemyAttackState::WeakRight:
-		model->PlayAnimation(7, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, 0, 1, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(attackAnimationSpeed);
 
 		break;
 
 	case EnemyAttackState::WeakLeft:
-		model->PlayAnimation(8, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, 1, 1, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(attackAnimationSpeed);
 
 		break;
 
 	case EnemyAttackState::StrongRight:
-		model->PlayAnimation(9, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, 2, 1, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(attackAnimationSpeed);
 
 		break;
 
 	case EnemyAttackState::StrongLeft:
-		model->PlayAnimation(10, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, 0, 1, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(attackAnimationSpeed);
 

@@ -254,9 +254,12 @@ void PlayerEditor::GUI()
 							{
 								if (!saveCheck)
 								{
-									//ImGui::InputInt("Animation State", &data.animState);
-									ImGui::InputInt(u8"アニメーション番号", &data.animIndex);
-									ImGui::Separator();
+									Phoenix::s32 index = data.animIndex + 1;
+									{
+										ImGui::InputInt(u8"アニメーション番号", &index);
+										ImGui::Separator();
+									}
+									data.animIndex = index - 1;
 
 									Phoenix::f32 beginTime = data.playBeginTime * 60.0f;
 									Phoenix::f32 endTime = data.playEndTime * 60.0f;
@@ -303,11 +306,11 @@ void PlayerEditor::GUI()
 
 									Phoenix::s32 weak = data.weakDerivedAttackState + 1;
 									Phoenix::s32 strong = data.strongDerivedAttackState + 1;
-
-									ImGui::InputInt(u8"派生 弱攻撃 番号", &weak);
-									ImGui::InputInt(u8"派生 強攻撃 番号", &strong);
-									ImGui::Separator();
-
+									{
+										ImGui::InputInt(u8"派生 弱攻撃 番号", &weak);
+										ImGui::InputInt(u8"派生 強攻撃 番号", &strong);
+										ImGui::Separator();
+									}
 									if (attackCount < weak) weak = attackCount;
 									if (attackCount < strong) strong = attackCount;
 
@@ -364,48 +367,48 @@ void PlayerEditor::GUI()
 
 		ImGui::Begin(u8"アニメーション番号 リスト", &open);
 		{
-			ImGui::Text(u8"左ストレート 始め : 11");
-			ImGui::Text(u8"左ストレート 終わり : 12");
+			ImGui::Text(u8"左ストレート 始め : 1");
+			ImGui::Text(u8"左ストレート 終わり : 2");
 			ImGui::Separator();
 
-			ImGui::Text(u8"右ストレート 始め : 13");
-			ImGui::Text(u8"右ストレート 終わり : 14");
+			ImGui::Text(u8"右ストレート 始め : 3");
+			ImGui::Text(u8"右ストレート 終わり : 4");
 			ImGui::Separator();
 
-			ImGui::Text(u8"左フック 始め : 15");
-			ImGui::Text(u8"左フック 終わり : 16");
+			ImGui::Text(u8"左フック 始め : 5");
+			ImGui::Text(u8"左フック 終わり : 6");
 			ImGui::Separator();
 
-			ImGui::Text(u8"右フック 始め : 17");
-			ImGui::Text(u8"右フック 終わり : 18");
+			ImGui::Text(u8"右フック 始め : 7");
+			ImGui::Text(u8"右フック 終わり : 8");
 			ImGui::Separator();
 
-			ImGui::Text(u8"左キック 始め : 19");
-			ImGui::Text(u8"左キック 終わり : 20");
+			ImGui::Text(u8"左キック 始め : 9");
+			ImGui::Text(u8"左キック 終わり : 10");
 			ImGui::Separator();
 
-			ImGui::Text(u8"右キック 始め : 21");
-			ImGui::Text(u8"右キック 終わり : 22");
+			ImGui::Text(u8"右キック 始め : 11");
+			ImGui::Text(u8"右キック 終わり : 12");
 			ImGui::Separator();
 
-			ImGui::Text(u8"強 左ストレート : 23");
+			ImGui::Text(u8"強 左ストレート : 13");
 			ImGui::Separator();
 
-			ImGui::Text(u8"強 右ストレート : 24");
+			ImGui::Text(u8"強 右ストレート : 14");
 			ImGui::Separator();
 
-			ImGui::Text(u8"強 左フック : 25");
+			ImGui::Text(u8"強 左フック : 15");
 			ImGui::Separator();
 
-			ImGui::Text(u8"強 右フック : 26");
+			ImGui::Text(u8"強 右フック : 16");
 			ImGui::Separator();
 
-			ImGui::Text(u8"強 左キック 始め : 27");
-			ImGui::Text(u8"強 左キック 中 : 28");
-			ImGui::Text(u8"強 左キック 終わり : 29");
+			ImGui::Text(u8"強 左キック 始め : 17");
+			ImGui::Text(u8"強 左キック 中 : 18");
+			ImGui::Text(u8"強 左キック 終わり : 19");
 			ImGui::Separator();
 
-			ImGui::Text(u8"強 右キック : 30");
+			ImGui::Text(u8"強 右キック : 20");
 			ImGui::Separator();
 		}
 		ImGui::End();

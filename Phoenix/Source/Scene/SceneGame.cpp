@@ -298,12 +298,22 @@ void SceneGame::Initialize()
 		//dusterParticle[1]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster06.png", false);
 		//dusterParticle[2]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster07.png", false);
 	}
+
+	// 再生
+	{
+		soundSystem->Play(SoundType::BGM_Game, true);
+	}
 }
 
 void SceneGame::Update(Phoenix::f32 elapsedTime)
 {
 	bool onFade = sceneSystem->GetOnFade();
 	bool onControl = player->GetAlive();
+
+	// サウンド更新
+	{
+		soundSystem->Update();
+	}
 
 	// プレイヤー更新
 	Phoenix::Math::Vector3 oldPlayerPos = player->GetPosition();
@@ -342,6 +352,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		if (player->GetDeath())
 		{
 			sceneSystem->ChangeScene(SceneType::GameOver, false, true);
+			soundSystem->Stop(SoundType::BGM_Game, true);
 		}
 
 		Phoenix::s32 enable = 0;
@@ -361,6 +372,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		if (enable == alive && alive == death && death == enable && enable != 0)
 		{
 			sceneSystem->ChangeScene(SceneType::GameClear, false, true);
+			soundSystem->Stop(SoundType::BGM_Game, true);
 		}
 	}
 

@@ -25,6 +25,22 @@ public:
 		Large   // ボス
 	};
 
+	enum class LayerType
+	{
+		Base,
+		LowerBody,
+	};
+
+	enum class StateType
+	{
+		Idle,
+		Run,
+		DamageSmall,
+		DamageBig,
+		Dedge,
+		Death,
+	};
+
 	struct AttackData
 	{
 		EnemyAttackState animState; // アニメーションステート
@@ -115,6 +131,12 @@ private:
 
 	// 攻撃権
 	bool stackAttackRight = false;
+
+	// レイヤー番号
+	std::map<LayerType, Phoenix::s32> layerIndexList;
+
+	// レイヤー内のステート番号
+	std::map<StateType, Phoenix::s32> stateIndexList;
 
 public:
 	Enemy() {}

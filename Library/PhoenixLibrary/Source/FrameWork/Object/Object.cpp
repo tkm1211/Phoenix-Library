@@ -105,19 +105,29 @@ namespace Phoenix
 			return animator->LoadResource(resourceManamger.get(), filename, index);
 		}
 
-		void ModelObject::AddAnimationLayer(s32 setBaseAnimationIndex, const s8* beginNodeName, const s8* endNodeName)
+		s32 ModelObject::AddAnimationLayer(const s8* beginNodeName, const s8* endNodeName)
 		{
-			animator->AddLayer(setBaseAnimationIndex, beginNodeName, endNodeName);
+			return animator->AddLayer(beginNodeName, endNodeName);
 		}
 
-		void ModelObject::AddAnimationLayer(s32 setBaseAnimationIndex, s32 beginNodeIndex, s32 endNodeIndex)
+		s32 ModelObject::AddAnimationLayer(s32 beginNodeIndex, s32 endNodeIndex)
 		{
-			animator->AddLayer(setBaseAnimationIndex, beginNodeIndex, endNodeIndex);
+			return animator->AddLayer(beginNodeIndex, endNodeIndex);
 		}
 
-		void ModelObject::AddBlendAnimationToLayer(s32 addBlendAnimationIndex, s32 animationLayerIndex, Phoenix::Math::Vector3 plot)
+		s32 ModelObject::AddAnimationStateToLayer(s32 addAnimationIndex, s32 animationLayerIndex)
 		{
-			animator->AddBlendAnimationToLayer(addBlendAnimationIndex, animationLayerIndex, plot);
+			return animator->AddAnimationStateToLayer(addAnimationIndex, animationLayerIndex);
+		}
+
+		s32 ModelObject::AddBlendTreeToLayer(s32 animationLayerIndex)
+		{
+			return animator->AddBlendTreeToLayer(animationLayerIndex);
+		}
+
+		s32 ModelObject::AddBlendAnimationStateToBlendTree(s32 addAnimationIndex, Phoenix::Math::Vector3 plot, s32 animationLayerIndex, s32 blendTreeIndex)
+		{
+			return animator->AddBlendAnimationStateToBlendTree(addAnimationIndex, plot, animationLayerIndex, blendTreeIndex);
 		}
 
 		// 行列を更新
@@ -187,15 +197,27 @@ namespace Phoenix
 		}
 
 		// アニメーションの再生
-		void ModelObject::PlayAnimation(u32 layerIndex, u32 clip, f32 fadeTime)
+		void ModelObject::PlayAnimation(u32 layerIndex, u32 stateIndex, u32 clip, f32 fadeTime)
 		{
-			animator->Play(layerIndex, layerIndex, clip, fadeTime);
+			animator->Play(layerIndex, stateIndex, clip, fadeTime);
+		}
+
+		// ブレンドツリーのアニメーション再生
+		void ModelObject::PlayBlendTreeAnimation(u32 layerIndex, u32 blendTreeIndex, u32 clip, f32 fadeTime)
+		{
+			animator->PlayBlendTree(layerIndex, blendTreeIndex, clip, fadeTime);
 		}
 
 		// アニメーションの同時再生
-		void ModelObject::PlayBlendAnimation(u32 layerIndex, u32 clip, f32 fadeTime)
+		void ModelObject::SimultaneousPlayAnimation(u32 layerIndex, u32 blendTreeIndex, u32 clip, f32 fadeTime)
 		{
-			animator->BlendPlay(layerIndex, layerIndex, clip, fadeTime);
+			animator->BlendPlay(layerIndex, blendTreeIndex, clip, fadeTime);
+		}
+
+		// ブレンドツリーのアニメーション同時再生
+		void ModelObject::SimultaneousPlayBlendTreeAniamation(u32 layerIndex, u32 blendTreeIndex, u32 clip, f32 fadeTime)
+		{
+			animator->BlendPlayBlendTree(layerIndex, blendTreeIndex, clip, fadeTime);
 		}
 
 		// 一時停止/再開

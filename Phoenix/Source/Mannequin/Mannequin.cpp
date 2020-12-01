@@ -32,7 +32,7 @@ void Mannequin::Initialize()
 {
 	// 待機モーション開始
 	{
-		model->PlayAnimation(0, 1);
+		model->PlayAnimation(0, 0, 1);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
 	}

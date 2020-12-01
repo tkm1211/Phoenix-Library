@@ -266,9 +266,6 @@
     <ClInclude Include="Source\AI\MetaAI\MetaType.h">
       <Filter>Source\AI\MetaAI</Filter>
     </ClInclude>
-    <ClInclude Include="Source\AI\StateMachine\StateMachine.h">
-      <Filter>Source\AI\StateMachine</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Enemy\EnemyState.h">
       <Filter>Source\Enemy</Filter>
     </ClInclude>

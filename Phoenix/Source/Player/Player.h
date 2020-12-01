@@ -7,6 +7,7 @@
 #include "Phoenix/FrameWork/Object/Object.h"
 #include "Phoenix/FrameWork/Input/InputDevice.h"
 #include "../UI/PlayerUI.h"
+#include "../Sound/SoundSystem.h"
 
 
 //******************************************************
@@ -155,6 +156,25 @@ public:
 		End
 	};*/
 #endif
+
+	enum class LayerType
+	{
+		Base,
+		LowerBody,
+	};
+
+	enum class StateType
+	{
+		Idle,
+		BattleIdle,
+		DamageSmall,
+		DamageBig,
+		ForwardDedge,
+		BackDedge,
+		RightDedge,
+		LeftDedge,
+		Death,
+	};
 
 	enum class AttackKey
 	{
@@ -336,6 +356,15 @@ private:
 
 	SYSTEMTIME stFileTime;
 
+	// Sound
+	std::shared_ptr<SoundSystem<SoundType>> soundSystem;
+
+	// レイヤー番号
+	std::map<LayerType, Phoenix::s32> layerIndexList;
+
+	// レイヤー内のステート番号
+	std::map<StateType, Phoenix::s32> stateIndexList;
+
 public:
 	Player() :
 		worldMatrix(Phoenix::Math::MatrixIdentity()), 
@@ -360,7 +389,7 @@ public:
 	void UpdateUI();
 	void Control(Phoenix::Graphics::Camera& camera);
 	void ChangeAnimation();
-	void ChangeAttackAnimation(Phoenix::u32 animationNum);
+	void ChangeAttackAnimation(Phoenix::s32 layerIndex);
 	void AttackJudgment();
 	void GUI();
 	void Damage(int damage, Phoenix::u32 damagePower);
@@ -505,4 +534,5 @@ public:
 	void SetBattleMode(bool isBattleMode) { this->isBattleMode = isBattleMode; }
 	void SetTargetPos(Phoenix::Math::Vector3 targetPos) { this->targetPos = targetPos; }
 	void SetAttackDatasList(AttackDataList data) { attackDatasList = data; }
+	void SetSoundSystem(std::shared_ptr<SoundSystem<SoundType>> soundSystem) { this->soundSystem = soundSystem; }
 };

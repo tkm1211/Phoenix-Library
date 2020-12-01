@@ -13,6 +13,7 @@
 #include <list>
 
 #include "WAVFileReader.h"
+#include "Phoenix/Types.h"
 
 #pragma comment(lib, "xaudio2.lib")
 
@@ -66,13 +67,15 @@ namespace Phoenix
 			}
 
 		public:
-			bool PlayWAV();				// 再生
-			bool PauseWAV();			// 一時停止
-			bool StopWAV();				// 停止
-			bool Update();				// 更新
-			bool Copy();				// 複製
-			bool Volume(float volume);	// ボリューム調整
-			bool Pitch(float pitch);	// ピッチ調整
+			bool PlayWAV();					// 再生
+			bool PauseWAV();				// 一時停止
+			bool StopWAV();					// 停止
+			bool Update();					// 更新
+			bool Copy();					// 複製
+			bool SetVolume(float volume);	// ボリューム調整
+			bool SetPitch(float pitch);		// ピッチ調整
+			Phoenix::f32 GetVolume();		// ボリューム取得
+			Phoenix::f32 GetPitch();		// ピッチ取得
 		};
 
 		// TODO : re -> Factor化

@@ -270,7 +270,6 @@
     <ClInclude Include="Source\AI\MetaAI\PlayerSkillAnalyzer.h" />
     <ClInclude Include="Source\AI\StateMachine\BattleEnemyAI.h" />
     <ClInclude Include="Source\AI\StateMachine\BattleEnemyState.h" />
-    <ClInclude Include="Source\AI\StateMachine\StateMachine.h" />
     <ClInclude Include="Source\Boss\AI.h" />
     <ClInclude Include="Source\Boss\AIState\AIState.h" />
     <ClInclude Include="Source\Boss\AIState\AvoidState.h" />

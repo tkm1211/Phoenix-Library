@@ -101,13 +101,39 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 		// SE
 		loadTypeNum = 0;
 		{
-			soundSystem->AddSound(SoundType::SE_Player_Walk, L"..\\Data\\Assets\\Audio\\SE\\Player\\Walk\\walk.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Punch_Swing, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Punch\\Swing\\punch-real-swing3.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Punch_Hit_Right, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Punch\\Hit\\punch-light1.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Punch_Hit_Heavy, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Punch\\Hit\\punch-heavy2.wav", loadTypeNum);
+
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Swing, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Swing\\kick-real-swing2.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Hit_Right, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Hit\\kick-light2.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Hit_Heavy, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Hit\\kick-heavy1.wav", loadTypeNum);
 		}
 
 		// Loop SE
 		loadTypeNum = 1;
 		{
+			soundSystem->AddSound(SoundType::SE_Player_Walk, L"..\\Data\\Assets\\Audio\\SE\\Player\\Walk\\walk.wav", loadTypeNum);
 		}
+	}
+
+	// ‰¹—Ê’²®
+	{
+		soundSystem->SetVolume(SoundType::BGM_Title, 0.25f);
+		soundSystem->SetVolume(SoundType::BGM_Game, 0.25f);
+
+		soundSystem->SetVolume(SoundType::SE_Player_Walk, 0.75f);
+		soundSystem->SetVolume(SoundType::SE_Player_Attack_Punch_Swing, 0.75f);
+		soundSystem->SetVolume(SoundType::SE_Player_Attack_Punch_Hit_Right, 0.75f);
+		soundSystem->SetVolume(SoundType::SE_Player_Attack_Punch_Hit_Heavy, 0.75f);
+		soundSystem->SetVolume(SoundType::SE_Player_Attack_Kick_Swing, 0.75f);
+		soundSystem->SetVolume(SoundType::SE_Player_Attack_Kick_Hit_Right, 0.75f);
+		soundSystem->SetVolume(SoundType::SE_Player_Attack_Kick_Hit_Heavy, 0.75f);
+	}
+
+	// ‹¤—L
+	{
+		player->SetSoundSystem(soundSystem);
 	}
 
 	operatorUI = Phoenix::Graphics::ITexture::Create();

@@ -234,7 +234,7 @@ namespace Phoenix
 			return true;
 		}
 
-		bool CXAudio2::Volume(float volume)
+		bool CXAudio2::SetVolume(float volume)
 		{
 			float newVolume = volume;
 
@@ -252,7 +252,7 @@ namespace Phoenix
 			return true;
 		}
 
-		bool CXAudio2::Pitch(float pitch)
+		bool CXAudio2::SetPitch(float pitch)
 		{
 			float newPitch = pitch;
 
@@ -268,6 +268,36 @@ namespace Phoenix
 			}
 
 			return true;
+		}
+
+		Phoenix::f32 CXAudio2::GetVolume()
+		{
+			Phoenix::f32 volume;
+			
+			for (auto& it : lpSourceVoice)
+			{
+				if (it && playing)
+				{
+					it->GetVolume(&volume);
+				}
+			}
+
+			return volume;
+		}
+
+		Phoenix::f32 CXAudio2::GetPitch()
+		{
+			float pitch;
+			
+			for (auto& it : lpSourceVoice)
+			{
+				if (it && playing)
+				{
+					it->GetFrequencyRatio(&pitch);
+				}
+			}
+
+			return pitch;
 		}
 	}
 }
