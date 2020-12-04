@@ -451,11 +451,11 @@ void PlayerEditor::GUI()
 		{
 			saveCheck = false;
 
-			ImGui::SetNextWindowPos(ImVec2(width - 640.0f, height - 70), ImGuiCond_Always);
+			ImGui::SetNextWindowPos(ImVec2(width - 300.0f, height - 70), ImGuiCond_Always);
 			ImGui::Begin(u8"ï€ë∂");
 			{
-				std::string pass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
-				ImGui::Text((pass + u8"Ç…ï€ë∂ÇµÇ‹ÇµÇΩÅB").c_str());
+				std::string pass = Phoenix::OS::Path::GetFullPath(u8"..\\Data\\Document\\Player\\AttackDatas.atk");
+				ImGui::Text(u8"ï€ë∂ÇµÇ‹ÇµÇΩÅB");
 			}
 			ImGui::End();
 		}

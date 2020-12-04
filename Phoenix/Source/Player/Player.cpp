@@ -1079,8 +1079,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	{
 		if (isBattleMode)
 		{
-			blendRate.x = sX;
-			blendRate.y = sY;
+			blendRate.x = Phoenix::Math::f32Lerp(blendRate.x, sX, 0.15f);
+			blendRate.y = Phoenix::Math::f32Lerp(blendRate.y, sY, 0.15f);
 		}
 
 		blendRate.z = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(sX, sY));

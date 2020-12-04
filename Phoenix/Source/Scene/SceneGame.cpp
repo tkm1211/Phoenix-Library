@@ -216,6 +216,7 @@ void SceneGame::Initialize()
 		}
 
 		isDrawUI = true;
+		onPlayerEditor = false;
 	}
 
 	// 共通データの初期化
@@ -309,6 +310,17 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 {
 	bool onFade = sceneSystem->GetOnFade();
 	bool onControl = player->GetAlive();
+
+	// GUI起動
+	{
+		if (GetKeyState(VK_SHIFT) < 0)
+		{
+			if (GetKeyState('1') < 0)
+			{
+				onPlayerEditor = true;
+			}
+		}
+	}
 
 	// サウンド更新
 	{
@@ -1665,7 +1677,6 @@ void SceneGame::GUI()
 #if	defined(PHOENIX_TARGET_DEBUG)
 	ImGui::Begin("Game");
 	{
-		ImGui::Text("%d", hit);
 		if (ImGui::Button("Open Player Editor"))
 		{
 			Phoenix::OS::StartUp(L"..\\Tool\\PlayerEditor.exe");
@@ -1944,5 +1955,22 @@ void SceneGame::GUI()
 		}
 	}
 	ImGui::End();
+#else
+	if (onPlayerEditor)
+	{
+		ImGui::Begin("Game", &onPlayerEditor);
+		{
+			if (ImGui::Button("Open Player Editor"))
+			{
+				Phoenix::OS::StartUp(L"..\\Tool\\PlayerEditor.exe");
+				isPlayerUpdate = false;
+				isBossUpdate = false;
+			}
+			ImGui::Checkbox("Update", &isUpdate);
+			ImGui::Checkbox("PlayerUpdate", &isPlayerUpdate);
+			ImGui::Checkbox("BossUpdate", &isBossUpdate);
+		}
+		ImGui::End();
+	}
 #endif
 }

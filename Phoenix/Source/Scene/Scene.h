@@ -420,10 +420,9 @@ private: // Debug
 	bool bloomBlend = false;
 	bool isPBR = false;
 	bool active[10] = { false };
-
 	bool onPointLight = false;
-
 	bool isDrawUI = false;
+	bool onPlayerEditor = false;
 
 private:
 	struct DissolveCB
