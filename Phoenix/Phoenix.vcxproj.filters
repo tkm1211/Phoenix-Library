@@ -46,6 +46,9 @@
     <Filter Include="Source\Sound">
       <UniqueIdentifier>{a29b933a-4376-4b15-a396-23f150476f8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Collision">
+      <UniqueIdentifier>{70ad8f72-02ae-4527-9072-8db26ca3a2b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -286,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="Source\Sound\SoundSystem.h">
       <Filter>Source\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Collision\Collision.h">
+      <Filter>Source\Collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

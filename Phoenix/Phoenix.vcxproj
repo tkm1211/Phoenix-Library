@@ -286,6 +286,7 @@
     <ClInclude Include="Source\Boss\AIState\WaitState.h" />
     <ClInclude Include="Source\Boss\Boss.h" />
     <ClInclude Include="Source\Boss\BossAI.h" />
+    <ClInclude Include="Source\Collision\Collision.h" />
     <ClInclude Include="Source\Enemy\Enemy.h" />
     <ClInclude Include="Source\Enemy\EnemyState.h" />
     <ClInclude Include="Source\Enemy\EnemyManager.h" />

@@ -679,6 +679,7 @@ namespace Phoenix
 
 			Math::Vector3 _pos = focus - (front * len);
 			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y; // ステージに埋まってしまうので押し出し
+			eye = _pos;
 
 			// カメラシェイク値を注視点に加算するとズレが生じるので変数に代入
 			Math::Vector3 _target = focus + shake;

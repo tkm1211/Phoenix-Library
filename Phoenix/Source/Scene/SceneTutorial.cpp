@@ -1314,37 +1314,6 @@ void SceneTutorial::GUI()
 
 			ImGui::TreePop();
 		}
-		if (ImGui::TreeNode("Audio"))
-		{
-			if (ImGui::TreeNode("BGM"))
-			{
-				if (ImGui::Button("Play BGM"))
-				{
-					commonData->bgm->PlayWAV();
-				}
-				if (ImGui::Button("Stop BGM"))
-				{
-					commonData->bgm->StopWAV();
-				}
-
-				ImGui::TreePop();
-			}
-			if (ImGui::TreeNode("SE"))
-			{
-				if (ImGui::Button("Play SE"))
-				{
-					commonData->se->PlayWAV();
-				}
-				if (ImGui::Button("Stop SE"))
-				{
-					commonData->se->StopWAV();
-				}
-
-				ImGui::TreePop();
-			}
-
-			ImGui::TreePop();
-		}
 	}
 	ImGui::End();
 #endif

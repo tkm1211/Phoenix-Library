@@ -18,6 +18,7 @@ enum class SoundType
 	SE_Player_Attack_Kick_Swing,
 	SE_Player_Attack_Kick_Hit_Right,
 	SE_Player_Attack_Kick_Hit_Heavy,
+	SE_Player_Dedge,
 };
 
 class Sound
@@ -102,9 +103,9 @@ public:
 	}
 
 	// 指定の音を再生
-	void Play(bool fade)
+	void Play(bool fade, bool onCopy)
 	{
-		sound->PlayWAV();
+		sound->PlayWAV(onCopy);
 		fadeIn = fade;
 		if (fadeIn)
 		{
@@ -217,9 +218,10 @@ public:
 	/// </summary>
 	/// <param name="type"> 種類 </param>
 	/// <param name="fade"> フェードイン </param>
-	void Play(T type, bool fade = false)
+	/// <param name="onCopy"> コピー許可 </param>
+	void Play(T type, bool fade = false, bool onCopy = false)
 	{
-		sounds.at(type)->Play(fade);
+		sounds.at(type)->Play(fade, onCopy);
 	}
 
 	/// <summary>

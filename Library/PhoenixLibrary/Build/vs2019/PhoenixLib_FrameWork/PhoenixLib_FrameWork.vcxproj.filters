@@ -183,6 +183,9 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\StateMachine\StateMachine.h">
       <Filter>Include\StateMachine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Model.h">
+      <Filter>Include\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -253,6 +256,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\System\SceneSystem.cpp">
       <Filter>Source\System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Compoment\Model.cpp">
+      <Filter>Source\Compoment</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

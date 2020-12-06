@@ -131,7 +131,7 @@ namespace Phoenix
 				cb.particleRandomFactor = randomFactor;
 				cb.particleScaling = scaleX;
 				cb.particleSize = size;
-				cb.particleMotionBlurAmount = 50.0f;
+				cb.particleMotionBlurAmount = motionBlurAmount;
 				cb.particleRotation = rotation;
 				cb.particleColor = 0; // TODO : material color
 				cb.particleEmissive = 0; // TODO : material emissive color w

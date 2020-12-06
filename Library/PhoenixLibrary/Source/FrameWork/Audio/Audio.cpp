@@ -144,7 +144,7 @@ namespace Phoenix
 			assert(!hr && "SubmitSourceBuffer	Error");
 		}
 
-		bool CXAudio2::PlayWAV()
+		bool CXAudio2::PlayWAV(bool onCopy)
 		{
 			for (auto& it : lpSourceVoice)
 			{
@@ -203,6 +203,10 @@ namespace Phoenix
 						it->GetState(&state);
 						isRunning = (state.BuffersQueued > 0) != 0;
 					}
+					/*if (!isRunning)
+					{
+						playing = false;
+					}*/
 				}
 
 				i++;
@@ -236,6 +240,8 @@ namespace Phoenix
 
 		bool CXAudio2::SetVolume(float volume)
 		{
+			if (!playing) return false;
+
 			float newVolume = volume;
 
 			if (volume < 0.0f) newVolume = 0.0f;
@@ -243,7 +249,7 @@ namespace Phoenix
 
 			for (auto& it : lpSourceVoice)
 			{
-				if (it && playing)
+				if (it)
 				{
 					it->SetVolume(newVolume, 0);
 				}
@@ -254,6 +260,8 @@ namespace Phoenix
 
 		bool CXAudio2::SetPitch(float pitch)
 		{
+			if (!playing) return false;
+
 			float newPitch = pitch;
 
 			if (pitch < 0.0f) newPitch = 0.0f;
@@ -261,7 +269,7 @@ namespace Phoenix
 
 			for (auto& it : lpSourceVoice)
 			{
-				if (it && playing)
+				if (it)
 				{
 					it->SetFrequencyRatio(newPitch);
 				}
@@ -272,11 +280,13 @@ namespace Phoenix
 
 		Phoenix::f32 CXAudio2::GetVolume()
 		{
-			Phoenix::f32 volume;
+			if (!playing) return 0.0f;
+
+			Phoenix::f32 volume = 0.0f;
 			
 			for (auto& it : lpSourceVoice)
 			{
-				if (it && playing)
+				if (it)
 				{
 					it->GetVolume(&volume);
 				}
@@ -287,11 +297,13 @@ namespace Phoenix
 
 		Phoenix::f32 CXAudio2::GetPitch()
 		{
-			float pitch;
+			if (!playing) return 0.0f;
+
+			Phoenix::f32 pitch = 0.0f;
 			
 			for (auto& it : lpSourceVoice)
 			{
-				if (it && playing)
+				if (it)
 				{
 					it->GetFrequencyRatio(&pitch);
 				}

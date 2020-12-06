@@ -365,6 +365,13 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		{
 			sceneSystem->ChangeScene(SceneType::GameOver, false, true);
 			soundSystem->Stop(SoundType::BGM_Game, true);
+			soundSystem->Stop(SoundType::SE_Player_Walk, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Punch_Swing, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Punch_Hit_Right, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Punch_Hit_Heavy, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Kick_Swing, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Kick_Hit_Right, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Kick_Hit_Heavy, true);
 		}
 
 		Phoenix::s32 enable = 0;
@@ -385,6 +392,13 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		{
 			sceneSystem->ChangeScene(SceneType::GameClear, false, true);
 			soundSystem->Stop(SoundType::BGM_Game, true);
+			soundSystem->Stop(SoundType::SE_Player_Walk, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Punch_Swing, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Punch_Hit_Right, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Punch_Hit_Heavy, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Kick_Swing, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Kick_Hit_Right, true);
+			soundSystem->Stop(SoundType::SE_Player_Attack_Kick_Hit_Heavy, true);
 		}
 	}
 
@@ -531,6 +545,22 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 #endif
 			}
 
+			static bool playSE = true;
+			static Phoenix::s32 hitCollisionIndex = -1;
+			static Phoenix::s32 hitAttackPower = -1;
+			static Phoenix::s32 stopCount = 0;
+
+			if (hitCollisionIndex != -1 && hitAttackPower != -1)
+			{
+				if (15 <= stopCount++)
+				{
+					playSE = true;
+					stopCount = 0;
+					hitCollisionIndex = -1;
+					hitAttackPower = -1;
+				}
+			}
+
 			if (player->IsAttackJudgment().at(index) && !isHitStop && enemy->GetBattleState() != BattleEnemyState::Dedge)
 			{
 				const std::vector<Phoenix::FrameWork::CollisionData> playerDatas = player->GetCollisionDatas();
@@ -551,12 +581,52 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					player->SetIsHit(index);
 					enemy->Damage(player->GetAttackDamage());
 
+					// SE再生
+					if (playSE)
+					{
+						if (player->GetAttackCollisionIndex() == 1 || player->GetAttackCollisionIndex() == 2)
+						{
+							if (player->GetAttackPower() == 0)
+							{
+								soundSystem->Play(SoundType::SE_Player_Attack_Punch_Hit_Right);
+								playSE = false;
+								hitCollisionIndex = player->GetAttackCollisionIndex();
+								hitAttackPower = player->GetAttackPower();
+							}
+							else if (player->GetAttackPower() == 1)
+							{
+								soundSystem->Play(SoundType::SE_Player_Attack_Punch_Hit_Heavy);
+								playSE = false;
+								hitCollisionIndex = player->GetAttackCollisionIndex();
+								hitAttackPower = player->GetAttackPower();
+							}
+						}
+						else if (player->GetAttackCollisionIndex() == 3 || player->GetAttackCollisionIndex() == 4)
+						{
+							if (player->GetAttackPower() == 0)
+							{
+								soundSystem->Play(SoundType::SE_Player_Attack_Kick_Hit_Right);
+								playSE = false;
+								hitCollisionIndex = player->GetAttackCollisionIndex();
+								hitAttackPower = player->GetAttackPower();
+							}
+							else if (player->GetAttackPower() == 1)
+							{
+								soundSystem->Play(SoundType::SE_Player_Attack_Kick_Hit_Heavy);
+								playSE = false;
+								hitCollisionIndex = player->GetAttackCollisionIndex();
+								hitAttackPower = player->GetAttackPower();
+							}
+						}
+					}
+
 					// Burst Particle.
 					{
 						playerHitParticle->Burst(150);
 						playerHitParticle->SetParticleLife(1.5f);
 						playerHitParticle->SetParticleSize(0.004f);
 						playerHitParticle->SetParticleScale(1.0f);
+						playerHitParticle->SetParticleMotionBlurAmount(50.0f);
 						playerHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
 						playerHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
 						//playerHitParticle->SetParticleColor(Phoenix::Math::Color(40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
@@ -650,12 +720,37 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					enemy->SetIsHit(true);
 					player->Damage(10, enemy->GetAttackPower());
 
+					// SE再生
+					if (enemy->GetAttackCollisionIndex() == 1 || enemy->GetAttackCollisionIndex() == 2)
+					{
+						if (enemy->GetAttackPower() == 0)
+						{
+							soundSystem->Play(SoundType::SE_Player_Attack_Punch_Hit_Right, false, true);
+						}
+						else if (enemy->GetAttackPower() == 1)
+						{
+							soundSystem->Play(SoundType::SE_Player_Attack_Punch_Hit_Heavy, false, true);
+						}
+					}
+					else if (enemy->GetAttackCollisionIndex() == 3 || enemy->GetAttackCollisionIndex() == 4)
+					{
+						if (enemy->GetAttackPower() == 0)
+						{
+							soundSystem->Play(SoundType::SE_Player_Attack_Kick_Hit_Right, false, true);
+						}
+						else if (enemy->GetAttackPower() == 1)
+						{
+							soundSystem->Play(SoundType::SE_Player_Attack_Kick_Hit_Heavy, false, true);
+						}
+					}
+
 					// Burst Particle.
 					{
 						bossHitParticle->Burst(150);
 						bossHitParticle->SetParticleLife(1.5f);
 						bossHitParticle->SetParticleSize(0.004f);
 						bossHitParticle->SetParticleScale(1.0f);
+						bossHitParticle->SetParticleMotionBlurAmount(50.0f);
 						bossHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
 						//bossHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
 						bossHitParticle->SetParticleColor(Phoenix::Math::Color(100.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
@@ -899,6 +994,22 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 		for (const auto& enemy : enemyManager->GetEnemies())
 		{
+			//Phoenix::Math::Vector3 frontVec = camera->GetFocus() - camera->GetEye();
+			Phoenix::Math::Vector3 frontVec = camera->GetFront();
+			Phoenix::Math::Vector3 enemyFromCameraVec = Phoenix::Math::Vector3Normalize(enemy->GetPosition() - camera->GetEye());
+			frontVec.y = 0.0f;
+			enemyFromCameraVec.y = 0.0f;
+
+			Phoenix::f32 angle;
+			angle = acosf(Phoenix::Math::Vector3Dot(frontVec, enemyFromCameraVec));
+			if (1e-8f < fabs(angle))
+			{
+				if ((90.0f * 0.01745f) <= angle)
+				{
+					enemy->UpdateUI(Phoenix::Math::Vector2(-1920.0f, -1080.0f)); // 画面にエネミーが映っていないときにUIが表示されるため外に描画して隠している。
+					continue;
+				}
+			}
 			Phoenix::Math::Vector3 pos = enemy->GetPosition();
 			pos.y += 2.15f;
 
@@ -1919,37 +2030,6 @@ void SceneGame::GUI()
 			ImGui::SliderFloat("shakeRight", &vibrationRight, 0.0f, 65535.0f);
 			ImGui::SliderFloat("shakeLeft", &vibrationLeft, 0.0f, 65535.0f);
 			ImGui::DragInt("shakeMaxCnt", &vibrationMaxCnt);
-
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("Audio"))
-		{
-			if (ImGui::TreeNode("BGM"))
-			{
-				if (ImGui::Button("Play BGM"))
-				{
-					commonData->bgm->PlayWAV();
-				}
-				if (ImGui::Button("Stop BGM"))
-				{
-					commonData->bgm->StopWAV();
-				}
-
-				ImGui::TreePop();
-			}
-			if (ImGui::TreeNode("SE"))
-			{
-				if (ImGui::Button("Play SE"))
-				{
-					commonData->se->PlayWAV();
-				}
-				if (ImGui::Button("Stop SE"))
-				{
-					commonData->se->StopWAV();
-				}
-
-				ImGui::TreePop();
-			}
 
 			ImGui::TreePop();
 		}

@@ -56,11 +56,11 @@ void SceneGameOver::Update(Phoenix::f32 elapsedTime)
 
 	if (isChangeScene) return;
 
-	if (isRight && xInput[0].bLEFTt)
+	if (isRight && xInput[0].bLEFTt || xInput[0].sX < 0)
 	{
 		isRight = false;
 	}
-	else if (!isRight && xInput[0].bRIGHTt)
+	else if (!isRight && xInput[0].bRIGHTt || 0 < xInput[0].sX)
 	{
 		isRight = true;
 	}

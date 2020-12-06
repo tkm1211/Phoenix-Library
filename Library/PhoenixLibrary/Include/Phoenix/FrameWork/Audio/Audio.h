@@ -67,7 +67,7 @@ namespace Phoenix
 			}
 
 		public:
-			bool PlayWAV();					// Ä¶
+			bool PlayWAV(bool onCopy);		// Ä¶
 			bool PauseWAV();				// ˆê’â~
 			bool StopWAV();					// ’â~
 			bool Update();					// XV

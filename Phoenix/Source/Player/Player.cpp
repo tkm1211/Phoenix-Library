@@ -31,7 +31,6 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		model->Initialize(graphicsDevice);
 		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Idle\\Breathing_Idle.fbx");
-		//model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Mixamo\\Sword_And_Shield_Attack\\Sword_And_Shield_Attack.fbx");
 	}
 
 	// アニメーション読み込み
@@ -89,67 +88,10 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Guard\\Ready_Idle.fbx", -1); // 36
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Death\\Dying.fbx", -1); // 37
+	}
 
-		/*
-		model->AddAnimationLayer(0); // idle
-
-		model->AddAnimationLayer(1); // walk
-		model->AddAnimationLayer(2); // walk
-		model->AddAnimationLayer(3); // walk
-		model->AddAnimationLayer(4); // walk
-
-		model->AddAnimationLayer(5); // battle idle up
-		model->AddAnimationLayer(5, 56, 65); // battle idle down // anim num : 6
-
-		model->AddAnimationLayer(10); // dodge // layer num : 7
-		model->AddAnimationLayer(11); // dodge
-		model->AddAnimationLayer(12); // dodge
-		model->AddAnimationLayer(13); // dodge
-
-		model->AddAnimationLayer(14); // right punch begin // 11
-		model->AddAnimationLayer(15); // right punch end
-
-		model->AddAnimationLayer(16); // left punch begin // 13
-		model->AddAnimationLayer(17); // left punch end
-
-		model->AddAnimationLayer(18); // right hook begin // 15
-		model->AddAnimationLayer(19); // right hook end
-
-		model->AddAnimationLayer(20); // left hook begin // 17
-		model->AddAnimationLayer(21); // left hook end
-
-		model->AddAnimationLayer(22); // right kick begin // 19
-		model->AddAnimationLayer(23); // right kick end
-
-		model->AddAnimationLayer(24); // left kick begin // 21
-		model->AddAnimationLayer(25); // left kick end
-
-		model->AddAnimationLayer(26); // strong right punch // 23
-		model->AddAnimationLayer(27); // strong left punch
-
-		model->AddAnimationLayer(28); // strong right hook // 25
-		model->AddAnimationLayer(29); // strong left hook
-
-		model->AddAnimationLayer(30); // turn right kick begin // 27
-		model->AddAnimationLayer(31); // turn right kick
-		model->AddAnimationLayer(32); // turn right kick end
-
-		model->AddAnimationLayer(33); // turn left kick // 30
-
-		model->AddAnimationLayer(34); // damage small // 31
-		model->AddAnimationLayer(35); // damage big
-
-		model->AddAnimationLayer(36); // guard // 33
-
-		model->AddAnimationLayer(37); // dying // 34
-
-		model->AddBlendAnimationToLayer(6, 6, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
-		model->AddBlendAnimationToLayer(7, 6, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
-		model->AddBlendAnimationToLayer(8, 6, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
-		model->AddBlendAnimationToLayer(9, 6, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));
-
-		model->AddBlendAnimationToLayer(static_cast<Phoenix::u32>(AnimationState::SlowRun), static_cast<Phoenix::u32>(AnimationState::Walk), Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));*/
-
+	// アニメーターデータ構築
+	{
 		// レイヤー追加
 		Phoenix::s32 layerNum = 0;
 		{
@@ -163,6 +105,7 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		// ステート追加
 		Phoenix::s32 stateNum = 0;
 		{
+			// ステート追加関数
 			auto AddState = [&](StateType type, Phoenix::u32 animationIndex, Phoenix::u32 layerIndex)
 			{
 				stateNum = model->AddAnimationStateToLayer(animationIndex, layerIndex);
@@ -179,13 +122,13 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 				AddState(StateType::Idle, 0, layerNum);
 				AddState(StateType::BattleIdle, 5, layerNum);
-				AddState(StateType::DamageSmall, 34, layerNum);
-				AddState(StateType::DamageBig, 35, layerNum);
+				AddState(StateType::DamageSmall, endIndex + 1, layerNum);
+				AddState(StateType::DamageBig, endIndex + 2, layerNum);
 				AddState(StateType::ForwardDedge, 10, layerNum);
 				AddState(StateType::BackDedge, 11, layerNum);
 				AddState(StateType::RightDedge, 12, layerNum);
 				AddState(StateType::LeftDedge, 13, layerNum);
-				AddState(StateType::Death, 37, layerNum);
+				AddState(StateType::Death, endIndex + 4, layerNum);
 
 				Phoenix::s32 blendTreeIndex = model->AddBlendTreeToLayer(layerNum);
 				model->AddBlendAnimationStateToBlendTree(1, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), layerNum, blendTreeIndex);
@@ -196,11 +139,11 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			layerNum = layerIndexList.at(LayerType::LowerBody);
 			{
 				Phoenix::s32 blendTreeIndex = model->AddBlendTreeToLayer(layerNum);
-				model->AddBlendAnimationStateToBlendTree(5, Phoenix::Math::Vector3( 0.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
-				model->AddBlendAnimationStateToBlendTree(6, Phoenix::Math::Vector3( 0.0f,  1.0f, 0.0f), layerNum, blendTreeIndex);
-				model->AddBlendAnimationStateToBlendTree(7, Phoenix::Math::Vector3( 0.0f, -1.0f, 0.0f), layerNum, blendTreeIndex);
-				model->AddBlendAnimationStateToBlendTree(8, Phoenix::Math::Vector3( 1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
-				model->AddBlendAnimationStateToBlendTree(9, Phoenix::Math::Vector3(-1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(5, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(6, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(7, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(8, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(9, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f), layerNum, blendTreeIndex);
 			}
 		}
 	}
@@ -235,226 +178,8 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		ui = PlayerUI::Create();
 	}
 
-	// アタックデータ生成
+	// 攻撃データ生成
 	{
-		/*//auto SetAttackData = [&]
-		//(
-		//	Phoenix::s32 animState,
-		//	Phoenix::s32 animIndex,
-
-		//	Phoenix::f32 playSpeed,
-		//	Phoenix::f32 playBeginTime,
-		//	Phoenix::f32 playEndTime,
-
-		//	Phoenix::s32 collisionNum,
-		//	Phoenix::f32 collisionBeginTime,
-		//	Phoenix::f32 collisionEndTime,
-
-		//	bool receptionStack,
-		//	Phoenix::f32 receptionBeginTime,
-		//	Phoenix::f32 receptionEndTime,
-
-		//	Phoenix::f32 dedgeReceptionBeginTime,
-		//	Phoenix::f32 dedgeReceptionEndTime,
-
-		//	Phoenix::s32 weakDerivedAttackState,
-		//	Phoenix::s32 strongDerivedAttackState
-		//)
-		//{
-		//	AttackData data;
-
-		//	data.animState = animState;
-		//	data.animIndex = animIndex;
-
-		//	data.playSpeed = playSpeed;
-		//	data.playBeginTime = playBeginTime == -1.0f ? -1.0f : playBeginTime / 60.0f;
-		//	data.playEndTime = playEndTime == -1.0f ? -1.0f : playEndTime / 60.0f;
-
-		//	data.collisionNum = collisionNum;
-		//	data.collisionBeginTime = collisionBeginTime == -1.0f ? -1.0f : collisionBeginTime / 60.0f;
-		//	data.collisionEndTime = collisionEndTime == -1.0f ? -1.0f : collisionEndTime / 60.0f;
-
-		//	data.receptionStack = receptionStack;
-		//	data.receptionBeginTime = receptionBeginTime == -1.0f ? -1.0f : receptionBeginTime / 60.0f;
-		//	data.receptionEndTime = receptionEndTime == -1.0f ? -1.0f : receptionEndTime / 60.0f;
-
-		//	data.dedgeReceptionBeginTime = dedgeReceptionBeginTime == -1.0f ? -1.0f : dedgeReceptionBeginTime / 60.0f;
-		//	data.dedgeReceptionEndTime = dedgeReceptionEndTime == -1.0f ? -1.0f : dedgeReceptionEndTime / 60.0f;
-
-		//	data.weakDerivedAttackState = weakDerivedAttackState;
-		//	data.strongDerivedAttackState = strongDerivedAttackState;
-
-		//	return data;
-		//};
-
-		//// 弱攻撃
-		//{
-		//	// 右ストレート
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::WeakAttack);
-
-		//		datas.AddData(SetAttackData(0, 11, 2.0f, -1.0f, -1.0f, 1, 13.0f, 23.0f, true,  13.0f, 23.0f, 13.0f, 23.0f, 1, 7));
-		//		datas.AddData(SetAttackData(0, 12, 1.0f, 24.0f, 47.0f, 0, -1.0f, -1.0f, false, 24.0f, 47.0f, 24.0f, 47.0f, 1, 7));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 左ストレート
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::WeakAttack);
-
-		//		datas.AddData(SetAttackData(1, 13, 2.0f, -1.0f, -1.0f, 2, 10.0f, 20.0f, true,  15.0f, 20.0f, 15.0f, 20.0f, 2, 6));
-		//		datas.AddData(SetAttackData(1, 14, 1.0f, 21.0f, 47.0f, 0, -1.0f, -1.0f, false, 21.0f, 47.0f, 21.0f, 47.0f, 2, 6));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 右フック
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::WeakAttack);
-
-		//		datas.AddData(SetAttackData(2, 15, 1.5f, 40.0f, -1.0f,  1, 46.0f, 72.0f, true,  46.0f, 72.0f,  46.0f, 72.0f,  3, 9));
-		//		datas.AddData(SetAttackData(2, 16, 1.0f, 73.0f, 130.0f, 0, -1.0f, -1.0f, false, 73.0f, 130.0f, 73.0f, 130.0f, 3, 9));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 左フック
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::WeakAttack);
-
-		//		datas.AddData(SetAttackData(3, 17, 1.5f, 40.0f, -1.0f,  2, 46.0f, 72.0f, true,  60.0f, 72.0f,  60.0f, 72.0f,  4, 8));
-		//		datas.AddData(SetAttackData(3, 18, 1.0f, 73.0f, 130.0f, 0, -1.0f, -1.0f, false, 73.0f, 130.0f, 73.0f, 130.0f, 4, 8));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 右キック
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::WeakAttack);
-
-		//		datas.AddData(SetAttackData(4, 19, 1.5f, 25.0f, -1.0f,  3, 50.0f, 60.0f, true,  50.0f, 60.0f,  50.0f, 60.0f,  5, 11));
-		//		datas.AddData(SetAttackData(4, 20, 1.0f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, 61.0f, 150.0f, 61.0f, 150.0f, 5, 11));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 左キック
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::WeakAttack);
-
-		//		datas.AddData(SetAttackData(5, 21, 1.5f, 25.0f, -1.0f,  4, 50.0f, 60.0f, true,  50.0f, 60.0f,  50.0f, 60.0f,  -1, 10));
-		//		datas.AddData(SetAttackData(5, 22, 1.0f, 61.0f, 150.0f, 0, -1.0f, -1.0f, false, 61.0f, 150.0f, 61.0f, 150.0f, -1, 10));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-		//}
-
-		//// 強攻撃
-		//{
-		//	// 右強ストレート
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::StrongAttack);
-
-		//		datas.AddData(SetAttackData(6, 23, 1.75f, 0.0f, 45.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(6, 23, 2.5f, 46.0f, 60.0f, 1, 50.0f, 60.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(6, 23, 1.5f, 61.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 115.0f, 120.0f, -1, -1));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 左強ストレート
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::StrongAttack);
-
-		//		datas.AddData(SetAttackData(7, 24, 1.75f, 0.0f, 45.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(7, 24, 2.5f, 46.0f, 60.0f, 2, 50.0f, 60.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(7, 24, 1.5f, 61.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 115.0f, 120.0f, -1, -1));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 右強フック
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::StrongAttack);
-
-		//		datas.AddData(SetAttackData(8, 25, 1.5f, 0.0f,  50.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(8, 25, 2.5f, 51.0f, 70.0f, 1, 51.0f, 70.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(8, 25, 1.5f, 71.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 125.0f, 130.0f, -1, -1));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 左強フック
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::StrongAttack);
-
-		//		datas.AddData(SetAttackData(9, 26, 1.5f, 0.0f,  50.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(9, 26, 2.5f, 51.0f, 70.0f, 2, 51.0f, 70.0f, false, -1.0f, -1.0f, -1.0f,  -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(9, 26, 1.5f, 71.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 125.0f, 130.0f, -1, -1));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 右回転キック
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::StrongAttack);
-
-		//		datas.AddData(SetAttackData(10, 27, 1.05f, -1.0f, 24.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(10, 28, 2.0f, 25.0f,  46.0f, 3, 25.0f, 46.0f, false, -1.0f, -1.0f, -1.0f, -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(10, 29, 1.0f, 47.0f,  -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 95.0f, 100.0f, -1, -1));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-
-		//	// 左回転キック
-		//	{
-		//		AttackDatas datas;
-
-		//		// 入力キー設定
-		//		datas.SetKey(AttackKey::StrongAttack);
-
-		//		datas.AddData(SetAttackData(11, 30, 1.05f, -1.0f, 24.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, -1.0f, -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(11, 30, 2.0f,  25.0f, 46.0f, 4, 25.0f, 46.0f, false, -1.0f, -1.0f, -1.0f, -1.0f,  -1, -1));
-		//		datas.AddData(SetAttackData(11, 30, 1.0f,  47.0f, -1.0f, 0, -1.0f, -1.0f, false, -1.0f, -1.0f, 95.0f, 100.0f, -1, -1));
-
-		//		attackDatasList.attackDatas.emplace_back(datas);
-		//	}
-		//}*/
-
 		const char* fullPass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
 
 		Player::AttackDataList data;
@@ -497,14 +222,12 @@ void Player::Initialize()
 		model->PlayAnimation(layerIndexList.at(LayerType::Base), stateIndexList.at(StateType::Idle), 1);
 		model->UpdateTransform(1 / 60.0f);
 		model->SetLoopAnimation(true);
-		//model->PauseAnimation(true);
 	}
 
 	// トランスフォームの初期化
 	{
 		worldMatrix = Phoenix::Math::MatrixIdentity();
 		pos = { 0,0,12.0f }; // tutorial : 135.0f , main : 12.0f
-		//rotate = { 0,180.0f * 0.01745f,0 };
 		rotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), 180.0f * 0.01745f);
 		scale = { 1,1,1 };
 		radius = 0.35f;
@@ -513,9 +236,7 @@ void Player::Initialize()
 	// パラメーターの初期化
 	{
 		life = MaxLife;
-		//isHit = false;
 		invincible = false;
-		//isAttackJudgment = false;
 		alive = true;
 		death = false;
 		attackCollisionIndex = -1;
@@ -537,6 +258,7 @@ void Player::Initialize()
 		}
 	}
 
+	// 攻撃データファイルのタイムスタンプを取得
 	{
 		HANDLE hFile;
 		FILETIME ftFileTime, ftLocalFileTime;
@@ -632,8 +354,6 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, bool atta
 		return;
 	}
 
-	bool isAccumulationDamege = false;
-
 	// スコア計算
 	{
 		Phoenix::f32 score = static_cast<Phoenix::f32>(behaviorScore);
@@ -644,6 +364,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, bool atta
 	}
 
 	// 蓄積ダメージの確認
+	bool isAccumulationDamege = false;
 	{
 		isAccumulationDamege = AccumulationDamege();
 	}
@@ -700,13 +421,11 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, bool atta
 void Player::UpdateTrasform()
 {
 	Phoenix::Math::Vector3 scale = this->scale;
-	//Phoenix::Math::Vector3 rotate = this->rotate;
 	Phoenix::Math::Quaternion rotate = this->rotate;
 	Phoenix::Math::Vector3 translate = pos;
 
 	Phoenix::Math::Matrix S, R, T;
 	S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
-	//R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
 	R = Phoenix::Math::MatrixRotationQuaternion(&rotate);
 	T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
 
@@ -791,20 +510,6 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
 		Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
 		forward.y = 0.0f;
-
-		/*{
-			Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&newRotate);
-			Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
-			forward.y = 0.0f;
-
-			Phoenix::f32 angle;
-			angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
-
-			if (1e-8f < fabs(angle))
-			{
-				angle /= 0.01745f;
-			}
-		}*/
 
 		Phoenix::f32 angle;
 		angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
@@ -894,120 +599,6 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 					dedgeLayerIndex = stateIndexList.at(StateType::LeftDedge);
 				}
 			}
-
-			/*
-			//Phoenix::Math::Vector3 dir = targetPos - GetPosition();
-			//dir = Phoenix::Math::Vector3Normalize(dir);
-			//dir.y = 0.0f;
-
-			//Phoenix::f32 newRotateY = atan2f(-dir.x, -dir.z) + atan2f(sX, sY);
-
-			//Phoenix::Math::Vector3 f = { sinf(newRotateY),  0.0f, cosf(newRotateY) };
-
-			//Phoenix::Math::Quaternion newQ = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), newRotateY);
-			//Phoenix::Math::Matrix newM = Phoenix::Math::MatrixRotationQuaternion(&newQ);
-			//Phoenix::Math::Vector3 newForward = Phoenix::Math::Vector3(newM._31, newM._32, newM._33);
-			//newForward.y = 0.0f;
-
-			//Phoenix::Math::Quaternion q = rotate;
-			//Phoenix::Math::Quaternion q = rotate // * newQ;
-			//Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&q);
-			//Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
-
-			//Phoenix::Math::Vector3 cameraForword = camera.GetFront();
-			//cameraForword.y = 0.0f;
-
-			//Phoenix::f32 angle = acosf(Phoenix::Math::Vector3Dot(dir, cameraForword)) / 0.01745f;
-			////if (45.0f <= angle && angle <= 135.0f) f *= -1;
-
-			//if (fabsf(f.x) < fabsf(f.z))
-			//{
-			//	if (f.z < 0.0f)
-			//	{
-			//		dedgeLayerIndex = 15;
-			//		rotateY = atan2f(-dir.x, -dir.z) + atan2f(0.0f, -1.0f);
-			//	}
-			//	if (f.z > 0.0f)
-			//	{
-			//		dedgeLayerIndex = 16;
-			//		rotateY = atan2f(-dir.x, -dir.z) + atan2f(0.0f, 1.0f);
-			//	}
-			//}
-			//if (fabsf(f.z) < fabsf(f.x))
-			//{
-			//	if (f.x < 0.0f)
-			//	{
-			//		dedgeLayerIndex = 17;
-			//		rotateY = atan2f(-dir.x, -dir.z) + atan2f(-1.0f, 0.0f);
-			//	}
-			//	if (f.x > 0.0f)
-			//	{
-			//		dedgeLayerIndex = 18;
-			//		rotateY = atan2f(-dir.x, -dir.z) + atan2f(1.0f, 0.0f);
-			//	}
-			//}
-
-			//rotateY = newRotateY;
-
-			Phoenix::Math::Quaternion q = rotate * newRotateY;
-			Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&q);
-			Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
-			Phoenix::Math::Vector3 up = Phoenix::Math::Vector3(matrix._21, matrix._22, matrix._23);
-			Phoenix::Math::Vector3 right = Phoenix::Math::Vector3(matrix._11, matrix._12, matrix._13);
-
-			forward.y = 0.0f;
-
-			Phoenix::f32 angleSX, angleSY;
-			angleSX = acosf(Phoenix::Math::Vector3Dot(dir, forward));
-			angleSY = acosf(Phoenix::Math::Vector3Dot(dir, right));
-
-			if (1e-8f < fabs(angleSX))
-			{
-				Phoenix::f32 angleR;
-				{
-					angleR = acosf(Phoenix::Math::Vector3Dot(dir, right));
-					angleR -= (90.0f * 0.01745f);
-					if (0.0f < angleR) angleSX *= -1;
-				}
-				{
-					angleR = acosf(Phoenix::Math::Vector3Dot(dir, forward));
-					angleR -= (90.0f * 0.01745f);
-					if (0.0f < angleR) angleSY *= -1;
-				}
-
-				if (fabsf(forward.z) < fabsf(forward.x))
-				{
-					if (angleSX < 0.0f)
-					{
-						dedgeLayerIndex = 17;
-						rotateY = atan2f(dir.x, dir.z);
-						rotateY += 270.0f * 0.01745f;
-
-					}
-					if (angleSX > 0.0f)
-					{
-						dedgeLayerIndex = 18;
-						rotateY = atan2f(dir.x, dir.z);
-						rotateY += 90.0f * 0.01745f;
-					}
-				}
-				else if (fabsf(forward.x) < fabsf(forward.z))
-				{
-					if (angleSY < 0.0f)
-					{
-						dedgeLayerIndex = 15;
-						rotateY = atan2f(dir.x, dir.z);
-						rotateY += 0.0f * 0.01745f;
-					}
-					if (angleSY > 0.0f)
-					{
-						dedgeLayerIndex = 16;
-						rotateY = atan2f(dir.x, dir.z);
-						rotateY += 180.0f * 0.01745f;
-					}
-				}
-			}
-			*/
 		}
 		else
 		{
@@ -1030,6 +621,16 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			if (attackDatasList.attackDatas.at(nextIndex).receptionKey == stackKey)
 			{
 				ChangeAnimation(index, nextIndex);
+
+				Phoenix::s32 animIndex = attackDatasList.attackDatas.at(0).datas.at(0).animIndex;
+				if (0 <= animIndex && animIndex <= 7 || 12 <= animIndex && animIndex <= 15)
+				{
+					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Punch_Swing);
+				}
+				else if (8 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 19)
+				{
+					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Kick_Swing);
+				}
 			}
 		}
 	};
@@ -1046,6 +647,16 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			else
 			{
 				ChangeAnimation(index, nextIndex);
+
+				Phoenix::s32 animIndex = attackDatasList.attackDatas.at(0).datas.at(0).animIndex;
+				if (0 <= animIndex && animIndex <= 7 || 12 <= animIndex && animIndex <= 15)
+				{
+					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Punch_Swing);
+				}
+				else if (8 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 19)
+				{
+					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Kick_Swing);
+				}
 			}
 		}
 	};
@@ -1123,6 +734,16 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 				}
 
 				RotatePlayerToAttack();
+
+				Phoenix::s32 animIndex = attackDatasList.attackDatas.at(0).datas.at(0).animIndex;
+				if (0 <= animIndex && animIndex <= 7 || 12 <= animIndex && animIndex <= 15)
+				{
+					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Punch_Swing);
+				}
+				else if (8 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 19)
+				{
+					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Kick_Swing);
+				}
 			}
 		}
 		else if (0 < attackDatasList.attackDatas.at(attackState).datas.size())
@@ -1198,7 +819,6 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	if (!isAttack)
 	{
 		// 回避ステート
-		//if (isBattleMode)
 		{
 			// 回避ステートへ
 			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
@@ -1240,10 +860,6 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 					{
 						ChangeAnimationState(AnimationState::Walk, WalkSpeed);
 					}
-					/*if ((xInput[0].bRBs || GetKeyState(VK_SHIFT) < 0) && animationState != AnimationState::Run)
-					{
-						ChangeAnimationState(AnimationState::Run, RunSpeed);
-					}*/
 				}
 			}
 			// 待機ステートへ
@@ -1256,24 +872,21 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 	// 攻撃中
 	else
 	{
-		//if (isBattleMode)
+		// 回避ステートへ
+		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
 		{
-			// 回避ステートへ
-			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
+			Phoenix::s32 index = attackState;
+
+			// 次の攻撃が発動するボタンの受付
+			if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionEndTime)
 			{
-				Phoenix::s32 index = attackState;
+				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
+				ChangeAttackAnimationState(-1, -1, 0.0f);
 
-				// 次の攻撃が発動するボタンの受付
-				if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionEndTime)
-				{
-					ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
-					ChangeAttackAnimationState(-1, -1, 0.0f);
+				isAttack = false;
+				attackReceptionTimeCnt = 0.0f;
 
-					isAttack = false;
-					attackReceptionTimeCnt = 0.0f;
-
-					JudgeDedgeIndex();
-				}
+				JudgeDedgeIndex();
 			}
 		}
 
@@ -1330,17 +943,28 @@ void Player::ChangeAnimation()
 	Phoenix::s32 baseLayerIndex = layerIndexList.at(LayerType::Base);
 	Phoenix::s32 lowerBodyLayerIndex = layerIndexList.at(LayerType::LowerBody);
 
+	// SE停止
+	{
+		if (soundSystem) soundSystem->Stop(SoundType::SE_Player_Walk);
+		/*soundSystem->Stop(SoundType::SE_Player_Attack_Punch_Swing);
+		soundSystem->Stop(SoundType::SE_Player_Attack_Punch_Hit_Right);
+		soundSystem->Stop(SoundType::SE_Player_Attack_Punch_Hit_Heavy);
+		soundSystem->Stop(SoundType::SE_Player_Attack_Kick_Swing);
+		soundSystem->Stop(SoundType::SE_Player_Attack_Kick_Hit_Right);
+		soundSystem->Stop(SoundType::SE_Player_Attack_Kick_Hit_Heavy);*/
+	}
+
 	switch (animationState)
 	{
 	case AnimationState::Idle:
 		if (isBattleMode)
 		{
-			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::BattleIdle), stateIndexList.at(StateType::BattleIdle), 0.2f);
+			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::BattleIdle), 1, 0.2f);
 			model->SetLoopAnimation(true);
 		}
 		else
 		{
-			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Idle), 1, 0.1f);
+			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Idle), 1, 0.4f);
 			model->SetLoopAnimation(true);
 		}
 		break;
@@ -1352,11 +976,13 @@ void Player::ChangeAnimation()
 			model->SimultaneousPlayBlendTreeAniamation(lowerBodyLayerIndex, 0, 1, 0.2f);
 			model->SetLoopAnimation(true);
 			model->SetBlendLoopAnimation(true);
+			if (soundSystem) soundSystem->Play(SoundType::SE_Player_Walk);
 		}
 		else
 		{
 			model->PlayBlendTreeAnimation(baseLayerIndex, 0, 1, 0.2f);
 			model->SetLoopAnimation(true);
+			if (soundSystem) soundSystem->Play(SoundType::SE_Player_Walk);
 		}
 		break;
 
@@ -1381,6 +1007,7 @@ void Player::ChangeAnimation()
 		model->PlayAnimation(baseLayerIndex, dedgeLayerIndex, 0, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(2.25f);
+		if (soundSystem) soundSystem->Play(SoundType::SE_Player_Dedge);
 		break;
 
 	case AnimationState::Death:
@@ -1515,10 +1142,6 @@ bool Player::AccumulationDamege()
 				attackState = -1;
 			}
 		}
-		else
-		{
-			//speed += KnockBackDownSpeed;
-		}
 	}
 
 	if (accumulationDamege == 0) return false;
@@ -1553,15 +1176,6 @@ void Player::GUI()
 
 	if (ImGui::TreeNode("Player"))
 	{
-		/*if (ImGui::Button("Load Attack Data"))
-		{
-			const char* fullPass = Phoenix::OS::Path::GetFullPath("..\\Data\\Document\\Player\\AttackDatas.atk");
-
-			Player::AttackDataList data;
-			Player::AttackDataList::Deserialize(data, fullPass);
-
-			SetAttackDatasList(data);
-		}*/
 		if (ImGui::TreeNode("Prameter"))
 		{
 			ImGui::Text("HP : %d", life);
@@ -1579,75 +1193,12 @@ void Player::GUI()
 		if (ImGui::TreeNode("Speed"))
 		{
 			ImGui::Text("speed : %f", speed);
-			/*ImGui::DragFloat("WalkSpeed", &WalkSpeed, 0.1f);
-			ImGui::DragFloat("RunSpeed", &RunSpeed, 0.1f);
-			ImGui::DragFloat("RollSpeed", &RollSpeed, 0.1f);
-			ImGui::DragFloat("KnockBackSpeed", &KnockBackSpeed, 0.1f);*/
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Bone"))
 		{
-			//ImGui::ListBox("BoneListBox\n(single select)", &boneIndex, model->GetBoneNode()->at(0).name.data(), model->GetBoneNode()->at(0).name.size(), 4);
-			//ImGui::ListBox("NodeListBox\n(single select)", &nodeIndex, model->GetNodes()->data(), model->GetNodes()->size(), 4);
-			//ImGui::ListBox("ListBox\n(single select)", &boneIndex, model->GetBoneNames().data(), model->GetBoneNames().size(), 4);
 			ImGui::TreePop();
 		}
-		//if (ImGui::TreeNode("Animation"))
-		//{
-		//	ImGui::InputInt("AnimClip", &animClip);
-		//	ImGui::Text("Len : %f", model->GetLength());
-		//	ImGui::Text("RunLen : %f", attackReceptionTimeCnt);
-		//	if (ImGui::Button("Play"))
-		//	{
-		//		model->PlayAnimation(0, animClip);
-		//	}
-		//	if (ImGui::Button("LoopPlay"))
-		//	{
-		//		model->SetLoopAnimation(true);
-		//	}
-		//	ImGui::TreePop();
-
-		//	if (ImGui::TreeNode("Blend"))
-		//	{
-		//		ImGui::DragFloat("Rate", &blendRate.x, 0.01f, 0.0f, 1.0f);
-		//		if (ImGui::Button("PlayBlendAnim"))
-		//		{
-		//			isChangeAnimation = true;
-		//			//speed = WalkSpeed;
-		//			animationState = AnimationState::Walk;
-		//		}
-		//		ImGui::TreePop();
-		//	}
-		//}
-		/*if (ImGui::TreeNode("Pass"))
-		{
-			HANDLE hFile;
-			FILETIME ftFileTime, ftLocalFileTime;
-			SYSTEMTIME newSTFileTime;
-
-			const wchar_t* fullPass = Phoenix::OS::Path::GetFullPathW(L"..\\Data\\Document\\Player\\AttackDatas.atk");
-			hFile = CreateFile(fullPass, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-			GetFileTime(hFile, NULL, NULL, &ftFileTime);
-			FileTimeToLocalFileTime(&ftFileTime, &ftLocalFileTime);
-			FileTimeToSystemTime(&ftLocalFileTime, &newSTFileTime);
-			CloseHandle(hFile);
-
-			ImGui::Text("%d", stFileTime.wYear);
-			ImGui::Text("%d", stFileTime.wMonth);
-			ImGui::Text("%d", stFileTime.wDay);
-			ImGui::Text("%d", stFileTime.wHour);
-			ImGui::Text("%d", stFileTime.wMinute);
-			ImGui::Text("%d", stFileTime.wSecond);
-
-			ImGui::Text("%d", newSTFileTime.wYear);
-			ImGui::Text("%d", newSTFileTime.wMonth);
-			ImGui::Text("%d", newSTFileTime.wDay);
-			ImGui::Text("%d", newSTFileTime.wHour);
-			ImGui::Text("%d", newSTFileTime.wMinute);
-			ImGui::Text("%d", newSTFileTime.wSecond);
-			ImGui::TreePop();
-		}*/
 		ImGui::TreePop();
 	}
 }

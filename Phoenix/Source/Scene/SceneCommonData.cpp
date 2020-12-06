@@ -95,25 +95,27 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 		loadTypeNum = 1;
 		{
 			soundSystem->AddSound(SoundType::BGM_Title, L"..\\Data\\Assets\\Audio\\BGM\\Title.wav", loadTypeNum);
-			soundSystem->AddSound(SoundType::BGM_Game, L"..\\Data\\Assets\\Audio\\BGM\\GameMain.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::BGM_Game, L"..\\Data\\Assets\\Audio\\BGM\\GameMain2.wav", loadTypeNum);
 		}
 
 		// SE
 		loadTypeNum = 0;
 		{
-			soundSystem->AddSound(SoundType::SE_Player_Attack_Punch_Swing, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Punch\\Swing\\punch-real-swing3.wav", loadTypeNum);
-			soundSystem->AddSound(SoundType::SE_Player_Attack_Punch_Hit_Right, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Punch\\Hit\\punch-light1.wav", loadTypeNum);
-			soundSystem->AddSound(SoundType::SE_Player_Attack_Punch_Hit_Heavy, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Punch\\Hit\\punch-heavy2.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Punch_Swing, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Punch\\Swing\\punch_swing.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Punch_Hit_Right, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Punch\\Hit\\punch_hit_right.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Punch_Hit_Heavy, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Punch\\Hit\\punch_hit_heavy.wav", loadTypeNum);
 
-			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Swing, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Swing\\kick-real-swing2.wav", loadTypeNum);
-			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Hit_Right, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Hit\\kick-light2.wav", loadTypeNum);
-			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Hit_Heavy, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Hit\\kick-heavy1.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Swing, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Swing\\kick_swing.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Hit_Right, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Hit\\kick_hit_right.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Hit_Heavy, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Hit\\kick_hit_heavy.wav", loadTypeNum);
+
+			soundSystem->AddSound(SoundType::SE_Player_Dedge, L"..\\Data\\Assets\\Audio\\SE\\Player\\Dedge\\dedge.wav", loadTypeNum);
 		}
 
 		// Loop SE
 		loadTypeNum = 1;
 		{
-			soundSystem->AddSound(SoundType::SE_Player_Walk, L"..\\Data\\Assets\\Audio\\SE\\Player\\Walk\\walk.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Player_Walk, L"..\\Data\\Assets\\Audio\\SE\\Player\\Walk\\walk4.wav", loadTypeNum);
 		}
 	}
 
@@ -129,6 +131,7 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 		soundSystem->SetVolume(SoundType::SE_Player_Attack_Kick_Swing, 0.75f);
 		soundSystem->SetVolume(SoundType::SE_Player_Attack_Kick_Hit_Right, 0.75f);
 		soundSystem->SetVolume(SoundType::SE_Player_Attack_Kick_Hit_Heavy, 0.75f);
+		soundSystem->SetVolume(SoundType::SE_Player_Dedge, 0.75f);
 	}
 
 	// ‹¤—L

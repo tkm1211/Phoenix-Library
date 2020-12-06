@@ -1178,6 +1178,8 @@ namespace Phoenix
 			{
 				std::vector<Math::Matrix> boneTransform;
 				u32 boneTransformCount = 0;
+
+				MeshNode() {}
 			};
 
 			struct Material

@@ -203,13 +203,13 @@ namespace Phoenix
 			void Finalize();
 
 			// çXêV
-			void UpdateCPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Vector3 transform, float dt);
+			void UpdateCPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Vector3 transform, f32 dt);
 		
-			void UpdateGPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Matrix worldTransform, float dt);
+			void UpdateGPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Matrix worldTransform, f32 dt);
 
 			void Draw(Graphics::IGraphicsDevice* graphicsDevice, const Graphics::Camera& camera);
 
-			void Burst(int num);
+			void Burst(s32 num);
 
 			void Restart();
 
@@ -217,17 +217,19 @@ namespace Phoenix
 
 			void LoadShaders(Graphics::IDevice* device, const char* simulateCSFileName, bool isEmissive, bool isAlpha);
 
-			void SetParticleSize(float particleSize) { size = particleSize; }
+			void SetParticleSize(f32 particleSize) { size = particleSize; }
 
-			void SetParticleLife(float particleLife) { life = particleLife; }
+			void SetParticleLife(f32 particleLife) { life = particleLife; }
 
-			void SetParticleScale(float particleScale) { scaleX = particleScale; }
+			void SetParticleScale(f32 particleScale) { scaleX = particleScale; }
 
-			void SetParticleRotate(float particleRotate) { rotation = particleRotate; }
+			void SetParticleRotate(f32 particleRotate) { rotation = particleRotate; }
 
 			void SetParticleNormal(Math::Vector4 particleNormal) { normal = particleNormal; }
 
 			void SetParticleColor(Math::Color particleColor) { mainColor = particleColor; }
+
+			void SetParticleMotionBlurAmount(f32 particleMotionBlurAmount) { motionBlurAmount = particleMotionBlurAmount; }
 		};
 
 		/*
