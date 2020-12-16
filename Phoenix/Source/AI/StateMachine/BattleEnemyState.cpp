@@ -127,54 +127,7 @@ namespace AI
 #pragma endregion
 
 #pragma region Attack
-		// ê∂ê¨
-		std::shared_ptr<Attack> Attack::Create(std::shared_ptr<Enemy> owner)
-		{
-			return std::make_shared<Attack>(owner);
-		}
-
-		// èÛë‘Ç…ì¸Ç¡ÇΩÇ∆Ç´Ç…åƒÇŒÇÍÇÈä÷êî
-		void Attack::SetUp()
-		{
-			index = 0;
-
-			attackList.emplace_back(EnemyAttackState::WeakRight);
-			attackList.emplace_back(EnemyAttackState::WeakLeft);
-			attackList.emplace_back(EnemyAttackState::StrongRight);
-			//attackList.emplace_back(EnemyAttackState::StrongLeft);
-		}
-
-		// éüÇÃèÛë‘Ç…à⁄ÇÈëOÇ…åƒÇŒÇÍÇÈä÷êî
-		void Attack::CleanUp()
-		{
-			attackList.clear();
-		}
-
-		// çXêV
-		BattleEnemyState Attack::Update()
-		{
-			if (!owner->GetModel()->IsPlaying() || index == 0)
-			{
-				if (attackList.size() <= index)
-				{
-					return BattleEnemyState::Idle;
-				}
-
-				currentAttack = attackList.at(index);
-				++index;
-
-				owner->SetAttackState(currentAttack);
-				owner->UpdateNewRotate();
-				owner->SetMoveSpeed(Speed);
-			}
-
-			Phoenix::f32 speed = owner->GetMoveSpeed();
-			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
-			owner->SetMoveSpeed(speed);
-			owner->SetMoveInput(0.0f, -1.0f);
-
-			return BattleEnemyState::NoneState;
-		}
+		
 #pragma endregion
 
 #pragma region Dedge

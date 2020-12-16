@@ -22,6 +22,7 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Actor\Actor.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\Audio.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\WAVFileReader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Animator.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Component.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Model.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Transform.h" />
@@ -55,6 +56,7 @@
     <ClCompile Include="..\..\..\Source\FrameWork\Actor\Actor.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Audio\Audio.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Audio\WAVFileReader.cpp" />
+    <ClCompile Include="..\..\..\Source\FrameWork\Compoment\Animator.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Compoment\Model.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\BitonicSort.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\ComputeShader.cpp" />

@@ -889,7 +889,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		{
 			//camera.ControllerCamera(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 100.0f, 0.0f));
 
-			bool inTerritory = false;
+			inTerritory = false;
 			Phoenix::Math::Vector3 playerPos = player->GetPosition();
 
 			static Phoenix::f32 lerp = 1.0f;
@@ -969,10 +969,15 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 				if (len <= 5.0f)
 				{
+					Phoenix::Math::Quaternion rotate = player->GetRotate();
+					Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+					Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
+					forward.y = 0.0f;
+
 					cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 5.0f, 0.05f);
 
 					enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
-					camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, 0.05f);
+					camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, 0.05f, true/*(player->GetAnimationState() == Player::AnimationState::Idle)*/, forward);
 					lerp = 0.01f;
 				}
 			}
@@ -1797,6 +1802,7 @@ void SceneGame::GUI()
 		ImGui::Checkbox("Update", &isUpdate);
 		ImGui::Checkbox("PlayerUpdate", &isPlayerUpdate);
 		ImGui::Checkbox("BossUpdate", &isBossUpdate);
+		ImGui::Checkbox("inTerritory", &inTerritory);
 		{
 			player->GUI();
 		}

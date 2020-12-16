@@ -618,7 +618,7 @@ namespace Phoenix
 			SetLookAt(_pos, _target, _up);
 		}
 
-		void Camera::ControllerCamera02(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 lerpTime)
+		void Camera::ControllerCamera02(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 lerpTime, bool adjustRotate, const Phoenix::Math::Vector3 targetFrontVec)
 		{
 			// TODO : Winä÷êîÇï ÇÃä÷êîÇ…ç∑Çµë÷Ç¶
 			POINT cursor;
@@ -673,6 +673,53 @@ namespace Phoenix
 			Math::Vector3 _right = { yCos, 0.0f, -ySin };
 			Math::Vector3 _up = Math::Vector3Cross(_right, _front);
 			front = _front;
+
+			// éŒÇﬂÇ…ï‚ä‘
+			bool hit = false;
+			static bool oldHit = false;
+			if (sX == 0.0f && adjustRotate && (targetFrontVec.x != 0.0f || targetFrontVec.z != 0.0f))
+			{
+				_front.y = 0.0f;
+
+				Phoenix::f32 dot = Phoenix::Math::Vector3Dot(targetFrontVec, _front);
+				Phoenix::f32 angle = acosf(dot) / 0.01745f;
+
+				if (1e-8f < fabs(angle))
+				{
+					Phoenix::f32 angleR;
+					angleR = acosf(Phoenix::Math::Vector3Dot(targetFrontVec, _right));
+					angleR -= (90.0f * 0.01745f);
+
+					if (0.0f < angleR)
+					{
+						angle *= -1;
+					}
+
+					if (0.0f <= fabs(angle) && fabs(angle) < 45.0f)
+					{
+						hit = true;
+
+						Phoenix::f32 originAngle = rotateY;
+						Phoenix::f32 newAngle = originAngle + (angle * 0.01745f);
+
+						if (!oldHit && 35.0f <= fabs(angle) && fabs(angle) < 45.0f)
+						{
+							adjustAngle = rotateY;
+						}
+						else
+						{
+							adjustAngle = Phoenix::Math::f32Lerp(adjustAngle, newAngle, lerpTime);
+							rotateY = adjustAngle;
+							oldHit = hit;
+						}
+					}
+				}
+			}
+			if (!hit)
+			{
+				adjustAngle = rotateY;
+				oldHit = false;
+			}
 
 			// íçéãì_Ç™ïœÇÌÇ¡ÇƒÇ‡ê¸å`ï‚ä‘Ç≈à·òaä¥ÇÇ»Ç≠Ç∑
 			focus = Phoenix::Math::Vector3Lerp(focus, (center + adjust), lerpTime);

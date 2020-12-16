@@ -2,6 +2,7 @@
 #include "EnemyManager.h"
 #include "../Player/Player.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
+#include "../AI/StateMachine/BattleEnemyState.h"
 
 
 // 生成
@@ -215,8 +216,26 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		// バトルモードAI
 		battleAI = BattleEnemyAI::Create();
 		{
-			battleAI->SetOwner(shared_from_this());
+			std::shared_ptr<Enemy> owner = shared_from_this();
+			std::shared_ptr<AI::BattleEnemy::Attack<EnemyAttackState>> attackState = AI::BattleEnemy::Attack<EnemyAttackState>::Create(owner);
+
+			battleAI->SetOwner(owner);
 			battleAI->SetUp();
+
+			battleAI->AddState(AI::BattleEnemy::Idle::Create());
+			battleAI->AddState(AI::BattleEnemy::Walk::Create(owner));
+			battleAI->AddState(AI::BattleEnemy::Run::Create(owner));
+			battleAI->AddState(attackState);
+			battleAI->AddState(AI::BattleEnemy::Dedge::Create(owner));
+			battleAI->AddState(AI::BattleEnemy::DamageSmall::Create(owner));
+			battleAI->AddState(AI::BattleEnemy::DamageBig::Create(owner));
+			battleAI->AddState(AI::BattleEnemy::Guard::Create());
+			battleAI->AddState(AI::BattleEnemy::Death::Create());
+
+			attackState->AddAttack(EnemyAttackState::WeakRight);
+			attackState->AddAttack(EnemyAttackState::WeakLeft);
+			attackState->AddAttack(EnemyAttackState::StrongRight);
+			//attackState->AddAttack(EnemyAttackState::StrongLeft);
 		}
 	}
 

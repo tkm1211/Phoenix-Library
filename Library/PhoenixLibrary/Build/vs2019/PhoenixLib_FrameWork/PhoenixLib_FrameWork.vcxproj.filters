@@ -186,6 +186,9 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Model.h">
       <Filter>Include\Component</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Animator.h">
+      <Filter>Include\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\FrameWork\pch.cpp">
@@ -258,6 +261,9 @@
       <Filter>Source\System</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Compoment\Model.cpp">
+      <Filter>Source\Compoment</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\FrameWork\Compoment\Animator.cpp">
       <Filter>Source\Compoment</Filter>
     </ClCompile>
   </ItemGroup>

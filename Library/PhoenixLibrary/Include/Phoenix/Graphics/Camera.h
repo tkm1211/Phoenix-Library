@@ -60,6 +60,8 @@ namespace Phoenix
 
 			Phoenix::Math::Vector3 shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 
+			f32 adjustAngle = 0.0f;
+
 		public:
 			f32 speed = 1.0f;
 			f32 adjustRight = 0.75f;
@@ -195,7 +197,7 @@ namespace Phoenix
 			void SurveyCamera(f32 addRotateX, f32 addRotateY, f32 distance, Math::Vector3 target);
 
 			void ControllerCamera(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 lerpTime = 1.0f);
-			void ControllerCamera02(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 lerpTime = 1.0f);
+			void ControllerCamera02(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 lerpTime = 1.0f, bool adjustRotate = false, const Phoenix::Math::Vector3 targetFrontVec = Phoenix::Math::Vector3());
 
 			void LockOnCamera(const Math::Vector3& center, const Math::Vector3& target, const Math::Vector3& centerAdjust, const Math::Vector3& targetAdjust, bool isLerp = true);
 

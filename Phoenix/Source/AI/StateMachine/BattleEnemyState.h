@@ -104,6 +104,7 @@ namespace AI
 #pragma endregion
 
 #pragma region Attack
+		template <class T>
 		class Attack : public State<BattleEnemyState>
 		{
 		private:
@@ -113,8 +114,8 @@ namespace AI
 			std::shared_ptr<Enemy> owner;
 
 			Phoenix::s32 index = 0;
-			EnemyAttackState currentAttack = EnemyAttackState::NoneState;
-			std::vector<EnemyAttackState> attackList;
+			T currentAttack = T();
+			std::vector<T> attackList;
 
 		public:
 			Attack(std::shared_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Attack), owner(owner) {}
@@ -122,19 +123,66 @@ namespace AI
 
 		public:
 			// 生成
-			static std::shared_ptr<Attack> Create(std::shared_ptr<Enemy> owner);
+			static std::shared_ptr<Attack<T>> Create(std::shared_ptr<Enemy> owner)
+			{
+				return std::make_shared<Attack<T>>(owner);
+			}
 
 			// 状態に入ったときに呼ばれる関数
-			void SetUp() override;
+			void SetUp() override
+			{
+				index = 0;
+			}
 
 			// 次の状態に移る前に呼ばれる関数
-			void CleanUp() override;
+			void CleanUp() override
+			{
+				attackList.clear();
+			}
 
 			/// <summary>
 			/// 更新
 			/// </summary>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override;
+			BattleEnemyState Update() override
+			{
+				if (!owner->GetModel()->IsPlaying() || index == 0)
+				{
+					if (attackList.size() <= index)
+					{
+						return BattleEnemyState::Idle;
+					}
+
+					currentAttack = attackList.at(index);
+					++index;
+
+					owner->SetAttackState(currentAttack);
+					owner->UpdateNewRotate();
+					owner->SetMoveSpeed(Speed);
+				}
+
+				Phoenix::f32 speed = owner->GetMoveSpeed();
+				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+				owner->SetMoveSpeed(speed);
+				owner->SetMoveInput(0.0f, -1.0f);
+
+				return BattleEnemyState::NoneState;
+			}
+
+		public:
+			/// <summary>
+			/// 攻撃追加
+			/// </summary>
+			/// <param name="id"> 攻撃ID </param>
+			void AddAttack(T id)
+			{
+				for (const auto& attack : attackList)
+				{
+					if (id == attack) return;
+				}
+
+				attackList.emplace_back(id);
+			}
 		};
 #pragma endregion
 

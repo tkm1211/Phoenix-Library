@@ -365,6 +365,8 @@ private:
 	Phoenix::s32 WeakAttackScore = 10;
 	Phoenix::s32 StrongAttackScore = 30;
 
+	bool inTerritory = false;
+
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
 	std::shared_ptr<GeometricPrimitive> cylinderPrimitive;
