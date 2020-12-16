@@ -218,7 +218,7 @@ namespace Phoenix
 				timer.Stop();
 				break;
 			case WM_EXITSIZEMOVE:
-				//timer.Start();
+				timer.Start();
 				break;
 			case WM_DROPFILES:
 				HDROP hdrop;
