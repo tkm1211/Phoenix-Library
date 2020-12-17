@@ -30,13 +30,13 @@ void FadeSystem::Finalize()
 	quad.reset();
 }
 
-void FadeSystem::Update(SceneSystem* sceneSystem)
+void FadeSystem::Update(SceneSystem* sceneSystem, Phoenix::f32 elapsedTime)
 {
 	if (!working) return;
 
 	if (!isTrun)
 	{
-		dissolveThreshold -= dissolveSpeed;
+		dissolveThreshold -= dissolveSpeed * elapsedTime;
 		if (dissolveThreshold <= 0.0f)
 		{
 			sceneSystem->SetScene(type);
@@ -45,7 +45,7 @@ void FadeSystem::Update(SceneSystem* sceneSystem)
 	}
 	else
 	{
-		dissolveThreshold += dissolveSpeed;
+		dissolveThreshold += dissolveSpeed * elapsedTime;
 		if (1.0f <= dissolveThreshold)
 		{
 			working = false;

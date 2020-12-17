@@ -340,7 +340,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			}
 		}
 
-		player->Update(*camera, !onFade && isPlayerUpdate /*&& (alive != 0)*/);
+		player->Update(*camera, !onFade && isPlayerUpdate, elapsedTime/*&& (alive != 0)*/);
 	}
 
 	// ƒƒ^AI

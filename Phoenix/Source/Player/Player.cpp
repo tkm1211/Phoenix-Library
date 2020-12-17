@@ -282,7 +282,7 @@ void Player::Finalize()
 	attackDatasList.attackDatas.clear();
 }
 
-void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, bool attackLoad)
+void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::f32 elapsedTime, bool attackLoad)
 {
 	if (attackLoad)
 	{
@@ -348,7 +348,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, bool atta
 		}
 		else
 		{
-			model->UpdateTransform(1 / 60.0f);
+			model->UpdateTransform(elapsedTime);
 		}
 
 		return;
@@ -371,7 +371,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, bool atta
 
 	// コントローラー操作(位置更新)
 	{
-		if (onControl && !isAccumulationDamege) Control(camera);
+		if (onControl && !isAccumulationDamege) Control(camera, elapsedTime);
 	}
 
 	// アニメーション変更
@@ -390,7 +390,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, bool atta
 			model->SetBlendRate(blendRate.z);
 		}
 
-		model->UpdateTransform(1 / 60.0f);
+		model->UpdateTransform(elapsedTime);
 	}
 
 	// ワールド行列を作成
@@ -440,7 +440,7 @@ void Player::UpdateUI()
 	ui->Update((hp / MaxLife) * 100.0f);
 }
 
-void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player control
+void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime) // TODO : re -> player control
 {
 	Phoenix::f32 sX = 0.0f;
 	Phoenix::f32 sY = 0.0f;
@@ -891,7 +891,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 		}
 
 		// アタックアニメーションスピード計測
-		attackReceptionTimeCnt += animationSpeed / 60.0f;
+		attackReceptionTimeCnt += animationSpeed * elapsedTime; // animationSpeed / 60.0f
 	}
 
 	// 座標更新
@@ -903,19 +903,19 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 			{
 				if (isBattleMode)
 				{
-					pos.x += sinf(rotateY) * (speed + (BattleSlowRunSpeed * blendRate.z));
-					pos.z += cosf(rotateY) * (speed + (BattleSlowRunSpeed * blendRate.z));
+					pos.x += sinf(rotateY) * ((speed + (BattleSlowRunSpeed * blendRate.z) * elapsedTime));
+					pos.z += cosf(rotateY) * ((speed + (BattleSlowRunSpeed * blendRate.z) * elapsedTime));
 				}
 				else
 				{
-					pos.x += sinf(rotateY) * (speed + (SlowRunSpeed * blendRate.z));
-					pos.z += cosf(rotateY) * (speed + (SlowRunSpeed * blendRate.z));
+					pos.x += sinf(rotateY) * ((speed + (SlowRunSpeed * blendRate.z)) * elapsedTime);
+					pos.z += cosf(rotateY) * ((speed + (SlowRunSpeed * blendRate.z)) * elapsedTime);
 				}
 			}
 			else if (animationState != AnimationState::Attack)
 			{
-				pos.x += sinf(rotateY) * speed;
-				pos.z += cosf(rotateY) * speed;
+				pos.x += sinf(rotateY) * (speed * elapsedTime);
+				pos.z += cosf(rotateY) * (speed * elapsedTime);
 			}
 		}
 
@@ -926,8 +926,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera) // TODO : re -> player c
 				Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&rotate);
 				Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
 
-				pos.x += forward.x * speed;
-				pos.z += forward.z * speed;
+				pos.x += forward.x * (speed * elapsedTime);
+				pos.z += forward.z * (speed * elapsedTime);
 
 				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
 			}

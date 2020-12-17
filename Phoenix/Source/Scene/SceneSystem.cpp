@@ -95,7 +95,7 @@ void SceneSystem::Update(Phoenix::f32 elapsedTime)
 		nextScene = nullptr;
 		currentScene->Initialize();
 	}
-	fadeSystem->Update(this);
+	fadeSystem->Update(this, elapsedTime);
 	currentScene->Update(elapsedTime);
 }
 

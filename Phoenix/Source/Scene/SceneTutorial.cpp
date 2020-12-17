@@ -256,7 +256,7 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 	Phoenix::Math::Vector3 oldPlayerPos = player->GetPosition();
 	if (isUpdate && !isHitStop)
 	{
-		player->Update(*camera, !onFade && isPlayerUpdate);
+		player->Update(*camera, !onFade && isPlayerUpdate, elapsedTime);
 	}
 
 	// エネミーマネージャー更新

@@ -6,7 +6,7 @@
 class FadeSystem
 {
 private:
-	const Phoenix::f32 dissolveSpeed = 0.01f;
+	const Phoenix::f32 dissolveSpeed = 1.0f;
 
 private:
 	bool working = false;
@@ -28,7 +28,7 @@ public:
 
 	void Finalize();
 
-	void Update(SceneSystem* sceneSystem);
+	void Update(SceneSystem* sceneSystem, Phoenix::f32 elapsedTime);
 
 	void Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 

@@ -56,7 +56,7 @@ public:
 class SceneTitle : public Scene
 {
 private:
-	const Phoenix::f32 dissolveSpeed = 0.005f;
+	const Phoenix::f32 dissolveSpeed = 0.5f;
 
 private:
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;

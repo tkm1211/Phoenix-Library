@@ -80,6 +80,8 @@ namespace Phoenix
 			//io.Fonts->AddFontFromFileTTF(".\\consolab.ttf", 10.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 			//io.Fonts->AddFontFromFileTTF(".\\Inconsolata-Bold.ttf", 12.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 			
+			elapsedTime = 0.0f;
+
 			return true;
 		}
 
@@ -120,7 +122,7 @@ namespace Phoenix
 				ImGui::Render();
 				ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 				
-				graphicsDevice->Present(1);
+				graphicsDevice->Present(0);
 			}
 		}
 	}

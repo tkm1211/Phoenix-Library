@@ -104,7 +104,7 @@ void SceneTitle::Initialize()
 
 void SceneTitle::Update(Phoenix::f32 elapsedTime)
 {
-	camera->SurveyCamera(0.0f, -0.005f, 300.0f, Phoenix::Math::Vector3(0.0f, 25.0f, 0.0f));
+	camera->SurveyCamera(0.0f, -0.5f * elapsedTime, 300.0f, Phoenix::Math::Vector3(0.0f, 25.0f, 0.0f));
 	//camera->FreeCamera();
 	camera->Update();
 
@@ -117,7 +117,7 @@ void SceneTitle::Update(Phoenix::f32 elapsedTime)
 
 	if (isChangeScene)
 	{
-		if (dissolveThreshold <= 1.2f) dissolveThreshold += dissolveSpeed;
+		if (dissolveThreshold <= 1.2f) dissolveThreshold += dissolveSpeed * elapsedTime;
 		//else sceneSystem->ChangeScene(SceneType::Tutorial, false, true);
 		else
 		{
@@ -133,7 +133,7 @@ void SceneTitle::Update(Phoenix::f32 elapsedTime)
 		dissolveThreshold = 0.5f;
 	}
 
-	if (-0.1f < dissolveThreshold) dissolveThreshold -= dissolveSpeed;
+	if (-0.1f < dissolveThreshold) dissolveThreshold -= dissolveSpeed * elapsedTime;
 }
 
 void SceneTitle::Draw(Phoenix::f32 elapsedTime)
