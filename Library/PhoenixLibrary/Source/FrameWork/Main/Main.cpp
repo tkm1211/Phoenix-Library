@@ -99,17 +99,18 @@ namespace Phoenix
 		{
 			// XV
 			{
-				GetXInputState(&xInput[0], 0);
-				GetDInputState(&dInput[0], 0);
+				display->TimerTick();
+				display->CalculateFrameStats();
+				elapsedTime = display->TimerInterval() * 60.0f;
+
+				GetXInputState(&xInput[0], 0, elapsedTime);
+				GetDInputState(&dInput[0], 0, elapsedTime);
 
 				ImGui_ImplDX11_NewFrame();
 				ImGui_ImplWin32_NewFrame();
 				ImGui::NewFrame();
 				//ImGuizmo::BeginFrame();
 
-				display->TimerTick();
-				display->CalculateFrameStats();
-				elapsedTime = display->TimerInterval();
 				Update(elapsedTime);
 			}
 

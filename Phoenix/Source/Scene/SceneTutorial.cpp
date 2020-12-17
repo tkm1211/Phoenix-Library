@@ -262,7 +262,7 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 	// エネミーマネージャー更新
 	if (isUpdate)
 	{
-		enemyManager->Update(onControl);
+		enemyManager->Update(onControl, elapsedTime);
 	}
 
 	// ボス更新
@@ -1310,7 +1310,7 @@ void SceneTutorial::GUI()
 
 			ImGui::SliderFloat("shakeRight", &vibrationRight, 0.0f, 65535.0f);
 			ImGui::SliderFloat("shakeLeft", &vibrationLeft, 0.0f, 65535.0f);
-			ImGui::DragInt("shakeMaxCnt", &vibrationMaxCnt);
+			ImGui::DragFloat("shakeMaxCnt", &vibrationMaxCnt);
 
 			ImGui::TreePop();
 		}

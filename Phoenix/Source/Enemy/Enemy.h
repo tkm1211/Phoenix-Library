@@ -159,7 +159,7 @@ public:
 	void Finalize();
 
 	// 更新
-	void Update(bool onControl);
+	void Update(bool onControl, Phoenix::f32 elapsedTime);
 
 	// トランスフォーム更新
 	void UpdateTrasform();

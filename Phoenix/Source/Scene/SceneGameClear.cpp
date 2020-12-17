@@ -61,7 +61,7 @@ void SceneGameClear::Update(Phoenix::f32 elapsedTime)
 
 	if (isTurn)
 	{
-		bright += addBright;
+		bright += addBright * elapsedTime;
 		if (0.25f <= bright)
 		{
 			bright = 0.25f;
@@ -70,7 +70,7 @@ void SceneGameClear::Update(Phoenix::f32 elapsedTime)
 	}
 	else
 	{
-		bright -= addBright;
+		bright -= addBright * elapsedTime;
 		if (bright <= 0.1f)
 		{
 			bright = 0.1f;

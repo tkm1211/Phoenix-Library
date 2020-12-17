@@ -104,7 +104,7 @@ void SceneTitle::Initialize()
 
 void SceneTitle::Update(Phoenix::f32 elapsedTime)
 {
-	camera->SurveyCamera(0.0f, -0.5f * elapsedTime, 300.0f, Phoenix::Math::Vector3(0.0f, 25.0f, 0.0f));
+	camera->SurveyCamera(0.0f, -0.005f * elapsedTime, 300.0f, Phoenix::Math::Vector3(0.0f, 25.0f, 0.0f));
 	//camera->FreeCamera();
 	camera->Update();
 

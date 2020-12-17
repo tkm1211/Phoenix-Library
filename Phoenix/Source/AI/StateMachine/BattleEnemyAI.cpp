@@ -31,11 +31,11 @@ void BattleEnemyAI::CleanUp()
 }
 
 // XV
-BattleEnemyState BattleEnemyAI::Update()
+BattleEnemyState BattleEnemyAI::Update(Phoenix::f32 elapsedTime)
 {
 	if (currentState == nullptr) return BattleEnemyState::NoneState;
 
-	BattleEnemyState nextState = currentState->Update();
+	BattleEnemyState nextState = currentState->Update(elapsedTime);
 	if (nextState != BattleEnemyState::NoneState)
 	{
 		owner->SetState(nextState);

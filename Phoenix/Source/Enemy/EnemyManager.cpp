@@ -45,11 +45,11 @@ void EnemyManager::Finalize()
 }
 
 // XV
-void EnemyManager::Update(bool onControl)
+void EnemyManager::Update(bool onControl, Phoenix::f32 elapsedTime)
 {
 	for (auto enemy : enemies)
 	{
-		enemy->Update(onControl);
+		enemy->Update(onControl, elapsedTime);
 	}
 }
 

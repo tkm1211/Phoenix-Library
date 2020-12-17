@@ -13,10 +13,10 @@ namespace AI
 		class Idle : public State<BattleEnemyState>
 		{
 		private:
-			const Phoenix::s32 MaxCount = 100;
+			const Phoenix::f32 MaxCount = 100.0f;
 
 		private:
-			Phoenix::s32 timeCounter = 0;
+			Phoenix::f32 timeCounter = 0.0f;
 
 		public:
 			Idle() : State<BattleEnemyState>(BattleEnemyState::Idle) {}
@@ -35,8 +35,9 @@ namespace AI
 			/// <summary>
 			/// 更新
 			/// </summary>
+			/// <param name="elapsedTime"> 経過時間 </param>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override;
+			BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
 		};
 #pragma endregion
 
@@ -67,8 +68,9 @@ namespace AI
 			/// <summary>
 			/// 更新
 			/// </summary>
+			/// <param name="elapsedTime"> 経過時間 </param>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override;
+			BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
 		};
 #pragma endregion
 
@@ -98,8 +100,9 @@ namespace AI
 			/// <summary>
 			/// 更新
 			/// </summary>
+			/// <param name="elapsedTime"> 経過時間 </param>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override;
+			BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
 		};
 #pragma endregion
 
@@ -137,14 +140,15 @@ namespace AI
 			// 次の状態に移る前に呼ばれる関数
 			void CleanUp() override
 			{
-				attackList.clear();
+				//attackList.clear();
 			}
 
 			/// <summary>
 			/// 更新
 			/// </summary>
+			/// <param name="elapsedTime"> 経過時間 </param>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override
+			BattleEnemyState Update(Phoenix::f32 elapsedTime) override
 			{
 				if (!owner->GetModel()->IsPlaying() || index == 0)
 				{
@@ -162,7 +166,7 @@ namespace AI
 				}
 
 				Phoenix::f32 speed = owner->GetMoveSpeed();
-				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
 				owner->SetMoveSpeed(speed);
 				owner->SetMoveInput(0.0f, -1.0f);
 
@@ -212,8 +216,9 @@ namespace AI
 			/// <summary>
 			/// 更新
 			/// </summary>
+			/// <param name="elapsedTime"> 経過時間 </param>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override;
+			BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
 		};
 #pragma endregion
 
@@ -243,8 +248,9 @@ namespace AI
 			/// <summary>
 			/// 更新
 			/// </summary>
+			/// <param name="elapsedTime"> 経過時間 </param>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override;
+			BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
 		};
 #pragma endregion
 
@@ -274,8 +280,9 @@ namespace AI
 			/// <summary>
 			/// 更新
 			/// </summary>
+			/// <param name="elapsedTime"> 経過時間 </param>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override;
+			BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
 		};
 #pragma endregion
 
@@ -302,8 +309,9 @@ namespace AI
 			/// <summary>
 			/// 更新
 			/// </summary>
+			/// <param name="elapsedTime"> 経過時間 </param>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override;
+			BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
 		};
 #pragma endregion
 
@@ -330,8 +338,9 @@ namespace AI
 			/// <summary>
 			/// 更新
 			/// </summary>
+			/// <param name="elapsedTime"> 経過時間 </param>
 			/// <returns> 次の移行するステートID </returns>
-			BattleEnemyState Update() override;
+			BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
 		};
 #pragma endregion
 	}

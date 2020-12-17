@@ -74,8 +74,8 @@ void PlayerEditor::Update(Phoenix::f32 elapsedTime)
 	static Phoenix::f32 lerp = 1.0f;
 	static Phoenix::f32 cameraLen = 6.0f;
 	{
-		lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f);
-		cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f);
+		lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f * elapsedTime);
+		cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f * elapsedTime);
 
 		camera->ControllerCamera02(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), cameraLen, lerp);
 	}

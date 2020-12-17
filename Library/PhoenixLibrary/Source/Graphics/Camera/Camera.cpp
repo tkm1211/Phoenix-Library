@@ -618,7 +618,7 @@ namespace Phoenix
 			SetLookAt(_pos, _target, _up);
 		}
 
-		void Camera::ControllerCamera02(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 lerpTime, bool adjustRotate, const Phoenix::Math::Vector3 targetFrontVec)
+		void Camera::ControllerCamera02(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 elapsedTime, const Phoenix::f32 lerpTime, bool adjustRotate, const Phoenix::Math::Vector3 targetFrontVec)
 		{
 			// TODO : Win関数を別の関数に差し替え
 			POINT cursor;
@@ -641,13 +641,13 @@ namespace Phoenix
 			{
 				f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
 				f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
-				rotateY -= moveX * 0.5f;
-				rotateX += moveY * 0.5f;
+				rotateY -= moveX * 0.5f * elapsedTime;
+				rotateX += moveY * 0.5f * elapsedTime;
 			}
 			else
 			{
-				rotateY -= sX * 3.5f * 0.01745f;
-				rotateX -= sY * 3.5f * 0.01745f;
+				rotateY -= sX * 3.5f * 0.01745f * elapsedTime;
+				rotateX -= sY * 3.5f * 0.01745f * elapsedTime;
 				if (0.5f < rotateX)
 				{
 					rotateX = 0.5f;
@@ -660,7 +660,7 @@ namespace Phoenix
 
 			if (sY == 0.0f)
 			{
-				rotateX = Phoenix::Math::f32Lerp(rotateX, -0.15f, 0.15f);
+				rotateX = Phoenix::Math::f32Lerp(rotateX, -0.15f, 0.15f * elapsedTime);
 			}
 
 			f32 xSin = sinf(rotateX);
@@ -708,7 +708,7 @@ namespace Phoenix
 						}
 						else
 						{
-							adjustAngle = Phoenix::Math::f32Lerp(adjustAngle, newAngle, lerpTime);
+							adjustAngle = Phoenix::Math::f32Lerp(adjustAngle, newAngle, lerpTime * elapsedTime);
 							rotateY = adjustAngle;
 							oldHit = hit;
 						}
@@ -722,7 +722,7 @@ namespace Phoenix
 			}
 
 			// 注視点が変わっても線形補間で違和感をなくす
-			focus = Phoenix::Math::Vector3Lerp(focus, (center + adjust), lerpTime);
+			focus = Phoenix::Math::Vector3Lerp(focus, (center + adjust), lerpTime * elapsedTime);
 
 			Math::Vector3 _pos = focus - (front * len);
 			_pos.y = _pos.y <= 1.0f ? 1.0f : _pos.y; // ステージに埋まってしまうので押し出し

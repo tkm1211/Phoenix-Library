@@ -56,7 +56,7 @@ public:
 class SceneTitle : public Scene
 {
 private:
-	const Phoenix::f32 dissolveSpeed = 0.5f;
+	const Phoenix::f32 dissolveSpeed = 0.005f;
 
 private:
 	Phoenix::FrameWork::ModelObject* stageModel = nullptr;
@@ -178,7 +178,7 @@ private:
 	// コントローラー振動
 	Phoenix::f32 vibrationRight = 0.0f;
 	Phoenix::f32 vibrationLeft = 0.0f;
-	Phoenix::s32 vibrationMaxCnt = 0;
+	Phoenix::f32 vibrationMaxCnt = 0;
 
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
@@ -351,13 +351,13 @@ private:
 	Phoenix::Math::Vector3 shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::f32 shakeWidth = 0.0f;
 	Phoenix::f32 shakeHeight = 0.0f;
-	Phoenix::s32 cameraShakeCnt = 0;
-	Phoenix::s32 cameraShakeMaxCnt = 0;
+	Phoenix::f32 cameraShakeCnt = 0;
+	Phoenix::f32 cameraShakeMaxCnt = 0;
 
 	// コントローラー振動
 	Phoenix::f32 vibrationRight = 0.0f;
 	Phoenix::f32 vibrationLeft = 0.0f;
-	Phoenix::s32 vibrationMaxCnt = 0;
+	Phoenix::f32 vibrationMaxCnt = 0.0f;
 
 	// 行動スコア
 	Phoenix::s32 playerBehaviorScore = 0;

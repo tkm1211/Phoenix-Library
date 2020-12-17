@@ -16,7 +16,7 @@ namespace AI
 		void Idle::SetUp()
 		{
 			canChangeState = false;
-			timeCounter = 0;
+			timeCounter = 0.0f;
 		}
 
 		// 次の状態に移る前に呼ばれる関数
@@ -26,12 +26,16 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnemyState Idle::Update()
+		BattleEnemyState Idle::Update(Phoenix::f32 elapsedTime)
 		{
-			if (MaxCount <= timeCounter++)
+			if ((MaxCount * elapsedTime) <= timeCounter)
 			{
 				canChangeState = true;
 				timeCounter = 0;
+			}
+			else
+			{
+				timeCounter += 1.0f * elapsedTime;
 			}
 
 			return BattleEnemyState::NoneState;
@@ -69,7 +73,7 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnemyState Walk::Update()
+		BattleEnemyState Walk::Update(Phoenix::f32 elapsedTime)
 		{
 			if (owner->InDistanceHitByAttack())
 			{
@@ -111,7 +115,7 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnemyState Run::Update()
+		BattleEnemyState Run::Update(Phoenix::f32 elapsedTime)
 		{
 			if (owner->InBattleTerritory())
 			{
@@ -127,7 +131,7 @@ namespace AI
 #pragma endregion
 
 #pragma region Attack
-		
+		// No Data.
 #pragma endregion
 
 #pragma region Dedge
@@ -150,7 +154,7 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnemyState Dedge::Update()
+		BattleEnemyState Dedge::Update(Phoenix::f32 elapsedTime)
 		{
 			if (!owner->GetModel()->IsPlaying())
 			{
@@ -169,7 +173,7 @@ namespace AI
 #endif
 
 			Phoenix::f32 speed = owner->GetMoveSpeed();
-			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
 			owner->SetMoveSpeed(speed);
 
 			return BattleEnemyState::NoneState;
@@ -197,7 +201,7 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnemyState DamageSmall::Update()
+		BattleEnemyState DamageSmall::Update(Phoenix::f32 elapsedTime)
 		{
 			if (!owner->GetModel()->IsPlaying())
 			{
@@ -206,7 +210,7 @@ namespace AI
 			}
 
 			Phoenix::f32 speed = owner->GetMoveSpeed();
-			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
 			owner->SetMoveSpeed(speed);
 			owner->SetMoveInput(0.0f, 1.0f);
 
@@ -235,7 +239,7 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnemyState DamageBig::Update()
+		BattleEnemyState DamageBig::Update(Phoenix::f32 elapsedTime)
 		{
 			if (!owner->GetModel()->IsPlaying())
 			{
@@ -244,7 +248,7 @@ namespace AI
 			}
 
 			Phoenix::f32 speed = owner->GetMoveSpeed();
-			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
 			owner->SetMoveSpeed(speed);
 			owner->SetMoveInput(0.0f, 1.0f);
 
@@ -272,7 +276,7 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnemyState Guard::Update()
+		BattleEnemyState Guard::Update(Phoenix::f32 elapsedTime)
 		{
 			return BattleEnemyState::NoneState;
 		}
@@ -298,7 +302,7 @@ namespace AI
 		}
 
 		// 更新
-		BattleEnemyState Death::Update()
+		BattleEnemyState Death::Update(Phoenix::f32 elapsedTime)
 		{
 			return BattleEnemyState::NoneState;
 		}

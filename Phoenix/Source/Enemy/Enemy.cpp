@@ -298,7 +298,7 @@ void Enemy::Finalize()
 }
 
 // 更新
-void Enemy::Update(bool onControl)
+void Enemy::Update(bool onControl, Phoenix::f32 elapsedTime)
 {
 	// ライフが０ならマネージャーの生存エネミーカウントを下げる
 	if (life <= 0 && alive)
@@ -322,7 +322,7 @@ void Enemy::Update(bool onControl)
 		}
 		else
 		{
-			model->UpdateTransform(1 / 60.0f);
+			model->UpdateTransform(elapsedTime / 60.0f);
 		}
 	}
 
@@ -335,7 +335,7 @@ void Enemy::Update(bool onControl)
 		{
 			SetState(BattleEnemyState::Idle);
 		}
-		model->UpdateTransform(1 / 60.0f);
+		model->UpdateTransform(elapsedTime / 60.0f);
 		return;
 	}
 
@@ -349,7 +349,7 @@ void Enemy::Update(bool onControl)
 			break;
 
 		case EnemyMode::Battle:
-			nextBattleState = battleAI->Update();
+			nextBattleState = battleAI->Update(elapsedTime);
 			/*if (nextBattleState == BattleEnemyState::Idle && stackAttackRight)
 			{
 				stackAttackRight = false;
@@ -395,7 +395,7 @@ void Enemy::Update(bool onControl)
 		}
 
 		Phoenix::Math::Quaternion rotate = transform->GetRotate();
-		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f);
+		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f * elapsedTime);
 
 		transform->SetRotate(rotate);
 	}
@@ -432,8 +432,8 @@ void Enemy::Update(bool onControl)
 
 		Phoenix::Math::Vector3 pos = transform->GetTranslate();
 		{
-			pos.x += sinf(rotateY) * moveSpeed;
-			pos.z += cosf(rotateY) * moveSpeed;
+			pos.x += sinf(rotateY) * (moveSpeed * elapsedTime);
+			pos.z += cosf(rotateY) * (moveSpeed * elapsedTime);
 		}
 
 		transform->SetTranslate(pos);
@@ -456,8 +456,8 @@ void Enemy::Update(bool onControl)
 			model->SetBlendRate(Phoenix::Math::Vector3(-moveX, moveY, 0.0f));
 		}
 
-		model->UpdateTransform(1 / 60.0f);
-		attackReceptionTimeCnt += (1 / 60.0f) * attackAnimationSpeed;
+		model->UpdateTransform(elapsedTime / 60.0f);
+		attackReceptionTimeCnt += attackAnimationSpeed * elapsedTime / 60.0f;
 	}
 
 	// トランスフォーム更新

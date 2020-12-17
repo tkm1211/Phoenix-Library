@@ -78,10 +78,10 @@ struct XINPUT
 
 	// vibration
 	bool isVibration;
-	int rVib;
-	int lVib;
-	int vibCnt;
-	int vibMaxCnt;
+	float rVib;
+	float lVib;
+	float vibCnt;
+	float vibMaxCnt;
 
 	// button cnt
 	int cnt[16] = { 0 };
@@ -184,8 +184,8 @@ public:
 #define	PAD	Joystick::getInstance()
 
 
-extern bool GetXInputState(XINPUT *xinput, int _num = 0);         //XboxƒRƒ“ƒgƒ[ƒ‰[‚Ì“ü—Íó‘Ô‚Ìæ“¾
-extern bool GetDInputState(DINPUT *dinput, int _num = 0);         //PS4ƒRƒ“ƒgƒ[ƒ‰[‚Ì“ü—Íó‘Ô‚Ìæ“¾
+extern bool GetXInputState(XINPUT *xinput, int _num = 0, float elapsedTime = 0.0f);         //XboxƒRƒ“ƒgƒ[ƒ‰[‚Ì“ü—Íó‘Ô‚Ìæ“¾
+extern bool GetDInputState(DINPUT *dinput, int _num = 0, float elapsedTime = 0.0f);         //PS4ƒRƒ“ƒgƒ[ƒ‰[‚Ì“ü—Íó‘Ô‚Ìæ“¾
 
 /// <summary>
 /// XboxƒRƒ“ƒgƒ[ƒ‰[‚ÌƒoƒCƒuƒŒ[ƒVƒ‡ƒ“’l‚Ìİ’è
@@ -194,7 +194,7 @@ extern bool GetDInputState(DINPUT *dinput, int _num = 0);         //PS4ƒRƒ“ƒgƒ
 /// <param name="lVib"> ¶‚ÌU“®’l : 0.0f ~ 1.0f </param>
 /// <param name="_cnt"> U“®ŠÔ(ƒtƒŒ[ƒ€) </param>
 /// <param name="_num"> ƒRƒ“ƒgƒ[ƒ‰[”Ô† : 0 ~ 3 </param>
-extern void SetXInputVibration(float rVib, float lVib, int _cnt, int _num = 0);
+extern void SetXInputVibration(float rVib, float lVib, float _cnt, int _num = 0);
 
 
 class Mouse

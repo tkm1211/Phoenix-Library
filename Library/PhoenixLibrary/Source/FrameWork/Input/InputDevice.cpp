@@ -149,7 +149,7 @@ void Joystick::InitInputDevice()
 	}
 }
 
-bool GetXInputState(XINPUT *xinput, int _num)
+bool GetXInputState(XINPUT *xinput, int _num, float elapsedTime)
 {
 	// ゲームパッドの状態を取得
 	XINPUT_STATE state;
@@ -476,7 +476,7 @@ bool GetXInputState(XINPUT *xinput, int _num)
 	// バイブレーション更新
 	if (xinput->isVibration)
 	{
-		if (xinput->vibMaxCnt <= xinput->vibCnt++)
+		if (xinput->vibMaxCnt <= xinput->vibCnt)
 		{
 			XINPUT_VIBRATION vibration;
 			ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
@@ -484,16 +484,20 @@ bool GetXInputState(XINPUT *xinput, int _num)
 			vibration.wRightMotorSpeed = 0; // val:0~65535
 			XInputSetState(_num, &vibration);
 
-			xinput->vibCnt = 0;
-			xinput->vibMaxCnt = 0;
+			xinput->vibCnt = 0.0f;
+			xinput->vibMaxCnt = 0.0f;
 			xinput->isVibration = false;
+		}
+		else
+		{
+			xinput->vibCnt += 1.0f * elapsedTime;
 		}
 	}
 
 	return true;
 }
 
-bool GetDInputState(DINPUT *dinput, int _num)
+bool GetDInputState(DINPUT *dinput, int _num, float elapsedTime)
 {
 	if ((int)(PAD.lpJoystick.size() - 1) != _num) return false;
 
@@ -754,7 +758,7 @@ bool GetDInputState(DINPUT *dinput, int _num)
 	return true;
 }
 
-void SetXInputVibration(float rVib, float lVib, int _cnt, int _num)
+void SetXInputVibration(float rVib, float lVib, float _cnt, int _num)
 {
 	xInput[_num].isVibration = true;
 	xInput[_num].rVib = rVib;

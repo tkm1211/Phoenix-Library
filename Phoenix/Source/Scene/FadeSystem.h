@@ -6,7 +6,7 @@
 class FadeSystem
 {
 private:
-	const Phoenix::f32 dissolveSpeed = 1.0f;
+	const Phoenix::f32 dissolveSpeed = 0.01f;
 
 private:
 	bool working = false;

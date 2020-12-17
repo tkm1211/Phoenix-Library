@@ -230,6 +230,8 @@ namespace Phoenix
 			void SetParticleColor(Math::Color particleColor) { mainColor = particleColor; }
 
 			void SetParticleMotionBlurAmount(f32 particleMotionBlurAmount) { motionBlurAmount = particleMotionBlurAmount; }
+
+			void SetParticleFixedTimeStep(f32 particleFixedTimeStep) { fixedTimeStep = particleFixedTimeStep; }
 		};
 
 		/*

@@ -355,7 +355,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 	// エネミー更新
 	if (isUpdate && isBossUpdate && !isHitStop)
 	{
-		enemyManager->Update(onControl);
+		enemyManager->Update(onControl, elapsedTime);
 	}
 
 	// ゲームジャッジ
@@ -676,27 +676,27 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 							{
 								isCameraShake = true;
 								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-								cameraShakeCnt = 0;
+								cameraShakeCnt = 0.0f;
 								
 								shakeWidth = 0.0f;
 								shakeHeight = 0.05f;
 							
-								cameraShakeMaxCnt = 7;
+								cameraShakeMaxCnt = 7.0f;
 
-								SetXInputVibration(1.0f, 0.0f, 5);
+								SetXInputVibration(1.0f, 0.0f, 5.0f);
 							}
 							else if (player->GetAttackPower() == 1)
 							{
 								isCameraShake = true;
 								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-								cameraShakeCnt = 0;
+								cameraShakeCnt = 0.0f;
 
 								shakeWidth = 0.0f;
 								shakeHeight = 0.25f;
 
-								cameraShakeMaxCnt = 10;
+								cameraShakeMaxCnt = 10.0f;
 
-								SetXInputVibration(1.0f, 1.0f, 10);
+								SetXInputVibration(1.0f, 1.0f, 10.0f);
 							}
 						}
 					}
@@ -776,7 +776,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 								cameraShakeMaxCnt = 7;
 
-								SetXInputVibration(1.0f, 0.0f, 5);
+								SetXInputVibration(1.0f, 0.0f, 5.0f);
 							}
 							else if (enemy->GetAttackPower() == 1)
 							{
@@ -789,7 +789,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 								cameraShakeMaxCnt = 10;
 
-								SetXInputVibration(1.0f, 1.0f, 10);
+								SetXInputVibration(1.0f, 1.0f, 10.0f);
 							}
 						}
 					}
@@ -839,7 +839,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		{
 			Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
 
-			if (playerAttackEndMaxCount <= playerAttackEndCount++)
+			if (playerAttackEndMaxCount <= playerAttackEndCount)
 			{
 				point->position = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 				point->color = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -852,9 +852,11 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			{
 				//point->distance = pointLightDistance * ((playerAttackEndMaxCount - playerAttackEndCount) / playerAttackEndMaxCount);
 
-				point->color.x -= grayScale / playerAttackEndMaxCount;
-				point->color.y -= grayScale / playerAttackEndMaxCount;
-				point->color.z -= grayScale / playerAttackEndMaxCount;
+				point->color.x -= grayScale / playerAttackEndMaxCount * elapsedTime;
+				point->color.y -= grayScale / playerAttackEndMaxCount * elapsedTime;
+				point->color.z -= grayScale / playerAttackEndMaxCount * elapsedTime;
+
+				playerAttackEndCount += 1.0f * elapsedTime;
 			}
 		}
 	}
@@ -974,19 +976,19 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
 					forward.y = 0.0f;
 
-					cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 5.0f, 0.05f);
+					cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 5.0f, 0.05f * elapsedTime);
 
 					enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
-					camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, 0.05f, true/*(player->GetAnimationState() == Player::AnimationState::Idle)*/, forward);
+					camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, elapsedTime, 0.05f, true/*(player->GetAnimationState() == Player::AnimationState::Idle)*/, forward);
 					lerp = 0.01f;
 				}
 			}
 			else
 			{
-				lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f);
-				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f);
+				lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f * elapsedTime);
+				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f * elapsedTime);
 
-				camera->ControllerCamera02(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, lerp);
+				camera->ControllerCamera02(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, elapsedTime, lerp);
 			}
 		}
 		//camera->Update();
@@ -1043,16 +1045,19 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		//gpuParticle->Burst(10);
 		//gpuParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
 		//gpuParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
-
+		playerHitParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
 		playerHitParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
 		playerHitParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 
+		bossHitParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
 		bossHitParticle->UpdateCPU(graphicsDevice, bossHitParticlePos, 1.0f / 60.0f);
 		bossHitParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 
+		petalParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
 		petalParticle->UpdateCPU(graphicsDevice, jumpAttackParticlePos, 1.0f / 60.0f);
 		petalParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 
+		soilParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
 		soilParticle->UpdateCPU(graphicsDevice, jumpAttackParticlePos, 1.0f / 60.0f);
 		soilParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 
@@ -1085,12 +1090,16 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 		camera->SetCameraShake(shake);
 
-		if (cameraShakeMaxCnt <= cameraShakeCnt++)
+		if (cameraShakeMaxCnt <= cameraShakeCnt)
 		{
 			isCameraShake = false;
 			cameraShakeCnt = 0;
 			shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 			camera->SetCameraShake(shake);
+		}
+		else
+		{
+			cameraShakeCnt += 1.0f * elapsedTime;
 		}
 	}
 
@@ -2035,7 +2044,7 @@ void SceneGame::GUI()
 
 			ImGui::SliderFloat("shakeRight", &vibrationRight, 0.0f, 65535.0f);
 			ImGui::SliderFloat("shakeLeft", &vibrationLeft, 0.0f, 65535.0f);
-			ImGui::DragInt("shakeMaxCnt", &vibrationMaxCnt);
+			ImGui::DragFloat("shakeMaxCnt", &vibrationMaxCnt);
 
 			ImGui::TreePop();
 		}

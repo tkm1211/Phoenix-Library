@@ -28,7 +28,7 @@ public:
 	void CleanUp() override;
 
 	// 更新
-	BattleEnemyState Update() override;
+	BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
 
 public:
 	// エネミー設定

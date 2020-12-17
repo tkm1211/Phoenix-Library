@@ -117,16 +117,16 @@ public:
 	};
 
 private:
-	static constexpr Phoenix::f32 WalkSpeed = 2.1f;
-	static constexpr Phoenix::f32 BattleWalkSpeed = 0.001f;
-	static constexpr Phoenix::f32 RunSpeed = 18.0f;
-	static constexpr Phoenix::f32 SlowRunSpeed = 4.5f;
-	static constexpr Phoenix::f32 BattleSlowRunSpeed = 3.0f;
-	static constexpr Phoenix::f32 RollSpeed = 1.5f;
-	static constexpr Phoenix::f32 DedgeSpeed = 15.0f;
-	static constexpr Phoenix::f32 KnockBackSpeed = -0.3f;
-	static constexpr Phoenix::f32 KnockBackDownSpeed = 0.003f;
-	static constexpr Phoenix::f32 Attack03Speed = 1.0f;
+	static constexpr Phoenix::f32 WalkSpeed = 0.021f;
+	static constexpr Phoenix::f32 BattleWalkSpeed = 0.0105f;
+	static constexpr Phoenix::f32 RunSpeed = 0.18f;
+	static constexpr Phoenix::f32 SlowRunSpeed = 0.09f;
+	static constexpr Phoenix::f32 BattleSlowRunSpeed = 0.045f;
+	static constexpr Phoenix::f32 RollSpeed = 0.15f;
+	static constexpr Phoenix::f32 DedgeSpeed = 0.15f;
+	static constexpr Phoenix::f32 KnockBackSpeed = -0.03f;
+	static constexpr Phoenix::f32 KnockBackDownSpeed = 0.0003f;
+	static constexpr Phoenix::f32 Attack03Speed = 0.1f;
 	static constexpr Phoenix::f32 AnimationSpeed30 = 30.0f; // 0.03333333f
 	static constexpr Phoenix::f32 AnimationSpeed45 = 45.0f; // 0.02222222f
 	static constexpr Phoenix::f32 AnimationSpeed60 = 60.0f; // 0.01666667f
@@ -138,7 +138,7 @@ private:
 	static constexpr Phoenix::f32 Attack06AnimationSpeed = 1.0f;
 	static constexpr Phoenix::f32 Attack01ReceptionStartTime = 1.3333332f; // GoalÇÕÅAAnimationÇÃéûä‘ÇÃí∑Ç≥Ç©ÇÁéÊìæ // 20 * 0.0166666667f;
 	static constexpr Phoenix::f32 Attack02ReceptionStartTime = 2.2f; // GoalÇÕÅAAnimationÇÃéûä‘ÇÃí∑Ç≥Ç©ÇÁéÊìæ // 20 * 0.0166666667f;
-	static constexpr Phoenix::f32 Attack01MoveSpeed = 15.0f;
+	static constexpr Phoenix::f32 Attack01MoveSpeed = 0.1f;
 	static constexpr Phoenix::f32 WeakAttackCollisionRadius = 0.25f;
 	static constexpr Phoenix::f32 StrongAttackCollisionRadius = 0.75f;
 	static constexpr Phoenix::s32 MaxLife = 100; // TODO : í≤êÆïKê{

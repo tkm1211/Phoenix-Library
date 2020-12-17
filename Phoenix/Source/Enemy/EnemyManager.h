@@ -44,7 +44,7 @@ public:
 	void Finalize();
 
 	// 更新
-	void Update(bool onControl);
+	void Update(bool onControl, Phoenix::f32 elapsedTime);
 
 	// UI更新
 	void UpdateUI(Phoenix::s32 index);

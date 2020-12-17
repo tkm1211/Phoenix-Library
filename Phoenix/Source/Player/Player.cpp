@@ -348,7 +348,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::
 		}
 		else
 		{
-			model->UpdateTransform(elapsedTime);
+			model->UpdateTransform(elapsedTime / 60.0f);
 		}
 
 		return;
@@ -358,7 +358,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::
 	{
 		Phoenix::f32 score = static_cast<Phoenix::f32>(behaviorScore);
 		{
-			score = Phoenix::Math::f32Lerp(score, 0.0f, 0.05f);
+			score = Phoenix::Math::f32Lerp(score, 0.0f, 0.05f * elapsedTime);
 		}
 		behaviorScore = static_cast<Phoenix::s32>(score);
 	}
@@ -390,7 +390,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::
 			model->SetBlendRate(blendRate.z);
 		}
 
-		model->UpdateTransform(elapsedTime);
+		model->UpdateTransform(elapsedTime / 60.0f);
 	}
 
 	// ワールド行列を作成
@@ -690,8 +690,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	{
 		if (isBattleMode)
 		{
-			blendRate.x = Phoenix::Math::f32Lerp(blendRate.x, sX, 0.15f);
-			blendRate.y = Phoenix::Math::f32Lerp(blendRate.y, sY, 0.15f);
+			blendRate.x = Phoenix::Math::f32Lerp(blendRate.x, sX, 0.15f * elapsedTime);
+			blendRate.y = Phoenix::Math::f32Lerp(blendRate.y, sY, 0.15f * elapsedTime);
 		}
 
 		blendRate.z = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(sX, sY));
@@ -829,7 +829,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 			// 回避ステート中
 			else if (animationState == AnimationState::Dedge)
 			{
-				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.025f);
+				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.025f * elapsedTime);
 				// 待機ステートへ
 				if (!model->IsPlaying())
 				{
@@ -891,13 +891,13 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 		}
 
 		// アタックアニメーションスピード計測
-		attackReceptionTimeCnt += animationSpeed * elapsedTime; // animationSpeed / 60.0f
+		attackReceptionTimeCnt += animationSpeed * elapsedTime / 60.0f; // animationSpeed / 60.0f
 	}
 
 	// 座標更新
 	if (!isChangeAnimation)
 	{
-		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f);
+		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f * elapsedTime);
 		{
 			if (animationState == AnimationState::Walk/* && !isBattleMode*/)
 			{
@@ -929,7 +929,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 				pos.x += forward.x * (speed * elapsedTime);
 				pos.z += forward.z * (speed * elapsedTime);
 
-				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f);
+				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
 			}
 		}
 	}
