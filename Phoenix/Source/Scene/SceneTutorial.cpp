@@ -273,7 +273,7 @@ void SceneTutorial::Update(Phoenix::f32 elapsedTime)
 
 	if (isUpdate)
 	{
-		metaAI->Update();
+		metaAI->Update(elapsedTime);
 	}
 
 	// ゲームジャッジ
@@ -943,12 +943,12 @@ void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
 				Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
 				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Opaque), 0, 0xFFFFFFFF);
 
-				for (const auto data : player->GetCollisionDatas())
+				for (const auto& data : player->GetCollisionDatas())
 				{
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 				}
 
-				for (const auto data : mannequin->GetCollisionDatas())
+				for (const auto& data : mannequin->GetCollisionDatas())
 				{
 					PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 				}
@@ -956,7 +956,7 @@ void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
 				for (auto enemy : enemyManager->GetEnemies())
 				{
 					const auto datas = *enemy->GetCollisionDatas();
-					for (const auto data : datas)
+					for (const auto& data : datas)
 					{
 						PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
 					}

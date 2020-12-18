@@ -42,11 +42,11 @@ namespace Meta
 	}
 
 	// 更新
-	void BattleEnemySystem::Update(Phoenix::s32 score)
+	void BattleEnemySystem::Update(Phoenix::s32 score, Phoenix::f32 elapsedTime)
 	{
-		playerSkillAnalyzer->Update(score);
-		dynamicDifficultyAdjuster->Update(playerSkillAnalyzer->GetSkillLevel(), playerSkillAnalyzer->GetDownScore());
-		battleEnemyController->Update(dynamicDifficultyAdjuster->GetBattleEnemyState());
+		playerSkillAnalyzer->Update(score, elapsedTime);
+		dynamicDifficultyAdjuster->Update(playerSkillAnalyzer->GetSkillLevel(), playerSkillAnalyzer->GetDownScore(), elapsedTime);
+		battleEnemyController->Update(dynamicDifficultyAdjuster->GetBattleEnemyState(), elapsedTime);
 	}
 
 	// 管理クラスの設定

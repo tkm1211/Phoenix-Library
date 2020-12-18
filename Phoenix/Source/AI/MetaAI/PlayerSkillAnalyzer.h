@@ -36,7 +36,8 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="score"> : プレイヤー行動の合計スコア </param>
-	void Update(Phoenix::s32 score);
+	/// <param name="elapsedTime"> : 経過時間 </param>
+	void Update(Phoenix::s32 score, Phoenix::f32 elapsedTime);
 
 	// 分析したプレイヤーレベルの取得
 	Phoenix::s32 GetSkillLevel();

@@ -37,12 +37,12 @@ void MetaAI::Finalize()
 }
 
 // XV
-void MetaAI::Update()
+void MetaAI::Update(Phoenix::f32 elapsedTime)
 {
 	//if (!canUpdate || type == -1) return;
 	if (type == -1) return;
 
-	systems[type]->Update(score);
+	systems[type]->Update(score, elapsedTime);
 
 	canUpdate = false;
 	type = -1;

@@ -27,7 +27,7 @@ void PlayerSkillAnalyzer::Finalize()
 }
 
 // çXêV
-void PlayerSkillAnalyzer::Update(Phoenix::s32 score)
+void PlayerSkillAnalyzer::Update(Phoenix::s32 score, Phoenix::f32 elapsedTime)
 {
 	downScore = (score - oldPlayerScore) < 0 ? true : false;
 	playerSkillLevel = score / levelUpExperiencePoint;

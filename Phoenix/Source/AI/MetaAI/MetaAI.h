@@ -37,7 +37,7 @@ public:
 	void Finalize();
 
 	// 更新
-	void Update();
+	void Update(Phoenix::f32 elapsedTime);
 
 	/// <summary>
 	/// ゲームからメタAIを起動する関数

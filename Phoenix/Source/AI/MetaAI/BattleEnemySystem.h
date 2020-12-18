@@ -39,7 +39,8 @@ namespace Meta
 		/// 更新
 		/// </summary>
 		/// <param name="score"> : プレイヤー行動の合計スコア </param>
-		void Update(Phoenix::s32 score) override;
+		/// <param name="elapsedTime"> : 経過時間 </param>
+		void Update(Phoenix::s32 score, Phoenix::f32 elapsedTime) override;
 
 		/// <summary>
 		/// 管理クラスの設定

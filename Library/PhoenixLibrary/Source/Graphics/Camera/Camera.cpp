@@ -642,12 +642,12 @@ namespace Phoenix
 				f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
 				f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
 				rotateY -= moveX * 0.5f * elapsedTime;
-				rotateX += moveY * 0.5f * elapsedTime;
+				//rotateX += moveY * 0.5f * elapsedTime;
 			}
 			else
 			{
 				rotateY -= sX * 3.5f * 0.01745f * elapsedTime;
-				rotateX -= sY * 3.5f * 0.01745f * elapsedTime;
+				/*rotateX -= sY * 3.5f * 0.01745f * elapsedTime;
 				if (0.5f < rotateX)
 				{
 					rotateX = 0.5f;
@@ -655,12 +655,12 @@ namespace Phoenix
 				if (rotateX < -0.5f)
 				{
 					rotateX = -0.5f;
-				}
+				}*/
 			}
 
-			if (sY == 0.0f)
+			//if (sY == 0.0f)
 			{
-				rotateX = Phoenix::Math::f32Lerp(rotateX, -0.15f, 0.15f * elapsedTime);
+				rotateX = Phoenix::Math::f32Lerp(rotateX, -0.225f, 0.15f * elapsedTime);
 			}
 
 			f32 xSin = sinf(rotateX);

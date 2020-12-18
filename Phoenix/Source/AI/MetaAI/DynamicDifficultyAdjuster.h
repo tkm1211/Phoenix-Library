@@ -8,7 +8,7 @@ class DynamicDifficultyAdjuster
 {
 private:
 	BattleEnemyState ideaState = BattleEnemyState::NoneState;
-	Phoenix::s32 notUpdatedTime = 0;
+	Phoenix::f32 notUpdatedTime = 0.0f;
 
 public:
 	DynamicDifficultyAdjuster() {}
@@ -32,7 +32,8 @@ public:
 	/// </summary>
 	/// <param name="skillLevel"> : プレイヤー行動の合計スコアから分析したプレイヤーレベル </param>
 	/// <param name="downScore"> : プレイヤー行動の合計スコアが下がっているか </param>
-	void Update(Phoenix::s32 skillLevel, bool downScore);
+	/// <param name="elapsedTime"> : 経過時間 </param>
+	void Update(Phoenix::s32 skillLevel, bool downScore, Phoenix::f32 elapsedTime);
 
 	// エネミーステートの取得
 	BattleEnemyState GetBattleEnemyState();

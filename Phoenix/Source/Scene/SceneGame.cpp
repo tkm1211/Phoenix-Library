@@ -348,7 +348,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 	{
 		if (!onFade && onControl)
 		{
-			metaAI->Update();
+			metaAI->Update(elapsedTime);
 		}
 	}
 
@@ -976,17 +976,17 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
 					forward.y = 0.0f;
 
-					cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 5.0f, 0.05f * elapsedTime);
+					cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 6.0f, 0.05f * elapsedTime);
 
 					enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
-					camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, elapsedTime, 0.05f, true/*(player->GetAnimationState() == Player::AnimationState::Idle)*/, forward);
+					camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, elapsedTime, 0.05f, (player->GetAnimationState() == Player::AnimationState::Idle), forward);
 					lerp = 0.01f;
 				}
 			}
 			else
 			{
 				lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f * elapsedTime);
-				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f * elapsedTime);
+				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.5f, 0.05f * elapsedTime);
 
 				camera->ControllerCamera02(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, elapsedTime, lerp);
 			}
@@ -1532,7 +1532,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Opaque), 0, 0xFFFFFFFF);
 
 				Phoenix::s32 cnt = 0;
-				for(const auto data : player->GetCollisionDatas())
+				for(const auto& data : player->GetCollisionDatas())
 				{
 					if (cnt++ == 0)
 					{
@@ -1556,7 +1556,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 				for (const auto& enemy : enemyManager->GetEnemies())
 				{
 					Phoenix::s32 cnt = 0;
-					for (const auto data : *enemy->GetCollisionDatas())
+					for (const auto& data : *enemy->GetCollisionDatas())
 					{
 						if (enemy->GetEnable())
 						{

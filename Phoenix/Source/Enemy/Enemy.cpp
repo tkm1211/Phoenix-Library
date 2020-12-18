@@ -232,8 +232,8 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			battleAI->AddState(AI::BattleEnemy::Guard::Create());
 			battleAI->AddState(AI::BattleEnemy::Death::Create());
 
-			attackState->AddAttack(EnemyAttackState::WeakRight);
-			attackState->AddAttack(EnemyAttackState::WeakLeft);
+			//attackState->AddAttack(EnemyAttackState::WeakRight);
+			//attackState->AddAttack(EnemyAttackState::WeakLeft);
 			attackState->AddAttack(EnemyAttackState::StrongRight);
 			//attackState->AddAttack(EnemyAttackState::StrongLeft);
 		}
