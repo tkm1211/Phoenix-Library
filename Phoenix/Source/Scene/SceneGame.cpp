@@ -997,10 +997,10 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 				player->SetTargetPos(enemyManager->GetEnemies().at(nearIndex)->GetPosition());
 			}
 
-			Phoenix::f32 slowLen = 0.0f;
+			Phoenix::f32 adjustLen = 0.0f;
 			if (isSlow)
 			{
-				slowLen = -4.0f;
+				adjustLen = -4.0f;
 			}
 
 			if (inTerritory)
@@ -1015,7 +1015,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
 					forward.y = 0.0f;
 
-					cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 6.0f + slowLen, 0.05f * elapsedTime);
+					cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 6.0f + adjustLen, 0.05f * elapsedTime);
 
 					enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
 					camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, elapsedTime, 0.05f, (player->GetAnimationState() == Player::AnimationState::Idle), forward);
@@ -1025,7 +1025,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			else
 			{
 				lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f * elapsedTime);
-				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.5f + slowLen, 0.05f * elapsedTime);
+				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.5f + adjustLen, 0.05f * elapsedTime);
 
 				camera->ControllerCamera02(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, elapsedTime, lerp);
 			}
