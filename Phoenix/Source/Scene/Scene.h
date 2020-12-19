@@ -365,7 +365,12 @@ private:
 	Phoenix::s32 WeakAttackScore = 10;
 	Phoenix::s32 StrongAttackScore = 30;
 
+	// エネミーの攻撃攻撃範囲
 	bool inTerritory = false;
+
+	// スローモーション
+	bool isSlow = false;
+	Phoenix::f32 slowTimeCnt = 0.0f;
 
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;

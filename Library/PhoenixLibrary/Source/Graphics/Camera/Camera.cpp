@@ -660,7 +660,8 @@ namespace Phoenix
 
 			//if (sY == 0.0f)
 			{
-				rotateX = Phoenix::Math::f32Lerp(rotateX, -0.225f, 0.15f * elapsedTime);
+				//rotateX = Phoenix::Math::f32Lerp(rotateX, -0.225f, 0.15f * elapsedTime);
+				rotateX = -0.225f;
 			}
 
 			f32 xSin = sinf(rotateX);

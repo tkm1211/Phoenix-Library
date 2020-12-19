@@ -215,6 +215,7 @@ void Player::Initialize()
 		speed = 0.0f;
 		animationSpeed = AnimationSpeed60;
 		attackReceptionTimeCnt = 0.0f;
+		justDedgeTimeCnt = 0.0f;
 	}
 
 	// 待機モーション開始
@@ -712,7 +713,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	}
 
 	// 攻撃ステートへ
-	if ((key != AttackKey::None) && 0 < attackDatasList.attackDatas.size() && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run)))
+	if ((key != AttackKey::None) && 0 < attackDatasList.attackDatas.size() && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run) || (animationState == AnimationState::Dedge && isJustDedge)))
 	{
 		if (attackState == -1)
 		{
@@ -726,6 +727,9 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 				ChangeAttackAnimationState(attackDatasList.attackDatas.at(0).datas.at(0).animState, attackDatasList.attackDatas.at(0).datas.at(0).animIndex, attackDatasList.attackDatas.at(0).datas.at(0).playSpeed);
 
 				speed = Attack01MoveSpeed;
+
+				isInvincible = isJustDedge;
+				isJustDedge = false;
 
 				if (sX != 0.0f || sY != 0.0f)
 				{
@@ -825,11 +829,16 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 			{
 				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
 				JudgeDedgeIndex();
+
+				isJustDedge = false;
+				justDedgeTimeCnt = 0.0f;
 			}
 			// 回避ステート中
 			else if (animationState == AnimationState::Dedge)
 			{
 				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.025f * elapsedTime);
+				justDedgeTimeCnt += 1.0f * elapsedTime;
+
 				// 待機ステートへ
 				if (!model->IsPlaying())
 				{
@@ -886,12 +895,28 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 				isAttack = false;
 				attackReceptionTimeCnt = 0.0f;
 
+				isJustDedge = false;
+				justDedgeTimeCnt = 0.0f;
+
 				JudgeDedgeIndex();
 			}
 		}
 
 		// アタックアニメーションスピード計測
 		attackReceptionTimeCnt += animationSpeed * elapsedTime / 60.0f; // animationSpeed / 60.0f
+	}
+
+	if (isInvincible)
+	{
+		if (100.0f <= invincibleTimeCnt)
+		{
+			isInvincible = false;
+			invincibleTimeCnt = 0.0f;
+		}
+		else
+		{
+			invincibleTimeCnt += 1.0f * elapsedTime;
+		}
 	}
 
 	// 座標更新
@@ -1119,11 +1144,37 @@ void Player::AttackJudgment()
 	}
 }
 
-void Player::Damage(int damage, Phoenix::u32 damagePower)
+bool Player::OnJustDedge()
 {
-	life -= damage;
-	accumulationDamege += damage;
-	this->damagePower = damagePower;
+	// 回避中の場合
+	if (animationState == AnimationState::Dedge)
+	{
+		// ジャスト回避の時間内の場合
+		if (0.0f <= justDedgeTimeCnt && justDedgeTimeCnt <= 10.0f)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Player::Damage(int damage, Phoenix::u32 damagePower)
+{
+	// 回避中又は無敵中の場合
+	if (animationState == AnimationState::Dedge || isInvincible)
+	{
+		return true;
+	}
+
+	//	回避中以外の場合
+	{
+		life -= damage;
+		accumulationDamege += damage;
+		this->damagePower = damagePower;
+	}
+
+	return false;
 }
 
 bool Player::AccumulationDamege()

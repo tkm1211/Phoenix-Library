@@ -228,7 +228,7 @@ void SceneGame::Initialize()
 		metaAI->Initialize();
 
 		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
-		camera->SetRotateX(0.5f);
+		camera->SetRotateX(-0.225f);
 		camera->SetRotateY(0.0f);
 
 		currentShader = pbrShader;
@@ -248,6 +248,9 @@ void SceneGame::Initialize()
 		oldPlayerBehaviorScore = 0;
 		WeakAttackScore = 10;
 		StrongAttackScore = 30;
+
+		isSlow = false;
+		slowTimeCnt = 0.0f;
 	}
 
 	// エネミー追加
@@ -308,6 +311,22 @@ void SceneGame::Initialize()
 
 void SceneGame::Update(Phoenix::f32 elapsedTime)
 {
+	if (isSlow)
+	{
+		if (100.0f <= slowTimeCnt || !player->IsJustDedge())
+		{
+			isSlow = false;
+			slowTimeCnt = 0.0f;
+
+			player->SetIsJustDedge(false);
+		}
+		else
+		{
+			slowTimeCnt += 1.0f * elapsedTime;
+			elapsedTime *= 0.15f;
+		}
+	}
+
 	bool onFade = sceneSystem->GetOnFade();
 	bool onControl = player->GetAlive();
 
@@ -703,7 +722,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 				}
 			}
 
-			if (enemy->IsAttackJudgment() && !player->Invincible() && !isHitStop && !player->GetDodging())
+			if (enemy->IsAttackJudgment() && !player->Invincible() && !isHitStop && !player->IsJustDedge())
 			{
 				const std::vector<Phoenix::FrameWork::CollisionData> playerDatas = player->GetCollisionDatas();
 				const std::vector<Phoenix::FrameWork::CollisionData>* enemyDatas = enemy->GetCollisionDatas();
@@ -715,81 +734,95 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 				if (SphereVsCapsule(enemyDatas->at(enemy->GetAttackCollisionIndex()).pos, cp1, cp2, enemyDatas->at(enemy->GetAttackCollisionIndex()).radius, playerDatas.at(0).radius))
 				{
 					Phoenix::Math::Vector3 normal;
-					normal = Phoenix::Math::Vector3Normalize(enemyPos - playerPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
+					normal = Phoenix::Math::Vector3Normalize(enemyPos - playerPos);
 
-					enemy->SetIsHit(true);
-					player->Damage(10, enemy->GetAttackPower());
-
-					// SE再生
-					if (enemy->GetAttackCollisionIndex() == 1 || enemy->GetAttackCollisionIndex() == 2)
+					// ジャスト回避成功
+					if (player->OnJustDedge())
 					{
-						if (enemy->GetAttackPower() == 0)
-						{
-							soundSystem->Play(SoundType::SE_Player_Attack_Punch_Hit_Right, false, true);
-						}
-						else if (enemy->GetAttackPower() == 1)
-						{
-							soundSystem->Play(SoundType::SE_Player_Attack_Punch_Hit_Heavy, false, true);
-						}
+						isSlow = true;
+						player->SetIsJustDedge(true);
+						//player->ChangeJustDedge();
 					}
-					else if (enemy->GetAttackCollisionIndex() == 3 || enemy->GetAttackCollisionIndex() == 4)
+					// ジャスト回避失敗
+					else
 					{
-						if (enemy->GetAttackPower() == 0)
+						// 回避失敗
+						if (!player->Damage(10, enemy->GetAttackPower()))
 						{
-							soundSystem->Play(SoundType::SE_Player_Attack_Kick_Hit_Right, false, true);
-						}
-						else if (enemy->GetAttackPower() == 1)
-						{
-							soundSystem->Play(SoundType::SE_Player_Attack_Kick_Hit_Heavy, false, true);
-						}
-					}
+							enemy->SetIsHit(true);
 
-					// Burst Particle.
-					{
-						bossHitParticle->Burst(150);
-						bossHitParticle->SetParticleLife(1.5f);
-						bossHitParticle->SetParticleSize(0.004f);
-						bossHitParticle->SetParticleScale(1.0f);
-						bossHitParticle->SetParticleMotionBlurAmount(50.0f);
-						bossHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
-						//bossHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
-						bossHitParticle->SetParticleColor(Phoenix::Math::Color(100.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
-						//bossHitParticle->SetParticleColor(Phoenix::Math::Color(40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
-						//bossHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
-
-						bossHitParticlePos = enemyPos + ((playerPos - enemyPos) * 0.5f);
-						bossHitParticlePos.y = enemyDatas->at(enemy->GetAttackCollisionIndex()).pos.y;
-					}
-
-					// Set Camera Shake
-					{
-						if (!isCameraShake)
-						{
-							if (enemy->GetAttackPower() == 0)
+							// SE再生
+							if (enemy->GetAttackCollisionIndex() == 1 || enemy->GetAttackCollisionIndex() == 2)
 							{
-								isCameraShake = true;
-								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-								cameraShakeCnt = 0;
-
-								shakeWidth = 0.0f;
-								shakeHeight = 0.075f;
-
-								cameraShakeMaxCnt = 7;
-
-								SetXInputVibration(1.0f, 0.0f, 5.0f);
+								if (enemy->GetAttackPower() == 0)
+								{
+									soundSystem->Play(SoundType::SE_Player_Attack_Punch_Hit_Right, false, true);
+								}
+								else if (enemy->GetAttackPower() == 1)
+								{
+									soundSystem->Play(SoundType::SE_Player_Attack_Punch_Hit_Heavy, false, true);
+								}
 							}
-							else if (enemy->GetAttackPower() == 1)
+							else if (enemy->GetAttackCollisionIndex() == 3 || enemy->GetAttackCollisionIndex() == 4)
 							{
-								isCameraShake = true;
-								shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-								cameraShakeCnt = 0;
+								if (enemy->GetAttackPower() == 0)
+								{
+									soundSystem->Play(SoundType::SE_Player_Attack_Kick_Hit_Right, false, true);
+								}
+								else if (enemy->GetAttackPower() == 1)
+								{
+									soundSystem->Play(SoundType::SE_Player_Attack_Kick_Hit_Heavy, false, true);
+								}
+							}
 
-								shakeWidth = 0.0f;
-								shakeHeight = 0.35f;
+							// Burst Particle.
+							{
+								bossHitParticle->Burst(150);
+								bossHitParticle->SetParticleLife(1.5f);
+								bossHitParticle->SetParticleSize(0.004f);
+								bossHitParticle->SetParticleScale(1.0f);
+								bossHitParticle->SetParticleMotionBlurAmount(50.0f);
+								bossHitParticle->SetParticleNormal(Phoenix::Math::Vector4(normal, 0.0f));
+								//bossHitParticle->SetParticleColor(Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+								bossHitParticle->SetParticleColor(Phoenix::Math::Color(100.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+								//bossHitParticle->SetParticleColor(Phoenix::Math::Color(40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
+								//bossHitParticle->SetParticleColor(Phoenix::Math::Color(33.0f / 255.0f, 245.0f / 255.0f, 148.0f / 255.0f, 1.0f)); // particleMainColor Phoenix::Math::Color(245.0f / 255.0f, 69.0f / 255.0f, 33.0f / 255.0f, 1.0f) // 40.0f / 255.0f, 40.0f / 255.0f, 148.0f / 255.0f, 1.0f
 
-								cameraShakeMaxCnt = 10;
+								bossHitParticlePos = enemyPos + ((playerPos - enemyPos) * 0.5f);
+								bossHitParticlePos.y = enemyDatas->at(enemy->GetAttackCollisionIndex()).pos.y;
+							}
 
-								SetXInputVibration(1.0f, 1.0f, 10.0f);
+							// Set Camera Shake
+							{
+								if (!isCameraShake)
+								{
+									if (enemy->GetAttackPower() == 0)
+									{
+										isCameraShake = true;
+										shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+										cameraShakeCnt = 0;
+
+										shakeWidth = 0.0f;
+										shakeHeight = 0.075f;
+
+										cameraShakeMaxCnt = 7;
+
+										SetXInputVibration(1.0f, 0.0f, 5.0f);
+									}
+									else if (enemy->GetAttackPower() == 1)
+									{
+										isCameraShake = true;
+										shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+										cameraShakeCnt = 0;
+
+										shakeWidth = 0.0f;
+										shakeHeight = 0.35f;
+
+										cameraShakeMaxCnt = 10;
+
+										SetXInputVibration(1.0f, 1.0f, 10.0f);
+									}
+								}
 							}
 						}
 					}
@@ -964,6 +997,12 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 				player->SetTargetPos(enemyManager->GetEnemies().at(nearIndex)->GetPosition());
 			}
 
+			Phoenix::f32 slowLen = 0.0f;
+			if (isSlow)
+			{
+				slowLen = -4.0f;
+			}
+
 			if (inTerritory)
 			{
 				Phoenix::Math::Vector3 enemyToPlayerVec = (centerOfGravity / static_cast<Phoenix::f32>(enemyCount)) - playerPos;
@@ -976,7 +1015,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 					Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
 					forward.y = 0.0f;
 
-					cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 6.0f, 0.05f * elapsedTime);
+					cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 6.0f + slowLen, 0.05f * elapsedTime);
 
 					enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
 					camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, elapsedTime, 0.05f, (player->GetAnimationState() == Player::AnimationState::Idle), forward);
@@ -986,7 +1025,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 			else
 			{
 				lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f * elapsedTime);
-				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.5f, 0.05f * elapsedTime);
+				cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.5f + slowLen, 0.05f * elapsedTime);
 
 				camera->ControllerCamera02(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, elapsedTime, lerp);
 			}
@@ -1812,6 +1851,7 @@ void SceneGame::GUI()
 		ImGui::Checkbox("PlayerUpdate", &isPlayerUpdate);
 		ImGui::Checkbox("BossUpdate", &isBossUpdate);
 		ImGui::Checkbox("inTerritory", &inTerritory);
+		ImGui::Checkbox("isSlow", &isSlow);
 		{
 			player->GUI();
 		}

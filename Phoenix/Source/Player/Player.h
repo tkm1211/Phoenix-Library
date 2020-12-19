@@ -169,8 +169,9 @@ private:
 	bool isAttack;
 	bool alive = false;
 	bool death = false;
-	float attackReceptionTimeCnt;
-	float animationSpeed;
+	Phoenix::f32 attackReceptionTimeCnt;
+	Phoenix::f32 justDedgeTimeCnt;
+	Phoenix::f32 animationSpeed;
 
 	std::vector<Phoenix::FrameWork::CollisionData> collisionDatas;
 
@@ -235,6 +236,13 @@ private:
 	// レイヤー内のステート番号
 	std::map<StateType, Phoenix::s32> stateIndexList;
 
+	// ジャスト回避
+	bool isJustDedge = false;
+
+	// 無敵
+	bool isInvincible = false;
+	Phoenix::f32 invincibleTimeCnt = 0.0f;
+
 public:
 	Player() :
 		worldMatrix(Phoenix::Math::MatrixIdentity()), 
@@ -262,7 +270,8 @@ public:
 	void ChangeAttackAnimation(Phoenix::s32 layerIndex);
 	void AttackJudgment();
 	void GUI();
-	void Damage(int damage, Phoenix::u32 damagePower);
+	bool OnJustDedge();
+	bool Damage(int damage, Phoenix::u32 damagePower);
 	bool AccumulationDamege();
 	void Rotation(Phoenix::Math::Vector3 targetPos)
 	{
@@ -346,6 +355,25 @@ public:
 		animationSpeed = speed;
 	};
 
+	// ジャスト回避変更
+	void ChangeJustDedge()
+	{
+		ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
+		
+		Phoenix::s32 x = rand() % 2;
+		if (x)
+		{
+			dedgeLayerIndex = stateIndexList.at(StateType::RightDedge);
+		}
+		else
+		{
+			dedgeLayerIndex = stateIndexList.at(StateType::LeftDedge);
+		}
+
+		isJustDedge = false;
+		justDedgeTimeCnt = 0.0f;
+	}
+
 	bool CheckHitKey(AttackKey key)
 	{
 		switch (key)
@@ -391,6 +419,7 @@ public:
 	std::shared_ptr<PlayerUI> GetUI() { return ui; }
 	bool IsAttack() { return isAttack; }
 	bool IsDamage() { return animationState == AnimationState::Damage; }
+	bool IsJustDedge() { return isJustDedge; }
 
 	bool GetAlive() { return alive; }
 	bool GetDeath() { return death; }
@@ -398,8 +427,8 @@ public:
 	bool OnEnemyTerritory() { return inTerritory; }
 
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
-	//void SetIsHit(bool isHit) { this->isHit = isHit; }
 	void SetIsHit(Phoenix::s32 index) { isHit.at(index) = true; }
+	void SetIsJustDedge(bool isJustDedge) { this->isJustDedge = isJustDedge; }
 
 	void SetBattleMode(bool isBattleMode) { this->isBattleMode = isBattleMode; }
 	void SetTargetPos(Phoenix::Math::Vector3 targetPos) { this->targetPos = targetPos; }
