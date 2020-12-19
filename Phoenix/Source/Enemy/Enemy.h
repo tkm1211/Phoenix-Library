@@ -66,10 +66,19 @@ public:
 	};
 
 private:
+	// モデル
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
+
+	// トランスフォーム
 	std::unique_ptr<Phoenix::FrameWork::Transform> transform;
+
+	// 当たり判定データ
 	std::vector<Phoenix::FrameWork::CollisionData> collisionDatas;
+
+	// 攻撃データリスト
 	std::vector<AttackDatas> attackDatasList;
+
+	// HPゲージUI
 	std::shared_ptr<EnemyUI> ui;
 
 	// AI
@@ -140,10 +149,7 @@ private:
 
 public:
 	Enemy() {}
-	~Enemy()
-	{
-		//Finalize();
-	}
+	~Enemy() {}
 
 public:
 	// 生成
@@ -274,23 +280,33 @@ public:
 	// プレイヤーに攻撃が当たる距離に入っているか？
 	bool InDistanceHitByAttack();
 
+	// モデルを取得
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
 
+	// 当たり判定データを取得
 	const std::vector<Phoenix::FrameWork::CollisionData>* GetCollisionDatas() { return &collisionDatas; }
 
+	// ワールド行列を取得
 	Phoenix::Math::Matrix GetWorldMatrix() { return transform->GetWorldTransform(); }
 
+	// 座標を取得
 	Phoenix::Math::Vector3 GetPosition() { return transform->GetTranslate(); }
 
+	// 半径を取得
 	Phoenix::f32 GetRadius() { return radius; }
 
+	// 攻撃判定中
 	bool IsAttackJudgment() { return isAttackJudgment; }
 
+	// 攻撃の当たり判定番号を取得
 	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
 
+	// HPゲージUIを取得
 	std::shared_ptr<EnemyUI> GetUI() { return ui; }
 
+	// HPを取得
 	Phoenix::s32 GetLife() { return life; }
 
+	// 攻撃中の判定
 	bool UnderAttack() { return battleAI->GetCurrentStateName() == BattleEnemyState::Attack; }
 };

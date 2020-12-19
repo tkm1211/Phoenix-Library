@@ -168,7 +168,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			{
 				AttackDatas datas;
 
-				datas.AddData(SetAttackData(EnemyAttackState::WeakRight, 7, 2.0f, -1.0f, -1.0f, 1, 56.0f, 71.0f));
+				datas.AddData(SetAttackData(EnemyAttackState::WeakRight, 7, 1.5f, -1.0f, -1.0f, 1, 56.0f, 71.0f));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -177,7 +177,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			{
 				AttackDatas datas;
 
-				datas.AddData(SetAttackData(EnemyAttackState::WeakLeft, 8, 2.0f, -1.0f, -1.0f, 2, 20.0f, 40.0f));
+				datas.AddData(SetAttackData(EnemyAttackState::WeakLeft, 8, 1.5f, -1.0f, -1.0f, 2, 20.0f, 40.0f));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -186,7 +186,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			{
 				AttackDatas datas;
 
-				datas.AddData(SetAttackData(EnemyAttackState::StrongRight, 9, 2.0f, -1.0f, -1.0f, 1, 60.0f, 72.0f));
+				datas.AddData(SetAttackData(EnemyAttackState::StrongRight, 9, 1.5f, -1.0f, -1.0f, 1, 60.0f, 72.0f));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -225,12 +225,12 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			battleAI->AddState(AI::BattleEnemy::Idle::Create());
 			battleAI->AddState(AI::BattleEnemy::Walk::Create(owner));
 			battleAI->AddState(AI::BattleEnemy::Run::Create(owner));
-			battleAI->AddState(attackState);
 			battleAI->AddState(AI::BattleEnemy::Dedge::Create(owner));
 			battleAI->AddState(AI::BattleEnemy::DamageSmall::Create(owner));
 			battleAI->AddState(AI::BattleEnemy::DamageBig::Create(owner));
 			battleAI->AddState(AI::BattleEnemy::Guard::Create());
 			battleAI->AddState(AI::BattleEnemy::Death::Create());
+			battleAI->AddState(attackState);
 
 			//attackState->AddAttack(EnemyAttackState::WeakRight);
 			//attackState->AddAttack(EnemyAttackState::WeakLeft);
