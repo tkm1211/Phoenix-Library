@@ -505,6 +505,13 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	auto RotatePlayerToAttack = [&]()
 	{
 		Phoenix::Math::Vector3 dir = targetPos - pos;
+		Phoenix::f32 len = Phoenix::Math::Vector3Length(dir);
+
+		if (1.2f <= len)
+		{
+			return;
+		}
+
 		dir = Phoenix::Math::Vector3Normalize(dir);
 		dir.y = 0.0f;
 
