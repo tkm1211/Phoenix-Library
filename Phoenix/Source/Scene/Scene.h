@@ -378,6 +378,18 @@ private:
 	bool isSlow = false;
 	Phoenix::f32 slowTimeCnt = 0.0f;
 
+	// ラウンド
+	Phoenix::s32 roundCnt = 0;
+	Phoenix::s32 roundMax = 5;
+	bool roundSwitch = false;
+	Phoenix::f32 roundFadeColor = 0.0f;
+	bool roundFadeSwitch = false;
+
+	// エネミーデータ
+	Phoenix::s32 nearEnemyIndex = -1;
+	Phoenix::s32 nearIndex = -1;
+	Phoenix::s32 drawEnemyUIIndex = -1;
+
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
 	std::shared_ptr<GeometricPrimitive> cylinderPrimitive;
@@ -466,6 +478,11 @@ public:
 	void GUI() override;
 
 private:
+	void RoundInitialize();
+	void SearchNearEnemy(Phoenix::Math::Vector3& nearEnemyPos, Phoenix::Math::Vector3& centerOfGravity, Phoenix::s32& enemyCount);
+	void TargetPosUpdate(Phoenix::Math::Vector3 nearEnemyPos, Phoenix::Math::Vector3 centerOfGravity, Phoenix::s32 enemyCount);
+	void CameraUpdate(Phoenix::f32 elapsedTime);
+	void UIUpdate();
 	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale);
 	void CylinderPrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 cp1Translate, Phoenix::Math::Vector3 cp2Translate, Phoenix::Math::Vector3 cyilinderTranslate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale, Phoenix::Math::Vector3 cyilinderScale);
 	Phoenix::Math::Vector3 WorldToScreen(const Phoenix::Math::Vector3& worldPosition);

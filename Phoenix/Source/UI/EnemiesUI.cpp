@@ -53,6 +53,7 @@ void EnemiesUI::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix
 {
 	for (const auto& ui : uiList)
 	{
+		if (!ui) continue;
 		if (!ui->GetExit()) continue;
 
 		Phoenix::Math::Vector2 size = ui->GetSize() / 5.0f;
