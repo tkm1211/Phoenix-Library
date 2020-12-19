@@ -54,10 +54,12 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		frameBuffer[0] = Phoenix::FrameWork::FrameBuffer::Create();
 		frameBuffer[1] = Phoenix::FrameWork::FrameBuffer::Create();
 		frameBuffer[2] = Phoenix::FrameWork::FrameBuffer::Create();
+		frameBuffer[3] = Phoenix::FrameWork::FrameBuffer::Create();
 
 		frameBuffer[0]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), enableMSAA, 8, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
 		frameBuffer[1]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
 		frameBuffer[2]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::UNKNOWN);
+		frameBuffer[3]->Initialize(graphicsDevice, display->GetWidth(), display->GetHeight(), false, 1, Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT, Phoenix::Graphics::TextureFormatDx::R24G8_TYPELESS);
 	}
 
 	// ポストプロセス
@@ -1659,70 +1661,85 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 		}
 	}
 
-	// Blend Bloom.
-	if (bloomBlend)
+	frameBuffer[3]->Clear(graphicsDevice, 0, 0.5f, 0.5f, 0.5f, 1.0f);
+	frameBuffer[3]->Activate(graphicsDevice);
 	{
-		resolvedFramebuffer = 2;
-		frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
+		// Blend Bloom.
+		if (bloomBlend)
 		{
-			bloom->Blend(graphicsDevice, frameBuffer[0]->GetRenderTargetSurface()->GetTexture(), frameBuffer[1]->GetRenderTargetSurface()->GetTexture());
+			resolvedFramebuffer = 2;
+			frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
+			{
+				bloom->Blend(graphicsDevice, frameBuffer[0]->GetRenderTargetSurface()->GetTexture(), frameBuffer[1]->GetRenderTargetSurface()->GetTexture());
+			}
+			frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
+
+			quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+
+			//toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
 		}
-		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
-
-		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
-
-		//toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
-	}
-	else
-	{
-		quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
-	}
+		else
+		{
+			quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+		}
 #endif
-	// Draw UI and Effect.
-	{
+		// Draw UI and Effect.
+		{
 #if 1
-		//if (lockOnCamera)
-		//{
-		//	/*Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
-		//	context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);*/
+			//if (lockOnCamera)
+			//{
+			//	/*Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+			//	context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);*/
 
-		//	Phoenix::f32 size = 128.0f / 4.0f;
+			//	Phoenix::f32 size = 128.0f / 4.0f;
 
-		//	Phoenix::Math::Vector3 bossPos = boss->GetPosition();
-		//	bossPos.y += 1.5f;
+			//	Phoenix::Math::Vector3 bossPos = boss->GetPosition();
+			//	bossPos.y += 1.5f;
 
-		//	Phoenix::Math::Vector3 screenPos = WorldToScreen(bossPos);
-		//	screenPos.x -= size / 2.0f;
+			//	Phoenix::Math::Vector3 screenPos = WorldToScreen(bossPos);
+			//	screenPos.x -= size / 2.0f;
 
-		//	quad->Draw(graphicsDevice, targetMark, screenPos.x, screenPos.y, size, size);
-		//}
+			//	quad->Draw(graphicsDevice, targetMark, screenPos.x, screenPos.y, size, size);
+			//}
 
-		// Draw Effect.
-		//{
-		//	//Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
-		//	//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
-		//	{
-		//		gpuParticle->Draw(graphicsDevice, *camera);
-		//		playerHitParticle->Draw(graphicsDevice, *camera);
-		//	}
-		//	//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
-		//}
+			// Draw Effect.
+			//{
+			//	//Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+			//	//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
+			//	{
+			//		gpuParticle->Draw(graphicsDevice, *camera);
+			//		playerHitParticle->Draw(graphicsDevice, *camera);
+			//	}
+			//	//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
+			//}
 #endif
 
 #if 1
-		if (isDrawUI) uiSystem->Draw(graphicsDevice);
+			if (isDrawUI) uiSystem->Draw(graphicsDevice);
 
-		quad->Draw(graphicsDevice, commonData->operatorUI.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
+			quad->Draw(graphicsDevice, commonData->operatorUI.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f,1.0f, true, true, true , true, true, true);
 
-		/*float w = 480.0f * 0.5f;
-		float h = 270.0f * 0.5f;
-		quad->Draw(graphicsDevice, commonData->avoidUI.get(), Phoenix::Math::Vector2(w * 0.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
-		quad->Draw(graphicsDevice, commonData->attackUI.get(), Phoenix::Math::Vector2(w * 1.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
-		quad->Draw(graphicsDevice, commonData->runUI.get(), Phoenix::Math::Vector2(w * 2.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
-		quad->Draw(graphicsDevice, commonData->targetUI.get(), Phoenix::Math::Vector2(w * 3.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));*/
+			/*float w = 480.0f * 0.5f;
+			float h = 270.0f * 0.5f;
+			quad->Draw(graphicsDevice, commonData->avoidUI.get(), Phoenix::Math::Vector2(w * 0.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
+			quad->Draw(graphicsDevice, commonData->attackUI.get(), Phoenix::Math::Vector2(w * 1.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
+			quad->Draw(graphicsDevice, commonData->runUI.get(), Phoenix::Math::Vector2(w * 2.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
+			quad->Draw(graphicsDevice, commonData->targetUI.get(), Phoenix::Math::Vector2(w * 3.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));*/
 #endif
+		}
 	}
-	
+	frameBuffer[3]->Deactivate(graphicsDevice);
+
+	// Screen Filter
+	{
+		quad->SetBright(bright);
+		quad->SetContrast(contrast);
+		quad->SetSaturate(saturate);
+		quad->SetScreenColor(screenColor);
+
+		quad->Draw(graphicsDevice, frameBuffer[3]->renderTargerSurface[0]->GetTexture(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, true);
+	}
+
 	// Draw frameBuffer Texture.
 	{
 		if (active[0]) quad->Draw(graphicsDevice, shadowMap->GetDepthStencilSurface()->GetTexture(), texSize.x * 0, 0, texSize.x, texSize.y);
@@ -2072,6 +2089,20 @@ void SceneGame::GUI()
 			ImGui::SliderFloat("amount", &toneMap->shaderConstant.amount, 0.0f, 1.0f, "sepia = %.3f");
 			ImGui::SliderFloat("offset", &toneMap->shaderConstant.offset, 0.0f, 10.0f, "vignette = %.3f");
 			ImGui::SliderFloat("darkness", &toneMap->shaderConstant.darkness, 0.0f, 1.0f, "vignette = %.3f");
+
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("ScreenFilter"))
+		{
+			ImGui::DragFloat("bright", &bright, 0.1f);
+			ImGui::DragFloat("contrast", &contrast, 0.1f);
+			ImGui::DragFloat("saturate", &saturate, 0.1f);
+			ImGui::ColorEdit4("screenColor", screenColor);
+
+			quad->SetBright(bright);
+			quad->SetContrast(contrast);
+			quad->SetSaturate(saturate);
+			quad->SetScreenColor(screenColor);
 
 			ImGui::TreePop();
 		}

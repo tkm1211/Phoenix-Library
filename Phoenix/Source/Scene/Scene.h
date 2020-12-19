@@ -313,7 +313,7 @@ private:
 	Phoenix::Graphics::ITexture* targetMark = nullptr;
 
 	// フレームバッファ
-	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[3];
+	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[4];
 
 	// ポストプロセス
 	std::unique_ptr<Phoenix::FrameWork::PostProcessingEffects> postProcessingEffects;
@@ -336,6 +336,12 @@ private:
 
 	// トーンマップ
 	std::unique_ptr<Phoenix::FrameWork::ToneMap> toneMap;
+
+	// スクリーンフィルター
+	Phoenix::f32 bright = 0.0f; //明度
+	Phoenix::f32 contrast = 0.9f; //濃淡
+	Phoenix::f32 saturate = 1.1f; //彩度
+	Phoenix::Math::Color screenColor = Phoenix::Math::Color::White; //色調
 
 	// IBL
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> skyFrameBuffer[6];
