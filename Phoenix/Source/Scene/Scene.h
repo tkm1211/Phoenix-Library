@@ -313,7 +313,7 @@ private:
 	Phoenix::Graphics::ITexture* targetMark = nullptr;
 
 	// フレームバッファ
-	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[4];
+	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[6];
 
 	// ポストプロセス
 	std::unique_ptr<Phoenix::FrameWork::PostProcessingEffects> postProcessingEffects;
@@ -325,6 +325,10 @@ private:
 	std::unique_ptr<Phoenix::Graphics::IBuffer> shaderConstantsBuffer;
 	std::unique_ptr<Phoenix::Graphics::ISampler> comparisonSamplerState;
 	ShaderConstants shaderContexts;
+
+	// モーションブラー
+	bool isMotionBlur = false;
+	std::unique_ptr<Phoenix::FrameWork::MotionBlur> motionBlur;
 
 	// ブルーム
 	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
@@ -349,8 +353,8 @@ private:
 
 	// ヒットストップ
 	bool isHitStop = false;
-	Phoenix::s32 hitStopCnt = 0;
-	Phoenix::s32 hitStopMaxCnt = 1;
+	Phoenix::f32 hitStopCnt = 0.0f;
+	Phoenix::f32 hitStopMaxCnt = 1.0f;
 
 	// カメラシェイク
 	bool isCameraShake = false;
@@ -389,6 +393,12 @@ private:
 	Phoenix::s32 nearEnemyIndex = -1;
 	Phoenix::s32 nearIndex = -1;
 	Phoenix::s32 drawEnemyUIIndex = -1;
+
+	// フェード中
+	bool onFade = false;
+
+	// 操作可
+	bool onControl = false;
 
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;
@@ -480,9 +490,29 @@ public:
 private:
 	void RoundInitialize();
 	void SearchNearEnemy(Phoenix::Math::Vector3& nearEnemyPos, Phoenix::Math::Vector3& centerOfGravity, Phoenix::s32& enemyCount);
-	void TargetPosUpdate(Phoenix::Math::Vector3 nearEnemyPos, Phoenix::Math::Vector3 centerOfGravity, Phoenix::s32 enemyCount);
-	void CameraUpdate(Phoenix::f32 elapsedTime);
-	void UIUpdate();
+	void UpdateTargetPos(Phoenix::Math::Vector3 nearEnemyPos, Phoenix::Math::Vector3 centerOfGravity, Phoenix::s32 enemyCount);
+	void UpdatePlayer(Phoenix::f32 elapsedTime);
+	void UpdateEnemyManager(Phoenix::f32 elapsedTime);
+	void UpdateMetaAI(Phoenix::f32 elapsedTime);
+	void UpdateCamera(Phoenix::f32 elapsedTime);
+	void UpdateSlow(Phoenix::f32& elapsedTime);
+	void UpdateRound(Phoenix::f32 elapsedTime);
+	void UpdateHitLight(Phoenix::f32 elapsedTime);
+	void UpdateDirectionLight(Phoenix::f32 elapsedTime);
+	void UpdateParticle(Phoenix::f32 elapsedTime);
+	void UpdateHitStop(Phoenix::f32 elapsedTime);
+	void UpdateCameraShake(Phoenix::f32 elapsedTime);
+	void UpdateUI();
+	void JudgeCollision(Phoenix::f32 elapsedTime);
+	void JudgeGame();
+	void PushingOutEnemies();
+	void PushingOutPlayerAndEnemies();
+	void PushingOutPlayerAndStage();
+	void PushingOutEnemiesAndStage();
+	void JudgeHitPlayerAndEnemies();
+	void StartUpGUI();
+	void SwitchShader();
+	void NoticeMetaAI();
 	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale);
 	void CylinderPrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 cp1Translate, Phoenix::Math::Vector3 cp2Translate, Phoenix::Math::Vector3 cyilinderTranslate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale, Phoenix::Math::Vector3 cyilinderScale);
 	Phoenix::Math::Vector3 WorldToScreen(const Phoenix::Math::Vector3& worldPosition);

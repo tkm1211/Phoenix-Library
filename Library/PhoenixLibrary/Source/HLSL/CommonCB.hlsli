@@ -13,6 +13,12 @@ cbuffer CbScene : register(CB_SCENE)
 	float4x4    cb_viewInv;
 	float4x4    cb_projectionInv;
 	float4x4    cb_view_projectionInv;
+	float4x4    cb_prev_view;
+	float4x4    cb_prev_projection;
+	float4x4    cb_prev_view_projection;
+	float4x4    cb_prev_viewInv;
+	float4x4    cb_prev_projectionInv;
+	float4x4    cb_prev_view_projectionInv;
 	float4      cb_viewport;
 };
 #endif

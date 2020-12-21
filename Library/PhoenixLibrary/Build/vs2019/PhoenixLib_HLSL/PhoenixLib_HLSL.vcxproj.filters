@@ -67,6 +67,9 @@
     <Filter Include="Source\ToneMap">
       <UniqueIdentifier>{d229f9aa-9761-4da5-9705-1f08be413bcc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MotionBlur">
+      <UniqueIdentifier>{f981aeba-a9f3-4684-9db7-03dbf094540e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingVS.hlsl">
@@ -242,6 +245,12 @@
     </FxCompile>
     <FxCompile Include="..\..\..\Source\HLSL\PhysicallyBasedRenderingDissolvePS.hlsl">
       <Filter>Source\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\VelocityMapPS.hlsl">
+      <Filter>Source\MotionBlur</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\NormalBlurPS.hlsl">
+      <Filter>Source\MotionBlur</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

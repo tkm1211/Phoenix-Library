@@ -1357,5 +1357,189 @@ namespace Phoenix
 				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 2, texture);
 			}
 		}
+
+
+		std::unique_ptr<MotionBlur> MotionBlur::Create()
+		{
+			return std::make_unique<MotionBlur>();
+		}
+
+		bool MotionBlur::Initialize(Graphics::IGraphicsDevice* graphicsDevice, u32 width, u32 height)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+
+			FullScreenQuad::Initialize(graphicsDevice);
+
+			int	kBlockK = 20;
+
+			velocity = Phoenix::FrameWork::FrameBuffer::Create();
+			if (!velocity->Initialize
+			(
+				graphicsDevice,
+				width, height,
+				false, 1,
+				Phoenix::Graphics::TextureFormatDx::R8G8_UNORM,
+				Phoenix::Graphics::TextureFormatDx::UNKNOWN,
+				true,
+				false,
+				false
+			))
+			{
+				return false;
+			}
+
+			titleMax = Phoenix::FrameWork::FrameBuffer::Create();
+			if (!titleMax->Initialize
+			(
+				graphicsDevice,
+				width / kBlockK, height / kBlockK,
+				false, 1,
+				Phoenix::Graphics::TextureFormatDx::R8G8B8A8_UNORM,
+				Phoenix::Graphics::TextureFormatDx::UNKNOWN,
+				true,
+				false,
+				false
+			))
+			{
+				return false;
+			}
+
+			neighborMax = Phoenix::FrameWork::FrameBuffer::Create();
+			if (!neighborMax->Initialize
+			(
+				graphicsDevice,
+				width / kBlockK, height / kBlockK,
+				false, 1,
+				Phoenix::Graphics::TextureFormatDx::R8G8B8A8_UNORM,
+				Phoenix::Graphics::TextureFormatDx::UNKNOWN,
+				true,
+				false,
+				false
+			))
+			{
+				return false;
+			}
+
+			neighborMax = Phoenix::FrameWork::FrameBuffer::Create();
+			if (!neighborMax->Initialize
+			(
+				graphicsDevice,
+				width, height,
+				false, 1,
+				Phoenix::Graphics::TextureFormatDx::R16G16B16A16_FLOAT,
+				Phoenix::Graphics::TextureFormatDx::UNKNOWN,
+				true,
+				false,
+				false
+			))
+			{
+				return false;
+			}
+
+			// TODO : shader pass
+			velocityPS = Graphics::IShader::Create();
+			velocityPS->LoadPS(device, "VelocityMapPS.cso");
+
+			normalBlurPS = Graphics::IShader::Create();
+			normalBlurPS->LoadPS(device, "NormalBlurPS.cso");
+
+			/*tileMaxPS = Graphics::IShader::Create();
+			tileMaxPS->LoadPS(device, "GaussianBlurHorizontalPS.cso");
+
+			neighborMaxPS = Graphics::IShader::Create();
+			neighborMaxPS->LoadPS(device, "GlowExtractionPS.cso");
+
+			reconstructionBlurPS = Graphics::IShader::Create();
+			reconstructionBlurPS->LoadPS(device, "GaussianBlurHorizontalPS.cso");*/
+
+			return true;
+		}
+
+		void MotionBlur::Finalize()
+		{
+
+		}
+
+		void MotionBlur::ActivateVelocity(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			velocity->Clear(graphicsDevice, 0, 0.5f, 0.5f, 1.0f, 1.0f);
+			velocity->Activate(graphicsDevice);
+		}
+
+		void MotionBlur::DeactivateVelocity(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			velocity->Deactivate(graphicsDevice);
+		}
+		
+		void MotionBlur::ActivateVelocityPS(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			velocityPS->ActivatePS(graphicsDevice->GetDevice());
+
+			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
+			Phoenix::Graphics::IBuffer* psCBuffer[] =
+			{
+				context->GetConstantBufferScene()
+			};
+			context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+		}
+
+		void MotionBlur::DeactivateVelocityPS(Graphics::IGraphicsDevice* graphicsDevice)
+		{
+			velocityPS->DeactivatePS(graphicsDevice->GetDevice());
+		}
+
+		void MotionBlur::Draw(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* originTexture, const Graphics::Camera& camera, bool isNormal)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::IContext* context = graphicsDevice->GetContext();
+
+			// データセット
+			{
+				Graphics::ISampler* samplers[] =
+				{
+					context->GetSamplerState(Graphics::SamplerState::PointWrap),
+					context->GetSamplerState(Graphics::SamplerState::LinearWrap),
+					context->GetSamplerState(Graphics::SamplerState::AnisotropicWrap),
+				};
+				context->SetSamplers(Graphics::ShaderType::Pixel, 0, 3, samplers);
+
+				/*Phoenix::Graphics::IBuffer* vsCBuffer[] =
+				{
+					context->GetConstantBufferScene()
+				};
+				Phoenix::Graphics::IBuffer* psCBuffer[] =
+				{
+					context->GetConstantBufferScene()
+				};
+				context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Vertex, 0, Phoenix::FND::ArraySize(vsCBuffer), vsCBuffer);
+				context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);*/
+
+				// シーン定数バッファ更新
+				//context->UpdateConstantBufferScene(camera.GetView(), camera.GetProjection());
+			}
+
+			if (isNormal)
+			{
+				Graphics::ITexture* texture[] = 
+				{
+					originTexture,
+					velocity->renderTargerSurface[0]->GetTexture()
+				};
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(texture), texture);
+
+				normalBlurPS->Activate(device);
+				{
+					FullScreenQuad::Draw(graphicsDevice);
+				}
+				normalBlurPS->Deactivate(device);
+
+				Phoenix::Graphics::ITexture* nullTexture[8] = { nullptr };
+				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 8, nullTexture);
+			}
+			else
+			{
+
+			}
+		}
 	}
 }

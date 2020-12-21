@@ -336,71 +336,74 @@ void Enemy::Update(bool onControl, Phoenix::f32 elapsedTime)
 			SetState(BattleEnemyState::Idle);
 		}
 		model->UpdateTransform(elapsedTime / 60.0f);
+
+		UpdateRotate(elapsedTime);
+		UpdateTranslate(elapsedTime);
+		UpdateTransform();
+
 		return;
 	}
 
 	// AI更新
 	{
-		BattleEnemyState nextBattleState = BattleEnemyState::NoneState;
-
-		switch (currentMode)
-		{
-		case EnemyMode::Ordinary:
-			break;
-
-		case EnemyMode::Battle:
-			nextBattleState = battleAI->Update(elapsedTime);
-			/*if (nextBattleState == BattleEnemyState::Idle && stackAttackRight)
-			{
-				stackAttackRight = false;
-				if (battleAI->GetCurrentStateName() == BattleEnemyState::Attack)
-				{
-					battleAI->GoToState(BattleEnemyState::Idle);
-				}
-				else
-				{
-					battleAI->GoToState(BattleEnemyState::Attack);
-				}
-				SetMoveInput(0.0f, 0.0f);
-				SetMoveSpeed(0.0f);
-			}
-			else if (nextBattleState == BattleEnemyState::Attack)
-			{
-				battleAI->GoToState(BattleEnemyState::Attack);
-				SetMoveInput(0.0f, 0.0f);
-				SetMoveSpeed(0.0f);
-			}
-			else */
-			if (nextBattleState != BattleEnemyState::NoneState)
-			{
-				if (battleAI->GetCurrentStateName() != nextBattleState)
-				{
-					SetState(nextBattleState);
-				}
-				SetMoveInput(0.0f, 0.0f);
-				SetMoveSpeed(0.0f);
-			}
-
-			break;
-
-		default: break;
-		}
+		UpdateAI(elapsedTime);
 	}
 
 	// 回転
 	{
-		if (battleAI->GetCurrentStateName() == BattleEnemyState::Idle || battleAI->GetCurrentStateName() == BattleEnemyState::Walk || battleAI->GetCurrentStateName() == BattleEnemyState::Run)
-		{
-			UpdateNewRotate();
-		}
-
-		Phoenix::Math::Quaternion rotate = transform->GetRotate();
-		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f * elapsedTime);
-
-		transform->SetRotate(rotate);
+		UpdateRotate(elapsedTime);
 	}
 
 	// 移動
+	{
+		UpdateTranslate(elapsedTime);
+	}
+
+	// アニメーションの切り替え
+	{
+		ChangeAnimation();
+	}
+
+	// 攻撃アニメーションの切り替え
+	{
+		ChangeAttackAnimation();
+	}
+
+	// アニメーション更新
+	{
+		UpdateAnimation(elapsedTime);
+	}
+
+	// トランスフォーム更新
+	{
+		UpdateTransform();
+	}
+
+	// コリジョン更新
+	{
+		UpdateCollision();
+	}
+
+	// プレイヤーとの距離計測
+	{
+		DistanceMeasurement();
+	}
+
+	// アタック判定中
+	{
+		AttackJudgment();
+	}
+}
+
+// トランスフォーム更新
+void Enemy::UpdateTransform()
+{
+	transform->Update();
+}
+
+// 座標更新
+void Enemy::UpdateTranslate(Phoenix::f32 elapsedTime)
+{
 	if (0.0f < moveSpeed) // 0以下の時に計算をしても意味が無いので分岐している。
 	{
 		Phoenix::f32 cameraY = 0.0f;
@@ -438,62 +441,97 @@ void Enemy::Update(bool onControl, Phoenix::f32 elapsedTime)
 
 		transform->SetTranslate(pos);
 	}
+}
 
-	// アニメーションの切り替え
+// 回転更新
+void Enemy::UpdateRotate(Phoenix::f32 elapsedTime)
+{
+	if (battleAI->GetCurrentStateName() == BattleEnemyState::Idle || battleAI->GetCurrentStateName() == BattleEnemyState::Walk || battleAI->GetCurrentStateName() == BattleEnemyState::Run)
 	{
-		ChangeAnimation();
+		UpdateNewRotate();
 	}
 
-	// 攻撃アニメーションの切り替え
+	Phoenix::Math::Quaternion rotate = transform->GetRotate();
+	rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f * elapsedTime);
+
+	transform->SetRotate(rotate);
+}
+
+// アニメーション更新
+void Enemy::UpdateAnimation(Phoenix::f32 elapsedTime)
+{
+	if (battleAI->GetCurrentStateName() == BattleEnemyState::Walk)
 	{
-		ChangeAttackAnimation();
+		model->SetBlendRate(Phoenix::Math::Vector3(-moveX, moveY, 0.0f));
 	}
 
-	// アニメーション更新
+	model->UpdateTransform(elapsedTime / 60.0f);
+	attackReceptionTimeCnt += attackAnimationSpeed * elapsedTime / 60.0f;
+}
+
+// AI更新
+void Enemy::UpdateAI(Phoenix::f32 elapsedTime)
+{
+	BattleEnemyState nextBattleState = BattleEnemyState::NoneState;
+
+	switch (currentMode)
 	{
-		if (battleAI->GetCurrentStateName() == BattleEnemyState::Walk)
+	case EnemyMode::Ordinary:
+		break;
+
+	case EnemyMode::Battle:
+		nextBattleState = battleAI->Update(elapsedTime);
+		/*if (nextBattleState == BattleEnemyState::Idle && stackAttackRight)
 		{
-			model->SetBlendRate(Phoenix::Math::Vector3(-moveX, moveY, 0.0f));
+			stackAttackRight = false;
+			if (battleAI->GetCurrentStateName() == BattleEnemyState::Attack)
+			{
+				battleAI->GoToState(BattleEnemyState::Idle);
+			}
+			else
+			{
+				battleAI->GoToState(BattleEnemyState::Attack);
+			}
+			SetMoveInput(0.0f, 0.0f);
+			SetMoveSpeed(0.0f);
+		}
+		else if (nextBattleState == BattleEnemyState::Attack)
+		{
+			battleAI->GoToState(BattleEnemyState::Attack);
+			SetMoveInput(0.0f, 0.0f);
+			SetMoveSpeed(0.0f);
+		}
+		else */
+
+		if (nextBattleState != BattleEnemyState::NoneState)
+		{
+			if (battleAI->GetCurrentStateName() != nextBattleState)
+			{
+				SetState(nextBattleState);
+			}
+			SetMoveInput(0.0f, 0.0f);
+			SetMoveSpeed(0.0f);
 		}
 
-		model->UpdateTransform(elapsedTime / 60.0f);
-		attackReceptionTimeCnt += attackAnimationSpeed * elapsedTime / 60.0f;
-	}
+		break;
 
-	// トランスフォーム更新
-	{
-		UpdateTrasform();
-	}
-
-	// コリジョン更新
-	{
-		Phoenix::Math::Matrix systemUnitTransform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-		systemUnitTransform._11 = systemUnitTransform._22 = systemUnitTransform._33 = 0.01f;
-
-		auto nodes = model->GetNodes();
-		for (auto& data : collisionDatas)
-		{
-			Phoenix::Math::Matrix bone = nodes->at(data.boneIndex).worldTransform;
-			bone *= systemUnitTransform * transform->GetWorldTransform();
-			data.pos = Phoenix::Math::Vector3(bone._41, bone._42, bone._43);
-		}
-	}
-
-	// プレイヤーとの距離計測
-	{
-		DistanceMeasurement();
-	}
-
-	// アタック判定中
-	{
-		AttackJudgment();
+	default: break;
 	}
 }
 
-// トランスフォーム更新
-void Enemy::UpdateTrasform()
+// 当たり判定更新
+void Enemy::UpdateCollision()
 {
-	transform->Update();
+	Phoenix::Math::Matrix systemUnitTransform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+	systemUnitTransform._11 = systemUnitTransform._22 = systemUnitTransform._33 = 0.01f;
+
+	auto nodes = model->GetNodes();
+	for (auto& data : collisionDatas)
+	{
+		Phoenix::Math::Matrix bone = nodes->at(data.boneIndex).worldTransform;
+		bone *= systemUnitTransform * transform->GetWorldTransform();
+		data.pos = Phoenix::Math::Vector3(bone._41, bone._42, bone._43);
+	}
 }
 
 // UI更新

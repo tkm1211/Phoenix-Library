@@ -30,6 +30,12 @@ namespace Phoenix
 				Math::Matrix viewInv;
 				Math::Matrix projectionInv;
 				Math::Matrix viewProjectionInv;
+				Math::Matrix prevView;
+				Math::Matrix prevProjection;
+				Math::Matrix prevViewProjection;
+				Math::Matrix prevViewInv;
+				Math::Matrix prevProjectionInv;
+				Math::Matrix prevViewProjectionInv;
 				Math::Vector4 viewport;
 			};
 
@@ -65,6 +71,8 @@ namespace Phoenix
 			std::unique_ptr<ISampler> samplerState[static_cast<int>(SamplerState::TypeNum)] = { nullptr };
 
 			ID3D11Query* query[2] = { nullptr };
+
+			CbScene cbSceneData;
 
 		public:
 			ContextDX11() {}
@@ -149,6 +157,9 @@ namespace Phoenix
 
 			// シーン定数バッファ更新
 			void UpdateConstantBufferScene(const Math::Matrix& viewTransform, const Math::Matrix& projectionTransform) override;
+
+			// 前フレームのシーン定数バッファ更新
+			void UpdateConstantBufferPrevScene(const Math::Matrix& viewTransform, const Math::Matrix& projectionTransform) override;
 
 			// メッシュ定数バッファ更新
 			void UpdateConstantBufferMesh(const Math::Matrix& worldTransform) override;

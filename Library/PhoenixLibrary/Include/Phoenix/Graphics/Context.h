@@ -115,6 +115,9 @@ namespace Phoenix
 			// シーン定数バッファ更新
 			virtual void UpdateConstantBufferScene(const Math::Matrix& viewTransform, const Math::Matrix& projectionTransform) = 0;
 
+			// 前フレームのシーン定数バッファ更新
+			virtual void UpdateConstantBufferPrevScene(const Math::Matrix& viewTransform, const Math::Matrix& projectionTransform) = 0;
+
 			// メッシュ定数バッファ更新
 			virtual void UpdateConstantBufferMesh(const Math::Matrix& worldTransform) = 0;
 

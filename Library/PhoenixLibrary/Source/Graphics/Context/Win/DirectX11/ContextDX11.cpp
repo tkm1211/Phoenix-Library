@@ -566,26 +566,38 @@ namespace Phoenix
 		// シーン定数バッファ更新
 		void ContextDX11::UpdateConstantBufferScene(const Math::Matrix& viewTransform, const Math::Matrix& projectionTransform)
 		{
-			CbScene constantBufferScene;
-			constantBufferScene.view = (viewTransform);
-			constantBufferScene.projection = (projectionTransform);
-			constantBufferScene.viewProjection = Math::MatrixMultiplyTranspose(viewTransform, projectionTransform);
+			//CbScene constantBufferScene;
+			cbSceneData.view = (viewTransform);
+			cbSceneData.projection = (projectionTransform);
+			cbSceneData.viewProjection = Math::MatrixMultiplyTranspose(viewTransform, projectionTransform);
 
-			constantBufferScene.viewInv = Math::MatrixTranspose(Math::MatrixInverse(viewTransform));
-			constantBufferScene.projectionInv = Math::MatrixTranspose(Math::MatrixInverse(projectionTransform));
-			constantBufferScene.viewProjectionInv = Math::MatrixTranspose(Math::MatrixInverse(Math::MatrixMultiply(viewTransform, projectionTransform)));
+			cbSceneData.viewInv = Math::MatrixTranspose(Math::MatrixInverse(viewTransform));
+			cbSceneData.projectionInv = Math::MatrixTranspose(Math::MatrixInverse(projectionTransform));
+			cbSceneData.viewProjectionInv = Math::MatrixTranspose(Math::MatrixInverse(Math::MatrixMultiply(viewTransform, projectionTransform)));
 			
 			u32 viewportCount = 1;
 			Viewport* viewports[] = { new Viewport() };
 			GetViewports(viewportCount, viewports);
-			constantBufferScene.viewport = Math::Vector4(viewports[0]->x, viewports[0]->y, viewports[0]->width, viewports[0]->height);
+			cbSceneData.viewport = Math::Vector4(viewports[0]->x, viewports[0]->y, viewports[0]->width, viewports[0]->height);
 
-			UpdateSubresource(cbScene.get(), 0, 0, &constantBufferScene, 0, 0);
+			UpdateSubresource(cbScene.get(), 0, 0, &cbSceneData, 0, 0);
 
 			for (u32 i = 0; i < viewportCount; ++i)
 			{
 				FND::SafeDelete(viewports[i]);
 			}
+		}
+
+		// 前フレームのシーン定数バッファ更新
+		void ContextDX11::UpdateConstantBufferPrevScene(const Math::Matrix& viewTransform, const Math::Matrix& projectionTransform)
+		{
+			cbSceneData.prevView = (viewTransform);
+			cbSceneData.prevProjection = (projectionTransform);
+			cbSceneData.prevViewProjection = Math::MatrixMultiplyTranspose(viewTransform, projectionTransform);
+
+			cbSceneData.prevViewInv = Math::MatrixTranspose(Math::MatrixInverse(viewTransform));
+			cbSceneData.prevProjectionInv = Math::MatrixTranspose(Math::MatrixInverse(projectionTransform));
+			cbSceneData.prevViewProjectionInv = Math::MatrixTranspose(Math::MatrixInverse(Math::MatrixMultiply(viewTransform, projectionTransform)));
 		}
 
 		// メッシュ定数バッファ更新

@@ -618,7 +618,7 @@ namespace Phoenix
 			SetLookAt(_pos, _target, _up);
 		}
 
-		void Camera::ControllerCamera02(const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 elapsedTime, const Phoenix::f32 lerpTime, bool adjustRotate, const Phoenix::Math::Vector3 targetFrontVec)
+		void Camera::ControllerCamera02(bool onControl, const Math::Vector3& center, const Math::Vector3& adjust, const Phoenix::f32 len, const Phoenix::f32 elapsedTime, const Phoenix::f32 lerpTime, bool adjustRotate, const Phoenix::Math::Vector3 targetFrontVec)
 		{
 			// TODO : Winä÷êîÇï ÇÃä÷êîÇ…ç∑Çµë÷Ç¶
 			POINT cursor;
@@ -637,25 +637,28 @@ namespace Phoenix
 			sX = GetKeyState(VK_LEFT) < 0 ? -1.0f : sX;
 			sX = GetKeyState(VK_RIGHT) < 0 ? 1.0f : sX;
 
-			if (GetKeyState(VK_RBUTTON) < 0)
+			if (onControl)
 			{
-				f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
-				f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
-				rotateY -= moveX * 0.5f * elapsedTime;
-				//rotateX += moveY * 0.5f * elapsedTime;
-			}
-			else
-			{
-				rotateY -= sX * 3.5f * 0.01745f * elapsedTime;
-				/*rotateX -= sY * 3.5f * 0.01745f * elapsedTime;
-				if (0.5f < rotateX)
+				if (GetKeyState(VK_RBUTTON) < 0)
 				{
-					rotateX = 0.5f;
+					f32 moveX = (newCursor.x - oldCursor.x) * 0.02f;
+					f32 moveY = (newCursor.y - oldCursor.y) * 0.02f;
+					rotateY -= moveX * 0.5f * elapsedTime;
+					//rotateX += moveY * 0.5f * elapsedTime;
 				}
-				if (rotateX < -0.5f)
+				else
 				{
-					rotateX = -0.5f;
-				}*/
+					rotateY -= sX * 3.5f * 0.01745f * elapsedTime;
+					/*rotateX -= sY * 3.5f * 0.01745f * elapsedTime;
+					if (0.5f < rotateX)
+					{
+						rotateX = 0.5f;
+					}
+					if (rotateX < -0.5f)
+					{
+						rotateX = -0.5f;
+					}*/
+				}
 			}
 
 			//if (sY == 0.0f)

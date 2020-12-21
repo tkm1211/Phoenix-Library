@@ -168,7 +168,22 @@ public:
 	void Update(bool onControl, Phoenix::f32 elapsedTime);
 
 	// トランスフォーム更新
-	void UpdateTrasform();
+	void UpdateTransform();
+
+	// 座標更新
+	void UpdateTranslate(Phoenix::f32 elapsedTime);
+
+	// 回転更新
+	void UpdateRotate(Phoenix::f32 elapsedTime);
+
+	// アニメーション更新
+	void UpdateAnimation(Phoenix::f32 elapsedTime);
+
+	// AI更新
+	void UpdateAI(Phoenix::f32 elapsedTime);
+
+	// 当たり判定更新
+	void UpdateCollision();
 
 	// UI更新
 	void UpdateUI(Phoenix::Math::Vector2 pos);

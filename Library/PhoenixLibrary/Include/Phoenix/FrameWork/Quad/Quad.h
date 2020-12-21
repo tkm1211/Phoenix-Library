@@ -6,6 +6,7 @@
 #include "Phoenix/Graphics/RenderState.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/Graphics/Texture.h"
+#include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/FrameBuffer/FrameBuffer.h"
 
 #include <d3d11.h>
@@ -351,6 +352,68 @@ namespace Phoenix
 			void Finalize();
 
 			void Draw(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* colorTexture, f32 elapsedTime);
+		};
+
+		class MotionBlur : public FullScreenQuad
+		{
+		private:
+			enum { LINEAR_BORDER, POINT, LINEAR, ANISOTROPIC };
+
+			//struct ShaderConstants
+			//{
+			//	float glowExtractionThreshold = 0.0f; // 0.85f
+			//	float blurConvolutionIntensity = 0.08f; // 0.06f
+			//	float lensFlareThreshold = 1.000f;
+			//	float lensFlareGhostDispersal = 0.300f; //dispersion factor
+			//	int numberOfGhosts = 6;
+			//	float lensFlareIntensity = 0.35f;
+			//	int options[2] = { 1 };
+			//};
+
+		private:
+			// if you change value of 'number_of_downsampled', you must change 'number_of_downsampled' in bloom.hlsli to this same value.
+			//const static u32 numberOfDownsampled = 6;
+
+		public:
+			//ShaderConstants shaderContants;
+
+		private:
+			std::unique_ptr<Graphics::ISampler> samplerState[4];
+
+			std::unique_ptr<Graphics::IBlend> blendState;
+
+			std::unique_ptr<Graphics::IShader> velocityPS;
+			std::unique_ptr<Graphics::IShader> normalBlurPS;
+			std::unique_ptr<Graphics::IShader> tileMaxPS;
+			std::unique_ptr<Graphics::IShader> neighborMaxPS;
+			std::unique_ptr<Graphics::IShader> reconstructionBlurPS;
+
+			std::unique_ptr<FrameBuffer> velocity;
+			std::unique_ptr<FrameBuffer> titleMax;
+			std::unique_ptr<FrameBuffer> neighborMax;
+
+			std::unique_ptr<FullScreenQuad> fullScreenQuad;
+
+		public:
+			MotionBlur() : FullScreenQuad() {}
+			~MotionBlur() {}
+
+		public:
+			static std::unique_ptr<MotionBlur> Create();
+
+			bool Initialize(Graphics::IGraphicsDevice* graphicsDevice, u32 width, u32 height);
+
+			void Finalize();
+
+			void ActivateVelocity(Graphics::IGraphicsDevice* graphicsDevice);
+			void DeactivateVelocity(Graphics::IGraphicsDevice* graphicsDevice);
+
+			void ActivateVelocityPS(Graphics::IGraphicsDevice* graphicsDevice);
+			void DeactivateVelocityPS(Graphics::IGraphicsDevice* graphicsDevice);
+
+			void Draw(Graphics::IGraphicsDevice* graphicsDevice, Graphics::ITexture* originTexture, const Graphics::Camera& camera, bool isNormal);
+
+			FrameBuffer* GetVelocityFrameBuffer() { return velocity.get(); }
 		};
 	}
 }

@@ -692,7 +692,7 @@ void SceneTutorial::UpdateGameCamera(Phoenix::Math::Vector3 playerPos, Phoenix::
 		cameraLen = Phoenix::Math::f32Lerp(cameraLen, 8.5f, 0.05f);
 
 		enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
-		camera->ControllerCamera02(playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, 0.05f);
+		camera->ControllerCamera02(true, playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, 0.05f);
 		player->InEnemyTerritory(true);
 		player->SetTargetPos(mannequin->GetPosition());
 		lerp = 0.01f;
@@ -704,7 +704,7 @@ void SceneTutorial::UpdateGameCamera(Phoenix::Math::Vector3 playerPos, Phoenix::
 		lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f);
 		cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f);
 
-		camera->ControllerCamera02(player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, lerp);
+		camera->ControllerCamera02(true, player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.5f, 0.0f), cameraLen, lerp);
 		player->InEnemyTerritory(false);
 		player->SetTargetPos(Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f));
 	}
