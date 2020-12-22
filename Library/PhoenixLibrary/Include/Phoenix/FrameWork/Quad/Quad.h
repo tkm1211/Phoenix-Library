@@ -377,6 +377,8 @@ namespace Phoenix
 			    Math::Vector3 padding = Math::Vector3::OneAll;
 			};
 
+			const f32 kBlockK = 20.0f;
+
 		public:
 			VelocityConstants velocityConstants;
 			BlurConstants blurConstants;
@@ -393,6 +395,7 @@ namespace Phoenix
 			std::unique_ptr<Graphics::IShader> reconstructionBlurPS;
 
 			std::unique_ptr<FrameBuffer> velocity;
+			std::unique_ptr<FrameBuffer> depth;
 			std::unique_ptr<FrameBuffer> titleMax;
 			std::unique_ptr<FrameBuffer> neighborMax;
 

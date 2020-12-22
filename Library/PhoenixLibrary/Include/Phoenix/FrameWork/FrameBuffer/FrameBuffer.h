@@ -64,6 +64,15 @@ namespace Phoenix
 
 			void Finalize();
 
+			bool AddRenderTargetView
+			(
+				Graphics::IGraphicsDevice* graphicsDevice,
+				u32 width,
+				u32 height,
+				Graphics::TextureFormatDx renderTargetTexture2dFormat = Graphics::TextureFormatDx::R8G8B8A8_UNORM,
+				bool needRenderTargetShaderResourceView = true
+			);
+
 			void Clear(Graphics::IGraphicsDevice* graphicsDevice, u32 index = 0, float r = 0, float g = 0, float b = 0, float a = 1, float depth = 1, u8 stencil = 0);
 
 			//clear only 'render_target_view'

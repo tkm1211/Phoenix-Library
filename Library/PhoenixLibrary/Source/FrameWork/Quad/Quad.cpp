@@ -1558,6 +1558,7 @@ namespace Phoenix
 				//context->UpdateConstantBufferScene(camera.GetView(), camera.GetProjection());
 			}
 
+			// 通常速度ブラー
 			if (isNormal)
 			{
 				Graphics::ITexture* texture[] = 
@@ -1576,6 +1577,7 @@ namespace Phoenix
 				Phoenix::Graphics::ITexture* nullTexture[8] = { nullptr };
 				context->SetShaderResources(Graphics::ShaderType::Pixel, 0, 8, nullTexture);
 			}
+			// 再構築ブラー
 			else
 			{
 

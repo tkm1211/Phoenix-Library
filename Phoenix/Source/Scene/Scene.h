@@ -329,6 +329,7 @@ private:
 	// モーションブラー
 	bool isMotionBlur = false;
 	std::unique_ptr<Phoenix::FrameWork::MotionBlur> motionBlur;
+	Phoenix::s32 targetEnemyIndex = -1;
 
 	// ブルーム
 	std::unique_ptr<Phoenix::FrameWork::Quad> quad;

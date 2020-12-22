@@ -687,9 +687,17 @@ void SceneGame::UpdateCamera(Phoenix::f32 elapsedTime)
 
 		if (inTerritory)
 		{
-			Phoenix::Math::Vector3 enemyToPlayerVec = (centerOfGravity / static_cast<Phoenix::f32>(enemyCount)) - playerPos;
-			Phoenix::f32 len = Phoenix::Math::Vector3Length(enemyToPlayerVec);
+			Phoenix::Math::Vector3 enemyToPlayerVec;
+			if (isSlow)
+			{
+				enemyToPlayerVec = enemyManager->GetEnemies().at(targetEnemyIndex)->GetPosition() - playerPos;
+			}
+			else
+			{
+				enemyToPlayerVec = (centerOfGravity / static_cast<Phoenix::f32>(enemyCount)) - playerPos;
+			}
 
+			Phoenix::f32 len = Phoenix::Math::Vector3Length(enemyToPlayerVec);
 			if (len <= 5.0f)
 			{
 				Phoenix::Math::Quaternion rotate = player->GetRotate();
@@ -718,7 +726,7 @@ void SceneGame::UpdateSlow(Phoenix::f32& elapsedTime)
 {
 	if (isSlow)
 	{
-		if (100.0f <= slowTimeCnt || !player->IsJustDedge())
+		if (75.0f <= slowTimeCnt || !player->IsJustDedge())
 		{
 			isSlow = false;
 			slowTimeCnt = 0.0f;
@@ -730,6 +738,9 @@ void SceneGame::UpdateSlow(Phoenix::f32& elapsedTime)
 			slowTimeCnt += 1.0f * elapsedTime;
 			elapsedTime *= 0.15f;
 		}
+
+		motionBlur->velocityConstants.exposureTime = Phoenix::Math::f32Lerp(motionBlur->velocityConstants.exposureTime, 0.0f, 0.05f * (elapsedTime / 0.15f));
+		isMotionBlur = isSlow;
 	}
 }
 
@@ -869,9 +880,10 @@ void SceneGame::UpdateCameraShake(Phoenix::f32 elapsedTime)
 		{
 			cameraShakeCnt += 1.0f * elapsedTime;
 		}
-	}
 
-	isMotionBlur = isCameraShake;
+		motionBlur->velocityConstants.exposureTime = 480.0f;
+		isMotionBlur = isCameraShake;
+	}
 }
 
 void SceneGame::UpdateUI()
@@ -1389,6 +1401,8 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 				{
 					isSlow = true;
 					player->SetIsJustDedge(true);
+					motionBlur->velocityConstants.exposureTime = 50000.0f;
+					targetEnemyIndex = index;
 					//player->ChangeJustDedge();
 				}
 				// ジャスト回避失敗
@@ -1696,26 +1710,26 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 			}
 
 			// Draw player and enemies.
-			//{
-			//	if (currentShader)
-			//	{
-			//		currentShader->Begin(graphicsDevice, *camera);
-			//		motionBlur->ActivateVelocityPS(graphicsDevice);
-			//		{
-			//			//currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
-			//			for (const auto& enemy : enemyManager->GetEnemies())
-			//			{
-			//				if (enemy->GetEnable())
-			//				{
-			//					currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
-			//				}
-			//			}
-			//			currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
-			//		}
-			//		motionBlur->DeactivateVelocityPS(graphicsDevice);
-			//		currentShader->End(graphicsDevice);
-			//	}
-			//}
+			{
+				if (currentShader)
+				{
+					currentShader->Begin(graphicsDevice, *camera);
+					motionBlur->ActivateVelocityPS(graphicsDevice);
+					{
+						//currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
+						for (const auto& enemy : enemyManager->GetEnemies())
+						{
+							if (enemy->GetEnable())
+							{
+								currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
+							}
+						}
+						currentShader->Draw(graphicsDevice, player->GetWorldMatrix(), player->GetModel());
+					}
+					motionBlur->DeactivateVelocityPS(graphicsDevice);
+					currentShader->End(graphicsDevice);
+				}
+			}
 
 			// Draw stage.
 			{
@@ -2084,50 +2098,6 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 			quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 		}
 #endif
-		// Draw UI and Effect.
-		{
-#if 1
-			//if (lockOnCamera)
-			//{
-			//	/*Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
-			//	context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);*/
-
-			//	Phoenix::f32 size = 128.0f / 4.0f;
-
-			//	Phoenix::Math::Vector3 bossPos = boss->GetPosition();
-			//	bossPos.y += 1.5f;
-
-			//	Phoenix::Math::Vector3 screenPos = WorldToScreen(bossPos);
-			//	screenPos.x -= size / 2.0f;
-
-			//	quad->Draw(graphicsDevice, targetMark, screenPos.x, screenPos.y, size, size);
-			//}
-
-			// Draw Effect.
-			//{
-			//	//Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
-			//	//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Additive), 0, 0xFFFFFFFF);
-			//	{
-			//		gpuParticle->Draw(graphicsDevice, *camera);
-			//		playerHitParticle->Draw(graphicsDevice, *camera);
-			//	}
-			//	//context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
-			//}
-#endif
-
-#if 1
-			if (isDrawUI) uiSystem->Draw(graphicsDevice);
-
-			quad->Draw(graphicsDevice, commonData->operatorUI.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f,1.0f, true, true, true , true, true, true);
-
-			/*float w = 480.0f * 0.5f;
-			float h = 270.0f * 0.5f;
-			quad->Draw(graphicsDevice, commonData->avoidUI.get(), Phoenix::Math::Vector2(w * 0.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
-			quad->Draw(graphicsDevice, commonData->attackUI.get(), Phoenix::Math::Vector2(w * 1.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
-			quad->Draw(graphicsDevice, commonData->runUI.get(), Phoenix::Math::Vector2(w * 2.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));
-			quad->Draw(graphicsDevice, commonData->targetUI.get(), Phoenix::Math::Vector2(w * 3.0f, 1080.0f - h), Phoenix::Math::Vector2(w, h), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(480.0f, 270.0f));*/
-#endif
-		}
 	}
 	frameBuffer[3]->Deactivate(graphicsDevice);
 
@@ -2146,7 +2116,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 
 	// Motion Blur
 	resolvedFramebuffer = 4;
-	//if (isMotionBlur)
+	if (isMotionBlur)
 	{
 		resolvedFramebuffer = 5;
 		frameBuffer[resolvedFramebuffer]->Clear(graphicsDevice, 0, 0.5f, 0.5f, 0.5f, 1.0f);
@@ -2163,22 +2133,24 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 	// Final Draw
 	{
 		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
+	
+#if 1
+		// Draw UI and Effect.
+		{
+			if (isDrawUI) uiSystem->Draw(graphicsDevice);
+			quad->Draw(graphicsDevice, commonData->operatorUI.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, true);
+		}
+#endif
 	}
 
 	// Draw frameBuffer Texture.
 	{
 		if (active[0]) quad->Draw(graphicsDevice, shadowMap->GetDepthStencilSurface()->GetTexture(), texSize.x * 0, 0, texSize.x, texSize.y);
-		//if (active[0]) quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), texSize.x * 0, 0, texSize.x, texSize.y);
 		if (active[1]) quad->Draw(graphicsDevice, frameBuffer[1]->renderTargerSurface[0]->GetTexture(), texSize.x * 1, 0, texSize.x, texSize.y);
 		if (active[2]) quad->Draw(graphicsDevice, frameBuffer[1]->depthStencilSurface->GetTexture(), texSize.x * 2, 0, texSize.x, texSize.y);
 		if (active[3]) quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), texSize.x * 3, 0, texSize.x, texSize.y);
 		if (active[4]) quad->Draw(graphicsDevice, motionBlur->GetVelocityFrameBuffer()->renderTargerSurface[0]->GetTexture(), texSize.x * 4, 0, texSize.x, texSize.y);
-		/*if (active[3]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[0]->GetTexture(), texSize.x * 3, 0, texSize.x, texSize.y);
-		if (active[4]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[1]->GetTexture(), texSize.x * 4, 0, texSize.x, texSize.y);
-		if (active[5]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[2]->GetTexture(), texSize.x * 5, 0, texSize.x, texSize.y);
-		if (active[6]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[3]->GetTexture(), texSize.x * 6, 0, texSize.x, texSize.y);
-		if (active[7]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[4]->GetTexture(), texSize.x * 7, 0, texSize.x, texSize.y);
-		if (active[8]) quad->Draw(graphicsDevice, ibl->GetFrameBuffer()->renderTargerSurface[5]->GetTexture(), texSize.x * 8, 0, texSize.x, texSize.y);*/
+		if (active[5]) quad->Draw(graphicsDevice, motionBlur->GetVelocityFrameBuffer()->depthStencilSurface->GetTexture(), texSize.x * 0, texSize.y * 1, texSize.x, texSize.y);
 	}
 
 	// 前フレームとしてカメラ情報を保存
@@ -2535,6 +2507,11 @@ void SceneGame::GUI()
 			quad->SetSaturate(saturate);
 			quad->SetScreenColor(screenColor);
 
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("MotionBlur"))
+		{
+			ImGui::DragFloat("exposureTime", &motionBlur->velocityConstants.exposureTime);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Pad"))

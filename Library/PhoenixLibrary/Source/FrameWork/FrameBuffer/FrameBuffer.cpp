@@ -185,6 +185,77 @@ namespace Phoenix
 			}
 		}
 
+		bool FrameBuffer::AddRenderTargetView
+		(
+			Graphics::IGraphicsDevice* graphicsDevice,
+			u32 width,
+			u32 height,
+			Graphics::TextureFormatDx renderTargetTexture2dFormat,
+			bool needRenderTargetShaderResourceView
+		)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			Graphics::DeviceDX11* d3dDevice = static_cast<Graphics::DeviceDX11*>(device);
+
+			HRESULT hr = S_OK;
+
+			UINT msaaQualityLevel;
+			UINT sampleCount = 1;
+			DXGI_FORMAT dxgiFormat = static_cast<DXGI_FORMAT>(renderTargetTexture2dFormat);
+			hr = d3dDevice->GetD3DDevice()->CheckMultisampleQualityLevels(dxgiFormat, sampleCount, &msaaQualityLevel);
+			if (FAILED(hr))
+			{
+				PHOENIX_LOG_GRP_ERROR("ID3D11Device::CheckMultisampleQualityLevels() : Failed!!\n");
+				return false;
+			}
+
+			if (renderTargetTexture2dFormat != Graphics::TextureFormatDx::UNKNOWN)
+			{
+				D3D11_TEXTURE2D_DESC texture2dDesc = {};
+				texture2dDesc.Width = width;
+				texture2dDesc.Height = height;
+				texture2dDesc.MipLevels = 1;
+				texture2dDesc.ArraySize = 1;
+				texture2dDesc.Format = dxgiFormat;
+				texture2dDesc.SampleDesc.Count = 1;
+				texture2dDesc.SampleDesc.Quality = 0;
+				texture2dDesc.Usage = D3D11_USAGE_DEFAULT;
+				texture2dDesc.BindFlags = needRenderTargetShaderResourceView ? D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE : D3D11_BIND_RENDER_TARGET;
+				texture2dDesc.CPUAccessFlags = 0;
+				texture2dDesc.MiscFlags = 0;
+
+				D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+				rtvDesc.Format = texture2dDesc.Format;
+				rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+
+				D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+				if (needRenderTargetShaderResourceView)
+				{
+					srvDesc.Format = texture2dDesc.Format;
+					srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+					srvDesc.Texture2D.MipLevels = 1;
+				}
+
+				for (u32 i = 0; i < RenderTargetCount; ++i)
+				{
+					if (renderTargerSurface[i].get()) continue;
+
+					renderTargerSurface[i] = Graphics::IRenderTargetSurface::Create();
+					Graphics::RenderTargetSurfaceDX11* rtsDX11 = static_cast<Graphics::RenderTargetSurfaceDX11*>(renderTargerSurface[i].get());
+
+					if (!rtsDX11->Initialize(d3dDevice->GetD3DDevice(), texture2dDesc, &rtvDesc, &srvDesc))
+					{
+						PHOENIX_LOG_GRP_ERROR("Phoenix::Graphics::RenderTargetSurfaceDX11::Initialize() : Failed!!\n");
+						return false;
+					}
+
+					break;
+				}
+			}
+
+			return true;
+		}
+
 		void FrameBuffer::Clear(Graphics::IGraphicsDevice* graphicsDevice, u32 index, float r, float g, float b, float a, float depth, u8 stencil)
 		{
 			Graphics::IContext* context = graphicsDevice->GetContext();
