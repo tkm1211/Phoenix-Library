@@ -359,23 +359,27 @@ namespace Phoenix
 		private:
 			enum { LINEAR_BORDER, POINT, LINEAR, ANISOTROPIC };
 
-			//struct ShaderConstants
-			//{
-			//	float glowExtractionThreshold = 0.0f; // 0.85f
-			//	float blurConvolutionIntensity = 0.08f; // 0.06f
-			//	float lensFlareThreshold = 1.000f;
-			//	float lensFlareGhostDispersal = 0.300f; //dispersion factor
-			//	int numberOfGhosts = 6;
-			//	float lensFlareIntensity = 0.35f;
-			//	int options[2] = { 1 };
-			//};
+			struct VelocityConstants
+			{
+				f32 exposureTime = 480.0f;
+				f32 screenWidth = 1280.0f;
+				f32 screenHeight = 720.0f;
+				f32 frameRate = 0.01666667f; // 1.0f / 60.0f
+			};
 
-		private:
-			// if you change value of 'number_of_downsampled', you must change 'number_of_downsampled' in bloom.hlsli to this same value.
-			//const static u32 numberOfDownsampled = 6;
+			struct BlurConstants
+			{
+			    u32 loop = 5;
+			    f32 softZExtent = 0.0f;
+			    f32 div = 0.166666667f;	// 1.0 / (loop + 1)
+			    s32 jitter = 1;			// ジッタのON/OFF
+			    s32 mix = 1;			// 速度のミックスを行うかどうか
+			    Math::Vector3 padding = Math::Vector3::OneAll;
+			};
 
 		public:
-			//ShaderConstants shaderContants;
+			VelocityConstants velocityConstants;
+			BlurConstants blurConstants;
 
 		private:
 			std::unique_ptr<Graphics::ISampler> samplerState[4];
@@ -392,7 +396,8 @@ namespace Phoenix
 			std::unique_ptr<FrameBuffer> titleMax;
 			std::unique_ptr<FrameBuffer> neighborMax;
 
-			std::unique_ptr<FullScreenQuad> fullScreenQuad;
+			std::unique_ptr<Graphics::IBuffer> velocityConstantsBuffer;
+			std::unique_ptr<Graphics::IBuffer> blurConstantsBuffer;
 
 		public:
 			MotionBlur() : FullScreenQuad() {}

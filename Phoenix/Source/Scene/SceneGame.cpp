@@ -1688,6 +1688,13 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 	{
 		motionBlur->ActivateVelocity(graphicsDevice);
 		{
+			// データセット
+			{
+				motionBlur->velocityConstants.screenWidth = static_cast<Phoenix::f32>(display->GetWidth());
+				motionBlur->velocityConstants.screenHeight = static_cast<Phoenix::f32>(display->GetHeight());
+				motionBlur->velocityConstants.frameRate = elapsedTime / 60.0f;
+			}
+
 			// Draw player and enemies.
 			//{
 			//	if (currentShader)
@@ -2139,12 +2146,15 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 
 	// Motion Blur
 	resolvedFramebuffer = 4;
-	if (isMotionBlur)
+	//if (isMotionBlur)
 	{
 		resolvedFramebuffer = 5;
 		frameBuffer[resolvedFramebuffer]->Clear(graphicsDevice, 0, 0.5f, 0.5f, 0.5f, 1.0f);
 		frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
 		{
+			motionBlur->blurConstants.loop = 5;
+			motionBlur->blurConstants.div = 1.0f / static_cast<Phoenix::f32>(motionBlur->blurConstants.loop + 1);
+
 			motionBlur->Draw(graphicsDevice, frameBuffer[4]->renderTargerSurface[0]->GetTexture(), *camera, true);
 		}
 		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);

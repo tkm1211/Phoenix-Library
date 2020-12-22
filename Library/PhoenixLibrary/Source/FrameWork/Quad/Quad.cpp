@@ -1436,7 +1436,32 @@ namespace Phoenix
 				return false;
 			}
 
-			// TODO : shader pass
+			// 定数バッファ作成
+			{
+				Graphics::PhoenixBufferDesc bufferDesc = {};
+				Phoenix::FND::MemSet(&bufferDesc, 0, sizeof(bufferDesc));
+				bufferDesc.usage = Phoenix::Graphics::PhoenixUsage::Default;
+				bufferDesc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ConstantBuffer);
+				bufferDesc.cpuAccessFlags = 0;
+				bufferDesc.miscFlags = 0;
+				bufferDesc.byteWidth = sizeof(VelocityConstants);
+				bufferDesc.structureByteStride = 0;
+
+				velocityConstantsBuffer = Graphics::IBuffer::Create();
+				if (!velocityConstantsBuffer->Initialize(graphicsDevice->GetDevice(), bufferDesc))
+				{
+					return false;
+				}
+
+				bufferDesc.byteWidth = sizeof(BlurConstants);
+
+				blurConstantsBuffer = Graphics::IBuffer::Create();
+				if (!blurConstantsBuffer->Initialize(graphicsDevice->GetDevice(), bufferDesc))
+				{
+					return false;
+				}
+			}
+
 			velocityPS = Graphics::IShader::Create();
 			velocityPS->LoadPS(device, "VelocityMapPS.cso");
 
@@ -1473,14 +1498,22 @@ namespace Phoenix
 		
 		void MotionBlur::ActivateVelocityPS(Graphics::IGraphicsDevice* graphicsDevice)
 		{
-			velocityPS->ActivatePS(graphicsDevice->GetDevice());
-
-			Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
-			Phoenix::Graphics::IBuffer* psCBuffer[] =
+			// データセット
 			{
-				context->GetConstantBufferScene()
-			};
-			context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+				Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
+				Phoenix::Graphics::IBuffer* psCBuffer[] =
+				{
+					context->GetConstantBufferScene(),
+					velocityConstantsBuffer.get()
+				};
+				context->UpdateSubresource(velocityConstantsBuffer.get(), 0, 0, &velocityConstants, 0, 0);
+				context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
+			}
+
+			// ピクセルシェーダーセット
+			{
+				velocityPS->ActivatePS(graphicsDevice->GetDevice());
+			}
 		}
 
 		void MotionBlur::DeactivateVelocityPS(Graphics::IGraphicsDevice* graphicsDevice)
@@ -1502,6 +1535,13 @@ namespace Phoenix
 					context->GetSamplerState(Graphics::SamplerState::AnisotropicWrap),
 				};
 				context->SetSamplers(Graphics::ShaderType::Pixel, 0, 3, samplers);
+
+				Phoenix::Graphics::IBuffer* psCBuffer[] =
+				{
+					blurConstantsBuffer.get()
+				};
+				context->UpdateSubresource(blurConstantsBuffer.get(), 0, 0, &blurConstants, 0, 0);
+				context->SetConstantBuffers(Phoenix::Graphics::ShaderType::Pixel, 0, Phoenix::FND::ArraySize(psCBuffer), psCBuffer);
 
 				/*Phoenix::Graphics::IBuffer* vsCBuffer[] =
 				{
