@@ -252,6 +252,9 @@
     <FxCompile Include="..\..\..\Source\HLSL\NormalBlurPS.hlsl">
       <Filter>Source\MotionBlur</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\..\Source\HLSL\EmittedParticle\BossAuraEffectCS.hlsl">
+      <Filter>Source\EmittedParticle\Simulate</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\HLSL\Bloom.hlsli">

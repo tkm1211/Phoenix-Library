@@ -340,6 +340,7 @@ void Enemy::Update(bool onControl, Phoenix::f32 elapsedTime)
 		UpdateRotate(elapsedTime);
 		UpdateTranslate(elapsedTime);
 		UpdateTransform();
+		UpdateCollision();
 
 		return;
 	}

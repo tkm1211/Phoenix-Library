@@ -101,7 +101,8 @@ void main( uint3 DTid : SV_DispatchThreadID )
         particle.colorMirror = 0;
         particle.colorMirror |= ((rand(seed, uv) > 0.5f) << 31) & 0x10000000;
         particle.colorMirror |= ((rand(seed, uv) < 0.5f) << 30) & 0x20000000;
-
+        particle.originPosition = float4(pos, 0.0f);
+		
         uint color_modifier = 0;
 		//color_modifier |= (uint)(255.0f * lerp(1, rand(seed, uv), xParticleRandomFactor)) << 0;
 		//color_modifier |= (uint)(255.0f * lerp(1, rand(seed, uv), xParticleRandomFactor)) << 8;

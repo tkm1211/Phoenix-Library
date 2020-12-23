@@ -154,6 +154,7 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		bossHitParticle = Phoenix::FrameWork::GPUParticle::Create();
 		petalParticle = Phoenix::FrameWork::GPUParticle::Create();
 		soilParticle = Phoenix::FrameWork::GPUParticle::Create();
+		bossAuraParticle = Phoenix::FrameWork::GPUParticle::Create();
 		//dusterParticle[0] = Phoenix::FrameWork::GPUParticle::Create();
 		//dusterParticle[1] = Phoenix::FrameWork::GPUParticle::Create();
 		//dusterParticle[2] = Phoenix::FrameWork::GPUParticle::Create();
@@ -281,11 +282,12 @@ void SceneGame::Initialize()
 	{
 		testComputeShader->Initialize(graphicsDevice);
 		bitonicSort->Initialize(graphicsDevice);
-		gpuParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png"); // particle
+		gpuParticle->Initialize(graphicsDevice, "PlayerHitEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png"); // particle
 		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS Fire\\FireOrigin02
 		bossHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
 		petalParticle->Initialize(graphicsDevice, "PetalEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\JumpAttack\\Petal01.png", false);
 		soilParticle->Initialize(graphicsDevice, "SoilEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\JumpAttack\\Soil01.png", false);
+		bossAuraParticle->Initialize(graphicsDevice, "BossAuraEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true);
 		//dusterParticle[0]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster05.png", false);
 		//dusterParticle[1]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster06.png", false);
 		//dusterParticle[2]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster07.png", false);
@@ -492,6 +494,11 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 		UpdateDirectionLight(elapsedTime);
 	}
 
+	// パーティクル更新
+	{
+		UpdateParticle(elapsedTime);
+	}
+
 	// フェード中
 	if (sceneSystem->GetOnFade())
 	{
@@ -501,11 +508,6 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 	// シェーダー切り替え
 	{
 		SwitchShader();
-	}
-
-	// パーティクル更新
-	{
-		UpdateParticle(elapsedTime);
 	}
 
 	// ヒットストップ更新
@@ -629,6 +631,23 @@ void SceneGame::UpdateEnemyManager(Phoenix::f32 elapsedTime)
 	if (isUpdate && isBossUpdate && !isHitStop)
 	{
 		enemyManager->Update(onControl && !roundSwitch, elapsedTime);
+	}
+
+	auto enemy = enemyManager->GetEnemies().at(0);
+	if (enemy->GetAlive())
+	{
+		const std::vector<Phoenix::FrameWork::CollisionData>* enemyDatas = enemy->GetCollisionDatas();
+
+		bossAuraParticlePos = enemyDatas->at(0).pos;
+		bossAuraParticlePos.y += 1.0f;
+
+		bossAuraParticle->Burst(20 * elapsedTime);
+		bossAuraParticle->SetParticleLife(1.0f);
+		bossAuraParticle->SetParticleSize(0.01f);
+		bossAuraParticle->SetParticleScale(1.0f);
+		bossAuraParticle->SetParticleMotionBlurAmount(2.5f);
+		bossAuraParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+		bossAuraParticle->SetParticleColor(Phoenix::Math::Color(255.0f / 255.0f, 74.0f / 255.0f, 240.0f / 255.0f, 1.0f));
 	}
 }
 
@@ -768,6 +787,7 @@ void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 	}
 	screenColor = Phoenix::Math::Color(roundFadeColor, roundFadeColor, roundFadeColor, 1.0f);
 
+	UpdateParticle(elapsedTime);
 	UpdateCamera(elapsedTime);
 	UpdateUI();
 }
@@ -810,9 +830,10 @@ void SceneGame::UpdateParticle(Phoenix::f32 elapsedTime)
 {
 	if (isUpdate)
 	{
-		//gpuParticle->Burst(10);
-		//gpuParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
-		//gpuParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+		gpuParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
+		gpuParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
+		gpuParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+		
 		playerHitParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
 		playerHitParticle->UpdateCPU(graphicsDevice, particlePos, 1.0f / 60.0f);
 		playerHitParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
@@ -828,6 +849,10 @@ void SceneGame::UpdateParticle(Phoenix::f32 elapsedTime)
 		soilParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
 		soilParticle->UpdateCPU(graphicsDevice, jumpAttackParticlePos, 1.0f / 60.0f);
 		soilParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+
+		bossAuraParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
+		bossAuraParticle->UpdateCPU(graphicsDevice, bossAuraParticlePos, 1.0f / 60.0f);
+		bossAuraParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 
 		/*for (Phoenix::s32 i = 0; i < 3; ++i)
 		{
@@ -1957,6 +1982,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 							bossHitParticle->Draw(graphicsDevice, *camera);
 							petalParticle->Draw(graphicsDevice, *camera);
 							soilParticle->Draw(graphicsDevice, *camera);
+							bossAuraParticle->Draw(graphicsDevice, *camera);
 							/*for (Phoenix::s32 i = 0; i < 3; ++i)
 							{
 								dusterParticle[i]->Draw(graphicsDevice, *camera);
@@ -2428,6 +2454,9 @@ void SceneGame::GUI()
 		}
 		if (ImGui::TreeNode("GPUParticle"))
 		{
+			static bool isRun = false;
+			static Phoenix::s32 burstNum = 10;
+
 			if (ImGui::Button("Burst"))
 			{
 				gpuParticle->Burst(100);
@@ -2447,7 +2476,19 @@ void SceneGame::GUI()
 				gpuParticle->SetParticleNormal(particleNormal);
 				gpuParticle->SetParticleColor(particleMainColor);
 			}
+			
+			if (isRun)
+			{
+				gpuParticle->Burst(burstNum);
+				gpuParticle->SetParticleLife(particleLife);
+				gpuParticle->SetParticleSize(particleSize);
+				gpuParticle->SetParticleScale(particleScale);
+				gpuParticle->SetParticleNormal(particleNormal);
+				gpuParticle->SetParticleColor(particleMainColor);
+			}
 
+			ImGui::Checkbox("Run", &isRun);
+			ImGui::DragInt("Burst Num", &burstNum);
 			ImGui::DragFloat3("Pos", &particlePos.x, 0.1f);
 			ImGui::DragFloat3("noemal", &particleNormal.x, 0.1f);
 			ImGui::DragFloat("life", &particleLife, 0.1f);

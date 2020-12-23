@@ -62,6 +62,7 @@ namespace Phoenix
 				f32 life;
 				u32 colorMirror;
 				Math::Vector4 motionVelocity;
+				Math::Vector4 originPosition;
 			};
 
 			struct ParticleCounters
@@ -128,7 +129,7 @@ namespace Phoenix
 
 		private:
 			static const u32 emitterMaxSize = 256;
-			static const u32 particleMaxSize = 1000;
+			static const u32 particleMaxSize = 10000;
 
 			static const u32 ARGUMENTBUFFER_OFFSET_DISPATCHEMIT = 0;
 			static const u32 ARGUMENTBUFFER_OFFSET_DISPATCHSIMULATION = ARGUMENTBUFFER_OFFSET_DISPATCHEMIT + (3 * 4);

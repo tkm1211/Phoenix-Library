@@ -26,27 +26,16 @@ void main(uint3 DTid : SV_DispatchThreadID, uint Gid : SV_GroupIndex)
         if (particle.life > 0)
         {
 		    // integrate:
-            //particle.velocity += 10.0f * dt;
-      //      float seed = xSeed;
-      //      particle.position.x += particle.velocity.x * particle.force.x * dt;
-      //      particle.position.y += 1.0f * dt;
-      //      particle.position.z += particle.velocity.z * particle.force.z * dt;
-
-		    //// reset force for next frame:
-      //      particle.life -= dt;
-      //      particle.force = particle.life * 5.0f;
-      //      particle.force *= sin((particle.maxLife * 0.5f) - particle.life) < 0.0f ? -1.0f : 1.0f;
-            
+            float3 oldPos = particle.position;
             particle.position.x += particle.velocity.x * dt;
             particle.position.y += particle.velocity.y * dt;
             particle.position.z += particle.velocity.z * dt;
 
-            //float invLife = particle.maxLife - particle.life;
-            //particle.position.y += abs(particle.velocity.y) * (invLife * invLife * 0.25f);
-            
 		    // reset force for next frame:
             particle.life -= dt;
             particle.force = particle.life;
+            
+            particle.motionVelocity = float4(normalize(particle.position - oldPos), 0.0f);
 
 		    // write back simulated particle:
             particleBuffer[particleIndex] = particle;

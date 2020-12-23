@@ -413,6 +413,7 @@ private: // Debug
 
 	Phoenix::Math::Vector3 particlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector3 bossHitParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	Phoenix::Math::Vector3 bossAuraParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector3 jumpAttackParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector4 particleNormal = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Color particleMainColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -427,6 +428,7 @@ private: // Debug
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> bossHitParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> petalParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> soilParticle;
+	std::unique_ptr<Phoenix::FrameWork::GPUParticle> bossAuraParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> dusterParticle[3];
 
 	Phoenix::f32 dis = 10.0f;
