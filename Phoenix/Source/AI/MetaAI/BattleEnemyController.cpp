@@ -20,6 +20,7 @@ void BattleEnemyController::Initialize()
 {
 	notAttack = false;
 	notAttackTime = 0.0f;
+	notAttackTimeMax = 0.0f;
 }
 
 // I—¹‰»
@@ -137,11 +138,13 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 				if (enemies.at(indices.at(r))->InBattleTerritory())
 				{
 					notAttack = enemyManager->SetAttackRight(indices.at(r), (enemyManager->GetAliveEnemyCount() == 1));
+					notAttackTimeMax = static_cast<Phoenix::f32>(10 + rand() % 90);
+					notAttackTimeMax += static_cast<Phoenix::f32>(10 + rand() % 10);
 				}
 			}
 			else if (notAttack)
 			{
-				if (100.0f <= notAttackTime)
+				if (notAttackTimeMax <= notAttackTime)
 				{
 					notAttack = false;
 					notAttackTime = 0.0f;

@@ -230,7 +230,7 @@ void SceneTutorial::Initialize()
 		transform.SetTranslate({ 0,0,65.0f });
 		transform.SetRotate({ 0,0,0,1 });
 		transform.SetScale({ 1.0f,1.0f,1.0f });
-		enemyManager->AddEnemy(transform);
+		enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 		enemyManager->SetBattleEnemy(0);
 	}
 

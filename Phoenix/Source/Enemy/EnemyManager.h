@@ -2,13 +2,15 @@
 
 #include <vector>
 #include <memory>
+#include "Enemy.h"
 #include "Phoenix/Math/PhoenixMath.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
 #include "Phoenix/FrameWork/Component/Transform.h"
+#include "Phoenix/FrameWork/Object/Object.h"
 #include "../UI/EnemiesUI.h"
 
 
-class Enemy;
+//class Enemy;
 class Player;
 class EnemyManager : public std::enable_shared_from_this<EnemyManager>
 {
@@ -22,6 +24,8 @@ private:
 
 	std::shared_ptr<Player> player;
 	std::shared_ptr<EnemiesUI> enemiesUI;
+	
+	std::shared_ptr<Phoenix::FrameWork::ModelObject> bossModel;
 
 public:
 	EnemyManager() {}
@@ -55,9 +59,12 @@ public:
 	// GUI
 	void GUI();
 
+	// ボスモデル読み込み
+	void CreateBossModel(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
+
 public:
 	// エネミー追加
-	void AddEnemy(Phoenix::FrameWork::Transform transform);
+	void AddEnemy(Enemy::TypeTag tag, Phoenix::FrameWork::Transform transform);
 
 	// エネミー達解除
 	void ResetEnemies();

@@ -12,6 +12,7 @@ private:
 
 	bool notAttack = false;
 	Phoenix::f32 notAttackTime = 0.0f;
+	Phoenix::f32 notAttackTimeMax = 0.0f;
 
 public:
 	BattleEnemyController() {}

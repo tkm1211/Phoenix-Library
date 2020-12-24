@@ -67,7 +67,9 @@ public:
 
 private:
 	// モデル
-	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
+	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
+	std::shared_ptr<Phoenix::FrameWork::ModelObject> smallModel;
+	std::shared_ptr<Phoenix::FrameWork::ModelObject> bossModel;
 
 	// トランスフォーム
 	std::unique_ptr<Phoenix::FrameWork::Transform> transform;
@@ -98,6 +100,9 @@ private:
 	BattleEnemyState changeState = BattleEnemyState::NoneState;
 	EnemyAttackState changeAttackState = EnemyAttackState::NoneState;
 	EnemyAttackState currentAttackState = EnemyAttackState::NoneState;
+
+	// 種類タグ
+	TypeTag typeTag = TypeTag::Small;
 
 	// パラメーター
 	Phoenix::s32 life = 0;
@@ -258,6 +263,12 @@ public:
 	// 移動方向の指定
 	void SetMoveInput(Phoenix::f32 moveX, Phoenix::f32 moveY);
 
+	// ボスモデルの設定
+	void SetBossModel(std::shared_ptr<Phoenix::FrameWork::ModelObject> model);
+
+	// 種類タグ
+	void SetTypeTag(TypeTag tag);
+
 	// ダメージ
 	void Damage(int damage);
 
@@ -321,6 +332,9 @@ public:
 
 	// HPを取得
 	Phoenix::s32 GetLife() { return life; }
+
+	// 種類タグ
+	TypeTag GetTypeTag() { return typeTag; }
 
 	// 攻撃中の判定
 	bool UnderAttack() { return battleAI->GetCurrentStateName() == BattleEnemyState::Attack; }

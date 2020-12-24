@@ -319,95 +319,95 @@ void SceneGame::RoundInitialize()
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(0);
 				break;
 			case 1:
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(0);
 
 				transform.SetTranslate({ 5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(1);
 				break;
 			case 2:
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(0);
 
 				transform.SetTranslate({ 5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(1);
 
 				transform.SetTranslate({ -5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(2);
 				break;
 			case 3:
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(0);
 
 				transform.SetTranslate({ 5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(1);
 
 				transform.SetTranslate({ -5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(2);
 
 				transform.SetTranslate({ -5,0,5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(3);
 				break;
 			case 4:
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(0);
 
 				transform.SetTranslate({ 5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(1);
 
 				transform.SetTranslate({ -5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Large, transform);
 				enemyManager->SetBattleEnemy(2);
 
 				transform.SetTranslate({ -5,0,5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(3);
 
 				transform.SetTranslate({ 5,0,5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(4);
 				break;
 			default: break;
@@ -633,21 +633,28 @@ void SceneGame::UpdateEnemyManager(Phoenix::f32 elapsedTime)
 		enemyManager->Update(onControl && !roundSwitch, elapsedTime);
 	}
 
-	auto enemy = enemyManager->GetEnemies().at(0);
-	if (enemy->GetAlive())
+	for (const auto& enemy : enemyManager->GetEnemies())
 	{
-		const std::vector<Phoenix::FrameWork::CollisionData>* enemyDatas = enemy->GetCollisionDatas();
+		if (enemy->GetTypeTag() != Enemy::TypeTag::Large) continue;
 
-		bossAuraParticlePos = enemyDatas->at(0).pos;
-		bossAuraParticlePos.y += 1.0f;
+		if (enemy->GetAlive())
+		{
+			const std::vector<Phoenix::FrameWork::CollisionData>* enemyDatas = enemy->GetCollisionDatas();
 
-		bossAuraParticle->Burst(20 * elapsedTime);
-		bossAuraParticle->SetParticleLife(1.0f);
-		bossAuraParticle->SetParticleSize(0.01f);
-		bossAuraParticle->SetParticleScale(1.0f);
-		bossAuraParticle->SetParticleMotionBlurAmount(2.5f);
-		bossAuraParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
-		bossAuraParticle->SetParticleColor(Phoenix::Math::Color(255.0f / 255.0f, 74.0f / 255.0f, 240.0f / 255.0f, 1.0f));
+			bossAuraParticlePos = enemyDatas->at(4).pos;
+			bossAuraParticlePos.y += -0.1f;
+
+			Phoenix::s32 burstNum = static_cast<Phoenix::s32>(20.0f * elapsedTime);
+			bossAuraParticle->Burst(burstNum);
+			bossAuraParticle->SetParticleLife(1.0f);
+			bossAuraParticle->SetParticleSize(0.01f);
+			bossAuraParticle->SetParticleScale(1.0f);
+			bossAuraParticle->SetParticleMotionBlurAmount(2.5f);
+			bossAuraParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+			bossAuraParticle->SetParticleColor(Phoenix::Math::Color(255.0f / 255.0f, 74.0f / 255.0f, 240.0f / 255.0f, 1.0f));
+
+			break;
+		}
 	}
 }
 
@@ -787,6 +794,7 @@ void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 	}
 	screenColor = Phoenix::Math::Color(roundFadeColor, roundFadeColor, roundFadeColor, 1.0f);
 
+	UpdateDirectionLight(elapsedTime);
 	UpdateParticle(elapsedTime);
 	UpdateCamera(elapsedTime);
 	UpdateUI();
