@@ -29,13 +29,13 @@ namespace Phoenix
 			}
 
 			particleBuffer01 = Phoenix::Graphics::IBuffer::Create();
-			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, sizeof(ParticleParameter) * particleMaxSize, particleMaxSize, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), &particle[0], particleBuffer01.get()))
+			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(ParticleParameter) * particleMaxSize, particleMaxSize, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), &particle[0], particleBuffer01.get()))
 			{
 				return false;
 			}
 
 			particleBufferResult = Phoenix::Graphics::IBuffer::Create();
-			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, sizeof(ParticleParameter) * particleMaxSize, particleMaxSize, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr, particleBufferResult.get()))
+			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(ParticleParameter) * particleMaxSize, particleMaxSize, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr, particleBufferResult.get()))
 			{
 				return false;
 			}

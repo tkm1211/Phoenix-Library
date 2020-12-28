@@ -125,7 +125,7 @@ namespace Phoenix
 
 		bool BitonicSort::Set(Graphics::IDevice* device, SortData* data, u32 dataMaxSize)
 		{
-			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, sizeof(SortData) * dataMaxSize, dataMaxSize, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), data, buffer.get()))
+			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(SortData) * dataMaxSize, dataMaxSize, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), data, buffer.get()))
 			{
 				return false;
 			}

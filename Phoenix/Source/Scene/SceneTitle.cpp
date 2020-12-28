@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "SceneSystem.h"
+#include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui_impl_win32.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui_impl_dx11.h"
@@ -224,23 +225,25 @@ void SceneTitle::Draw(Phoenix::f32 elapsedTime)
 
 		resolvedFramebuffer = 1;
 
+		frameBuffer[resolvedFramebuffer]->Clear(graphicsDevice, 0, 0.5f, 0.5f, 0.5f, 1.0f);
 		frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
 		{
+			quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 			bloom->Draw(graphicsDevice);
 		}
 		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 	}
 
-	// Blend Bloom.
+	// Draw Frame.
 	{
-		resolvedFramebuffer = 2;
-		frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
-		{
-			bloom->Blend(graphicsDevice, frameBuffer[0]->GetRenderTargetSurface()->GetTexture(), frameBuffer[1]->GetRenderTargetSurface()->GetTexture());
-		}
-		frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
-
 		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+	}
+
+	// Draw frameBuffer Texture.
+	{
+		if (active[0]) quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), texSize.x * 0, 0, texSize.x, texSize.y);
+		if (active[1]) quad->Draw(graphicsDevice, frameBuffer[1]->renderTargerSurface[0]->GetTexture(), texSize.x * 1, 0, texSize.x, texSize.y);
+		if (active[2]) quad->Draw(graphicsDevice, frameBuffer[2]->renderTargerSurface[0]->GetTexture(), texSize.x * 2, 0, texSize.x, texSize.y);
 	}
 }
 

@@ -274,7 +274,8 @@ void Enemy::Initialize()
 
 		newRotate = Phoenix::Math::Quaternion::Zero;
 
-		life = LifeRange;
+		life = SmallLifeRange;
+		lifeMax = SmallLifeRange;
 		radius = 0.75f;
 
 		attackReceptionTimeCnt = 0.0f;
@@ -546,7 +547,7 @@ void Enemy::UpdateUI(Phoenix::Math::Vector2 pos)
 	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
 	hp = hp <= 0 ? 0 : hp;
 
-	ui->Update((hp / LifeRange) * 100.0f);
+	ui->Update((hp / lifeMax) * 100.0f);
 	ui->SetExit(alive);
 	ui->SetPos(pos);
 }
@@ -819,6 +820,7 @@ void Enemy::SetTypeTag(TypeTag tag)
 	{
 	case Enemy::TypeTag::Small:
 		model = smallModel;
+		life = lifeMax = SmallLifeRange;
 		break;
 
 	case Enemy::TypeTag::Medium:
@@ -826,6 +828,7 @@ void Enemy::SetTypeTag(TypeTag tag)
 
 	case Enemy::TypeTag::Large:
 		model = bossModel;
+		life = lifeMax = LargeLifeRange;
 		break;
 
 	default: break;

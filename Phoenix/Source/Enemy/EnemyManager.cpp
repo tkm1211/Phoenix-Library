@@ -145,7 +145,7 @@ void EnemyManager::UpdateUI(Phoenix::s32 index)
 	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
 	hp = hp <= 0 ? 0 : hp;
 
-	enemiesUI->Update(index, (hp / enemies.at(index)->LifeRange) * 100.0f);
+	enemiesUI->Update(index, (hp / enemies.at(index)->GetLifeMax()) * 100.0f);
 }
 
 // •`‰æ

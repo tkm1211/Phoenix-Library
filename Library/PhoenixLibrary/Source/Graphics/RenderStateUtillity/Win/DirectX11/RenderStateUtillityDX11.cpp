@@ -22,6 +22,8 @@ namespace Phoenix
 			switch (blendState)
 			{
 			case BlendState::Opaque:
+				desc.AlphaToCoverageEnable = false;
+				desc.IndependentBlendEnable = false;
 				desc.RenderTarget[0].BlendEnable = false;
 				desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 				desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
@@ -33,20 +35,31 @@ namespace Phoenix
 				break;
 
 			case BlendState::AlphaBlend:
-				desc.AlphaToCoverageEnable = true;
-				desc.RenderTarget[0].BlendEnable = false;
+				desc.AlphaToCoverageEnable = false;
+				desc.IndependentBlendEnable = false;
+				desc.RenderTarget[0].BlendEnable = true;
+				desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+				desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+				desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+				desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+				desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+				desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+				desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+				/*desc.AlphaToCoverageEnable = false;
+				desc.RenderTarget[0].BlendEnable = true;
 				desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 				desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 				desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-				desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+				desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 				desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 				desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-				desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+				desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;*/
 				break;
 
 			case BlendState::Additive:
-				desc.AlphaToCoverageEnable = true;
-				desc.RenderTarget[0].BlendEnable = false;
+				desc.AlphaToCoverageEnable = false;
+				desc.IndependentBlendEnable = false;
+				desc.RenderTarget[0].BlendEnable = true;
 				desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 				desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
 				desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
@@ -57,7 +70,9 @@ namespace Phoenix
 				break;
 
 			case BlendState::Subtraction:
-				desc.RenderTarget[0].BlendEnable = false;
+				desc.AlphaToCoverageEnable = false;
+				desc.IndependentBlendEnable = false;
+				desc.RenderTarget[0].BlendEnable = true;
 				desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 				desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 				desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_REV_SUBTRACT;
@@ -68,9 +83,24 @@ namespace Phoenix
 				break;
 
 			case BlendState::Multiply:
-				desc.RenderTarget[0].BlendEnable = false;
+				desc.AlphaToCoverageEnable = false;
+				desc.IndependentBlendEnable = false;
+				desc.RenderTarget[0].BlendEnable = true;
 				desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 				desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+				desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+				desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+				desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+				desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+				desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+				break;
+
+			case BlendState::AlphaToCoverageEnable:
+				desc.AlphaToCoverageEnable = true;
+				desc.IndependentBlendEnable = false;
+				desc.RenderTarget[0].BlendEnable = false;
+				desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+				desc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
 				desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 				desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 				desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;

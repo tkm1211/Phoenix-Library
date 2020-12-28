@@ -92,6 +92,9 @@ private:
 private: // Debug
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
 
+	bool active[10] = { true, true, true };
+	Phoenix::Math::Vector2 texSize = Phoenix::Math::Vector2(256.0f, 256.0f);
+
 public:
 	SceneTitle() {}
 	~SceneTitle() {}
@@ -384,11 +387,15 @@ private:
 	Phoenix::f32 slowTimeCnt = 0.0f;
 
 	// ラウンド
+	bool roundSwitch = false;
+	bool roundLogo = false;
+	bool roundFadeSwitch = false;
 	Phoenix::s32 roundCnt = 0;
 	Phoenix::s32 roundMax = 5;
-	bool roundSwitch = false;
+	Phoenix::s32 roundLogoState = 0;
 	Phoenix::f32 roundFadeColor = 0.0f;
-	bool roundFadeSwitch = false;
+	Phoenix::f32 roundThreshold = 0.0f;        //透過閾値
+	Phoenix::f32 roundEmissiveWidth = 0.0f;    //発光閾値(ディゾルブ・エミッシブ)
 
 	// エネミーデータ
 	Phoenix::s32 nearEnemyIndex = -1;
@@ -414,9 +421,12 @@ private: // Debug
 	Phoenix::Math::Vector3 particlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector3 bossHitParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector3 bossAuraParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	Phoenix::Math::Vector3 strongAttackParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	//Phoenix::Math::Vector3 meshParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector3 jumpAttackParticlePos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Vector4 particleNormal = Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	Phoenix::Math::Color particleMainColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
+	Phoenix::f32 particleMotionBlurAmount = 0.0f;
 	Phoenix::f32 particleLife = 1.0f;
 	Phoenix::f32 particleSize = 1.0f;
 	Phoenix::f32 particleScale = 1.0f;
@@ -429,7 +439,10 @@ private: // Debug
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> petalParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> soilParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> bossAuraParticle;
+	std::unique_ptr<Phoenix::FrameWork::GPUParticle> playerStrongAttackParticle;
+	//std::unique_ptr<Phoenix::FrameWork::GPUParticle> playerMeshParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> dusterParticle[3];
+	Phoenix::Math::Color testColor = Phoenix::Math::Color::White;
 
 	Phoenix::f32 dis = 10.0f;
 	Phoenix::f32 width = 30.0f;

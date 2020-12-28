@@ -105,7 +105,7 @@ namespace Phoenix
 
 			// メッシュ定数バッファ更新
 			CbMaterial cb = {};
-			cb.color = { 5.0f, 5.0f, 5.0f, 1.0f };
+			cb.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 			context->UpdateSubresource(cbMatrial.get(), 0, 0, &cb, 0, 0);
 
 			shader->Activate(graphicsDevice->GetDevice());

@@ -12,11 +12,11 @@ namespace Phoenix
 		{
 		public:
 			// コンピュートシェーダー用バッファ作成関数
-			static bool CreateStructuredBuffer(Graphics::IDevice* device, u32 byteWidth, u32 structureByteStride, s32 miscFlags, void* initData, Graphics::IBuffer* buffer);
+			static bool CreateStructuredBuffer(Graphics::IDevice* device, Phoenix::Graphics::PhoenixUsage usage, u32 bindFlags, u32 byteWidth, u32 structureByteStride, s32 miscFlags, void* initData, Graphics::IBuffer* buffer);
 
 			// コンピュートシェーダー用テクスチャ作成関数
-			static bool CreateBufferSRV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView);
-			static bool CreateBufferUAV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView);
+			static bool CreateBufferSRV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView, Graphics::TextureFormatDx format = Graphics::TextureFormatDx::UNKNOWN, u32 byteWidth = 0, u32 structureByteStride = 0);
+			static bool CreateBufferUAV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView, Graphics::TextureFormatDx format = Graphics::TextureFormatDx::UNKNOWN, u32 byteWidth = 0, u32 structureByteStride = 0);
 
 			// コンピュートシェーダー用データ抽出関数
 			static void CreateAndCopyToBuffer(Graphics::IDevice* device, Graphics::IContext* context, Graphics::IBuffer* buffer, Graphics::IBuffer* copyBuffer);

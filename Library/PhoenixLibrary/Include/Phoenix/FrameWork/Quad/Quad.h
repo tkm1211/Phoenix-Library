@@ -191,8 +191,8 @@ namespace Phoenix
 
 			struct ShaderConstants
 			{
-				float glowExtractionThreshold = 0.0f; // 0.85f
-				float blurConvolutionIntensity = 0.08f; // 0.06f
+				float glowExtractionThreshold = 1.02f; // 0.85f
+				float blurConvolutionIntensity = 0.22f; // 0.06f
 				float lensFlareThreshold = 1.000f;
 				float lensFlareGhostDispersal = 0.300f; //dispersion factor
 				int numberOfGhosts = 6;
@@ -292,8 +292,8 @@ namespace Phoenix
 		private:
 			struct ShaderConstants
 			{
-				float whitePoint = 3.435f; //The luminance level to use as the upper end of a tone mapping curve.
-				float averageGray = 1.145f; //The luminance level to use as the midpoint of a tone mapping curve.
+				float whitePoint = 1.6f; //The luminance level to use as the upper end of a tone mapping curve.
+				float averageGray = 1.137f; //The luminance level to use as the midpoint of a tone mapping curve.
 
 				//Brightness - Contrast Effect
 				//The brightness - contrast effect allows you to modify the brightness and contrast of the rendered image.

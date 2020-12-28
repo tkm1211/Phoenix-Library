@@ -7,6 +7,12 @@ RWStructuredBuffer<uint> aliveBuffer_NEW : register(u2);
 RWStructuredBuffer<uint> deadBuffer : register(u3);
 RWByteAddressBuffer counterBuffer : register(u4);
 
+//#define EMIT_FROM_MESH // test
+#ifdef EMIT_FROM_MESH
+Buffer<uint> meshIndexBuffer : register(t0);
+ByteAddressBuffer meshVertexBuffer_POS : register(t1);
+#endif // EMIT_FROM_MESH
+
 [numthreads(THREADCOUNT_EMIT, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {

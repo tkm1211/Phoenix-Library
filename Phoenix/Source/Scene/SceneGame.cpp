@@ -155,6 +155,8 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		petalParticle = Phoenix::FrameWork::GPUParticle::Create();
 		soilParticle = Phoenix::FrameWork::GPUParticle::Create();
 		bossAuraParticle = Phoenix::FrameWork::GPUParticle::Create();
+		playerStrongAttackParticle = Phoenix::FrameWork::GPUParticle::Create();
+		//playerMeshParticle = Phoenix::FrameWork::GPUParticle::Create();
 		//dusterParticle[0] = Phoenix::FrameWork::GPUParticle::Create();
 		//dusterParticle[1] = Phoenix::FrameWork::GPUParticle::Create();
 		//dusterParticle[2] = Phoenix::FrameWork::GPUParticle::Create();
@@ -270,10 +272,13 @@ void SceneGame::Initialize()
 
 	// ラウンド
 	{
-		roundCnt = 0;
-		roundSwitch = false;
-		roundFadeColor = 1.0f;
+		roundSwitch = true;
+		roundLogo = true;
 		roundFadeSwitch = false;
+		roundCnt = 0;
+		roundFadeColor = 1.0f;
+		roundThreshold = 0.0f;
+		roundEmissiveWidth = 0.0f;
 
 		RoundInitialize();
 	}
@@ -282,12 +287,15 @@ void SceneGame::Initialize()
 	{
 		testComputeShader->Initialize(graphicsDevice);
 		bitonicSort->Initialize(graphicsDevice);
-		gpuParticle->Initialize(graphicsDevice, "PlayerHitEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png"); // particle
+		gpuParticle->Initialize(graphicsDevice, "PlayerHitEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin.png", true); // particle
 		playerHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS Fire\\FireOrigin02
 		bossHitParticle->Initialize(graphicsDevice, "SimulateCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true); // PlayerHitEffectCS
 		petalParticle->Initialize(graphicsDevice, "PetalEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\JumpAttack\\Petal01.png", false);
 		soilParticle->Initialize(graphicsDevice, "SoilEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\JumpAttack\\Soil01.png", false);
 		bossAuraParticle->Initialize(graphicsDevice, "BossAuraEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true);
+		playerStrongAttackParticle->Initialize(graphicsDevice, "BossAuraEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true);
+		//playerMeshParticle->Initialize(graphicsDevice, "BossAuraEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Fire\\FireOrigin02.png", true);
+		//playerMeshParticle->CreateMeshBuffers(graphicsDevice, player->GetModel()->GetModelResource()->GetMesh(0));
 		//dusterParticle[0]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster05.png", false);
 		//dusterParticle[1]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster06.png", false);
 		//dusterParticle[2]->Initialize(graphicsDevice, "DusterEffectCS.cso", "..\\Data\\Assets\\Texture\\Effect\\Duster\\Duster07.png", false);
@@ -323,13 +331,13 @@ void SceneGame::RoundInitialize()
 				enemyManager->SetBattleEnemy(0);
 				break;
 			case 1:
-				transform.SetTranslate({ 0,0,-5 });
+				transform.SetTranslate({ 5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
 				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(0);
 
-				transform.SetTranslate({ 5,0,-5 });
+				transform.SetTranslate({ -5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
 				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
@@ -355,25 +363,25 @@ void SceneGame::RoundInitialize()
 				enemyManager->SetBattleEnemy(2);
 				break;
 			case 3:
-				transform.SetTranslate({ 0,0,-5 });
+				transform.SetTranslate({ 5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
 				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(0);
 
-				transform.SetTranslate({ 5,0,-5 });
+				transform.SetTranslate({ -5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
 				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(1);
 
-				transform.SetTranslate({ -5,0,-5 });
+				transform.SetTranslate({ -5,0,5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
 				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(2);
 
-				transform.SetTranslate({ -5,0,5 });
+				transform.SetTranslate({ 5,0,5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
 				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
@@ -383,7 +391,7 @@ void SceneGame::RoundInitialize()
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Large, transform);
 				enemyManager->SetBattleEnemy(0);
 
 				transform.SetTranslate({ 5,0,-5 });
@@ -395,7 +403,7 @@ void SceneGame::RoundInitialize()
 				transform.SetTranslate({ -5,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Large, transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(2);
 
 				transform.SetTranslate({ -5,0,5 });
@@ -624,6 +632,37 @@ void SceneGame::UpdatePlayer(Phoenix::f32 elapsedTime)
 
 		player->Update(*camera, !onFade && isPlayerUpdate && !roundSwitch, elapsedTime/*&& (alive != 0)*/);
 	}
+
+	if (player->GetAlive())
+	{
+		if (player->GetAnimationState() == Player::AnimationState::Attack && player->GetAttackPower() == 1 && player->GetAttackCollisionIndex() != -1)
+		{
+			const std::vector<Phoenix::FrameWork::CollisionData> collisionDatas = player->GetCollisionDatas();
+
+			strongAttackParticlePos = collisionDatas.at(player->GetAttackCollisionIndex()).pos;
+			strongAttackParticlePos.y += -0.1f;
+
+			Phoenix::s32 burstNum = static_cast<Phoenix::s32>(20.0f * elapsedTime);
+			playerStrongAttackParticle->Burst(burstNum);
+			playerStrongAttackParticle->SetParticleLife(1.0f);
+			playerStrongAttackParticle->SetParticleSize(0.01f);
+			playerStrongAttackParticle->SetParticleScale(1.0f);
+			playerStrongAttackParticle->SetParticleMotionBlurAmount(5.0f);
+			playerStrongAttackParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+			playerStrongAttackParticle->SetParticleColor(Phoenix::Math::Color(255.0f / 255.0f, 45.0f / 255.0f, 15.0f / 255.0f, 1.0f));
+
+			/*meshParticlePos = player->GetPosition();
+
+			burstNum = static_cast<Phoenix::s32>(500.0f * elapsedTime);
+			playerMeshParticle->Burst(burstNum);
+			playerMeshParticle->SetParticleLife(1.0f);
+			playerMeshParticle->SetParticleSize(0.01f);
+			playerMeshParticle->SetParticleScale(1.0f);
+			playerMeshParticle->SetParticleMotionBlurAmount(5.0f);
+			playerMeshParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+			playerMeshParticle->SetParticleColor(Phoenix::Math::Color(255.0f / 255.0f, 15.0f / 255.0f, 15.0f / 255.0f, 1.0f));*/
+		}
+	}
 }
 
 void SceneGame::UpdateEnemyManager(Phoenix::f32 elapsedTime)
@@ -639,9 +678,9 @@ void SceneGame::UpdateEnemyManager(Phoenix::f32 elapsedTime)
 
 		if (enemy->GetAlive())
 		{
-			const std::vector<Phoenix::FrameWork::CollisionData>* enemyDatas = enemy->GetCollisionDatas();
+			const std::vector<Phoenix::FrameWork::CollisionData>* collisionDatas = enemy->GetCollisionDatas();
 
-			bossAuraParticlePos = enemyDatas->at(4).pos;
+			bossAuraParticlePos = collisionDatas->at(4).pos;
 			bossAuraParticlePos.y += -0.1f;
 
 			Phoenix::s32 burstNum = static_cast<Phoenix::s32>(20.0f * elapsedTime);
@@ -772,24 +811,51 @@ void SceneGame::UpdateSlow(Phoenix::f32& elapsedTime)
 
 void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 {
-	if (!roundFadeSwitch)
+	if (roundLogo)
 	{
-		roundFadeColor -= 0.01f * elapsedTime;
-		if (roundFadeColor <= 0.0f)
+		switch (roundLogoState)
 		{
-			roundFadeSwitch = true;
-			roundFadeColor = 0.0f;
-			RoundInitialize();
+		case 0: // round
+
+			break;
+
+		case 1: // num
+
+			break;
+
+		case 2: // fight
+
+			break;
+
+		case 3: // finish
+			roundSwitch = false;
+			break;
+
+		default: break;
 		}
 	}
 	else
 	{
-		roundFadeColor += 0.01f * elapsedTime;
-		if (1.0f <= roundFadeColor)
+		if (!roundFadeSwitch)
 		{
-			roundSwitch = false;
-			roundFadeSwitch = false;
-			roundFadeColor = 1.0f;
+			roundFadeColor -= 0.01f * elapsedTime;
+			if (roundFadeColor <= 0.0f)
+			{
+				roundFadeSwitch = true;
+				roundFadeColor = 0.0f;
+				RoundInitialize();
+			}
+		}
+		else
+		{
+			roundFadeColor += 0.01f * elapsedTime;
+			if (1.0f <= roundFadeColor)
+			{
+				roundLogo = true;
+				roundFadeSwitch = false;
+				roundLogoState = 0;
+				roundFadeColor = 1.0f;
+			}
 		}
 	}
 	screenColor = Phoenix::Math::Color(roundFadeColor, roundFadeColor, roundFadeColor, 1.0f);
@@ -861,6 +927,14 @@ void SceneGame::UpdateParticle(Phoenix::f32 elapsedTime)
 		bossAuraParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
 		bossAuraParticle->UpdateCPU(graphicsDevice, bossAuraParticlePos, 1.0f / 60.0f);
 		bossAuraParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+
+		playerStrongAttackParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
+		playerStrongAttackParticle->UpdateCPU(graphicsDevice, strongAttackParticlePos, 1.0f / 60.0f);
+		playerStrongAttackParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
+
+		//playerMeshParticle->SetParticleFixedTimeStep(elapsedTime / 60.0f);
+		//playerMeshParticle->UpdateCPU(graphicsDevice, meshParticlePos, 1.0f / 60.0f);
+		//playerMeshParticle->UpdateGPU(graphicsDevice, Phoenix::Math::MatrixIdentity(), 1.0f / 60.0f);
 
 		/*for (Phoenix::s32 i = 0; i < 3; ++i)
 		{
@@ -1436,6 +1510,21 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 					player->SetIsJustDedge(true);
 					motionBlur->velocityConstants.exposureTime = 50000.0f;
 					targetEnemyIndex = index;
+
+					const std::vector<Phoenix::FrameWork::CollisionData> collisionDatas = player->GetCollisionDatas();
+
+					strongAttackParticlePos = collisionDatas.at(0).pos;
+					strongAttackParticlePos.y += -0.1f;
+
+					Phoenix::s32 burstNum = static_cast<Phoenix::s32>(20.0f);
+					playerStrongAttackParticle->Burst(burstNum);
+					playerStrongAttackParticle->SetParticleLife(1.0f);
+					playerStrongAttackParticle->SetParticleSize(0.01f);
+					playerStrongAttackParticle->SetParticleScale(1.0f);
+					playerStrongAttackParticle->SetParticleMotionBlurAmount(5.0f);
+					playerStrongAttackParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+					playerStrongAttackParticle->SetParticleColor(Phoenix::Math::Color(255.0f / 255.0f, 45.0f / 255.0f, 15.0f / 255.0f, 1.0f));
+
 					//player->ChangeJustDedge();
 				}
 				// ジャスト回避失敗
@@ -1864,9 +1953,15 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 					W = S * R * T;
 				}
 #if 1
-				basicShader->Begin(graphicsDevice, *camera);
-				basicShader->Draw(graphicsDevice, W, bossStageModel);
-				basicShader->End(graphicsDevice);
+				Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+				Phoenix::f32 blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaToCoverageEnable), blendFactor, 0xFFFFFFFF);
+				{
+					basicShader->Begin(graphicsDevice, *camera);
+					basicShader->Draw(graphicsDevice, W, bossStageModel);
+					basicShader->End(graphicsDevice);
+				}
+				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 #elif 0
 				standardShader->Begin(graphicsDevice, camera);
 				standardShader->Draw(graphicsDevice, W, bossStageModel);
@@ -1991,6 +2086,8 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 							petalParticle->Draw(graphicsDevice, *camera);
 							soilParticle->Draw(graphicsDevice, *camera);
 							bossAuraParticle->Draw(graphicsDevice, *camera);
+							playerStrongAttackParticle->Draw(graphicsDevice, *camera);
+							//playerMeshParticle->Draw(graphicsDevice, *camera);
 							/*for (Phoenix::s32 i = 0; i < 3; ++i)
 							{
 								dusterParticle[i]->Draw(graphicsDevice, *camera);
@@ -2090,8 +2187,10 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 
 			bloom->Generate(graphicsDevice, frameBuffer[resolvedFramebuffer]->GetRenderTargetSurface()->GetTexture(), false);
 
+			frameBuffer[resolvedFramebuffer]->Clear(graphicsDevice, 0, 0.5f, 0.5f, 0.5f, 1.0f);
 			frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
 			{
+				quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 				bloom->Draw(graphicsDevice);
 			}
 			frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
@@ -2102,8 +2201,10 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 
 			resolvedFramebuffer = 1;
 
+			frameBuffer[resolvedFramebuffer]->Clear(graphicsDevice, 0, 0.5f, 0.5f, 0.5f, 1.0f);
 			frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
 			{
+				quad->Draw(graphicsDevice, frameBuffer[0]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 				bloom->Draw(graphicsDevice);
 			}
 			frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
@@ -2116,16 +2217,16 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 		// Blend Bloom.
 		if (bloomBlend)
 		{
-			resolvedFramebuffer = 2;
+			/*resolvedFramebuffer = 2;
 			frameBuffer[resolvedFramebuffer]->Activate(graphicsDevice);
 			{
 				bloom->Blend(graphicsDevice, frameBuffer[0]->GetRenderTargetSurface()->GetTexture(), frameBuffer[1]->GetRenderTargetSurface()->GetTexture());
 			}
 			frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
 
-			quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
+			quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));*/
 
-			//toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
+			toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
 		}
 		else
 		{
@@ -2473,6 +2574,7 @@ void SceneGame::GUI()
 				gpuParticle->SetParticleScale(particleScale);
 				gpuParticle->SetParticleNormal(particleNormal);
 				gpuParticle->SetParticleColor(particleMainColor);
+				gpuParticle->SetParticleMotionBlurAmount(particleMotionBlurAmount);
 			}
 
 			if (ImGui::Button("Hit Particle Burst"))
@@ -2483,6 +2585,7 @@ void SceneGame::GUI()
 				gpuParticle->SetParticleScale(0.25f);
 				gpuParticle->SetParticleNormal(particleNormal);
 				gpuParticle->SetParticleColor(particleMainColor);
+				gpuParticle->SetParticleMotionBlurAmount(particleMotionBlurAmount);
 			}
 			
 			if (isRun)
@@ -2493,15 +2596,17 @@ void SceneGame::GUI()
 				gpuParticle->SetParticleScale(particleScale);
 				gpuParticle->SetParticleNormal(particleNormal);
 				gpuParticle->SetParticleColor(particleMainColor);
+				gpuParticle->SetParticleMotionBlurAmount(particleMotionBlurAmount);
 			}
 
-			ImGui::Checkbox("Run", &isRun);
-			ImGui::DragInt("Burst Num", &burstNum);
-			ImGui::DragFloat3("Pos", &particlePos.x, 0.1f);
-			ImGui::DragFloat3("noemal", &particleNormal.x, 0.1f);
+			ImGui::Checkbox("run", &isRun);
+			ImGui::DragInt("burst num", &burstNum);
+			ImGui::DragFloat3("pos", &particlePos.x, 0.1f);
+			ImGui::DragFloat3("normal", &particleNormal.x, 0.1f);
 			ImGui::DragFloat("life", &particleLife, 0.1f);
 			ImGui::DragFloat("size", &particleSize, 0.1f);
 			ImGui::DragFloat("scale", &particleScale, 0.1f);
+			ImGui::DragFloat("motion blur", &particleMotionBlurAmount, 0.1f);
 			ImGui::ColorEdit4("color", particleMainColor);
 
 			//if (ImGui::TreeNode("JumpAttackParticle"))

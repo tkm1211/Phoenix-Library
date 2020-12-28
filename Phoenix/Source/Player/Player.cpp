@@ -1100,7 +1100,7 @@ void Player::AttackJudgment()
 				isAttackJudgment.at(i) = true;
 			}
 
-			attackCollisionIndex = index;
+			//attackCollisionIndex = index;
 		};
 		auto NoJudgment = [&]()
 		{
@@ -1109,10 +1109,23 @@ void Player::AttackJudgment()
 				isAttackJudgment.at(i) = false;
 				isHit.at(i) = false;
 			}
-			attackCollisionIndex = -1;
+			//attackCollisionIndex = -1;
 		};
 
 		Phoenix::s32 index = attackState;
+		attackPower = attackDatasList.attackDatas.at(index).receptionKey == AttackKey::StrongAttack ? 1 : 0;
+		attackCollisionIndex = attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionNum;
+		if (attackCollisionIndex == 0)
+		{
+			for (const auto& data : attackDatasList.attackDatas.at(index).datas)
+			{
+				if (0 < data.collisionNum)
+				{
+					attackCollisionIndex = data.collisionNum;
+					break;
+				}
+			}
+		}
 
 		// “–‚½‚è”»’è
 		if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionEndTime)
@@ -1120,30 +1133,29 @@ void Player::AttackJudgment()
 			Judgment(attackDatasList.attackDatas.at(index).datas.at(attackComboState).collisionNum);
 			if (attackDatasList.attackDatas.at(index).receptionKey == AttackKey::WeakAttack)
 			{
-				attackPower = 0;
 				attackDamage = 10;
 				collisionDatas.at(attackCollisionIndex).radius = WeakAttackCollisionRadius;
 			}
 			else if (attackDatasList.attackDatas.at(index).receptionKey == AttackKey::StrongAttack)
 			{
-				attackPower = 1;
 				attackDamage = 20;
 				collisionDatas.at(attackCollisionIndex).radius = StrongAttackCollisionRadius;
 			}
 			else
 			{
-				attackPower = 0;
 				attackDamage = 0;
 				collisionDatas.at(attackCollisionIndex).radius = WeakAttackCollisionRadius;
 			}
 		}
 		else
 		{
+			attackDamage = 0;
 			NoJudgment();
 		}
 	}
 	else
 	{
+		attackDamage = 0;
 		for (Phoenix::s32 i = 0; i < isHit.size(); ++i)
 		{
 			isAttackJudgment.at(i) = false;

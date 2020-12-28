@@ -11,12 +11,12 @@ namespace Phoenix
 		//****************************************************************************
 		// コンピュートシェーダー用バッファ作成関数
 		//****************************************************************************
-		bool ComputeShaderBufferFactor::CreateStructuredBuffer(Graphics::IDevice* device, u32 byteWidth, u32 structureByteStride, s32 miscFlags, void* initData, Graphics::IBuffer* buffer)
+		bool ComputeShaderBufferFactor::CreateStructuredBuffer(Graphics::IDevice* device, Phoenix::Graphics::PhoenixUsage usage, u32 bindFlags, u32 byteWidth, u32 structureByteStride, s32 miscFlags, void* initData, Graphics::IBuffer* buffer)
 		{
 			Phoenix::Graphics::PhoenixBufferDesc desc = {};
 			Phoenix::FND::MemSet(&desc, 0, sizeof(desc));
-			desc.usage = Phoenix::Graphics::PhoenixUsage::Default;
-			desc.bindFlags = static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ShadowResource);
+			desc.usage = usage;
+			desc.bindFlags = bindFlags; // static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShadowResource);
 			desc.byteWidth = byteWidth;
 			desc.miscFlags = miscFlags;
 			desc.structureByteStride = structureByteStride;
@@ -45,7 +45,7 @@ namespace Phoenix
 		//****************************************************************************
 		// コンピュートシェーダー用テクスチャ作成関数
 		//****************************************************************************
-		bool ComputeShaderBufferFactor::CreateBufferSRV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView)
+		bool ComputeShaderBufferFactor::CreateBufferSRV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView, Graphics::TextureFormatDx format, u32 byteWidth, u32 structureByteStride)
 		{
 			Phoenix::Graphics::PhoenixBufferDesc bufferDesc = {};
 			Phoenix::FND::MemSet(&bufferDesc, 0, sizeof(bufferDesc));
@@ -72,7 +72,8 @@ namespace Phoenix
 				}
 				else
 				{
-					return false;
+					srvDesc.format = format;
+					srvDesc.bufferEx.numElements = byteWidth / structureByteStride;
 				}
 			}
 			if (!shaderResouceView->Initialize(device, srvDesc, buffer))
@@ -83,7 +84,7 @@ namespace Phoenix
 			return true;
 		};
 
-		bool ComputeShaderBufferFactor::CreateBufferUAV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView)
+		bool ComputeShaderBufferFactor::CreateBufferUAV(Graphics::IDevice* device, Graphics::IBuffer* buffer, Graphics::ITexture* shaderResouceView, Graphics::TextureFormatDx format, u32 byteWidth, u32 structureByteStride)
 		{
 			Phoenix::Graphics::PhoenixBufferDesc bufferDesc = {};
 			Phoenix::FND::MemSet(&bufferDesc, 0, sizeof(bufferDesc));

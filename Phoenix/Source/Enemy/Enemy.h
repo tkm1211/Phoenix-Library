@@ -15,7 +15,8 @@ class Player;
 class Enemy : public std::enable_shared_from_this<Enemy>
 {
 public:
-	static constexpr Phoenix::s32 LifeRange = 150;
+	static constexpr Phoenix::s32 SmallLifeRange = 150;
+	static constexpr Phoenix::s32 LargeLifeRange = 750;
 
 public:
 	enum class TypeTag
@@ -106,6 +107,7 @@ private:
 
 	// パラメーター
 	Phoenix::s32 life = 0;
+	Phoenix::s32 lifeMax = 0;
 	Phoenix::f32 radius = 0.0f;
 
 	// 新たな回転値
@@ -332,6 +334,9 @@ public:
 
 	// HPを取得
 	Phoenix::s32 GetLife() { return life; }
+
+	// 最大HPを取得
+	Phoenix::s32 GetLifeMax() { return lifeMax; }
 
 	// 種類タグ
 	TypeTag GetTypeTag() { return typeTag; }

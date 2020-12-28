@@ -18,13 +18,13 @@ namespace Phoenix
 		}
 
 		// ‰Šú‰»
-		bool GPUBuffer::Initialize(Graphics::IDevice* device, u32 byteWidth, u32 structureByteStride, s32 miscFlags, void* initData)
+		bool GPUBuffer::Initialize(Graphics::IDevice* device, Phoenix::Graphics::PhoenixUsage usage, u32 bindFlags, u32 byteWidth, u32 structureByteStride, s32 miscFlags, void* initData, Graphics::TextureFormatDx format)
 		{
 			buffer = Phoenix::Graphics::IBuffer::Create();
 			srv = Phoenix::Graphics::ITexture::Create();
 			uav = Phoenix::Graphics::ITexture::Create();
 
-			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, byteWidth, structureByteStride, miscFlags, initData, buffer.get()))
+			if (!ComputeShaderBufferFactor::CreateStructuredBuffer(device, usage, bindFlags,  byteWidth, structureByteStride, miscFlags, initData, buffer.get()))
 			{
 				return false;
 			}
@@ -34,16 +34,16 @@ namespace Phoenix
 			{
 				buffer->GetDesc(&bufferDesc);
 			}
-			if (bufferDesc.bindFlags & static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ShadowResource))
+			if (bufferDesc.bindFlags & static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource))
 			{
-				if (!ComputeShaderBufferFactor::CreateBufferSRV(device, buffer.get(), srv.get()))
+				if (!ComputeShaderBufferFactor::CreateBufferSRV(device, buffer.get(), srv.get(), format, byteWidth, structureByteStride))
 				{
 					return false;
 				}
 			}
 			if (bufferDesc.bindFlags & static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess))
 			{
-				if (!ComputeShaderBufferFactor::CreateBufferUAV(device, buffer.get(), uav.get()))
+				if (!ComputeShaderBufferFactor::CreateBufferUAV(device, buffer.get(), uav.get(), format, byteWidth, structureByteStride))
 				{
 					return false;
 				}
@@ -94,7 +94,7 @@ namespace Phoenix
 		}
 
 		// XV
-		void GPUParticle::UpdateCPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Vector3 transform, float dt)
+		void GPUParticle::UpdateCPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Vector3 transform, f32 dt)
 		{
 			emit = FND::Max(0.0f, emit - floorf(emit));
 
@@ -109,7 +109,7 @@ namespace Phoenix
 			std::swap(aliveList[0], aliveList[1]);
 		}
 
-		void GPUParticle::UpdateGPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Matrix worldTransform, float dt)
+		void GPUParticle::UpdateGPU(Graphics::IGraphicsDevice* graphicsDevice, Math::Matrix worldTransform, f32 dt)
 		{
 			Graphics::IDevice* device = graphicsDevice->GetDevice();
 			Graphics::IContext* context = graphicsDevice->GetContext();
@@ -121,8 +121,8 @@ namespace Phoenix
 
 				cb.emitterWorld = world;
 				cb.emitCount = static_cast<u32>(emit);
-				cb.emitterMeshIndexCount = 0; // TODO : mesh index
-				cb.emitterMeshVertexPositionStride = 0;
+				cb.emitterMeshIndexCount = meshIndexCount;
+				cb.emitterMeshVertexPositionStride = sizeof(MeshVertexPos);
 				cb.emitterRandomness = (rand() % 1000) * 0.001f;
 				cb.particleNormal = normal;
 				cb.particleMainColor = mainColor;
@@ -192,11 +192,39 @@ namespace Phoenix
 			kickoffUpdateCS->Deactivate(device);
 
 			// emit the required amount if there are free slots in dead list
-			emitCS->Activate(device);
+			if (0 < meshIndexCount)
 			{
-				emitCS->DispatchIndirect(device, indirectBuffers->buffer.get(), ARGUMENTBUFFER_OFFSET_DISPATCHEMIT);
+				emitCSFromMesh->Activate(device);
+				{
+					if (indexBuffer && vertexBuffer)
+					{
+						Graphics::ITexture* texture[] =
+						{
+							indexBuffer->srv.get(),
+							vertexBuffer->srv.get()
+						};
+						context->SetShaderResources(Graphics::ShaderType::Compute, 0, 2, texture);
+					}
+
+					emitCSFromMesh->DispatchIndirect(device, indirectBuffers->buffer.get(), ARGUMENTBUFFER_OFFSET_DISPATCHEMIT);
+
+					Graphics::ITexture* texture[] =
+					{
+						nullptr,
+						nullptr
+					};
+					context->SetShaderResources(Graphics::ShaderType::Compute, 0, 2, texture);
+				}
+				emitCSFromMesh->Deactivate(device);
 			}
-			emitCS->Deactivate(device);
+			else
+			{
+				emitCS->Activate(device);
+				{
+					emitCS->DispatchIndirect(device, indirectBuffers->buffer.get(), ARGUMENTBUFFER_OFFSET_DISPATCHEMIT);
+				}
+				emitCS->Deactivate(device);
+			}
 
 			simulateCS->Activate(device);
 			{
@@ -289,7 +317,7 @@ namespace Phoenix
 			drawShader->Deactivate(device);
 		}
 
-		void GPUParticle::Burst(int num)
+		void GPUParticle::Burst(s32 num)
 		{
 			burst += num;
 		}
@@ -298,21 +326,22 @@ namespace Phoenix
 		{
 			
 		}
+
 		bool GPUParticle::CreateBuffers(Graphics::IDevice* device)
 		{
 			particleBuffer = std::make_unique<GPUBuffer>();
-			if (!particleBuffer->Initialize(device, sizeof(Particle) * particleMaxSize, sizeof(Particle), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
+			if (!particleBuffer->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(Particle) * particleMaxSize, sizeof(Particle), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
 			{
 				return false;
 			}
 
 			aliveList[0] = std::make_unique<GPUBuffer>();
-			if (!aliveList[0]->Initialize(device, sizeof(u32) * particleMaxSize, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
+			if (!aliveList[0]->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(u32) * particleMaxSize, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
 			{
 				return false;
 			}
 			aliveList[1] = std::make_unique<GPUBuffer>();
-			if (!aliveList[1]->Initialize(device, sizeof(u32) * particleMaxSize, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
+			if (!aliveList[1]->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(u32) * particleMaxSize, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), nullptr))
 			{
 				return false;
 			}
@@ -324,7 +353,7 @@ namespace Phoenix
 				{
 					indices[i] = i;
 				}
-				if (!deadList->Initialize(device, sizeof(u32) * particleMaxSize, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), indices.data()))
+				if (!deadList->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(u32) * particleMaxSize, sizeof(u32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), indices.data()))
 				{
 					return false;
 				}
@@ -334,7 +363,7 @@ namespace Phoenix
 			{
 				std::vector<f32> distances(particleMaxSize);
 				std::fill(distances.begin(), distances.end(), 0.0f);
-				if (!distanceBuffer->Initialize(device, sizeof(f32) * particleMaxSize, sizeof(f32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), distances.data()))
+				if (!distanceBuffer->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(f32) * particleMaxSize, sizeof(f32), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferStructured), distances.data()))
 				{
 					return false;
 				}
@@ -347,13 +376,13 @@ namespace Phoenix
 			counters.aliveCount_afterSimulation = 0;
 
 			counterBuffer = std::make_unique<GPUBuffer>();
-			if (!counterBuffer->Initialize(device, sizeof(counters), sizeof(counters), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews), &counters))
+			if (!counterBuffer->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(counters), sizeof(counters), static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews), &counters))
 			{
 				return false;
 			}
 
 			indirectBuffers = std::make_unique<GPUBuffer>();
-			if (!indirectBuffers->Initialize(device, sizeof(IndirectDispatchArgs) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDrawArgsInstanced), 0, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews) | static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscDrawindIrectArgs), nullptr))
+			if (!indirectBuffers->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::UnorderedAccess) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(IndirectDispatchArgs) + sizeof(IndirectDispatchArgs) + sizeof(IndirectDrawArgsInstanced), 0, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews) | static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscDrawindIrectArgs), nullptr))
 			{
 				return false;
 			}
@@ -393,6 +422,67 @@ namespace Phoenix
 			return true;
 		}
 
+		bool GPUParticle::CreateMeshBuffers(Graphics::IGraphicsDevice* graphicsDevice, Graphics::IMesh* mesh)
+		{
+			Graphics::IDevice* device = graphicsDevice->GetDevice();
+			const Graphics::MeshDesc& desc = mesh->GetDesc();
+
+			if (desc.indicesU16)
+			{
+				std::vector<u16> indeces;
+				indeces.resize(desc.indexCount);
+
+				for (u32 i = 0;i < desc.indexCount;++i)
+				{
+					indeces.at(i) = desc.indicesU16[i];
+				}
+
+				indexBuffer = std::make_unique<GPUBuffer>();
+				if (!indexBuffer->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::IndexBuffer) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(u16) * desc.indexCount, sizeof(u16), 0, indeces.data(), Graphics::TextureFormatDx::R16_UINT))
+				{
+					return false;
+				}
+
+				meshIndexCount = desc.indexCount;
+			}
+			else
+			{
+				std::vector<u32> indeces;
+				indeces.resize(desc.indexCount);
+
+				for (u32 i = 0; i < desc.indexCount; ++i)
+				{
+					indeces.at(i) = desc.indicesU32[i];
+				}
+
+				indexBuffer = std::make_unique<GPUBuffer>();
+				if (!indexBuffer->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::IndexBuffer) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(u32) * desc.indexCount, sizeof(u32), 0, indeces.data(), Graphics::TextureFormatDx::R32_UINT))
+				{
+					return false;
+				}
+
+				meshIndexCount = desc.indexCount;
+			}
+
+			if (desc.positions)
+			{
+				std::vector<MeshVertexPos> vertex;
+				vertex.resize(desc.vertexCount);
+
+				for (u32 i = 0; i < desc.vertexCount; ++i)
+				{
+					vertex.at(i).SetParameter(desc.positions[i], desc.normals[i], 0xFF);
+				}
+
+				vertexBuffer = std::make_unique<GPUBuffer>();
+				if (!vertexBuffer->Initialize(device, Phoenix::Graphics::PhoenixUsage::Default, static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::VertexBuffer) | static_cast<Phoenix::u32>(Phoenix::Graphics::PhoenixBindFlag::ShaderResource), sizeof(MeshVertexPos) * desc.vertexCount, 0, static_cast<Phoenix::s32>(Phoenix::Graphics::PhoenixResouceMiscFlag::ResouceMiscBufferAllowsRAWViews), vertex.data()))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 
 		void GPUParticle::LoadShaders(Graphics::IDevice* device, const char* simulateCSFileName, bool isEmissive, bool isAlpha)
 		{
@@ -419,6 +509,7 @@ namespace Phoenix
 			kickoffUpdateCS->Load(device, "KickoffUpdateCS.cso");
 			finishUpdateCS->Load(device, "FinishUpdateCS.cso");
 			emitCS->Load(device, "emitCS.cso");
+			emitCSFromMesh->Load(device, "EmitFromMeshCS.cso");
 			simulateCS->Load(device, simulateCSFileName); // "SimulateCS.cso"
 
 			//emitCSVolume->Load(device, "emitCS_VOLUME.cso");

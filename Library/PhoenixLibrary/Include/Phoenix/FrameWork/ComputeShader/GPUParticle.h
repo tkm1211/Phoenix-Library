@@ -4,6 +4,7 @@
 #include "Phoenix\Graphics\GraphicsDevice.h"
 #include "Phoenix\Graphics\Shader.h"
 #include "Phoenix\Graphics\Camera.h"
+#include "Phoenix\Graphics\Mesh.h"
 #include "Phoenix\Math\PhoenixMath.h"
 
 
@@ -27,7 +28,7 @@ namespace Phoenix
 			static std::unique_ptr<GPUBuffer> Create();
 
 			// èâä˙âª
-			bool Initialize(Graphics::IDevice* device, u32 byteWidth, u32 structureByteStride, s32 miscFlags, void* initData);
+			bool Initialize(Graphics::IDevice* device, Phoenix::Graphics::PhoenixUsage usage, u32 bindFlags, u32 byteWidth, u32 structureByteStride, s32 miscFlags, void* initData, Graphics::TextureFormatDx format = Graphics::TextureFormatDx::UNKNOWN);
 
 			// èIóπâª
 			void Finalize();
@@ -127,6 +128,29 @@ namespace Phoenix
 				f32 dummy[3];
 			};
 
+			struct MeshVertexPos
+			{
+				Math::Vector3 position = Math::Vector3::Zero;
+				u32 normalWind = 0;
+
+				void SetParameter(const Math::Vector3& pos, const Math::Vector3& normal, u8 wind)
+				{
+					position.x = pos.x;
+					position.y = pos.y;
+					position.z = pos.z;
+					MakeFromParameters(normal, wind);
+				}
+
+				inline void MakeFromParameters(const Math::Vector3& normal, u8 wind)
+				{
+					normalWind = 0;
+					normalWind |= (u32)((normal.x * 0.5f + 0.5f) * 255.0f) << 0;
+					normalWind |= (u32)((normal.y * 0.5f + 0.5f) * 255.0f) << 8;
+					normalWind |= (u32)((normal.z * 0.5f + 0.5f) * 255.0f) << 16;
+					normalWind |= (u32)wind << 24;
+				}
+			};
+
 		private:
 			static const u32 emitterMaxSize = 256;
 			static const u32 particleMaxSize = 10000;
@@ -161,6 +185,9 @@ namespace Phoenix
 			std::unique_ptr<GPUBuffer> counterBuffer;
 			std::unique_ptr<GPUBuffer> indirectBuffers;
 
+			std::unique_ptr<GPUBuffer> vertexBuffer;
+			std::unique_ptr<GPUBuffer> indexBuffer;
+
 			std::unique_ptr<Graphics::IBuffer> emittedParticleCB;
 			std::unique_ptr<Graphics::IBuffer> frameTimeCB;
 
@@ -172,6 +199,7 @@ namespace Phoenix
 
 			f32 emit = 0.0f;
 			s32 burst = 0;
+			s32 meshIndexCount = 0;
 			Math::Vector3 center;
 
 			f32 size = 1.0f;
@@ -215,6 +243,8 @@ namespace Phoenix
 			void Restart();
 
 			bool CreateBuffers(Graphics::IDevice* device);
+
+			bool CreateMeshBuffers(Graphics::IGraphicsDevice* graphicsDevice, Graphics::IMesh* mesh);
 
 			void LoadShaders(Graphics::IDevice* device, const char* simulateCSFileName, bool isEmissive, bool isAlpha);
 

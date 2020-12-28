@@ -106,3 +106,12 @@ inline float rand(inout float seed, in float2 uv)
     seed += 1.0f;
     return result;
 }
+
+// https://www.shadertoy.com/view/llGSzw
+float hash1(uint n)
+{
+	// integer hash copied from Hugo Elias
+    n = (n << 13U) ^ n;
+    n = n * (n * n * 15731U + 789221U) + 1376312589U;
+    return float(n & 0x7fffffffU) / float(0x7fffffff);
+}

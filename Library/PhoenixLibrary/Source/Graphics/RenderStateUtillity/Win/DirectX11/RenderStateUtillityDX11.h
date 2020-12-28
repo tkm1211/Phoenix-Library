@@ -12,11 +12,12 @@ namespace Phoenix
 		//****************************************************************************
 		enum class BlendState
 		{
-			Opaque,				// 標準ブレンド
-			AlphaBlend,			// アルファブレンド
-			Additive,			// 加算ブレンド
-			Subtraction,		// 減算ブレンド
-			Multiply,			// 乗算ブレンド
+			Opaque,					// 標準ブレンド
+			AlphaBlend,				// アルファブレンド
+			Additive,				// 加算ブレンド
+			Subtraction,			// 減算ブレンド
+			Multiply,				// 乗算ブレンド
+			AlphaToCoverageEnable,	// アルファ透過
 
 			TypeNum
 		};

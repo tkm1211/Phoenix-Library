@@ -192,7 +192,7 @@ private:
 	bool invincible = false;
 
 	// コリジョンデータの要素数
-	Phoenix::u32 attackCollisionIndex = 0;
+	Phoenix::s32 attackCollisionIndex = 0;
 
 	// 攻撃の威力
 	Phoenix::u32 attackPower = 0;
@@ -415,7 +415,7 @@ public:
 	//bool IsAttackJudgment() { return isAttackJudgment; }
 	std::vector<bool> IsAttackJudgment() { return isAttackJudgment; }
 	bool Invincible() { return invincible; }
-	Phoenix::u32 GetAttackCollisionIndex() { return attackCollisionIndex; }
+	Phoenix::s32 GetAttackCollisionIndex() { return attackCollisionIndex; }
 	std::shared_ptr<PlayerUI> GetUI() { return ui; }
 	bool IsAttack() { return isAttack; }
 	bool IsDamage() { return animationState == AnimationState::Damage; }
