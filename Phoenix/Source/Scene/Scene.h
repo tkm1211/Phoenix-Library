@@ -92,7 +92,7 @@ private:
 private: // Debug
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
 
-	bool active[10] = { true, true, true };
+	bool active[10] = { false };
 	Phoenix::Math::Vector2 texSize = Phoenix::Math::Vector2(256.0f, 256.0f);
 
 public:
@@ -346,7 +346,7 @@ private:
 	std::unique_ptr<Phoenix::FrameWork::ToneMap> toneMap;
 
 	// スクリーンフィルター
-	Phoenix::f32 bright = 0.0f; //明度
+	Phoenix::f32 bright = 0.1f; //明度
 	Phoenix::f32 contrast = 0.9f; //濃淡
 	Phoenix::f32 saturate = 1.1f; //彩度
 	Phoenix::Math::Color screenColor = Phoenix::Math::Color::White; //色調

@@ -292,7 +292,7 @@ namespace Phoenix
 		private:
 			struct ShaderConstants
 			{
-				float whitePoint = 1.6f; //The luminance level to use as the upper end of a tone mapping curve.
+				float whitePoint = 1.5f; //The luminance level to use as the upper end of a tone mapping curve.
 				float averageGray = 1.137f; //The luminance level to use as the midpoint of a tone mapping curve.
 
 				//Brightness - Contrast Effect

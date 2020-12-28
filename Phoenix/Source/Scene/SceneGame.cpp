@@ -272,7 +272,7 @@ void SceneGame::Initialize()
 
 	// ƒ‰ƒEƒ“ƒh
 	{
-		roundSwitch = true;
+		roundSwitch = false;
 		roundLogo = true;
 		roundFadeSwitch = false;
 		roundCnt = 0;
@@ -2078,7 +2078,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 					{
 						Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
 						Phoenix::f32 blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-						context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), blendFactor, 0xFFFFFFFF);
+						context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaToCoverageEnable), blendFactor, 0xFFFFFFFF);
 						{
 							gpuParticle->Draw(graphicsDevice, *camera);
 							playerHitParticle->Draw(graphicsDevice, *camera);
@@ -2222,11 +2222,11 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 			{
 				bloom->Blend(graphicsDevice, frameBuffer[0]->GetRenderTargetSurface()->GetTexture(), frameBuffer[1]->GetRenderTargetSurface()->GetTexture());
 			}
-			frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);
+			frameBuffer[resolvedFramebuffer]->Deactivate(graphicsDevice);*/
 
-			quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));*/
+			quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), 0.0f, 0.0f, static_cast<Phoenix::f32>(display->GetWidth()), static_cast<Phoenix::f32>(display->GetHeight()));
 
-			toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
+			//toneMap->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), elapsedTime);
 		}
 		else
 		{
