@@ -392,10 +392,20 @@ private:
 	bool roundFadeSwitch = false;
 	Phoenix::s32 roundCnt = 0;
 	Phoenix::s32 roundMax = 5;
+	Phoenix::f32 roundTimeCnt = 0.0f;
+	Phoenix::f32 roundTimeMax = 0.0f;
 	Phoenix::s32 roundLogoState = 0;
 	Phoenix::f32 roundFadeColor = 0.0f;
-	Phoenix::f32 roundThreshold = 0.0f;        //透過閾値
-	Phoenix::f32 roundEmissiveWidth = 0.0f;    //発光閾値(ディゾルブ・エミッシブ)
+	Phoenix::f32 roundAlpha = 0.0f;
+	Phoenix::f32 roundNumAlpha = 0.0f;
+	Phoenix::f32 fightAlpha = 0.0f;
+	Phoenix::f32 fightScale = 0.0f;
+	Phoenix::Math::Vector2 roundPos = Phoenix::Math::Vector2(0.0f, 0.0f);
+	Phoenix::Math::Vector2 roundNumPos = Phoenix::Math::Vector2(0.0f, 0.0f);
+	std::unique_ptr<Phoenix::Graphics::ITexture> roundTexture;
+	std::unique_ptr<Phoenix::Graphics::ITexture> roundNumTexture;
+	std::unique_ptr<Phoenix::Graphics::ITexture> fightTexture;
+	std::unique_ptr<Phoenix::Graphics::ITexture> finalRoundTexture;
 
 	// エネミーデータ
 	Phoenix::s32 nearEnemyIndex = -1;
@@ -442,6 +452,7 @@ private: // Debug
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> playerStrongAttackParticle;
 	//std::unique_ptr<Phoenix::FrameWork::GPUParticle> playerMeshParticle;
 	std::unique_ptr<Phoenix::FrameWork::GPUParticle> dusterParticle[3];
+
 	Phoenix::Math::Color testColor = Phoenix::Math::Color::White;
 
 	Phoenix::f32 dis = 10.0f;

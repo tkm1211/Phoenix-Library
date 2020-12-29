@@ -49,6 +49,9 @@
     <Filter Include="Source\Collision">
       <UniqueIdentifier>{70ad8f72-02ae-4527-9072-8db26ca3a2b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Easing">
+      <UniqueIdentifier>{24ffc9b3-d044-4fe1-9522-19f0c24be38d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -164,6 +167,9 @@
     </ClCompile>
     <ClCompile Include="Source\UI\EnemyUI.cpp">
       <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Easing\Easing.cpp">
+      <Filter>Source\Easing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -292,6 +298,9 @@
     </ClInclude>
     <ClInclude Include="Source\Collision\Collision.h">
       <Filter>Source\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Easing\Easing.h">
+      <Filter>Source\Easing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

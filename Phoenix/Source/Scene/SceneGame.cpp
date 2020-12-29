@@ -13,6 +13,7 @@
 #include "../Enemy/Enemy.h"
 #include "../AI/MetaAI/MetaType.h"
 #include "Phoenix/OS/StartUp.h"
+#include "../Easing/Easing.h"
 
 
 void SceneGame::Construct(SceneSystem* sceneSystem)
@@ -162,6 +163,22 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		//dusterParticle[2] = Phoenix::FrameWork::GPUParticle::Create();
 	}
 
+	// ラウンドテクスチャ
+	{
+		roundTexture = Phoenix::Graphics::ITexture::Create();
+		roundTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Round\\Round.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+
+		roundNumTexture = Phoenix::Graphics::ITexture::Create();
+		roundNumTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Round\\Num.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+
+		fightTexture = Phoenix::Graphics::ITexture::Create();
+		fightTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Round\\Fight.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+		
+		finalRoundTexture = Phoenix::Graphics::ITexture::Create();
+		finalRoundTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Round\\FinalRound.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+	}
+
+	// ディゾルブ
 	{
 		dissolveCB = Phoenix::Graphics::IBuffer::Create();
 		{
@@ -272,13 +289,23 @@ void SceneGame::Initialize()
 
 	// ラウンド
 	{
-		roundSwitch = false;
+		roundSwitch = true;
 		roundLogo = true;
 		roundFadeSwitch = false;
 		roundCnt = 0;
+		roundLogoState = 0;
 		roundFadeColor = 1.0f;
-		roundThreshold = 0.0f;
-		roundEmissiveWidth = 0.0f;
+		roundTimeCnt = 0.0f;
+		roundTimeMax = 0.0f;
+
+		roundAlpha = 0.0f;
+		roundNumAlpha = 0.0f;
+		fightAlpha = 0.0f;
+
+		fightScale = 5.0f;
+
+		roundPos = Phoenix::Math::Vector2(0.0f, 0.0f);
+		roundNumPos = Phoenix::Math::Vector2(0.0f, 0.0f);
 
 		RoundInitialize();
 	}
@@ -313,6 +340,30 @@ void SceneGame::RoundInitialize()
 		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
 		camera->SetRotateX(-0.225f);
 		camera->SetRotateY(0.0f);
+	}
+
+	// ラウンドロゴ
+	{
+		roundLogoState = 0;
+
+		roundTimeCnt = 0.0f;
+		roundTimeMax = 10.0f;
+
+		roundAlpha = 0.0f;
+		roundNumAlpha = 0.0f;
+		fightAlpha = 0.0f;
+
+		fightScale = 5.0f;
+
+		if (roundCnt == (roundMax - 1))
+		{
+			roundPos = Phoenix::Math::Vector2(0.0f, -470.0f);
+		}
+		else
+		{
+			roundPos = Phoenix::Math::Vector2(-860.0f, 0.0f);
+		}
+		roundNumPos = Phoenix::Math::Vector2(1240.0f, 210.0f);
 	}
 
 	// エネミー追加
@@ -813,25 +864,68 @@ void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 {
 	if (roundLogo)
 	{
-		switch (roundLogoState)
+		if (!onFade)
 		{
-		case 0: // round
+			switch (roundLogoState)
+			{
+			case 0: // round
+				if (roundCnt == roundMax - 1)
+				{
+					roundPos.y = Phoenix::Math::f32Lerp(roundPos.y, 0.0f, 0.1f * elapsedTime);
+					roundAlpha = Phoenix::Math::f32Lerp(roundAlpha, 1.0f, 0.1f * elapsedTime);
+					if (0.999f <= roundAlpha)
+					{
+						roundLogoState = 2;
+						roundAlpha = 1.0f;
+					}
+				}
+				else
+				{
+					roundPos.x = Phoenix::Math::f32Lerp(roundPos.x, 0.0f, 0.1f * elapsedTime);
+					roundAlpha = Phoenix::Math::f32Lerp(roundAlpha, 1.0f, 0.1f * elapsedTime);
+					if (0.99f <= roundAlpha)
+					{
+						++roundLogoState;
+						roundAlpha = 1.0f;
+					}
+				}
+				break;
 
-			break;
+			case 1: // num
+				roundNumPos.x = Phoenix::Math::f32Lerp(roundNumPos.x, 784.0f, 0.1f * elapsedTime);
+				roundNumAlpha = Phoenix::Math::f32Lerp(roundNumAlpha, 1.0f, 0.1f * elapsedTime);
+				if (0.99f <= roundNumAlpha)
+				{
+					++roundLogoState;
+					roundNumAlpha = 1.0f;
+				}
+				break;
 
-		case 1: // num
+			case 2: // fight
+				fightScale = Phoenix::Math::f32Lerp(fightScale, 1.0f, 0.1f * elapsedTime);
+				fightAlpha = Phoenix::Math::f32Lerp(fightAlpha, 1.0f, 0.1f * elapsedTime);
+				if (0.99f <= fightAlpha)
+				{
+					++roundLogoState;
+					fightAlpha = 1.0f;
+				}
+				break;
 
-			break;
+			case 3:
+				fightAlpha = Phoenix::Math::f32Lerp(fightAlpha, 0.0f, 0.2f * elapsedTime);
+				if (fightAlpha <= 0.01f)
+				{
+					++roundLogoState;
+					fightAlpha = 1.0f;
+				}
+				break;
 
-		case 2: // fight
+			case 4: // finish
+				roundSwitch = false;
+				break;
 
-			break;
-
-		case 3: // finish
-			roundSwitch = false;
-			break;
-
-		default: break;
+			default: break;
+			}
 		}
 	}
 	else
@@ -1099,6 +1193,7 @@ void SceneGame::JudgeGame()
 			}
 			else
 			{
+				roundLogo = false;
 				roundSwitch = true;
 			}
 
@@ -2269,11 +2364,42 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 	{
 		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
 	
+		Phoenix::f32 width = static_cast<Phoenix::f32>(display->GetWidth());
+		Phoenix::f32 height = static_cast<Phoenix::f32>(display->GetHeight());
+
+		// Draw Round.
+		if (roundLogo)
+		{
+			switch (roundLogoState)
+			{
+			case 0: // round
+				if (roundCnt == roundMax - 1)
+				{
+					quad->Draw(graphicsDevice, finalRoundTexture.get(), roundPos, Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundAlpha);
+				}
+				else
+				{
+					quad->Draw(graphicsDevice, roundTexture.get(), roundPos, Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundAlpha);
+				}
+				break;
+
+			case 1: // num
+				quad->Draw(graphicsDevice, roundTexture.get(), roundPos, Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundAlpha);
+				quad->Draw(graphicsDevice, roundNumTexture.get(), roundNumPos, Phoenix::Math::Vector2(275.0f, 275.0f), Phoenix::Math::Vector2(275.0f * roundCnt, 0.0f), Phoenix::Math::Vector2(275.0f, 275.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundNumAlpha);
+				break;
+
+			case 2: case 3: // fight
+				quad->Draw(graphicsDevice, fightTexture.get(), Phoenix::Math::Vector2(width * 0.5f * (fightScale - 1.0f) * -1.0f, height * 0.5f * (fightScale - 1.0f) * -1.0f), Phoenix::Math::Vector2(width * fightScale, height * fightScale), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, fightAlpha);
+				break;
+
+			default: break;
+			}
+		}
 #if 1
 		// Draw UI and Effect.
 		{
 			if (isDrawUI) uiSystem->Draw(graphicsDevice);
-			quad->Draw(graphicsDevice, commonData->operatorUI.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, true);
+			quad->Draw(graphicsDevice, commonData->operatorUI.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, true);
 		}
 #endif
 	}
@@ -2678,6 +2804,19 @@ void SceneGame::GUI()
 			ImGui::SliderFloat("shakeRight", &vibrationRight, 0.0f, 65535.0f);
 			ImGui::SliderFloat("shakeLeft", &vibrationLeft, 0.0f, 65535.0f);
 			ImGui::DragFloat("shakeMaxCnt", &vibrationMaxCnt);
+
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Round"))
+		{
+			ImGui::InputInt("state", &roundLogoState);
+			ImGui::InputInt("num", &roundCnt);
+			ImGui::DragFloat2("round pos", &roundPos.x);
+			ImGui::DragFloat2("round num pos", &roundNumPos.x);
+			ImGui::DragFloat("fight scale", &fightScale, 0.001f);
+			ImGui::DragFloat("round alpha", &roundAlpha, 0.001f);
+			ImGui::DragFloat("round num alpha", &roundNumAlpha, 0.001f);
+			ImGui::DragFloat("fight alpha", &fightAlpha, 0.001f);
 
 			ImGui::TreePop();
 		}
