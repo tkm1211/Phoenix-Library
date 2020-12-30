@@ -681,7 +681,7 @@ void SceneGame::UpdatePlayer(Phoenix::f32 elapsedTime)
 			}
 		}
 
-		player->Update(*camera, !onFade && isPlayerUpdate && !roundSwitch, elapsedTime/*&& (alive != 0)*/);
+		player->Update(*camera, !onFade && isPlayerUpdate && !roundSwitch && (alive != 0), elapsedTime/*&& (alive != 0)*/);
 	}
 
 	if (player->GetAlive())
@@ -700,7 +700,7 @@ void SceneGame::UpdatePlayer(Phoenix::f32 elapsedTime)
 			playerStrongAttackParticle->SetParticleScale(1.0f);
 			playerStrongAttackParticle->SetParticleMotionBlurAmount(5.0f);
 			playerStrongAttackParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
-			playerStrongAttackParticle->SetParticleColor(Phoenix::Math::Color(255.0f / 255.0f, 45.0f / 255.0f, 15.0f / 255.0f, 1.0f));
+			playerStrongAttackParticle->SetParticleColor(Phoenix::Math::Color(242.0f / 255.0f, 102.0f / 255.0f, 64.0f / 255.0f, 1.0f));
 
 			/*meshParticlePos = player->GetPosition();
 
@@ -1606,7 +1606,7 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 					motionBlur->velocityConstants.exposureTime = 50000.0f;
 					targetEnemyIndex = index;
 
-					const std::vector<Phoenix::FrameWork::CollisionData> collisionDatas = player->GetCollisionDatas();
+					/*const std::vector<Phoenix::FrameWork::CollisionData> collisionDatas = player->GetCollisionDatas();
 
 					strongAttackParticlePos = collisionDatas.at(0).pos;
 					strongAttackParticlePos.y += -0.1f;
@@ -1618,7 +1618,7 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 					playerStrongAttackParticle->SetParticleScale(1.0f);
 					playerStrongAttackParticle->SetParticleMotionBlurAmount(5.0f);
 					playerStrongAttackParticle->SetParticleNormal(Phoenix::Math::Vector4(0.0f, 1.0f, 0.0f, 0.0f));
-					playerStrongAttackParticle->SetParticleColor(Phoenix::Math::Color(255.0f / 255.0f, 45.0f / 255.0f, 15.0f / 255.0f, 1.0f));
+					playerStrongAttackParticle->SetParticleColor(Phoenix::Math::Color(255.0f / 255.0f, 45.0f / 255.0f, 15.0f / 255.0f, 1.0f));*/
 
 					//player->ChangeJustDedge();
 				}

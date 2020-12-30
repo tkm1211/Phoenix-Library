@@ -265,7 +265,7 @@ public:
 	void Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::f32 elapsedTime, bool attackLoad = true);
 	void UpdateTrasform();
 	void UpdateUI();
-	void Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime);
+	void Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime, bool control);
 	void ChangeAnimation();
 	void ChangeAttackAnimation(Phoenix::s32 layerIndex);
 	void AttackJudgment();

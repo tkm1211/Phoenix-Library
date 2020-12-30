@@ -372,7 +372,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::
 
 	// コントローラー操作(位置更新)
 	{
-		if (onControl && !isAccumulationDamege) Control(camera, elapsedTime);
+		if (!isAccumulationDamege) Control(camera, elapsedTime, onControl);
 	}
 
 	// アニメーション変更
@@ -441,7 +441,7 @@ void Player::UpdateUI()
 	ui->Update((hp / MaxLife) * 100.0f);
 }
 
-void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime) // TODO : re -> player control
+void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime, bool control) // TODO : re -> player control
 {
 	Phoenix::f32 sX = 0.0f;
 	Phoenix::f32 sY = 0.0f;
@@ -673,7 +673,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	if (animationState == AnimationState::Damage && model->IsPlaying())
 	{
 		// 回避ステートへ
-		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && model->GetLastTime() <= (15.0f / 60.0f))
+		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && model->GetLastTime() <= (15.0f / 60.0f) && control)
 		{
 			ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
 			JudgeDedgeIndex();
@@ -685,7 +685,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	}
 
 	// ロックオン
-	if (xInput[0].bRBs || GetKeyState('L') < 0)
+	if ((xInput[0].bRBs || GetKeyState('L') < 0) && control)
 	{
 		InEnemyTerritory(true);
 	}
@@ -709,11 +709,11 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	// 攻撃キーの入力確認
 	AttackKey key = AttackKey::None;
 	{
-		if (xInput[0].bXt || GetAsyncKeyState('J') & 1)
+		if ((xInput[0].bXt || GetAsyncKeyState('J') & 1) && control)
 		{
 			key = AttackKey::WeakAttack;
 		}
-		if (xInput[0].bYt || GetAsyncKeyState('K') & 1)
+		if ((xInput[0].bYt || GetAsyncKeyState('K') & 1) && control)
 		{
 			key = AttackKey::StrongAttack;
 		}
@@ -832,7 +832,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 		// 回避ステート
 		{
 			// 回避ステートへ
-			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
+			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge && control)
 			{
 				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
 				JudgeDedgeIndex();
@@ -858,7 +858,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 		if (animationState != AnimationState::Roll && animationState != AnimationState::Dedge)
 		{
 			// 移動ステート
-			if (sX != 0.0f || sY != 0.0f)
+			if ((sX != 0.0f || sY != 0.0f) && control)
 			{
 				UpdateRotateY(sX, sY, camera.GetRotateY());
 				RotatePlayer(rotateY, isBattleMode);
@@ -889,7 +889,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	else
 	{
 		// 回避ステートへ
-		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge)
+		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge && control)
 		{
 			Phoenix::s32 index = attackState;
 
