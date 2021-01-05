@@ -7,6 +7,7 @@
 #include "Phoenix/FrameWork/Component/Transform.h"
 #include "EnemyState.h"
 #include "../AI/StateMachine/BattleEnemyAI.h"
+#include "../AI/StateMachine/BattleEnemyState.h"
 #include "../UI/EnemyUI.h"
 
 
@@ -80,6 +81,10 @@ private:
 
 	// 攻撃データリスト
 	std::vector<AttackDatas> attackDatasList;
+
+	// 攻撃ステート
+	std::shared_ptr<BattleEnemy::Attack<EnemyAttackState>> attackState;
+	std::shared_ptr<BattleEnemy::Attack<EnemyAttackState>> bossAttackState;
 
 	// HPゲージUI
 	std::shared_ptr<EnemyUI> ui;

@@ -193,6 +193,9 @@ void EnemyManager::ResetEnemies()
 		enemy->SetDeath(false);
 		enemy->SetState(BattleEnemyState::Idle);
 	}
+
+	aliveEnemyCount = 0;
+	battleEnemyCount = 0;
 }
 
 // エネミー生存最大数からカウントダウン

@@ -65,7 +65,7 @@ void SceneGameOver::Update(Phoenix::f32 elapsedTime)
 		isRight = true;
 	}
 
-	if (xInput[0].bAt || xInput[0].bBt || xInput[0].bXt || xInput[0].bYt || xInput[0].bRBt || xInput[0].bLBt || xInput[0].bRTt || xInput[0].bLTt || xInput[0].bSTARTt || xInput[0].bBACKt)
+	if ((GetKeyState(VK_SPACE) & 1) || xInput[0].bAt || xInput[0].bBt || xInput[0].bXt || xInput[0].bYt || xInput[0].bRBt || xInput[0].bLBt || xInput[0].bRTt || xInput[0].bLTt || xInput[0].bSTARTt || xInput[0].bBACKt)
 	{
 		isChangeScene = true;
 		if (!isRight) sceneSystem->ChangeScene(SceneType::Game, false, true);

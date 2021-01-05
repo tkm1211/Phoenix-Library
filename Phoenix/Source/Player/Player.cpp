@@ -1094,7 +1094,7 @@ void Player::AttackJudgment()
 				if (isHit.at(i))
 				{
 					isAttackJudgment.at(i) = false;
-					return;
+					continue;
 				}
 
 				isAttackJudgment.at(i) = true;

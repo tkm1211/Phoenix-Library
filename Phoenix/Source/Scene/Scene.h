@@ -385,17 +385,21 @@ private:
 	// スローモーション
 	bool isSlow = false;
 	Phoenix::f32 slowTimeCnt = 0.0f;
+	Phoenix::f32 slowMagnification = 0.0f;
 
 	// ラウンド
 	bool roundSwitch = false;
 	bool roundLogo = false;
 	bool roundFadeSwitch = false;
+	bool playRoundMoveSE = false;
+	bool playRoundNumMoveSE = false;
+	bool playFightSE = false;
 	Phoenix::s32 roundCnt = 0;
 	Phoenix::s32 roundMax = 5;
 	Phoenix::f32 roundTimeCnt = 0.0f;
 	Phoenix::f32 roundTimeMax = 0.0f;
 	Phoenix::s32 roundLogoState = 0;
-	Phoenix::f32 roundFadeColor = 0.0f;
+	Phoenix::f32 roundFadeAlpha = 0.0f;
 	Phoenix::f32 roundAlpha = 0.0f;
 	Phoenix::f32 roundNumAlpha = 0.0f;
 	Phoenix::f32 fightAlpha = 0.0f;
@@ -407,13 +411,30 @@ private:
 	std::unique_ptr<Phoenix::Graphics::ITexture> fightTexture;
 	std::unique_ptr<Phoenix::Graphics::ITexture> finalRoundTexture;
 
+	// K.O.
+	bool isKO = false;
+	bool playKOSE = false;
+	Phoenix::s32 koState = 0;
+	Phoenix::f32 kAlpha = 0.0f;
+	Phoenix::f32 kScale = 0.0f;
+	Phoenix::f32 oAlpha = 0.0f;
+	Phoenix::f32 oScale = 0.0f;
+	Phoenix::f32 koTimeCnt = 0.0f;
+	Phoenix::f32 koTimeMax = 0.0f;
+	const Phoenix::f32 weakKOTimeMax = 40.0f;
+	const Phoenix::f32 strongKOTimeMax = 50.0f;
+	Phoenix::Math::Color nextScreenColor;
+	std::unique_ptr<Phoenix::Graphics::ITexture> kTexture;
+	std::unique_ptr<Phoenix::Graphics::ITexture> oTexture;
+
 	// エネミーデータ
 	Phoenix::s32 nearEnemyIndex = -1;
 	Phoenix::s32 nearIndex = -1;
 	Phoenix::s32 drawEnemyUIIndex = -1;
 
-	// フェード中
+	// フェード
 	bool onFade = false;
+	std::unique_ptr<Phoenix::Graphics::ITexture> fadeTexture;
 
 	// 操作可
 	bool onControl = false;
@@ -524,6 +545,7 @@ private:
 	void UpdateCamera(Phoenix::f32 elapsedTime);
 	void UpdateSlow(Phoenix::f32& elapsedTime);
 	void UpdateRound(Phoenix::f32 elapsedTime);
+	void UpdateKO(Phoenix::f32& elapsedTime);
 	void UpdateHitLight(Phoenix::f32 elapsedTime);
 	void UpdateDirectionLight(Phoenix::f32 elapsedTime);
 	void UpdateParticle(Phoenix::f32 elapsedTime);

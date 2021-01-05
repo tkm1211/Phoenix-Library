@@ -241,7 +241,6 @@
     <ClCompile Include="Source\Boss\AIState\WaitState.cpp" />
     <ClCompile Include="Source\Boss\Boss.cpp" />
     <ClCompile Include="Source\Boss\BossAI.cpp" />
-    <ClCompile Include="Source\Easing\Easing.cpp" />
     <ClCompile Include="Source\Enemy\Enemy.cpp" />
     <ClCompile Include="Source\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Source\Main.cpp" />
@@ -288,7 +287,6 @@
     <ClInclude Include="Source\Boss\Boss.h" />
     <ClInclude Include="Source\Boss\BossAI.h" />
     <ClInclude Include="Source\Collision\Collision.h" />
-    <ClInclude Include="Source\Easing\Easing.h" />
     <ClInclude Include="Source\Enemy\Enemy.h" />
     <ClInclude Include="Source\Enemy\EnemyState.h" />
     <ClInclude Include="Source\Enemy\EnemyManager.h" />

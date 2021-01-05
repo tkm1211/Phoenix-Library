@@ -110,6 +110,11 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 			soundSystem->AddSound(SoundType::SE_Player_Attack_Kick_Hit_Heavy, L"..\\Data\\Assets\\Audio\\SE\\Player\\Attack\\Kick\\Hit\\kick_hit_heavy.wav", loadTypeNum);
 
 			soundSystem->AddSound(SoundType::SE_Player_Dedge, L"..\\Data\\Assets\\Audio\\SE\\Player\\Dedge\\dedge.wav", loadTypeNum);
+
+			soundSystem->AddSound(SoundType::SE_Round_Move, L"..\\Data\\Assets\\Audio\\SE\\Fight\\move.wav", loadTypeNum);
+			soundSystem->AddSound(SoundType::SE_Round_Fight, L"..\\Data\\Assets\\Audio\\SE\\Fight\\fight.wav", loadTypeNum);
+
+			soundSystem->AddSound(SoundType::SE_KO, L"..\\Data\\Assets\\Audio\\SE\\KO\\ko.wav", loadTypeNum);
 		}
 
 		// Loop SE
@@ -132,6 +137,11 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 		soundSystem->SetVolume(SoundType::SE_Player_Attack_Kick_Hit_Right, 0.75f);
 		soundSystem->SetVolume(SoundType::SE_Player_Attack_Kick_Hit_Heavy, 0.75f);
 		soundSystem->SetVolume(SoundType::SE_Player_Dedge, 0.75f);
+
+		soundSystem->SetVolume(SoundType::SE_Round_Move, 0.75f);
+		soundSystem->SetVolume(SoundType::SE_Round_Fight, 0.75f);
+
+		soundSystem->SetVolume(SoundType::SE_KO, 0.75f);
 	}
 
 	// ‹¤—L

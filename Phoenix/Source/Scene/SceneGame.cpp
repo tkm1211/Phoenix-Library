@@ -163,6 +163,12 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		//dusterParticle[2] = Phoenix::FrameWork::GPUParticle::Create();
 	}
 
+	// フェード
+	{
+		fadeTexture = Phoenix::Graphics::ITexture::Create();
+		fadeTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Fade\\Fade01.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+	}
+
 	// ラウンドテクスチャ
 	{
 		roundTexture = Phoenix::Graphics::ITexture::Create();
@@ -176,6 +182,15 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		
 		finalRoundTexture = Phoenix::Graphics::ITexture::Create();
 		finalRoundTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Round\\FinalRound.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+	}
+
+	// K.O.
+	{
+		kTexture = Phoenix::Graphics::ITexture::Create();
+		kTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\KO\\K.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
+
+		oTexture = Phoenix::Graphics::ITexture::Create();
+		oTexture->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\KO\\O.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color::White);
 	}
 
 	// ディゾルブ
@@ -292,9 +307,12 @@ void SceneGame::Initialize()
 		roundSwitch = true;
 		roundLogo = true;
 		roundFadeSwitch = false;
+		playRoundMoveSE = false;
+		playRoundNumMoveSE = false;
+		playFightSE = false;
 		roundCnt = 0;
 		roundLogoState = 0;
-		roundFadeColor = 1.0f;
+		roundFadeAlpha = 0.0f;
 		roundTimeCnt = 0.0f;
 		roundTimeMax = 0.0f;
 
@@ -306,6 +324,8 @@ void SceneGame::Initialize()
 
 		roundPos = Phoenix::Math::Vector2(0.0f, 0.0f);
 		roundNumPos = Phoenix::Math::Vector2(0.0f, 0.0f);
+
+		screenColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 		RoundInitialize();
 	}
@@ -363,7 +383,29 @@ void SceneGame::RoundInitialize()
 		{
 			roundPos = Phoenix::Math::Vector2(-860.0f, 0.0f);
 		}
+#if (defined(DEBUG) | defined(_DEBUG))
 		roundNumPos = Phoenix::Math::Vector2(1240.0f, 210.0f);
+#else
+		roundNumPos = Phoenix::Math::Vector2(1860.0f, 315.0f);
+#endif
+
+		playRoundMoveSE = false;
+		playRoundNumMoveSE = false;
+		playFightSE = false;
+	}
+
+	// KO
+	{
+		koTimeCnt = 0.0f;
+		koState = 0;
+		kAlpha = 0.0f;
+		kScale = 5.0f;
+		oAlpha = 0.0f;
+		oScale = 5.0f;
+		screenColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
+		nextScreenColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+		playKOSE = false;
 	}
 
 	// エネミー追加
@@ -494,6 +536,11 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 	// スローモーション更新
 	{
 		UpdateSlow(elapsedTime);
+	}
+
+	// KO更新
+	{
+		UpdateKO(elapsedTime);
 	}
 
 	// GUI起動
@@ -848,11 +895,15 @@ void SceneGame::UpdateSlow(Phoenix::f32& elapsedTime)
 			slowTimeCnt = 0.0f;
 
 			player->SetIsJustDedge(false);
+
+			screenColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+			soundSystem->SetVolume(SoundType::BGM_Game, 0.25f);
 		}
 		else
 		{
 			slowTimeCnt += 1.0f * elapsedTime;
-			elapsedTime *= 0.15f;
+			elapsedTime *= slowMagnification; 
 		}
 
 		motionBlur->velocityConstants.exposureTime = Phoenix::Math::f32Lerp(motionBlur->velocityConstants.exposureTime, 0.0f, 0.05f * (elapsedTime / 0.15f));
@@ -869,6 +920,12 @@ void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 			switch (roundLogoState)
 			{
 			case 0: // round
+				if (!playRoundMoveSE)
+				{
+					playRoundMoveSE = true;
+					soundSystem->Play(SoundType::SE_Round_Move);
+				}
+
 				if (roundCnt == roundMax - 1)
 				{
 					roundPos.y = Phoenix::Math::f32Lerp(roundPos.y, 0.0f, 0.1f * elapsedTime);
@@ -892,7 +949,17 @@ void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 				break;
 
 			case 1: // num
+				if (!playRoundNumMoveSE)
+				{
+					playRoundNumMoveSE = true;
+					soundSystem->Play(SoundType::SE_Round_Move);
+				}
+
+#if (defined(DEBUG) | defined(_DEBUG))
 				roundNumPos.x = Phoenix::Math::f32Lerp(roundNumPos.x, 784.0f, 0.1f * elapsedTime);
+#else
+				roundNumPos.x = Phoenix::Math::f32Lerp(roundNumPos.x, 784.0f * 1.5f, 0.1f * elapsedTime);
+#endif
 				roundNumAlpha = Phoenix::Math::f32Lerp(roundNumAlpha, 1.0f, 0.1f * elapsedTime);
 				if (0.99f <= roundNumAlpha)
 				{
@@ -902,6 +969,12 @@ void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 				break;
 
 			case 2: // fight
+				if (!playFightSE)
+				{
+					playFightSE = true;
+					soundSystem->Play(SoundType::SE_Round_Fight);
+				}
+
 				fightScale = Phoenix::Math::f32Lerp(fightScale, 1.0f, 0.1f * elapsedTime);
 				fightAlpha = Phoenix::Math::f32Lerp(fightAlpha, 1.0f, 0.1f * elapsedTime);
 				if (0.99f <= fightAlpha)
@@ -932,32 +1005,110 @@ void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 	{
 		if (!roundFadeSwitch)
 		{
-			roundFadeColor -= 0.01f * elapsedTime;
-			if (roundFadeColor <= 0.0f)
+			roundFadeAlpha += 0.01f * elapsedTime;
+			if (1.0f <= roundFadeAlpha)
 			{
 				roundFadeSwitch = true;
-				roundFadeColor = 0.0f;
+				roundFadeAlpha = 1.0f;
 				RoundInitialize();
 			}
 		}
 		else
 		{
-			roundFadeColor += 0.01f * elapsedTime;
-			if (1.0f <= roundFadeColor)
+			roundFadeAlpha -= 0.01f * elapsedTime;
+			if (roundFadeAlpha <= 0.0f)
 			{
 				roundLogo = true;
 				roundFadeSwitch = false;
 				roundLogoState = 0;
-				roundFadeColor = 1.0f;
+				roundFadeAlpha = 0.0f;
 			}
 		}
 	}
-	screenColor = Phoenix::Math::Color(roundFadeColor, roundFadeColor, roundFadeColor, 1.0f);
 
 	UpdateDirectionLight(elapsedTime);
 	UpdateParticle(elapsedTime);
 	UpdateCamera(elapsedTime);
 	UpdateUI();
+}
+
+void SceneGame::UpdateKO(Phoenix::f32& elapsedTime)
+{
+	if (isKO)
+	{
+		Phoenix::Math::Vector3 originColor = Phoenix::Math::Vector3(screenColor.r, screenColor.g, screenColor.b);
+		Phoenix::Math::Vector3 nextColor = Phoenix::Math::Vector3(nextScreenColor.r, nextScreenColor.g, nextScreenColor.b);
+
+		originColor = Phoenix::Math::Vector3Lerp(originColor, nextColor, 0.014f * elapsedTime);
+		screenColor = Phoenix::Math::Color(originColor.x, originColor.y, originColor.z, 1.0f);
+
+		if (enemyManager->GetAliveEnemyCount() <= 0 || player->GetHP() <= 0)
+		{
+			switch (koState)
+			{
+			case 0: // K
+				if (!playKOSE)
+				{
+					playKOSE = true;
+					soundSystem->Play(SoundType::SE_KO);
+				}
+
+				kScale = Phoenix::Math::f32Lerp(kScale, 1.0f, 0.1f * elapsedTime);
+				kAlpha = Phoenix::Math::f32Lerp(kAlpha, 1.0f, 0.1f * elapsedTime);
+				if (0.99f <= kAlpha)
+				{
+					++koState;
+					kAlpha = 1.0f;
+				}
+				break;
+
+			case 1: // O
+				oScale = Phoenix::Math::f32Lerp(oScale, 1.0f, 0.1f * elapsedTime);
+				oAlpha = Phoenix::Math::f32Lerp(oAlpha, 1.0f, 0.1f * elapsedTime);
+				if (0.999f <= oAlpha)
+				{
+					++koState;
+					oAlpha = 1.0f;
+				}
+				break;
+
+			case 2: // alpha
+				kAlpha = Phoenix::Math::f32Lerp(kAlpha, 0.0f, 0.2f * elapsedTime);
+				oAlpha = Phoenix::Math::f32Lerp(oAlpha, 0.0f, 0.2f * elapsedTime);
+				if (kAlpha <= 0.01f)
+				{
+					++koState;
+					kAlpha = 0.0f;
+					oAlpha = 0.0f;
+				}
+				break;
+
+			case 3:
+				isKO = false;
+				break;
+
+			default: break;
+			}
+		}
+		else
+		{
+			if (koTimeMax <= koTimeCnt)
+			{
+				isKO = false;
+				koTimeCnt = 0.0f;
+				if (0 < enemyManager->GetAliveEnemyCount() && 0 < player->GetHP())
+				{
+					screenColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
+				}
+			}
+			else
+			{
+				koTimeCnt += 1.0f * elapsedTime;
+			}
+		}
+
+		elapsedTime *= slowMagnification;
+	}
 }
 
 void SceneGame::UpdateHitLight(Phoenix::f32 elapsedTime)
@@ -1461,6 +1612,21 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 
 				player->SetIsHit(index);
 				enemy->Damage(player->GetAttackDamage());
+				if (enemy->GetLife() <= 0)
+				{
+					isKO = true;
+					slowMagnification = 0.01f;
+					nextScreenColor = Phoenix::Math::Color(0.4f, 0.4f, 1.0f, 1.0f);
+
+					if (player->GetAttackPower() == 0)
+					{
+						koTimeMax = weakKOTimeMax;
+					}
+					else if (player->GetAttackPower() == 1)
+					{
+						koTimeMax = strongKOTimeMax;
+					}
+				}
 
 				// SE再生
 				if (playSE)
@@ -1605,6 +1771,9 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 					player->SetIsJustDedge(true);
 					motionBlur->velocityConstants.exposureTime = 50000.0f;
 					targetEnemyIndex = index;
+					slowMagnification = 0.15f;
+
+					soundSystem->SetVolume(SoundType::BGM_Game, 0.05f);
 
 					/*const std::vector<Phoenix::FrameWork::CollisionData> collisionDatas = player->GetCollisionDatas();
 
@@ -1629,6 +1798,13 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 					if (!player->Damage(10, enemy->GetAttackPower()))
 					{
 						enemy->SetIsHit(true);
+
+						if (player->GetHP() <= 0)
+						{
+							isKO = true;
+							slowMagnification = 0.01f;
+							nextScreenColor = Phoenix::Math::Color(1.0f, 0.4f, 0.4f, 1.0f);
+						}
 
 						// SE再生
 						if (enemy->GetAttackCollisionIndex() == 1 || enemy->GetAttackCollisionIndex() == 2)
@@ -2363,45 +2539,70 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 	// Final Draw
 	{
 		quad->Draw(graphicsDevice, frameBuffer[resolvedFramebuffer]->renderTargerSurface[0]->GetTexture(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
-	
-		Phoenix::f32 width = static_cast<Phoenix::f32>(display->GetWidth());
-		Phoenix::f32 height = static_cast<Phoenix::f32>(display->GetHeight());
+	}
 
-		// Draw Round.
-		if (roundLogo)
+	Phoenix::f32 width = static_cast<Phoenix::f32>(display->GetWidth());
+	Phoenix::f32 height = static_cast<Phoenix::f32>(display->GetHeight());
+
+	// Draw Round.
+	if (roundLogo)
+	{
+		switch (roundLogoState)
 		{
-			switch (roundLogoState)
+		case 0: // round
+			if (roundCnt == roundMax - 1)
 			{
-			case 0: // round
-				if (roundCnt == roundMax - 1)
-				{
-					quad->Draw(graphicsDevice, finalRoundTexture.get(), roundPos, Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundAlpha);
-				}
-				else
-				{
-					quad->Draw(graphicsDevice, roundTexture.get(), roundPos, Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundAlpha);
-				}
-				break;
-
-			case 1: // num
-				quad->Draw(graphicsDevice, roundTexture.get(), roundPos, Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundAlpha);
-				quad->Draw(graphicsDevice, roundNumTexture.get(), roundNumPos, Phoenix::Math::Vector2(275.0f, 275.0f), Phoenix::Math::Vector2(275.0f * roundCnt, 0.0f), Phoenix::Math::Vector2(275.0f, 275.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundNumAlpha);
-				break;
-
-			case 2: case 3: // fight
-				quad->Draw(graphicsDevice, fightTexture.get(), Phoenix::Math::Vector2(width * 0.5f * (fightScale - 1.0f) * -1.0f, height * 0.5f * (fightScale - 1.0f) * -1.0f), Phoenix::Math::Vector2(width * fightScale, height * fightScale), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, fightAlpha);
-				break;
-
-			default: break;
+				quad->Draw(graphicsDevice, finalRoundTexture.get(), roundPos, Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundAlpha);
 			}
-		}
-#if 1
-		// Draw UI and Effect.
-		{
-			if (isDrawUI) uiSystem->Draw(graphicsDevice);
-			quad->Draw(graphicsDevice, commonData->operatorUI.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, true);
-		}
+			else
+			{
+				quad->Draw(graphicsDevice, roundTexture.get(), roundPos, Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundAlpha);
+			}
+			break;
+
+		case 1: // num
+			quad->Draw(graphicsDevice, roundTexture.get(), roundPos, Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundAlpha);
+
+#if (defined(DEBUG) | defined(_DEBUG))
+			quad->Draw(graphicsDevice, roundNumTexture.get(), roundNumPos, Phoenix::Math::Vector2(275.0f, 275.0f), Phoenix::Math::Vector2(275.0f * roundCnt, 0.0f), Phoenix::Math::Vector2(275.0f, 275.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundNumAlpha);
+#else
+			quad->Draw(graphicsDevice, roundNumTexture.get(), roundNumPos, Phoenix::Math::Vector2(275.0f * 1.5f, 275.0f * 1.5f), Phoenix::Math::Vector2(275.0f * roundCnt, 0.0f), Phoenix::Math::Vector2(275.0f, 275.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundNumAlpha);
 #endif
+			break;
+
+		case 2: case 3: // fight
+			quad->Draw(graphicsDevice, fightTexture.get(), Phoenix::Math::Vector2(width * 0.5f * (fightScale - 1.0f) * -1.0f, height * 0.5f * (fightScale - 1.0f) * -1.0f), Phoenix::Math::Vector2(width * fightScale, height * fightScale), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, fightAlpha);
+			break;
+
+		default: break;
+		}
+	}
+
+	// K.O.
+	if (isKO)
+	{
+		quad->Draw(graphicsDevice, kTexture.get(), Phoenix::Math::Vector2(width * 0.5f * (kScale - 1.0f) * -1.0f, height * 0.5f * (kScale - 1.0f) * -1.0f), Phoenix::Math::Vector2(width* kScale, height* kScale), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, kAlpha);
+		quad->Draw(graphicsDevice, oTexture.get(), Phoenix::Math::Vector2(width * 0.5f * (oScale - 1.0f) * -1.0f, height * 0.5f * (oScale - 1.0f) * -1.0f), Phoenix::Math::Vector2(width* oScale, height* oScale), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, oAlpha);
+	}
+
+#if 1
+	// Draw UI and Effect.
+	if (isDrawUI)
+	{
+		uiSystem->Draw(graphicsDevice);
+		quad->Draw(graphicsDevice, commonData->operatorUI.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, true);
+	}
+#endif
+
+	// フェード
+	{
+		Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+		Phoenix::f32 blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), blendFactor, 0xFFFFFFFF);
+		{
+			quad->Draw(graphicsDevice, fadeTexture.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, roundFadeAlpha);
+		}
+		context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 	}
 
 	// Draw frameBuffer Texture.
@@ -2817,6 +3018,7 @@ void SceneGame::GUI()
 			ImGui::DragFloat("round alpha", &roundAlpha, 0.001f);
 			ImGui::DragFloat("round num alpha", &roundNumAlpha, 0.001f);
 			ImGui::DragFloat("fight alpha", &fightAlpha, 0.001f);
+			ImGui::DragFloat("round fade alpha", &roundFadeAlpha, 0.001f);
 
 			ImGui::TreePop();
 		}

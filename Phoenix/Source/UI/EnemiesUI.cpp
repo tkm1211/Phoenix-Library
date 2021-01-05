@@ -2,6 +2,7 @@
 #include "EnemyUI.h"
 #include "Phoenix/OS/Path.h"
 #include "Phoenix/FND/Util.h"
+#include "../Source/Graphics/Context/Win/DirectX11/ContextDX11.h"
 
 
 std::shared_ptr<EnemiesUI> EnemiesUI::Create()
@@ -51,25 +52,33 @@ void EnemiesUI::AddUI(Phoenix::s32 index, std::shared_ptr<EnemyUI> ui)
 
 void EnemiesUI::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::FrameWork::Quad* quad)
 {
-	for (const auto& ui : uiList)
-	{
-		if (!ui) continue;
-		if (!ui->GetExit()) continue;
+	Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
+	Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
+	Phoenix::f32 blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-		Phoenix::Math::Vector2 size = ui->GetSize() / 5.0f;
-		Phoenix::Math::Vector2 hpTexPos = ui->GetHPTexPos();
-		Phoenix::Math::Vector2 pos = ui->GetPos();
-		pos.x -= (EnemyUI::SizeWidth / 5.0f) / 2.0f;
-	
-		quad->Draw(graphicsDevice, hpBack.get(), pos.x, pos.y, EnemyUI::SizeWidth / 5.0f, EnemyUI::SizeHeigth / 5.0f);
+	context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaToCoverageEnable), blendFactor, 0xFFFFFFFF);
+	{
+		for (const auto& ui : uiList)
+		{
+			if (!ui) continue;
+			if (!ui->GetExit()) continue;
+
+			Phoenix::Math::Vector2 size = ui->GetSize() / 5.0f;
+			Phoenix::Math::Vector2 hpTexPos = ui->GetHPTexPos();
+			Phoenix::Math::Vector2 pos = ui->GetPos();
+			pos.x -= (EnemyUI::SizeWidth / 5.0f) / 2.0f;
+
+			quad->Draw(graphicsDevice, hpBack.get(), pos.x, pos.y, EnemyUI::SizeWidth / 5.0f, EnemyUI::SizeHeigth / 5.0f);
+			quad->Draw(graphicsDevice, hp.get(), pos, size, Phoenix::Math::Vector2(0.0f, 0.0f), hpTexPos);
+		}
+
+		if (currentIndex <= -1 || uiList.size() <= currentIndex) return;
+
+		Phoenix::Math::Vector2 size = uiList.at(currentIndex)->GetSize();
+		Phoenix::Math::Vector2 hpTexPos = uiList.at(currentIndex)->GetHPTexPos();
+
+		quad->Draw(graphicsDevice, hpBack.get(), pos.x, pos.y, EnemyUI::SizeWidth, EnemyUI::SizeHeigth);
 		quad->Draw(graphicsDevice, hp.get(), pos, size, Phoenix::Math::Vector2(0.0f, 0.0f), hpTexPos);
 	}
-
-	if (currentIndex <= -1 || uiList.size() <= currentIndex) return;
-
-	Phoenix::Math::Vector2 size = uiList.at(currentIndex)->GetSize();
-	Phoenix::Math::Vector2 hpTexPos = uiList.at(currentIndex)->GetHPTexPos();
-
-	quad->Draw(graphicsDevice, hpBack.get(), pos.x, pos.y, EnemyUI::SizeWidth, EnemyUI::SizeHeigth);
-	quad->Draw(graphicsDevice, hp.get(), pos, size, Phoenix::Math::Vector2(0.0f, 0.0f), hpTexPos);
+	context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 }

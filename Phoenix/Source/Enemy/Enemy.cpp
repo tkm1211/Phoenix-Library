@@ -2,7 +2,6 @@
 #include "EnemyManager.h"
 #include "../Player/Player.h"
 #include "../../ExternalLibrary/ImGui/Include/imgui.h"
-#include "../AI/StateMachine/BattleEnemyState.h"
 
 
 // 生成
@@ -221,25 +220,31 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		battleAI = BattleEnemyAI::Create();
 		{
 			std::shared_ptr<Enemy> owner = shared_from_this();
-			std::shared_ptr<AI::BattleEnemy::Attack<EnemyAttackState>> attackState = AI::BattleEnemy::Attack<EnemyAttackState>::Create(owner);
+			attackState = BattleEnemy::Attack<EnemyAttackState>::Create(owner);
+			bossAttackState = BattleEnemy::Attack<EnemyAttackState>::Create(owner);
 
 			battleAI->SetOwner(owner);
 			battleAI->SetUp();
 
-			battleAI->AddState(AI::BattleEnemy::Idle::Create());
-			battleAI->AddState(AI::BattleEnemy::Walk::Create(owner));
-			battleAI->AddState(AI::BattleEnemy::Run::Create(owner));
-			battleAI->AddState(AI::BattleEnemy::Dedge::Create(owner));
-			battleAI->AddState(AI::BattleEnemy::DamageSmall::Create(owner));
-			battleAI->AddState(AI::BattleEnemy::DamageBig::Create(owner));
-			battleAI->AddState(AI::BattleEnemy::Guard::Create());
-			battleAI->AddState(AI::BattleEnemy::Death::Create());
-			battleAI->AddState(attackState);
+			battleAI->AddState(BattleEnemy::Idle::Create());
+			battleAI->AddState(BattleEnemy::Walk::Create(owner));
+			battleAI->AddState(BattleEnemy::Run::Create(owner));
+			battleAI->AddState(BattleEnemy::Dedge::Create(owner));
+			battleAI->AddState(BattleEnemy::DamageSmall::Create(owner));
+			battleAI->AddState(BattleEnemy::DamageBig::Create(owner));
+			battleAI->AddState(BattleEnemy::Guard::Create());
+			battleAI->AddState(BattleEnemy::Death::Create());
+			//battleAI->AddState(attackState);
 
 			//attackState->AddAttack(EnemyAttackState::WeakRight);
 			//attackState->AddAttack(EnemyAttackState::WeakLeft);
 			attackState->AddAttack(EnemyAttackState::StrongRight);
 			//attackState->AddAttack(EnemyAttackState::StrongLeft);
+
+			bossAttackState->AddAttack(EnemyAttackState::WeakRight);
+			bossAttackState->AddAttack(EnemyAttackState::WeakLeft);
+			bossAttackState->AddAttack(EnemyAttackState::StrongRight);
+			//bossAttackState->AddAttack(EnemyAttackState::StrongLeft);
 		}
 	}
 
@@ -821,6 +826,8 @@ void Enemy::SetTypeTag(TypeTag tag)
 	case Enemy::TypeTag::Small:
 		model = smallModel;
 		life = lifeMax = SmallLifeRange;
+		battleAI->RemoveState(bossAttackState);
+		battleAI->AddState(attackState);
 		break;
 
 	case Enemy::TypeTag::Medium:
@@ -829,6 +836,8 @@ void Enemy::SetTypeTag(TypeTag tag)
 	case Enemy::TypeTag::Large:
 		model = bossModel;
 		life = lifeMax = LargeLifeRange;
+		battleAI->RemoveState(attackState);
+		battleAI->AddState(bossAttackState);
 		break;
 
 	default: break;
@@ -972,6 +981,19 @@ void Enemy::Damage(int damage)
 
 		changeAnimation = true;
 		changeState = BattleEnemyState::DamageBig;
+	}
+
+	// ライフが０ならマネージャーの生存エネミーカウントを下げる
+	if (life <= 0 && alive)
+	{
+		alive = false;
+		if (std::shared_ptr<EnemyManager> manager = owner.lock())
+		{
+			manager->SubAliveEnemyCount(1);
+		}
+
+		SetState(BattleEnemyState::Death, true);
+		ChangeAnimation();
 	}
 }
 

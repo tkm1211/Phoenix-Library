@@ -19,6 +19,10 @@ enum class SoundType
 	SE_Player_Attack_Kick_Hit_Right,
 	SE_Player_Attack_Kick_Hit_Heavy,
 	SE_Player_Dedge,
+
+	SE_Round_Move,
+	SE_Round_Fight,
+	SE_KO,
 };
 
 class Sound
