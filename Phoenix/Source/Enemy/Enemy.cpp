@@ -899,6 +899,7 @@ void Enemy::ChangeAnimation()
 		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Death), 1, 0.2f);
 		model->SetLoopAnimation(false);
 		model->SetBeginTime(55.0f / 60.0f);
+		model->SetEndTime(195.0f / 60.0f);
 		model->SetCurrentTime(42.0f / 60.0f);
 		break;
 

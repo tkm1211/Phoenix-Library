@@ -209,7 +209,7 @@ void Player::Initialize()
 	// アニメーションパラメーターの設定
 	{
 		animationState = AnimationState::Idle;
-		attackState = -1;
+		attackState = 0;
 		isChangeAnimation = false;
 		isAttack = false;
 		speed = 0.0f;
@@ -552,12 +552,11 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	{
 		if (attackDatasList.attackDatas.at(index).datas.size() - 1 <= attackComboState)
 		{
-			attackComboState = -1;
+			attackComboState = 0;
 		}
 
-		if (attackComboState == -1)
+		if (attackComboState == 0)
 		{
-			attackComboState = 0;
 			attackReceptionTimeCnt = attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playBeginTime != -1 ? attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playBeginTime : 0.0f;
 
 			receptionStack = false;
@@ -722,7 +721,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	// 攻撃ステートへ
 	if ((key != AttackKey::None) && 0 < attackDatasList.attackDatas.size() && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run) || (animationState == AnimationState::Dedge && isJustDedge)))
 	{
-		if (attackState == -1)
+		/*if (attackState == -1)
 		{
 			// 弱攻撃からスタートするため
 			if (attackDatasList.attackDatas.at(0).receptionKey == key && 0 < attackDatasList.attackDatas.at(0).datas.size())
@@ -757,7 +756,8 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 				}
 			}
 		}
-		else if (0 < attackDatasList.attackDatas.at(attackState).datas.size())
+		else */
+		if (0 < attackDatasList.attackDatas.at(attackState).datas.size())
 		{
 			Phoenix::s32 index = attackState;
 			Phoenix::s32 wearNextIndex = attackDatasList.attackDatas.at(index).datas.at(attackComboState).weakDerivedAttackState;
@@ -776,7 +776,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 					JudgeInput01(index, strongNextIndex);
 				}
 			}
-			else if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionEndTime)
+			else if ((index == 0 && animationState != AnimationState::Attack) || attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionEndTime)
 			{
 				if (wearNextIndex < endIndex && 0 <= wearNextIndex)
 				{
@@ -803,11 +803,11 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 		else
 		{
 			ChangeAnimationState(AnimationState::Idle, 0.0f);
-			ChangeAttackAnimationState(-1, -1, 0.0f);
+			ChangeAttackAnimationState(0, 0, 0.0f);
 
 			isAttack = false;
 			attackReceptionTimeCnt = 0.0f;
-			attackComboState = -1;
+			attackComboState = 0;
 
 			receptionStack = false;
 			stackKey = AttackKey::None;
@@ -897,10 +897,11 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 			if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionEndTime)
 			{
 				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
-				ChangeAttackAnimationState(-1, -1, 0.0f);
+				ChangeAttackAnimationState(0, 0, 0.0f);
 
 				isAttack = false;
 				attackReceptionTimeCnt = 0.0f;
+				attackComboState = 0;
 
 				isJustDedge = false;
 				justDedgeTimeCnt = 0.0f;
@@ -1209,7 +1210,7 @@ bool Player::AccumulationDamege()
 				isChangeAnimation = true;
 				speed = 0.0f;
 				animationState = AnimationState::Idle;
-				attackState = -1;
+				attackState = 0;
 			}
 		}
 	}
@@ -1223,7 +1224,7 @@ bool Player::AccumulationDamege()
 		speed = 0.0f;
 		animationState = AnimationState::Damage;
 
-		attackState = -1;
+		attackState = 0;
 		attackReceptionTimeCnt = 0;
 
 		accumulationDamege = 0;
@@ -1250,6 +1251,7 @@ void Player::GUI()
 		{
 			ImGui::Text("HP : %d", life);
 			ImGui::Text("BehaviorScore : %d", behaviorScore);
+			ImGui::Text("attackState : %d", attackState);
 			ImGui::Checkbox("BattleMode", &isBattleMode);
 			ImGui::TreePop();
 		}

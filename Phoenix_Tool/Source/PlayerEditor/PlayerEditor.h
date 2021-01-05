@@ -73,4 +73,8 @@ public:
 	/// ƒtƒ@ƒCƒ‹‚ð•Û‘¶
 	/// </summary>
 	void SaveFile();
+
+	void AddAttackData(Phoenix::s32 attackNum);
+
+	void AddData(Phoenix::s32 attackNum);
 };

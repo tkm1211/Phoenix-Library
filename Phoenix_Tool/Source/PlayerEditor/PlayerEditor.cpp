@@ -83,7 +83,7 @@ void PlayerEditor::Update(Phoenix::f32 elapsedTime)
 	Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader.get())->GetLight();
 	light->direction = Phoenix::Math::Vector4(-camera->GetFront(), 1.0f);
 
-	player->Update(*camera.get(), true, false);
+	player->Update(*camera.get(), true, elapsedTime, false);
 }
 
 // 描画
@@ -171,11 +171,23 @@ void PlayerEditor::GUI()
 				auto& list = player->GetAttackDatasList();
 				for (auto& attack : list.attackDatas)
 				{
-					if (ImGui::Selectable(std::string("Attack" + std::to_string(count + 1)).c_str(), selected.at(count)) && !saveCheck)
+					if (count == 0)
 					{
-						ResetSelected();
-						selected.at(count) = true;
-						currentAttackNum = count;
+						if (ImGui::Selectable("Root", selected.at(count)) && !saveCheck)
+						{
+							ResetSelected();
+							selected.at(count) = true;
+							currentAttackNum = count;
+						}
+					}
+					else
+					{
+						if (ImGui::Selectable(std::string("Attack" + std::to_string(count)).c_str(), selected.at(count)) && !saveCheck)
+						{
+							ResetSelected();
+							selected.at(count) = true;
+							currentAttackNum = count;
+						}
 					}
 
 					++count;
@@ -183,11 +195,9 @@ void PlayerEditor::GUI()
 
 				if (ImGui::Button(u8"攻撃追加") && !saveCheck)
 				{
-					Player::AttackDatas datas;
-					list.attackDatas.emplace_back(datas);
-					selected.emplace_back(false);
+					AddAttackData(list.attackDatas.size());
 				}
-				if (ImGui::Button(u8"選択中の攻撃削除") && currentAttackNum != -1)
+				if (ImGui::Button(u8"選択中の攻撃削除") && currentAttackNum <= 0)
 				{
 					list.attackDatas.erase(list.attackDatas.begin() + currentAttackNum);
 
@@ -219,137 +229,152 @@ void PlayerEditor::GUI()
 
 			ImGui::SetNextWindowPos(ImVec2(0, 26), ImGuiCond_Once);
 			ImGui::SetNextWindowSize(ImVec2(400, height - 26), ImGuiCond_Once);
-			ImGui::Begin(std::string("Attack" + std::to_string(currentAttackNum + 1)).c_str());
+
+			if (currentAttackNum == 0) ImGui::Begin("Root");
+			else ImGui::Begin(std::string("Attack" + std::to_string(currentAttackNum)).c_str());
 			{
 				if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
 				{
 					if (ImGui::BeginTabItem(u8"データ リスト"))
 					{
-						if (ImGui::TreeNode(u8"入力キー"))
+						if (currentAttackNum == 0)
 						{
-							ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(350, 60), ImGuiWindowFlags_NoTitleBar);
+							for (auto& data : attack.datas)
 							{
-								bool weakSelect = false;
-								bool strongSelect = false;
-								if (attack.receptionKey == Player::AttackKey::WeakAttack) weakSelect = true;
-								if (attack.receptionKey == Player::AttackKey::StrongAttack) strongSelect = true;
-								if (ImGui::Selectable(u8"弱攻撃キー (Xbox : X ボタン, Keyboard : J キー)", weakSelect) && !saveCheck)
+								if (ImGui::TreeNode(u8"派生データ"))
 								{
-									attack.receptionKey = Player::AttackKey::WeakAttack;
-								}
-								if (ImGui::Selectable(u8"強攻撃キー (Xbox : Y ボタン, Keyboard : K キー)", strongSelect) && !saveCheck)
-								{
-									attack.receptionKey = Player::AttackKey::StrongAttack;
+									if (!saveCheck)
+									{
+										ImGui::InputInt(u8"派生 弱攻撃 番号", &data.weakDerivedAttackState);
+										ImGui::InputInt(u8"派生 強攻撃 番号", &data.strongDerivedAttackState);
+										ImGui::Separator();
+
+										if (attackCount < data.weakDerivedAttackState) data.weakDerivedAttackState = attackCount;
+										if (attackCount < data.strongDerivedAttackState) data.strongDerivedAttackState = attackCount;
+
+										if (data.weakDerivedAttackState <= 0) data.weakDerivedAttackState = 0;
+										if (data.strongDerivedAttackState <= 0)  data.strongDerivedAttackState = 0;
+									}
+									ImGui::TreePop();
 								}
 							}
-							ImGui::EndChild();
-							ImGui::TreePop();
 						}
-
-						Phoenix::s32 deleteIndex = -1;
-						Phoenix::s32 count = 0;
-						for (auto& data : attack.datas)
+						else
 						{
-							if (ImGui::TreeNode(std::to_string(count + 1).c_str()))
+							if (ImGui::TreeNode(u8"入力キー"))
 							{
-								if (!saveCheck)
+								ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(350, 60), ImGuiWindowFlags_NoTitleBar);
 								{
-									Phoenix::s32 index = data.animIndex + 1;
+									bool weakSelect = false;
+									bool strongSelect = false;
+									if (attack.receptionKey == Player::AttackKey::WeakAttack) weakSelect = true;
+									if (attack.receptionKey == Player::AttackKey::StrongAttack) strongSelect = true;
+									if (ImGui::Selectable(u8"弱攻撃キー (Xbox : X ボタン, Keyboard : J キー)", weakSelect) && !saveCheck)
 									{
-										ImGui::InputInt(u8"アニメーション番号", &index);
-										ImGui::Separator();
+										attack.receptionKey = Player::AttackKey::WeakAttack;
 									}
-									data.animIndex = index - 1;
-
-									Phoenix::f32 beginTime = data.playBeginTime * 60.0f;
-									Phoenix::f32 endTime = data.playEndTime * 60.0f;
+									if (ImGui::Selectable(u8"強攻撃キー (Xbox : Y ボタン, Keyboard : K キー)", strongSelect) && !saveCheck)
 									{
-										ImGui::InputFloat(u8"再生速度", &data.playSpeed);
-										ImGui::InputFloat(u8"再生開始フレーム", &beginTime);
-										ImGui::InputFloat(u8"再生終了フレーム", &endTime);
-										ImGui::Separator();
+										attack.receptionKey = Player::AttackKey::StrongAttack;
 									}
-									data.playBeginTime = beginTime / 60.0f;
-									data.playEndTime = endTime / 60.0f;
-
-									beginTime = data.collisionBeginTime * 60.0f;
-									endTime = data.collisionEndTime * 60.0f;
-									{
-										ImGui::InputInt(u8"当たり判定番号", &data.collisionNum);
-										ImGui::InputFloat(u8"当たり判定 開始フレーム", &beginTime);
-										ImGui::InputFloat(u8"当たり判定 終了フレーム", &endTime);
-										ImGui::Separator();
-									}
-									data.collisionBeginTime = beginTime / 60.0f;
-									data.collisionEndTime = endTime / 60.0f;
-
-									beginTime = data.receptionBeginTime * 60.0f;
-									endTime = data.receptionEndTime * 60.0f;
-									{
-										ImGui::Checkbox(u8"入力スタック", &data.receptionStack);
-										ImGui::InputFloat(u8"入力受付 開始フレーム", &beginTime);
-										ImGui::InputFloat(u8"入力受付 終了フレーム", &endTime);
-										ImGui::Separator();
-									}
-									data.receptionBeginTime = beginTime / 60.0f;
-									data.receptionEndTime = endTime / 60.0f;
-
-									beginTime = data.dedgeReceptionBeginTime * 60.0f;
-									endTime = data.dedgeReceptionEndTime * 60.0f;
-									{
-										ImGui::InputFloat(u8"回避 入力受付 開始フレーム", &beginTime);
-										ImGui::InputFloat(u8"回避 入力受付 終了フレーム", &endTime);
-										ImGui::Separator();
-									}
-									data.dedgeReceptionBeginTime = beginTime / 60.0f;
-									data.dedgeReceptionEndTime = endTime / 60.0f;
-
-									Phoenix::s32 weak = data.weakDerivedAttackState + 1;
-									Phoenix::s32 strong = data.strongDerivedAttackState + 1;
-									{
-										ImGui::InputInt(u8"派生 弱攻撃 番号", &weak);
-										ImGui::InputInt(u8"派生 強攻撃 番号", &strong);
-										ImGui::Separator();
-									}
-									if (attackCount < weak) weak = attackCount;
-									if (attackCount < strong) strong = attackCount;
-
-									if (weak <= 0) weak = 0;
-									if (strong <= 0) strong = 0;
-
-									data.weakDerivedAttackState = weak - 1;
-									data.strongDerivedAttackState = strong - 1;
-
-									if (ImGui::Button(u8"削除"))
-									{
-										deleteIndex = count;
-									}
-									ImGui::Separator();
 								}
+								ImGui::EndChild();
 								ImGui::TreePop();
 							}
 
-							++count;
-						}
-
-						if (deleteIndex != -1)
-						{
-							attack.datas.erase(attack.datas.begin() + deleteIndex);
-						}
-
-						if (ImGui::Button(u8"データ追加") && !saveCheck)
-						{
-							Phoenix::s32 state = -1;
+							Phoenix::s32 deleteIndex = -1;
+							Phoenix::s32 count = 0;
 							for (auto& data : attack.datas)
 							{
-								state = data.animState;
-								break;
+								if (ImGui::TreeNode(std::to_string(count + 1).c_str()))
+								{
+									if (!saveCheck)
+									{
+										ImGui::InputInt(u8"animState", &data.animState);
+										ImGui::Separator();
+
+										Phoenix::s32 index = data.animIndex + 1;
+										{
+											ImGui::InputInt(u8"アニメーション番号", &index);
+											ImGui::Separator();
+										}
+										data.animIndex = index - 1;
+
+										Phoenix::f32 beginTime = data.playBeginTime * 60.0f;
+										Phoenix::f32 endTime = data.playEndTime * 60.0f;
+										{
+											ImGui::InputFloat(u8"再生速度", &data.playSpeed);
+											ImGui::InputFloat(u8"再生開始フレーム", &beginTime);
+											ImGui::InputFloat(u8"再生終了フレーム", &endTime);
+											ImGui::Separator();
+										}
+										data.playBeginTime = beginTime / 60.0f;
+										data.playEndTime = endTime / 60.0f;
+
+										beginTime = data.collisionBeginTime * 60.0f;
+										endTime = data.collisionEndTime * 60.0f;
+										{
+											ImGui::InputInt(u8"当たり判定番号", &data.collisionNum);
+											ImGui::InputFloat(u8"当たり判定 開始フレーム", &beginTime);
+											ImGui::InputFloat(u8"当たり判定 終了フレーム", &endTime);
+											ImGui::Separator();
+										}
+										data.collisionBeginTime = beginTime / 60.0f;
+										data.collisionEndTime = endTime / 60.0f;
+
+										beginTime = data.receptionBeginTime * 60.0f;
+										endTime = data.receptionEndTime * 60.0f;
+										{
+											ImGui::Checkbox(u8"入力スタック", &data.receptionStack);
+											ImGui::InputFloat(u8"入力受付 開始フレーム", &beginTime);
+											ImGui::InputFloat(u8"入力受付 終了フレーム", &endTime);
+											ImGui::Separator();
+										}
+										data.receptionBeginTime = beginTime / 60.0f;
+										data.receptionEndTime = endTime / 60.0f;
+
+										beginTime = data.dedgeReceptionBeginTime * 60.0f;
+										endTime = data.dedgeReceptionEndTime * 60.0f;
+										{
+											ImGui::InputFloat(u8"回避 入力受付 開始フレーム", &beginTime);
+											ImGui::InputFloat(u8"回避 入力受付 終了フレーム", &endTime);
+											ImGui::Separator();
+										}
+										data.dedgeReceptionBeginTime = beginTime / 60.0f;
+										data.dedgeReceptionEndTime = endTime / 60.0f;
+
+
+										ImGui::InputInt(u8"派生 弱攻撃 番号", &data.weakDerivedAttackState);
+										ImGui::InputInt(u8"派生 強攻撃 番号", &data.strongDerivedAttackState);
+										ImGui::Separator();
+
+										if (attackCount < data.weakDerivedAttackState) data.weakDerivedAttackState = attackCount;
+										if (attackCount < data.strongDerivedAttackState) data.strongDerivedAttackState = attackCount;
+
+										if (data.weakDerivedAttackState <= 0) data.weakDerivedAttackState = 0;
+										if (data.strongDerivedAttackState <= 0)  data.strongDerivedAttackState = 0;
+
+										if (ImGui::Button(u8"削除"))
+										{
+											deleteIndex = count;
+										}
+										ImGui::Separator();
+									}
+									ImGui::TreePop();
+								}
+
+								++count;
 							}
 
-							Player::AttackData data;
-							data.animState = state == -1 ? 0 : state;
+							if (deleteIndex != -1)
+							{
+								attack.datas.erase(attack.datas.begin() + deleteIndex);
+							}
 
-							attack.datas.emplace_back(data);
+							if (ImGui::Button(u8"データ追加") && !saveCheck)
+							{
+								AddData(currentAttackNum);
+							}
 						}
 
 						ImGui::EndTabItem();
@@ -440,6 +465,8 @@ void PlayerEditor::GUI()
 		ImGui::End();
 	}
 
+	player->GUI();
+
 	if (saveExit)
 	{
 		if (5 * 60 <= saveCount++)
@@ -474,8 +501,10 @@ void PlayerEditor::ResetSelected()
 // 新規作成
 void PlayerEditor::NewFile()
 {
-	Player::AttackDataList data;
-	player->SetAttackDatasList(data);
+	Player::AttackDataList dataList;
+	player->SetAttackDatasList(dataList);
+
+	AddAttackData(0);
 }
 
 // ファイルを開く
@@ -503,4 +532,54 @@ void PlayerEditor::SaveFile()
 
 	saveExit = true;
 	saveCount = 0;
+}
+
+void PlayerEditor::AddAttackData(Phoenix::s32 attackNum)
+{
+	Player::AttackDatas datas;
+	player->GetAttackDatasList().attackDatas.emplace_back(datas);
+	
+	AddData(attackNum);
+	
+	selected.emplace_back(false);
+}
+
+void PlayerEditor::AddData(Phoenix::s32 attackNum)
+{
+	auto& attack = player->GetAttackDatasList().attackDatas.at(attackNum);
+
+	Phoenix::s32 state = -1;
+	for (auto& data : attack.datas)
+	{
+		state = data.animState;
+		break;
+	}
+	if (state == -1)
+	{
+		auto& attackDatas = player->GetAttackDatasList().attackDatas;
+		for (Phoenix::s32 i = 0; i < attackDatas.size(); ++i)
+		{
+			if (i == 0)
+			{
+				state = 0;
+			}
+			else
+			{
+				if (attackDatas.at(i).datas.size() <= 0) continue;
+				if (state <= attackDatas.at(i).datas.at(0).animState)
+				{
+					state = attackDatas.at(i).datas.at(0).animState;
+				}
+			}
+		}
+
+		state += 1;
+	}
+
+	if (attackNum == 0) attack.receptionKey = Player::AttackKey::None;
+
+	Player::AttackData data;
+	data.animState = state;
+
+	attack.datas.emplace_back(data);
 }

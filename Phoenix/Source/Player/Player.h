@@ -57,7 +57,7 @@ public:
 public:
 	struct AttackData
 	{
-		Phoenix::s32 animState = -1; // アニメーションステート
+		Phoenix::s32 animState = 0; // アニメーションステート
 		Phoenix::s32 animIndex = 0; // アニメーションレイヤーの番号
 
 		Phoenix::f32 playSpeed = 1.0f; // 再生スピード
@@ -160,8 +160,8 @@ private:
 	Phoenix::f32 rotateY = 0.0f;
 
 	AnimationState animationState;
-	Phoenix::s32 attackState = -1;
-	Phoenix::s32 attackComboState = -1;
+	Phoenix::s32 attackState = 0;
+	Phoenix::s32 attackComboState = 0;
 	Phoenix::s32 currentAttackAnimIndex = -1;
 	AttackDataList attackDatasList;
 
@@ -248,7 +248,7 @@ public:
 		worldMatrix(Phoenix::Math::MatrixIdentity()), 
 		speed(0.0f),
 		animationState(AnimationState::Idle),
-		attackState(-1),
+		attackState(0),
 		isChangeAnimation(false), 
 		isAttack(false),
 		attackReceptionTimeCnt(0.0f),
