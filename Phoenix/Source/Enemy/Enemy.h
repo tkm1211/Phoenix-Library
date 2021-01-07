@@ -5,6 +5,7 @@
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/Object/Object.h"
 #include "Phoenix/FrameWork/Component/Transform.h"
+#include "Phoenix/FrameWork/SharedFromThis/SharedFromThis.h"
 #include "EnemyState.h"
 #include "../AI/StateMachine/BattleEnemyAI.h"
 #include "../AI/StateMachine/BattleEnemyState.h"
@@ -13,11 +14,10 @@
 
 class EnemyManager;
 class Player;
-class Enemy : public std::enable_shared_from_this<Enemy>
+class Enemy : public inheritable_enable_shared_from_this<Enemy>
 {
 public:
-	static constexpr Phoenix::s32 SmallLifeRange = 150;
-	static constexpr Phoenix::s32 LargeLifeRange = 750;
+	static constexpr Phoenix::s32 LifeRange = 150;
 
 public:
 	enum class TypeTag
@@ -43,9 +43,10 @@ public:
 		Death,
 	};
 
+	template <class T>
 	struct AttackData
 	{
-		EnemyAttackState animState; // アニメーションステート
+		T animState; // アニメーションステート
 		Phoenix::s32 animIndex; // アニメーションレイヤーの番号
 
 		Phoenix::f32 playSpeed; // 再生スピード
@@ -57,34 +58,26 @@ public:
 		Phoenix::f32 collisionEndTime; // 当たり判定終了時間（再生フレーム）
 	};
 
+	template <class T>
 	struct AttackDatas
 	{
-		std::vector<AttackData> datas;
+		std::vector<AttackData<T>> datas;
 
-		void AddData(AttackData data)
+		void AddData(AttackData<T> data)
 		{
 			datas.emplace_back(data);
 		}
 	};
 
-private:
+protected:
 	// モデル
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
-	std::shared_ptr<Phoenix::FrameWork::ModelObject> smallModel;
-	std::shared_ptr<Phoenix::FrameWork::ModelObject> bossModel;
 
 	// トランスフォーム
 	std::unique_ptr<Phoenix::FrameWork::Transform> transform;
 
 	// 当たり判定データ
 	std::vector<Phoenix::FrameWork::CollisionData> collisionDatas;
-
-	// 攻撃データリスト
-	std::vector<AttackDatas> attackDatasList;
-
-	// 攻撃ステート
-	std::shared_ptr<BattleEnemy::Attack<EnemyAttackState>> attackState;
-	std::shared_ptr<BattleEnemy::Attack<EnemyAttackState>> bossAttackState;
 
 	// HPゲージUI
 	std::shared_ptr<EnemyUI> ui;
@@ -104,8 +97,6 @@ private:
 	bool changeAnimation = false;
 	bool changeAttackAnimation = false;
 	BattleEnemyState changeState = BattleEnemyState::NoneState;
-	EnemyAttackState changeAttackState = EnemyAttackState::NoneState;
-	EnemyAttackState currentAttackState = EnemyAttackState::NoneState;
 
 	// 種類タグ
 	TypeTag typeTag = TypeTag::Small;
@@ -159,70 +150,79 @@ private:
 	// レイヤー内のステート番号
 	std::map<StateType, Phoenix::s32> stateIndexList;
 
+private:
+	// 攻撃ステート
+	std::shared_ptr<BattleEnemy::Attack<EnemyAttackState, Enemy>> attackState;
+	EnemyAttackState changeAttackState = EnemyAttackState::NoneState;
+	EnemyAttackState currentAttackState = EnemyAttackState::NoneState;
+
+	// 攻撃データリスト
+	std::vector<AttackDatas<EnemyAttackState>> attackDatasList;
+
 public:
 	Enemy() {}
-	~Enemy() {}
+	virtual ~Enemy() {}
 
 public:
 	// 生成
 	static std::shared_ptr<Enemy> Create();
 
 	// コンストラクタ
-	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
+	virtual void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 
 	// 初期化
-	void Initialize();
+	virtual void Initialize();
 
 	// 終了化
-	void Finalize();
+	virtual void Finalize();
 
 	// 更新
-	void Update(bool onControl, Phoenix::f32 elapsedTime);
+	virtual void Update(bool onControl, Phoenix::f32 elapsedTime);
 
 	// トランスフォーム更新
-	void UpdateTransform();
+	virtual void UpdateTransform();
 
 	// 座標更新
-	void UpdateTranslate(Phoenix::f32 elapsedTime);
+	virtual void UpdateTranslate(Phoenix::f32 elapsedTime);
 
 	// 回転更新
-	void UpdateRotate(Phoenix::f32 elapsedTime);
+	virtual void UpdateRotate(Phoenix::f32 elapsedTime);
 
 	// アニメーション更新
-	void UpdateAnimation(Phoenix::f32 elapsedTime);
+	virtual void UpdateAnimation(Phoenix::f32 elapsedTime);
 
 	// AI更新
-	void UpdateAI(Phoenix::f32 elapsedTime);
+	virtual void UpdateAI(Phoenix::f32 elapsedTime);
 
 	// 当たり判定更新
-	void UpdateCollision();
+	virtual void UpdateCollision();
 
 	// UI更新
-	void UpdateUI(Phoenix::Math::Vector2 pos);
+	virtual void UpdateUI(Phoenix::Math::Vector2 pos);
 
 	// 描画
-	void Draw();
+	virtual void Draw();
 
 	// GUI
-	void GUI(Phoenix::s32 index);
+	virtual void GUI(Phoenix::s32 index);
 
 	// アニメーションを移行
-	void ChangeAnimation();
+	virtual void ChangeAnimation();
 
 	// 攻撃ステートを移行
-	void ChangeAttackAnimation();
+	virtual void ChangeAttackAnimation();
 
 	// 攻撃判定
-	void AttackJudgment();
+	virtual void AttackJudgment();
 
 	// プレイヤーとの距離計測
-	void DistanceMeasurement();
+	virtual void DistanceMeasurement();
 
 	// プレイヤーの攻撃視野にいるか判定
-	bool JudgePlayerAttackRange();
+	virtual bool JudgePlayerAttackRange();
 
 	// 新たな回転値の更新
-	void UpdateNewRotate();
+	virtual void UpdateNewRotate();
 
 public:
 	// 有効フラグ設定
@@ -269,12 +269,6 @@ public:
 
 	// 移動方向の指定
 	void SetMoveInput(Phoenix::f32 moveX, Phoenix::f32 moveY);
-
-	// ボスモデルの設定
-	void SetBossModel(std::shared_ptr<Phoenix::FrameWork::ModelObject> model);
-
-	// 種類タグ
-	void SetTypeTag(TypeTag tag);
 
 	// ダメージ
 	void Damage(int damage);

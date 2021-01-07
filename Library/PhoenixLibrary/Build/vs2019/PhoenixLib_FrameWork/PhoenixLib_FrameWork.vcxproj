@@ -44,6 +44,7 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\Shader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\SkyMapShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\StandardShader.h" />
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\SharedFromThis\SharedFromThis.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\StateMachine\StateMachine.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\SystemContainer\SystemContainer.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\System\ActorSystem.h" />

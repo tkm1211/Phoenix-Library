@@ -52,6 +52,7 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 	case BattleEnemyState::Idle:
 		for (const auto& enemy : enemies)
 		{
+			if (!enemy) continue;
 			if (!enemy->GetAlive()) continue;
 			if (!enemy->GetInBattle()) continue;
 
@@ -72,6 +73,7 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 	case BattleEnemyState::Run:
 		for (const auto& enemy : enemies)
 		{
+			if (!enemy) continue;
 			if (!enemy->GetAlive()) continue;
 			if (!enemy->GetInBattle()) continue;
 
@@ -92,6 +94,8 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 	case BattleEnemyState::Attack:
 		for (const auto& enemy : enemies)
 		{
+			if (!enemy) continue;
+
 			++index;
 
 			if (!enemy->GetAlive()) continue;
@@ -161,6 +165,8 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 	case BattleEnemyState::Dedge:
 		for (const auto& enemy : enemies)
 		{
+			if (!enemy) continue;
+
 			++index;
 
 			if (!enemy->GetAlive()) continue;

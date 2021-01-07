@@ -16,9 +16,6 @@
     <Filter Include="Source\Boss">
       <UniqueIdentifier>{0efa3f80-4869-4d74-83be-82aa5cd974e5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Boss\AIState">
-      <UniqueIdentifier>{dd4fc57b-b2e2-4cdf-acf8-bcac2e981e05}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Primitive">
       <UniqueIdentifier>{57bbc2f1-f6d2-4be9-9046-bd860ed35c55}</UniqueIdentifier>
     </Filter>
@@ -69,26 +66,8 @@
     <ClCompile Include="Source\Scene\SceneTitle.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Boss\BossAI.cpp">
-      <Filter>Source\Boss</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Boss\AIState\WaitState.cpp">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Boss\AIState\MoveState.cpp">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Boss\AIState\JumpAttackState.cpp">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Boss\AIState\SwingAttackState.cpp">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene\SceneCommonData.cpp">
       <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Boss\AIState\AvoidState.cpp">
-      <Filter>Source\Boss\AIState</Filter>
     </ClCompile>
     <ClCompile Include="Source\Primitive\GeometricPrimitive.cpp">
       <Filter>Source\Primitive</Filter>
@@ -101,9 +80,6 @@
     </ClCompile>
     <ClCompile Include="Source\UI\BossUI.cpp">
       <Filter>Source\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Boss\AIState\DamageState.cpp">
-      <Filter>Source\Boss\AIState</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\FadeSystem.cpp">
       <Filter>Source\Scene</Filter>
@@ -119,9 +95,6 @@
     </ClCompile>
     <ClCompile Include="Source\UI\TargetMarkUI.cpp">
       <Filter>Source\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Boss\AIState\RotationAttackState.cpp">
-      <Filter>Source\Boss\AIState</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\SceneEvent.cpp">
       <Filter>Source\Scene</Filter>
@@ -182,32 +155,8 @@
     <ClInclude Include="Source\Scene\SceneSystem.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Boss\AI.h">
-      <Filter>Source\Boss</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Boss\BossAI.h">
-      <Filter>Source\Boss</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Boss\AIState\AIState.h">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Boss\AIState\WaitState.h">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Boss\AIState\MoveState.h">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Boss\AIState\JumpAttackState.h">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Boss\AIState\SwingAttackState.h">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene\SceneCommonData.h">
       <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Boss\AIState\AvoidState.h">
-      <Filter>Source\Boss\AIState</Filter>
     </ClInclude>
     <ClInclude Include="Source\Primitive\GeometricPrimitive.h">
       <Filter>Source\Primitive</Filter>
@@ -224,9 +173,6 @@
     <ClInclude Include="Source\UI\BossUI.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Boss\AIState\DamageState.h">
-      <Filter>Source\Boss\AIState</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene\FadeSystem.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
@@ -235,9 +181,6 @@
     </ClInclude>
     <ClInclude Include="Source\UI\TargetMarkUI.h">
       <Filter>Source\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Boss\AIState\RotationAttackState.h">
-      <Filter>Source\Boss\AIState</Filter>
     </ClInclude>
     <ClInclude Include="Source\Mannequin\Mannequin.h">
       <Filter>Source\Mannequin</Filter>

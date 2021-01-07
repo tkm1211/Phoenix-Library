@@ -94,6 +94,9 @@
     <Filter Include="Include\StateMachine">
       <UniqueIdentifier>{bf37f27e-91cb-481f-9b86-0e5e44657a5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\SharedFromThis">
+      <UniqueIdentifier>{564c2955-be47-4e1b-801e-ec406daa73ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\FrameWork\pch.h">
@@ -188,6 +191,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Component\Animator.h">
       <Filter>Include\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\SharedFromThis\SharedFromThis.h">
+      <Filter>Include\SharedFromThis</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

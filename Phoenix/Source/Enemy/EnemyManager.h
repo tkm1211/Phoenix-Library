@@ -8,6 +8,7 @@
 #include "Phoenix/FrameWork/Component/Transform.h"
 #include "Phoenix/FrameWork/Object/Object.h"
 #include "../UI/EnemiesUI.h"
+#include "../Boss/Boss.h"
 
 
 //class Enemy;
@@ -19,13 +20,16 @@ public:
 
 private:
 	std::vector<std::shared_ptr<Enemy>> enemies;
+	std::vector<std::shared_ptr<Enemy>> originEnemies;
+	std::shared_ptr<Boss> boss;
+
 	Phoenix::s32 aliveEnemyCount = 0;
 	Phoenix::s32 battleEnemyCount = 0;
 
 	std::shared_ptr<Player> player;
 	std::shared_ptr<EnemiesUI> enemiesUI;
-	
-	std::shared_ptr<Phoenix::FrameWork::ModelObject> bossModel;
+
+	Phoenix::s32 useOriginCnt = 0;
 
 public:
 	EnemyManager() {}
@@ -58,9 +62,6 @@ public:
 
 	// GUI
 	void GUI();
-
-	// ボスモデル読み込み
-	void CreateBossModel(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
 
 public:
 	// エネミー追加

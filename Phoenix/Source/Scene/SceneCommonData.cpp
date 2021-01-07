@@ -14,9 +14,6 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 {
 	player = Player::Create();
 	player->Construct(graphicsDevice);
-
-	boss = Boss::Create();
-	boss->Construct(graphicsDevice, player.get());
 	
 	enemyManager = EnemyManager::Create();
 	enemyManager->Construct(graphicsDevice);

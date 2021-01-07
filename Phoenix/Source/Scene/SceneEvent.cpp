@@ -28,7 +28,6 @@ void SceneEvent::Construct(SceneSystem* sceneSystem)
 	// 共通データのアドレス取得
 	{
 		player = commonData->player.get();
-		boss = commonData->boss.get();
 		uiSystem = commonData->uiSystem.get();
 		stageModel = commonData->stageModel.get();
 		bossStageModel = commonData->bossStageModel.get();
@@ -223,8 +222,6 @@ void SceneEvent::Initialize()
 		player->Initialize();
 		boss->Initialize();
 
-		boss->SetPosition(Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f));
-
 		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
 		camera->SetRotateX(0.5f);
 		camera->SetRotateY(0.0f);
@@ -332,7 +329,7 @@ void SceneEvent::Update(Phoenix::f32 elapsedTime)
 		camera->EventCamera(focus, front, len);
 		camera->Update();
 
-		boss->Update(false);
+		//boss->Update();
 	}
 }
 

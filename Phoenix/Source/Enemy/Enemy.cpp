@@ -15,58 +15,38 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	// モデル読み込み
 	{
-		smallModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
-		smallModel->Initialize(graphicsDevice);
-		smallModel->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Enemy\\Enemy\\Idle\\Ready_Idle.fbx"); // "..\\Data\\Assets\\Model\\Enemy\\Idle\\Idle.fbx"  // "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Roaring.fbx"
+		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
+		model->Initialize(graphicsDevice);
+		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Enemy\\Enemy\\Idle\\Ready_Idle.fbx"); // "..\\Data\\Assets\\Model\\Enemy\\Idle\\Idle.fbx"  // "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Roaring.fbx"
 	}
 
 	// アニメーション読み込み
 	Phoenix::s32 beginIndex, endIndex;
 	{
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Forward\\Walk_Forward.fbx", -1);
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Back\\Walk_Backward.fbx", -1);
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Right\\Walk_Right.fbx", -1);
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Left\\Walk_Left.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Forward\\Walk_Forward.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Back\\Walk_Backward.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Right\\Walk_Right.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Left\\Walk_Left.fbx", -1);
 
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Run\\Running.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Run\\Running.fbx", -1);
 
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Dedge\\Back_Step.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Dedge\\Back_Step.fbx", -1);
 
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit.fbx", -1);
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit_Big.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit_Big.fbx", -1);
 
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Death\\Dying_Backwards.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Death\\Dying_Backwards.fbx", -1);
 
-		beginIndex = smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Cross_Punch.fbx", -1);
-		smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Punching.fbx", -1);
-		endIndex = smallModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Hook_Punch.fbx", -1);
-
-		/*smallModel->AddAnimationLayer(0); // 0
-		smallModel->AddAnimationLayer(0, 56, 65); // 1
-
-		smallModel->AddAnimationLayer(5); // 2
-		smallModel->AddAnimationLayer(6); // 3
-
-		smallModel->AddAnimationLayer(7); // 4
-		smallModel->AddAnimationLayer(8); // 5
-
-		smallModel->AddAnimationLayer(9); // 6
-
-		smallModel->AddAnimationLayer(10); // 7
-		smallModel->AddAnimationLayer(11); // 8
-		smallModel->AddAnimationLayer(12); // 9
-
-		smallModel->AddBlendAnimationToLayer(1, 1, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f));
-		smallModel->AddBlendAnimationToLayer(2, 1, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f));
-		smallModel->AddBlendAnimationToLayer(3, 1, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f));
-		smallModel->AddBlendAnimationToLayer(4, 1, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f));*/
+		beginIndex = model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Cross_Punch.fbx", -1);
+					 model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Punching.fbx", -1);
+		endIndex   = model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Hook_Punch.fbx", -1);
 
 		Phoenix::s32 layerNum = 0;
 		{
-			layerNum = smallModel->AddAnimationLayer();
+			layerNum = model->AddAnimationLayer();
 			layerIndexList.insert(std::make_pair(LayerType::Base, layerNum));
 
-			layerNum = smallModel->AddAnimationLayer(56, 65);
+			layerNum = model->AddAnimationLayer(56, 65);
 			layerIndexList.insert(std::make_pair(LayerType::LowerBody, layerNum));
 		}
 
@@ -75,7 +55,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		{
 			auto AddState = [&](StateType type, Phoenix::u32 animationIndex, Phoenix::u32 layerIndex)
 			{
-				stateNum = smallModel->AddAnimationStateToLayer(animationIndex, layerIndex);
+				stateNum = model->AddAnimationStateToLayer(animationIndex, layerIndex);
 				stateIndexList.insert(std::make_pair(type, stateNum));
 			};
 
@@ -84,7 +64,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			{
 				for (Phoenix::s32 i = beginIndex; i <= endIndex; ++i)
 				{
-					smallModel->AddAnimationStateToLayer(i, layerNum);
+					model->AddAnimationStateToLayer(i, layerNum);
 				}
 
 				AddState(StateType::Idle, 0, layerNum);
@@ -98,12 +78,12 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			// 下半身レイヤーにブレンドツリー追加
 			layerNum = layerIndexList.at(LayerType::LowerBody);
 			{
-				Phoenix::s32 blendTreeIndex = smallModel->AddBlendTreeToLayer(layerNum);
-				smallModel->AddBlendAnimationStateToBlendTree(0, Phoenix::Math::Vector3( 0.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
-				smallModel->AddBlendAnimationStateToBlendTree(1, Phoenix::Math::Vector3( 0.0f,  1.0f, 0.0f), layerNum, blendTreeIndex);
-				smallModel->AddBlendAnimationStateToBlendTree(2, Phoenix::Math::Vector3( 0.0f, -1.0f, 0.0f), layerNum, blendTreeIndex);
-				smallModel->AddBlendAnimationStateToBlendTree(3, Phoenix::Math::Vector3( 1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
-				smallModel->AddBlendAnimationStateToBlendTree(4, Phoenix::Math::Vector3(-1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+				Phoenix::s32 blendTreeIndex = model->AddBlendTreeToLayer(layerNum);
+				model->AddBlendAnimationStateToBlendTree(0, Phoenix::Math::Vector3( 0.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(1, Phoenix::Math::Vector3( 0.0f,  1.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(2, Phoenix::Math::Vector3( 0.0f, -1.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(3, Phoenix::Math::Vector3( 1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
+				model->AddBlendAnimationStateToBlendTree(4, Phoenix::Math::Vector3(-1.0f,  0.0f, 0.0f), layerNum, blendTreeIndex);
 			}
 		}
 	}
@@ -114,23 +94,23 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 		collisionDatas.at(0).radius = 0.5f;
-		collisionDatas.at(0).boneIndex = smallModel->GetBoneIndex("Hips");
+		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Hips");
 
 		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 		collisionDatas.at(1).radius = 0.25f;
-		collisionDatas.at(1).boneIndex = smallModel->GetBoneIndex("RightHandIndex1");
+		collisionDatas.at(1).boneIndex = model->GetBoneIndex("RightHandIndex1");
 
 		collisionDatas.at(2).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 		collisionDatas.at(2).radius = 0.25f;
-		collisionDatas.at(2).boneIndex = smallModel->GetBoneIndex("LeftHandIndex1");
+		collisionDatas.at(2).boneIndex = model->GetBoneIndex("LeftHandIndex1");
 
 		collisionDatas.at(3).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 		collisionDatas.at(3).radius = 0.25f;
-		collisionDatas.at(3).boneIndex = smallModel->GetBoneIndex("RightFoot");
+		collisionDatas.at(3).boneIndex = model->GetBoneIndex("RightFoot");
 
 		collisionDatas.at(4).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 		collisionDatas.at(4).radius = 0.25f;
-		collisionDatas.at(4).boneIndex = smallModel->GetBoneIndex("HeadTop_End");
+		collisionDatas.at(4).boneIndex = model->GetBoneIndex("HeadTop_End");
 	}
 
 	// アタックデータ生成
@@ -149,7 +129,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			Phoenix::f32 collisionEndTime
 		)
 		{
-			AttackData data;
+			AttackData<EnemyAttackState> data;
 
 			data.animState = animState;
 			data.animIndex = animIndex;
@@ -169,7 +149,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		{
 			// 右ストレート
 			{
-				AttackDatas datas;
+				AttackDatas<EnemyAttackState> datas;
 
 				datas.AddData(SetAttackData(EnemyAttackState::WeakRight, 7, 1.5f, -1.0f, -1.0f, 1, 56.0f, 71.0f));
 
@@ -178,7 +158,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 			// 左ストレート
 			{
-				AttackDatas datas;
+				AttackDatas<EnemyAttackState> datas;
 
 				datas.AddData(SetAttackData(EnemyAttackState::WeakLeft, 8, 1.5f, -1.0f, -1.0f, 2, 20.0f, 40.0f));
 
@@ -187,7 +167,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 			// 右フック
 			{
-				AttackDatas datas;
+				AttackDatas<EnemyAttackState> datas;
 
 				datas.AddData(SetAttackData(EnemyAttackState::StrongRight, 9, 1.5f, -1.0f, -1.0f, 1, 60.0f, 72.0f));
 
@@ -220,8 +200,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		battleAI = BattleEnemyAI::Create();
 		{
 			std::shared_ptr<Enemy> owner = shared_from_this();
-			attackState = BattleEnemy::Attack<EnemyAttackState>::Create(owner);
-			bossAttackState = BattleEnemy::Attack<EnemyAttackState>::Create(owner);
+			attackState = BattleEnemy::Attack<EnemyAttackState, Enemy>::Create(owner);
 
 			battleAI->SetOwner(owner);
 			battleAI->SetUp();
@@ -234,23 +213,16 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			battleAI->AddState(BattleEnemy::DamageBig::Create(owner));
 			battleAI->AddState(BattleEnemy::Guard::Create());
 			battleAI->AddState(BattleEnemy::Death::Create());
-			//battleAI->AddState(attackState);
+			battleAI->AddState(attackState);
 
-			//attackState->AddAttack(EnemyAttackState::WeakRight);
-			//attackState->AddAttack(EnemyAttackState::WeakLeft);
+			attackState->AddAttack(EnemyAttackState::WeakRight);
+			attackState->AddAttack(EnemyAttackState::WeakLeft);
 			attackState->AddAttack(EnemyAttackState::StrongRight);
-			//attackState->AddAttack(EnemyAttackState::StrongLeft);
-
-			bossAttackState->AddAttack(EnemyAttackState::WeakRight);
-			bossAttackState->AddAttack(EnemyAttackState::WeakLeft);
-			bossAttackState->AddAttack(EnemyAttackState::StrongRight);
-			//bossAttackState->AddAttack(EnemyAttackState::StrongLeft);
 		}
 	}
 
 	// その他のパラメータ初期化
 	{
-		model = smallModel;
 		Initialize();
 	}
 }
@@ -272,6 +244,8 @@ void Enemy::Initialize()
 
 	// パラメーター
 	{
+		typeTag = TypeTag::Small;
+
 		enable = false;
 		alive = false;
 		death = false;
@@ -279,8 +253,8 @@ void Enemy::Initialize()
 
 		newRotate = Phoenix::Math::Quaternion::Zero;
 
-		life = SmallLifeRange;
-		lifeMax = SmallLifeRange;
+		life = LifeRange;
+		lifeMax = LifeRange;
 		radius = 0.75f;
 
 		attackReceptionTimeCnt = 0.0f;
@@ -810,40 +784,6 @@ void Enemy::SetMoveInput(Phoenix::f32 moveX, Phoenix::f32 moveY)
 	this->moveY = moveY;
 }
 
-// ボスモデルの設定
-void Enemy::SetBossModel(std::shared_ptr<Phoenix::FrameWork::ModelObject> model)
-{
-	bossModel = model;
-}
-
-// 種類タグ
-void Enemy::SetTypeTag(TypeTag tag)
-{
-	typeTag = tag;
-
-	switch (typeTag)
-	{
-	case Enemy::TypeTag::Small:
-		model = smallModel;
-		life = lifeMax = SmallLifeRange;
-		battleAI->RemoveState(bossAttackState);
-		battleAI->AddState(attackState);
-		break;
-
-	case Enemy::TypeTag::Medium:
-		break;
-
-	case Enemy::TypeTag::Large:
-		model = bossModel;
-		life = lifeMax = LargeLifeRange;
-		battleAI->RemoveState(attackState);
-		battleAI->AddState(bossAttackState);
-		break;
-
-	default: break;
-	}
-}
-
 // アニメーションを移行
 void Enemy::ChangeAnimation()
 {
@@ -958,6 +898,7 @@ void Enemy::ChangeAttackAnimation()
 	changeAttackState = EnemyAttackState::NoneState;
 }
 
+// ダメージ
 void Enemy::Damage(int damage)
 {
 	if (battleAI->GetCurrentStateName() == BattleEnemyState::Dedge) return;

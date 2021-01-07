@@ -420,23 +420,10 @@ void SceneGame::RoundInitialize()
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Large, transform);
 				enemyManager->SetBattleEnemy(0);
 				break;
 			case 1:
-				transform.SetTranslate({ 5,0,-5 });
-				transform.SetRotate({ 0,0,0,1 });
-				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
-				enemyManager->SetBattleEnemy(0);
-
-				transform.SetTranslate({ -5,0,-5 });
-				transform.SetRotate({ 0,0,0,1 });
-				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
-				enemyManager->SetBattleEnemy(1);
-				break;
-			case 2:
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
@@ -455,32 +442,7 @@ void SceneGame::RoundInitialize()
 				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(2);
 				break;
-			case 3:
-				transform.SetTranslate({ 5,0,-5 });
-				transform.SetRotate({ 0,0,0,1 });
-				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
-				enemyManager->SetBattleEnemy(0);
-
-				transform.SetTranslate({ -5,0,-5 });
-				transform.SetRotate({ 0,0,0,1 });
-				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
-				enemyManager->SetBattleEnemy(1);
-
-				transform.SetTranslate({ -5,0,5 });
-				transform.SetRotate({ 0,0,0,1 });
-				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
-				enemyManager->SetBattleEnemy(2);
-
-				transform.SetTranslate({ 5,0,5 });
-				transform.SetRotate({ 0,0,0,1 });
-				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
-				enemyManager->SetBattleEnemy(3);
-				break;
-			case 4:
+			case 2:
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
@@ -653,6 +615,7 @@ void SceneGame::SearchNearEnemy(Phoenix::Math::Vector3& nearEnemyPos, Phoenix::M
 	Phoenix::s32 count = 0;
 	for (const auto& enemy : enemyManager->GetEnemies())
 	{
+		if (!enemy) continue;
 		if (enemy->GetAlive())
 		{
 			Phoenix::Math::Vector3 enemyPos = enemy->GetPosition();
@@ -722,6 +685,7 @@ void SceneGame::UpdatePlayer(Phoenix::f32 elapsedTime)
 		Phoenix::s32 alive = 0;
 		for (const auto& enemy : enemyManager->GetEnemies())
 		{
+			if (!enemy) continue;
 			if (enemy->GetEnable() && enemy->GetAlive())
 			{
 				++alive;
@@ -770,8 +734,9 @@ void SceneGame::UpdateEnemyManager(Phoenix::f32 elapsedTime)
 		enemyManager->Update(onControl && !roundSwitch, elapsedTime);
 	}
 
-	for (const auto& enemy : enemyManager->GetEnemies())
+	/*for (const auto& enemy : enemyManager->GetEnemies())
 	{
+		if (!enemy) continue;
 		if (enemy->GetTypeTag() != Enemy::TypeTag::Large) continue;
 
 		if (enemy->GetAlive())
@@ -792,7 +757,7 @@ void SceneGame::UpdateEnemyManager(Phoenix::f32 elapsedTime)
 
 			break;
 		}
-	}
+	}*/
 }
 
 void SceneGame::UpdateMetaAI(Phoenix::f32 elapsedTime)
@@ -1245,6 +1210,8 @@ void SceneGame::UpdateUI()
 
 	for (const auto& enemy : enemyManager->GetEnemies())
 	{
+		if (!enemy) continue;
+
 		//Phoenix::Math::Vector3 frontVec = camera->GetFocus() - camera->GetEye();
 		Phoenix::Math::Vector3 frontVec = camera->GetFront();
 		Phoenix::Math::Vector3 enemyFromCameraVec = Phoenix::Math::Vector3Normalize(enemy->GetPosition() - camera->GetEye());
@@ -1262,7 +1229,9 @@ void SceneGame::UpdateUI()
 			}
 		}
 		Phoenix::Math::Vector3 pos = enemy->GetPosition();
-		pos.y += 2.15f;
+
+		if (enemy->GetTypeTag() == Enemy::TypeTag::Small) pos.y += 2.15f;
+		if (enemy->GetTypeTag() == Enemy::TypeTag::Large) pos.y += (2.15f * 1.25f);
 
 		Phoenix::Math::Vector3 screenPos = WorldToScreen(pos);
 		enemy->UpdateUI(Phoenix::Math::Vector2(screenPos.x, screenPos.y));
@@ -1325,6 +1294,8 @@ void SceneGame::JudgeGame()
 		Phoenix::s32 death = 0;
 		for (const auto& enemy : enemyManager->GetEnemies())
 		{
+			if (!enemy) continue;
+
 			if (enemy->GetEnable()) ++enable;
 			else continue;
 
@@ -1367,11 +1338,13 @@ void SceneGame::PushingOutEnemies()
 	auto& enemies = enemyManager->GetEnemies();
 	for (Phoenix::s32 i = 0; i < enemies.size(); ++i)
 	{
+		if (!enemies.at(i)) continue;
 		if (!enemies.at(i)->GetAlive()) continue;
 
 		for (Phoenix::s32 j = i + 1; j < enemies.size(); ++j)
 		{
 			if (i == j) continue;
+			if (!enemies.at(j)) continue;
 			if (!enemies.at(j)->GetAlive()) continue;
 
 			Phoenix::Math::Vector3 enemy01Pos = enemies.at(i)->GetPosition();
@@ -1449,6 +1422,8 @@ void SceneGame::PushingOutPlayerAndEnemies()
 
 	for (const auto& enemy : enemyManager->GetEnemies())
 	{
+		if (!enemy) continue;
+
 		++index;
 
 		if (!enemy->GetAlive()) continue;
@@ -1529,6 +1504,7 @@ void SceneGame::PushingOutEnemiesAndStage()
 
 	for (const auto& enemy : enemyManager->GetEnemies())
 	{
+		if (!enemy) continue;
 		if (!enemy->GetAlive()) continue;
 
 		Phoenix::Math::Vector3 enemyPos = enemy->GetPosition();
@@ -1571,6 +1547,8 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 
 	for (const auto& enemy : enemyManager->GetEnemies())
 	{
+		if (!enemy) continue;
+
 		++index;
 
 		if (!enemy->GetAlive()) continue;
@@ -2050,6 +2028,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 						//currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
 						for (const auto& enemy : enemyManager->GetEnemies())
 						{
+							if (!enemy) continue;
 							if (enemy->GetEnable())
 							{
 								currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
@@ -2112,6 +2091,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 						//currentShader->Draw(graphicsDevice, boss->GetWorldMatrix(), boss->GetModel());
 						for (const auto& enemy : enemyManager->GetEnemies())
 						{
+							if (!enemy) continue;
 							if (enemy->GetEnable())
 							{
 								currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
@@ -2370,6 +2350,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 					currentShader->Begin(graphicsDevice, *camera);
 					for (const auto& enemy : enemyManager->GetEnemies())
 					{
+						if (!enemy) continue;
 						if (enemy->GetEnable())
 						{
 							currentShader->Draw(graphicsDevice, enemy->GetWorldMatrix(), enemy->GetModel());
@@ -2387,7 +2368,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 				Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
 
 				Phoenix::Graphics::ContextDX11* contextDX11 = static_cast<Phoenix::Graphics::ContextDX11*>(context);
-				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::Opaque), 0, 0xFFFFFFFF);
+				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 
 				Phoenix::s32 cnt = 0;
 				for(const auto& data : player->GetCollisionDatas())
@@ -2407,12 +2388,15 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 					}
 					else
 					{
-						PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
+						Phoenix::f32 alpha = player->GetAttackCollisionIndex() == cnt ? 1.0f : 0.5f;
+						PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius), alpha);
 					}
 				}
 
 				for (const auto& enemy : enemyManager->GetEnemies())
 				{
+					if (!enemy) continue;
+
 					Phoenix::s32 cnt = 0;
 					for (const auto& data : *enemy->GetCollisionDatas())
 					{
@@ -2423,8 +2407,8 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 								CylinderPrimitiveRender
 								(
 									device, 
-									Phoenix::Math::Vector3(data.pos.x, data.pos.y - 1.0f, data.pos.z),
-									Phoenix::Math::Vector3(data.pos.x, data.pos.y + 1.0f, data.pos.z),
+									Phoenix::Math::Vector3(data.pos.x, data.pos.y - (data.radius * 2.0f), data.pos.z),
+									Phoenix::Math::Vector3(data.pos.x, data.pos.y + (data.radius * 2.0f), data.pos.z),
 									Phoenix::Math::Vector3(data.pos.x, data.pos.y, data.pos.z),
 									Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f),
 									Phoenix::Math::Vector3(data.radius, data.radius, data.radius),
@@ -2433,13 +2417,14 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 							}
 							else
 							{
-								PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius));
+								Phoenix::f32 alpha = enemy->GetAttackCollisionIndex() == cnt ? 1.0f : 0.5f;
+								PrimitiveRender(device, data.pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(data.radius, data.radius, data.radius), alpha);
 							}
 						}
 					}
 				}
 
-				PrimitiveRender(device, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(stageRadius, stageRadius, stageRadius));
+				PrimitiveRender(device, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(stageRadius, stageRadius, stageRadius), 0.5f);
 
 				context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);
 			}
@@ -2621,7 +2606,7 @@ void SceneGame::Draw(Phoenix::f32 elapsedTime)
 	}
 }
 
-void SceneGame::PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale)
+void SceneGame::PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale, Phoenix::f32 alpha)
 {
 	// ƒ[ƒ‹ƒhs—ñ‚ðì¬
 	Phoenix::Math::Matrix W;
@@ -2640,7 +2625,7 @@ void SceneGame::PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::
 		Phoenix::Math::ConvertToFloat4x4FromVector4x4(W * camera->GetView() * camera->GetProjection()),
 		Phoenix::Math::ConvertToFloat4x4FromVector4x4(W),
 		DirectX::XMFLOAT4(1, 1, 1, 1),
-		DirectX::XMFLOAT4(0.0f, 0.6f, 0.0f, 0.5f),
+		DirectX::XMFLOAT4(0.0f, 0.6f, 0.0f, alpha),
 		false
 	);
 }
@@ -2649,12 +2634,12 @@ void SceneGame::CylinderPrimitiveRender(Phoenix::Graphics::DeviceDX11* device, P
 {
 	// Sphere1
 	{
-		PrimitiveRender(device, cp1Translate, rotate, scale);
+		//PrimitiveRender(device, cp1Translate, rotate, scale, 0.5f);
 	}
 
 	// Sphere2
 	{
-		PrimitiveRender(device, cp2Translate, rotate, scale);
+		//PrimitiveRender(device, cp2Translate, rotate, scale, 0.5f);
 	}
 
 	// Cylinder

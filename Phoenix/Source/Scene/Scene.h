@@ -562,7 +562,7 @@ private:
 	void StartUpGUI();
 	void SwitchShader();
 	void NoticeMetaAI();
-	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale);
+	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale, Phoenix::f32 alpha);
 	void CylinderPrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 cp1Translate, Phoenix::Math::Vector3 cp2Translate, Phoenix::Math::Vector3 cyilinderTranslate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale, Phoenix::Math::Vector3 cyilinderScale);
 	Phoenix::Math::Vector3 WorldToScreen(const Phoenix::Math::Vector3& worldPosition);
 };

@@ -955,6 +955,8 @@ void SceneTutorial::Draw(Phoenix::f32 elapsedTime)
 
 				for (auto enemy : enemyManager->GetEnemies())
 				{
+					if (!enemy) continue;
+
 					const auto datas = *enemy->GetCollisionDatas();
 					for (const auto& data : datas)
 					{

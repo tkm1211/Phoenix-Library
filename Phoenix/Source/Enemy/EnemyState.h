@@ -30,3 +30,12 @@ enum class EnemyAttackState
 	StrongRight,
 	StrongLeft,
 };
+
+enum class BossAttackState
+{
+	NoneState,
+
+	RightHook,
+	LeftHook,
+	LeftTurn,
+};

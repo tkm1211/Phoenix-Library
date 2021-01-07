@@ -105,28 +105,28 @@ namespace BattleEnemy
 #pragma endregion
 
 #pragma region Attack
-	template <class T>
+	template <class T, class U>
 	class Attack : public State<BattleEnemyState>
 	{
 	private:
 		static constexpr Phoenix::f32 Speed = 0.1f;
 
 	private:
-		std::shared_ptr<Enemy> owner;
+		std::shared_ptr<U> owner;
 
 		Phoenix::s32 index = 0;
 		T currentAttack = T();
 		std::vector<T> attackList;
 
 	public:
-		Attack(std::shared_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Attack), owner(owner) {}
+		Attack(std::shared_ptr<U> owner) : State<BattleEnemyState>(BattleEnemyState::Attack), owner(owner) {}
 		~Attack() {}
 
 	public:
 		// ¶¬
-		static std::shared_ptr<Attack<T>> Create(std::shared_ptr<Enemy> owner)
+		static std::shared_ptr<Attack<T, U>> Create(std::shared_ptr<U> owner)
 		{
-			return std::make_shared<Attack<T>>(owner);
+			return std::make_shared<Attack<T, U>>(owner);
 		}
 
 		// ó‘Ô‚É“ü‚Á‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éŠÖ”

@@ -25,7 +25,6 @@ class SceneCommonData
 {
 public:
 	std::shared_ptr<Player> player;
-	std::shared_ptr<Boss> boss;
 	std::shared_ptr<EnemyManager> enemyManager;
 	std::shared_ptr<Mannequin> mannequin;
 	std::shared_ptr<MetaAI> metaAI;

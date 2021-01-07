@@ -13,96 +13,22 @@ std::shared_ptr<EnemyManager> EnemyManager::Create()
 // コンストラクタ
 void EnemyManager::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
-	CreateBossModel(graphicsDevice);
-
 	enemies.resize(EnemyRange);
+	originEnemies.resize(EnemyRange);
 
-	for (auto& enemy : enemies)
+	for (auto& enemy : originEnemies)
 	{
 		enemy = std::make_shared<Enemy>();
 		enemy->Construct(graphicsDevice);
-		enemy->SetBossModel(bossModel);
 	}
+
+	boss = Boss::Create();
+	boss->Construct(graphicsDevice);
 
 	enemiesUI = EnemiesUI::Create();
 	enemiesUI->Initialize(graphicsDevice, EnemyRange);
 
 	aliveEnemyCount = 0;
-}
-
-// ボスモデル読み込み
-void EnemyManager::CreateBossModel(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
-{
-	// モデル読み込み
-	{
-		bossModel = std::make_unique<Phoenix::FrameWork::ModelObject>();
-		bossModel->Initialize(graphicsDevice);
-		bossModel->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Enemy\\Boss\\Idle\\Ready_Idle.fbx");
-	}
-
-	// アニメーション読み込み
-	Phoenix::s32 beginIndex, endIndex;
-	{
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Forward\\Walk_Forward.fbx", -1);
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Back\\Walk_Backward.fbx", -1);
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Right\\Walk_Right.fbx", -1);
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Walk\\Left\\Walk_Left.fbx", -1);
-
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Run\\Running.fbx", -1);
-
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Dedge\\Back_Step.fbx", -1);
-
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit.fbx", -1);
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit_Big.fbx", -1);
-
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Death\\Dying_Backwards.fbx", -1);
-
-		beginIndex = bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Cross_Punch.fbx", -1);
-		bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Punching.fbx", -1);
-		endIndex = bossModel->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Attack\\Hook_Punch.fbx", -1);
-
-		Phoenix::s32 layerNum = 0;
-		{
-			layerNum = bossModel->AddAnimationLayer();
-			layerNum = bossModel->AddAnimationLayer(56, 65);
-		}
-
-		// ステート追加
-		Phoenix::s32 stateNum = 0;
-		{
-			auto AddState = [&](Enemy::StateType type, Phoenix::u32 animationIndex, Phoenix::u32 layerIndex)
-			{
-				stateNum = bossModel->AddAnimationStateToLayer(animationIndex, layerIndex);
-			};
-
-			// ベースレイヤーにステート追加
-			layerNum = 0;
-			{
-				for (Phoenix::s32 i = beginIndex; i <= endIndex; ++i)
-				{
-					bossModel->AddAnimationStateToLayer(i, layerNum);
-				}
-
-				AddState(Enemy::StateType::Idle, 0, layerNum);
-				AddState(Enemy::StateType::Run, 5, layerNum);
-				AddState(Enemy::StateType::DamageSmall, 7, layerNum);
-				AddState(Enemy::StateType::DamageBig, 8, layerNum);
-				AddState(Enemy::StateType::Dedge, 6, layerNum);
-				AddState(Enemy::StateType::Death, 9, layerNum);
-			}
-
-			// 下半身レイヤーにブレンドツリー追加
-			layerNum = 1;
-			{
-				Phoenix::s32 blendTreeIndex = bossModel->AddBlendTreeToLayer(layerNum);
-				bossModel->AddBlendAnimationStateToBlendTree(0, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), layerNum, blendTreeIndex);
-				bossModel->AddBlendAnimationStateToBlendTree(1, Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), layerNum, blendTreeIndex);
-				bossModel->AddBlendAnimationStateToBlendTree(2, Phoenix::Math::Vector3(0.0f, -1.0f, 0.0f), layerNum, blendTreeIndex);
-				bossModel->AddBlendAnimationStateToBlendTree(3, Phoenix::Math::Vector3(1.0f, 0.0f, 0.0f), layerNum, blendTreeIndex);
-				bossModel->AddBlendAnimationStateToBlendTree(4, Phoenix::Math::Vector3(-1.0f, 0.0f, 0.0f), layerNum, blendTreeIndex);
-			}
-		}
-	}
 }
 
 // 初期化
@@ -116,6 +42,8 @@ void EnemyManager::Finalize()
 {
 	for (auto& enemy : enemies)
 	{
+		if (!enemy) continue;
+
 		enemy->Finalize();
 		enemy.reset();
 	}
@@ -127,6 +55,7 @@ void EnemyManager::Update(bool onControl, Phoenix::f32 elapsedTime)
 {
 	for (auto enemy : enemies)
 	{
+		if (!enemy) continue;
 		enemy->Update(onControl, elapsedTime);
 	}
 }
@@ -157,45 +86,67 @@ void EnemyManager::Draw()
 // エネミー追加
 void EnemyManager::AddEnemy(Enemy::TypeTag tag, Phoenix::FrameWork::Transform transform)
 {
-	Phoenix::s32 index = 0;
-	for (auto enemy : enemies)
+	for (Phoenix::s32 i = 0; i < enemies.size(); ++i)
 	{
-		if (!enemy->GetEnable())
+		if (enemies.at(i))
 		{
-			enemy->SetTypeTag(tag);
-			enemy->Initialize();
-			enemy->SetEnable(true);
-			enemy->SetAlive(true);
-			enemy->SetDeath(false);
-			enemy->SetTransform(transform);
-			enemy->SetOwner(shared_from_this());
-			enemy->SetPlayer(player);
-
-			enemiesUI->AddUI(index, enemy->GetUI());
-
-			++aliveEnemyCount;
-			++battleEnemyCount; // TODO : delete.
-
-			break;
+			if (enemies.at(i)->GetEnable()) continue;
 		}
 
-		++index;
+		if (tag == Enemy::TypeTag::Small)
+		{
+			enemies.at(i) = originEnemies.at(useOriginCnt);
+			transform.SetScale({ 1.0f,1.0f,1.0f });
+			++useOriginCnt;
+		}
+		else if (tag == Enemy::TypeTag::Large)
+		{
+			enemies.at(i) = boss;
+			transform.SetScale({ 1.4f,1.4f,1.4f });
+		}
+
+		enemies.at(i)->Initialize();
+		enemies.at(i)->SetEnable(true);
+		enemies.at(i)->SetAlive(true);
+		enemies.at(i)->SetDeath(false);
+		enemies.at(i)->SetTransform(transform);
+		enemies.at(i)->SetOwner(shared_from_this());
+		enemies.at(i)->SetPlayer(player);
+
+		enemiesUI->AddUI(i, enemies.at(i)->GetUI());
+
+		++aliveEnemyCount;
+		++battleEnemyCount; // TODO : delete.
+
+		break;
 	}
 }
 
 // エネミー達解除
 void EnemyManager::ResetEnemies()
 {
-	for (auto enemy : enemies)
+	for (auto enemy : originEnemies)
 	{
 		enemy->SetEnable(false);
 		enemy->SetAlive(false);
 		enemy->SetDeath(false);
 		enemy->SetState(BattleEnemyState::Idle);
 	}
+	{
+		boss->SetEnable(false);
+		boss->SetAlive(false);
+		boss->SetDeath(false);
+		boss->SetState(BattleEnemyState::Idle);
+	}
+
+	for (Phoenix::s32 i = 0; i < enemies.size(); ++i)
+	{
+		enemies.at(i) = nullptr;
+	}
 
 	aliveEnemyCount = 0;
 	battleEnemyCount = 0;
+	useOriginCnt = 0;
 }
 
 // エネミー生存最大数からカウントダウン
