@@ -2,7 +2,9 @@
 
 #include <memory>
 #include "../EditorSystem/EditorSystem.h"
+#include "../Source/Graphics/Device/Win/DirectX11/DeviceDX11.h"
 #include "Player/Player.h"
+#include "Primitive/GeometricPrimitive.h"
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/Shader/BasicSkinShader.h"
 #include "Phoenix/FrameWork/Shader/PBRShader.h"
@@ -16,6 +18,7 @@ private:
 	std::unique_ptr<Phoenix::Graphics::Camera> camera;
 	std::shared_ptr<Phoenix::FrameWork::IShader> basicSkinShader;
 	std::shared_ptr<Phoenix::FrameWork::IShader> pbrShader;
+	std::shared_ptr<GeometricPrimitive> primitive;
 	std::vector<bool> selected;
 	Phoenix::s32 currentAttackNum = -1;
 	std::vector<bool> helpOpen;
@@ -77,4 +80,6 @@ public:
 	void AddAttackData(Phoenix::s32 attackNum);
 
 	void AddData(Phoenix::s32 attackNum);
+
+	void PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale);
 };

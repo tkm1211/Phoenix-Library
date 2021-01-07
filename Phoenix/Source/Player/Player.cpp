@@ -80,14 +80,17 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Turn_Kick_01.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Turn_Kick_End.fbx", -1);
 
-		endIndex = model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Mma_Kick.fbx", -1); // 33
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\TurnKick\\Mma_Kick.fbx", -1); // 33
 
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit_Small.fbx", -1); // 34
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // 35
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\InvTurnKick\\Inv_Right_Turn_Kick.fbx", -1); // 34
+		endIndex = model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Attack\\Strong\\InvTurnKick\\Inv_Left_Turn_Kick.fbx", -1); // 35
 
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Guard\\Ready_Idle.fbx", -1); // 36
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit_Small.fbx", -1); // 36
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Damage\\Head_Hit.fbx", -1); // 37
 
-		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Death\\Dying.fbx", -1); // 37
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Guard\\Ready_Idle.fbx", -1); // 38
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Death\\Dying.fbx", -1); // 39
 	}
 
 	// アニメーターデータ構築
@@ -1062,7 +1065,7 @@ void Player::ChangeAttackAnimation(Phoenix::s32 layerIndex)
 	Phoenix::f32 beginTime = attackDatasList.attackDatas.at(index).datas.at(attackComboState).playBeginTime;
 	Phoenix::f32 endTime = attackDatasList.attackDatas.at(index).datas.at(attackComboState).playEndTime;
 
-	if (0 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 18)
+	if (0 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 18 || 20 <= animIndex && animIndex <= 21)
 	{
 		model->PlayAnimation(layerIndex, animIndex, 0, 0.2f);
 	}
@@ -1211,6 +1214,7 @@ bool Player::AccumulationDamege()
 				speed = 0.0f;
 				animationState = AnimationState::Idle;
 				attackState = 0;
+				attackComboState = 0;
 			}
 		}
 	}
@@ -1225,6 +1229,7 @@ bool Player::AccumulationDamege()
 		animationState = AnimationState::Damage;
 
 		attackState = 0;
+		attackComboState = 0;
 		attackReceptionTimeCnt = 0;
 
 		accumulationDamege = 0;

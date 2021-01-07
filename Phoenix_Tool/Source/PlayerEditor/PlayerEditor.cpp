@@ -31,6 +31,9 @@ bool PlayerEditor::Initialize(std::shared_ptr<Phoenix::Graphics::IGraphicsDevice
 	selected.resize(player->GetAttackDatasList().attackDatas.size());
 	ResetSelected();
 
+	Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
+	primitive = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 1);
+
 	currentAttackNum = -1;
 
 	helpOpen.resize(10);
@@ -77,7 +80,7 @@ void PlayerEditor::Update(Phoenix::f32 elapsedTime)
 		lerp = Phoenix::Math::f32Lerp(lerp, 1.0f, 0.01f * elapsedTime);
 		cameraLen = Phoenix::Math::f32Lerp(cameraLen, 6.0f, 0.05f * elapsedTime);
 
-		camera->ControllerCamera02(true, player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), cameraLen, lerp);
+		camera->ControllerCamera02(true, player->GetPosition(), Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), cameraLen, elapsedTime, lerp);
 	}
 
 	Phoenix::FrameWork::LightState* light = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader.get())->GetLight();
@@ -89,9 +92,29 @@ void PlayerEditor::Update(Phoenix::f32 elapsedTime)
 // 描画
 void PlayerEditor::Draw(Phoenix::f32 elapsedTime)
 {
+	Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
+
 	pbrShader->Begin(graphicsDevice.get(), *camera);
 	pbrShader->Draw(graphicsDevice.get(), player->GetWorldMatrix(), player->GetModel());
 	pbrShader->End(graphicsDevice.get());
+
+	if (currentAttackNum != -1)
+	{
+		auto& list = player->GetAttackDatasList();
+		auto& datas = player->GetCollisionDatas();
+		for (Phoenix::s32 i = 0; i < datas.size(); ++i)
+		{
+			for (Phoenix::s32 j = 0; j < list.attackDatas.at(currentAttackNum).datas.size(); ++j)
+			{
+				if (list.attackDatas.at(currentAttackNum).datas.at(j).collisionNum <= 0) continue;
+				if (i == list.attackDatas.at(currentAttackNum).datas.at(j).collisionNum)
+				{
+					PrimitiveRender(device, datas.at(i).pos, Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f), Phoenix::Math::Vector3(0.25f, 0.25f, 0.25f));
+					break;
+				}
+			}
+		}
+	}
 }
 
 // GUI
@@ -290,8 +313,8 @@ void PlayerEditor::GUI()
 								{
 									if (!saveCheck)
 									{
-										ImGui::InputInt(u8"animState", &data.animState);
-										ImGui::Separator();
+										/*ImGui::InputInt(u8"animState", &data.animState);
+										ImGui::Separator();*/
 
 										Phoenix::s32 index = data.animIndex + 1;
 										{
@@ -428,12 +451,18 @@ void PlayerEditor::GUI()
 			ImGui::Text(u8"強 右フック : 16");
 			ImGui::Separator();
 
-			ImGui::Text(u8"強 左キック 始め : 17");
-			ImGui::Text(u8"強 左キック 中 : 18");
-			ImGui::Text(u8"強 左キック 終わり : 19");
+			ImGui::Text(u8"強 左ターンキック 始め : 17");
+			ImGui::Text(u8"強 左ターンキック 中 : 18");
+			ImGui::Text(u8"強 左ターンキック 終わり : 19");
 			ImGui::Separator();
 
-			ImGui::Text(u8"強 右キック : 20");
+			ImGui::Text(u8"強 右ターンキック : 20");
+			ImGui::Separator();
+
+			ImGui::Text(u8"強 逆 左ターンキック : 21");
+			ImGui::Separator();
+
+			ImGui::Text(u8"強 逆 右ターンキック : 22");
 			ImGui::Separator();
 		}
 		ImGui::End();
@@ -465,7 +494,7 @@ void PlayerEditor::GUI()
 		ImGui::End();
 	}
 
-	player->GUI();
+	//player->GUI();
 
 	if (saveExit)
 	{
@@ -582,4 +611,28 @@ void PlayerEditor::AddData(Phoenix::s32 attackNum)
 	data.animState = state;
 
 	attack.datas.emplace_back(data);
+}
+
+void PlayerEditor::PrimitiveRender(Phoenix::Graphics::DeviceDX11* device, Phoenix::Math::Vector3 translate, Phoenix::Math::Vector3 rotate, Phoenix::Math::Vector3 scale)
+{
+	// ワールド行列を作成
+	Phoenix::Math::Matrix W;
+	{
+		Phoenix::Math::Matrix S, R, T;
+		S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
+		R = Phoenix::Math::MatrixRotationRollPitchYaw(rotate.x, rotate.y, rotate.z);
+		T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
+
+		W = S * R * T;
+	}
+
+	primitive->Render
+	(
+		device->GetD3DContext(),
+		Phoenix::Math::ConvertToFloat4x4FromVector4x4(W * camera->GetView() * camera->GetProjection()),
+		Phoenix::Math::ConvertToFloat4x4FromVector4x4(W),
+		DirectX::XMFLOAT4(1, 1, 1, 1),
+		DirectX::XMFLOAT4(0.0f, 0.6f, 0.0f, 0.5f),
+		false
+	);
 }
