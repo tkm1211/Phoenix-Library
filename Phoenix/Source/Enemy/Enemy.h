@@ -97,6 +97,8 @@ protected:
 	bool changeAnimation = false;
 	bool changeAttackAnimation = false;
 	BattleEnemyState changeState = BattleEnemyState::NoneState;
+	Phoenix::f32 playBeginTime = 0.0f;
+	Phoenix::f32 playEndTime = 0.0f;
 
 	// Ží—Þƒ^ƒO
 	TypeTag typeTag = TypeTag::Small;

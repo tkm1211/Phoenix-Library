@@ -31,6 +31,7 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		model->Initialize(graphicsDevice);
 		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Player\\Vampire_A_Lusth\\Idle\\Breathing_Idle.fbx");
+		model->SetHipID("Hips");
 	}
 
 	// アニメーション読み込み

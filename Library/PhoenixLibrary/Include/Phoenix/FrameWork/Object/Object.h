@@ -1377,6 +1377,8 @@ namespace Phoenix
 			void SetBlendRate(f32 rate);
 			void SetBlendRate(Phoenix::Math::Vector3 rate);
 
+			void SetHipID(const Phoenix::s8* nodeName);
+
 			// モデルリソースの取得
 			Graphics::IModelResource* GetModelResource() { return modelResource.get(); }
 
@@ -2238,6 +2240,8 @@ namespace Phoenix
 		
 			//f32 blendRate = 0.0f;
 			Phoenix::Math::Vector3 blendRate = { 0.0f, 0.0f, 0.0f };
+
+			Phoenix::u32 hipNodeID = 0;
 		
 		public:
 			void Initialize(ModelObject* model)
@@ -2783,6 +2787,18 @@ namespace Phoenix
 			{
 				blendRate = rate;
 			}
+
+			void SetHipID(const Phoenix::s8* nodeName)
+			{
+				for (u32 i = 0; i < nodes->size(); ++i)
+				{
+					if (FND::StrCmp(nodes->at(i).name, nodeName) == 0)
+					{
+						hipNodeID = i;
+						break;
+					}
+				}
+			}
 		
 			// アニメーションバンクインデックス取得
 			u32 GetAnimationBankIndex(const char* name) const
@@ -3002,7 +3018,7 @@ namespace Phoenix
 								Math::Quaternion rotate = node.rotate;
 								Math::Vector3 translate = node.translate;
 
-								if (animationNodeID == 1 || (blendCurrentAnimationLayer[layerCount]->beginNodeIndex <= animationNodeID && animationNodeID <= blendCurrentAnimationLayer[layerCount]->endNodeIndex))
+								if (animationNodeID == hipNodeID || (blendCurrentAnimationLayer[layerCount]->beginNodeIndex <= animationNodeID && animationNodeID <= blendCurrentAnimationLayer[layerCount]->endNodeIndex))
 								{
 									scale = blendCurrentNode.scale;
 									rotate = blendCurrentNode.rotate;
@@ -3030,7 +3046,7 @@ namespace Phoenix
 								Math::Quaternion rotate = node.rotate;
 								Math::Vector3 translate = node.translate;
 
-								if (animationNodeID == 1 || (blendCurrentAnimationLayer[layerCount]->beginNodeIndex <= animationNodeID && animationNodeID <= blendCurrentAnimationLayer[layerCount]->endNodeIndex))
+								if (animationNodeID == hipNodeID || (blendCurrentAnimationLayer[layerCount]->beginNodeIndex <= animationNodeID && animationNodeID <= blendCurrentAnimationLayer[layerCount]->endNodeIndex))
 								{
 									scale = blendCurrentNode.scale;
 									rotate = blendCurrentNode.rotate;

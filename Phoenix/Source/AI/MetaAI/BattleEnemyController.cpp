@@ -58,7 +58,7 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 
 			if (enemy->GetBattleState() == BattleEnemyState::Idle)
 			{
-				if (enemy->InBattleTerritory())
+				if (enemy->InBattleTerritory() && (enemy->GetTypeTag() == Enemy::TypeTag::Small))
 				{
 					enemy->SetState(BattleEnemyState::Walk);
 				}
@@ -79,7 +79,7 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 
 			if (enemy->GetBattleState() == BattleEnemyState::Idle)
 			{
-				if (enemy->InBattleTerritory())
+				if (enemy->InBattleTerritory() && (enemy->GetTypeTag() == Enemy::TypeTag::Small))
 				{
 					enemy->SetState(BattleEnemyState::Walk);
 				}

@@ -465,6 +465,7 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		model->Initialize(graphicsDevice);
 		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Enemy\\Boss02\\Idle\\Idle.fbx");
+		model->SetHipID("Mutant:Hips");
 	}
 
 	// アニメーション読み込み
@@ -599,7 +600,7 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			{
 				AttackDatas<BossAttackState> datas;
 
-				datas.AddData(SetAttackData(BossAttackState::LeftHook, 8, 1.0f, -1.0f, -1.0f, 1, 55.0f, 70.0f));
+				datas.AddData(SetAttackData(BossAttackState::LeftHook, 8, 1.5f, -1.0f, 96.0f, 1, 55.0f, 70.0f));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -646,7 +647,7 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 			battleAI->AddState(BattleEnemy::Idle::Create());
 			battleAI->AddState(BattleEnemy::Walk::Create(owner));
-			battleAI->AddState(BattleEnemy::Run::Create(owner));
+			battleAI->AddState(BattleBoss::Run::Create(owner));
 			battleAI->AddState(BattleEnemy::Dedge::Create(owner));
 			battleAI->AddState(BattleEnemy::DamageSmall::Create(owner));
 			battleAI->AddState(BattleEnemy::DamageBig::Create(owner));
@@ -845,23 +846,50 @@ void Boss::ChangeAttackAnimation()
 	switch (changeAttackState)
 	{
 	case BossAttackState::RightHook:
-		model->PlayAnimation(baseLayerIndex, 0, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, 0, 1, 0.5f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(attackAnimationSpeed);
+		if (0.0f <= playBeginTime)
+		{
+			model->SetBeginTime(playBeginTime);
+			model->SetCurrentTime(playBeginTime);
+		}
+		if (0.0f < playEndTime)
+		{
+			model->SetEndTime(playEndTime);
+		}
 
 		break;
 
 	case BossAttackState::LeftHook:
-		model->PlayAnimation(baseLayerIndex, 1, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, 1, 1, 0.5f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(attackAnimationSpeed);
+		if (0.0f <= playBeginTime)
+		{
+			model->SetBeginTime(playBeginTime);
+			model->SetCurrentTime(playBeginTime);
+		}
+		if (0.0f < playEndTime)
+		{
+			model->SetEndTime(playEndTime);
+		}
 
 		break;
 
 	case BossAttackState::LeftTurn:
-		model->PlayAnimation(baseLayerIndex, 2, 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, 2, 1, 0.5f);
 		model->SetLoopAnimation(false);
 		model->SetSpeed(attackAnimationSpeed);
+		if (0.0f <= playBeginTime)
+		{
+			model->SetBeginTime(playBeginTime);
+			model->SetCurrentTime(playBeginTime);
+		}
+		if (0.0f < playEndTime)
+		{
+			model->SetEndTime(playEndTime);
+		}
 
 		break;
 
@@ -886,6 +914,8 @@ void Boss::SetAttackState(BossAttackState state)
 		if (state == data.datas.at(0).animState)
 		{
 			attackAnimationSpeed = data.datas.at(0).playSpeed;
+			playBeginTime = data.datas.at(0).playBeginTime;
+			playEndTime = data.datas.at(0).playEndTime;
 		}
 	}
 	attackReceptionTimeCnt = 0.0f;

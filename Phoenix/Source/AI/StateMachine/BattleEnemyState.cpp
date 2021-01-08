@@ -27,7 +27,7 @@ namespace BattleEnemy
 	// 更新
 	BattleEnemyState Idle::Update(Phoenix::f32 elapsedTime)
 	{
-		if ((MaxCount * elapsedTime) <= timeCounter)
+		if (MaxCount <= timeCounter)
 		{
 			canChangeState = true;
 			timeCounter = 0;
@@ -88,7 +88,7 @@ namespace BattleEnemy
 			return BattleEnemyState::Run;
 		}
 
-		owner->SetMoveInput(moveX, -1.0f);
+		owner->SetMoveInput(0.0f, -1.0f);
 		owner->SetMoveSpeed(Speed);
 		return BattleEnemyState::NoneState;
 	}
@@ -303,6 +303,97 @@ namespace BattleEnemy
 	// 更新
 	BattleEnemyState Death::Update(Phoenix::f32 elapsedTime)
 	{
+		return BattleEnemyState::NoneState;
+	}
+#pragma endregion
+}
+
+namespace BattleBoss
+{
+#pragma region Walk
+	// 生成
+	std::shared_ptr<Walk> Walk::Create(std::shared_ptr<Enemy> owner)
+	{
+		return std::make_shared<Walk>(owner);
+	}
+
+	// 状態に入ったときに呼ばれる関数
+	void Walk::SetUp()
+	{
+		moveX = 0.0f;
+
+		Phoenix::s32 judge = rand() % 2;
+
+		if (judge)
+		{
+			moveX = -1.0f;
+		}
+		else
+		{
+			moveX = 1.0f;
+		}
+	}
+
+	// 次の状態に移る前に呼ばれる関数
+	void Walk::CleanUp()
+	{
+
+	}
+
+	// 更新
+	BattleEnemyState Walk::Update(Phoenix::f32 elapsedTime)
+	{
+		if (owner->InDistanceHitByAttack())
+		{
+			owner->SetMoveInput(0.0f, 0.0f);
+			owner->SetMoveSpeed(0.0f);
+			//return BattleEnemyState::Attack;
+			return BattleEnemyState::Idle;
+		}
+		else if (!owner->InBattleTerritory())
+		{
+			owner->SetMoveInput(0.0f, 0.0f);
+			owner->SetMoveSpeed(0.0f);
+			return BattleEnemyState::Run;
+		}
+
+		owner->SetMoveInput(0.0f, -1.0f);
+		owner->SetMoveSpeed(Speed);
+		return BattleEnemyState::NoneState;
+	}
+#pragma endregion
+
+#pragma region Run
+	// 生成
+	std::shared_ptr<Run> Run::Create(std::shared_ptr<Enemy> owner)
+	{
+		return std::make_shared<Run>(owner);
+	}
+
+	// 状態に入ったときに呼ばれる関数
+	void Run::SetUp()
+	{
+
+	}
+
+	// 次の状態に移る前に呼ばれる関数
+	void Run::CleanUp()
+	{
+
+	}
+
+	// 更新
+	BattleEnemyState Run::Update(Phoenix::f32 elapsedTime)
+	{
+		if (owner->InDistanceHitByAttack())
+		{
+			owner->SetMoveInput(0.0f, 0.0f);
+			owner->SetMoveSpeed(0.0f);
+			return BattleEnemyState::Idle;
+		}
+
+		owner->SetMoveInput(0.0f, -1.0f);
+		owner->SetMoveSpeed(Speed);
 		return BattleEnemyState::NoneState;
 	}
 #pragma endregion

@@ -361,5 +361,10 @@ namespace Phoenix
 		{
 			animator->SetBlendRate(rate);
 		}
+
+		void ModelObject::SetHipID(const Phoenix::s8* nodeName)
+		{
+			animator->SetHipID(nodeName);
+		}
 	}
 }

@@ -18,6 +18,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		model = std::make_unique<Phoenix::FrameWork::ModelObject>();
 		model->Initialize(graphicsDevice);
 		model->Load(graphicsDevice, "..\\Data\\Assets\\Model\\Enemy\\Enemy\\Idle\\Ready_Idle.fbx"); // "..\\Data\\Assets\\Model\\Enemy\\Idle\\Idle.fbx"  // "..\\Data\\Assets\\Model\\Boss\\Mutant\\Idle\\Mutant_Roaring.fbx"
+		model->SetHipID("Hips");
 	}
 
 	// アニメーション読み込み
@@ -448,7 +449,7 @@ void Enemy::UpdateAnimation(Phoenix::f32 elapsedTime)
 {
 	if (battleAI->GetCurrentStateName() == BattleEnemyState::Walk)
 	{
-		model->SetBlendRate(Phoenix::Math::Vector3(-moveX, moveY, 0.0f));
+		model->SetBlendRate(Phoenix::Math::Vector3(-moveX, -moveY, 0.0f));
 	}
 
 	model->UpdateTransform(elapsedTime / 60.0f);
@@ -722,6 +723,12 @@ void Enemy::SetOwner(std::shared_ptr<EnemyManager> owner)
 // ステートを変更
 void Enemy::SetState(BattleEnemyState state, bool forcedChange)
 {
+	/*if (battleAI->GetCurrentStateName() == BattleEnemyState::DamageSmall || battleAI->GetCurrentStateName() == BattleEnemyState::DamageBig)
+	{
+		Phoenix::s32 temp = 0;
+		temp++;
+	}*/
+
 	Phoenix::s32 check = battleAI->GoToState(state, forcedChange);
 
 	if (check != -1)
@@ -795,7 +802,7 @@ void Enemy::ChangeAnimation()
 	switch (changeState)
 	{
 	case BattleEnemyState::Idle:
-		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Idle), 1, 0.2f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Idle), 1, 0.5f);
 		model->SetLoopAnimation(true);
 		break;
 
@@ -804,6 +811,9 @@ void Enemy::ChangeAnimation()
 		model->SimultaneousPlayBlendTreeAniamation(lowerBodyLayerIndex, 0, 1, 0.2f);
 		model->SetLoopAnimation(true);
 		model->SetBlendLoopAnimation(true);
+
+		/*model->PlayBlendTreeAnimation(lowerBodyLayerIndex, 0, 1, 0.2f);
+		model->SetLoopAnimation(true);*/
 		break;
 
 	case BattleEnemyState::Run:

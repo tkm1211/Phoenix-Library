@@ -420,7 +420,7 @@ void SceneGame::RoundInitialize()
 				transform.SetTranslate({ 0,0,-5 });
 				transform.SetRotate({ 0,0,0,1 });
 				transform.SetScale({ 1.0f,1.0f,1.0f });
-				enemyManager->AddEnemy(Enemy::TypeTag::Large, transform);
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(0);
 				break;
 			case 1:
