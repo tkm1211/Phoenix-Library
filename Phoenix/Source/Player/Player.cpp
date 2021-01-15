@@ -19,11 +19,13 @@ CEREAL_CLASS_VERSION(Player::AttackDatas, 1)
 CEREAL_CLASS_VERSION(Player::AttackData, 1)
 
 
+// 生成
 std::unique_ptr<Player> Player::Create()
 {
 	return std::make_unique<Player>();
 }
 
+// コンストラクタ
 void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	// モデル読み込み
@@ -208,6 +210,7 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	}
 }
 
+// 初期化
 void Player::Initialize()
 {
 	// アニメーションパラメーターの設定
@@ -282,11 +285,13 @@ void Player::Initialize()
 	}
 }
 
+// 終了化
 void Player::Finalize()
 {
 	attackDatasList.attackDatas.clear();
 }
 
+// 更新
 void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::f32 elapsedTime, bool attackLoad)
 {
 	if (attackLoad)
@@ -423,6 +428,7 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::
 	}
 }
 
+// トランスフォーム更新
 void Player::UpdateTrasform()
 {
 	Phoenix::Math::Vector3 scale = this->scale;
@@ -437,6 +443,7 @@ void Player::UpdateTrasform()
 	worldMatrix = S * R * T;
 }
 
+// UI更新
 void Player::UpdateUI()
 {
 	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
@@ -445,6 +452,7 @@ void Player::UpdateUI()
 	ui->Update((hp / MaxLife) * 100.0f);
 }
 
+// 操作更新
 void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime, bool control) // TODO : re -> player control
 {
 	Phoenix::f32 sX = 0.0f;
@@ -939,6 +947,7 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	}
 }
 
+// アニメーション移行
 void Player::ChangeAnimation()
 {
 	if (!isChangeAnimation) return;
@@ -1025,6 +1034,7 @@ void Player::ChangeAnimation()
 	isChangeAnimation = false;
 }
 
+// 攻撃アニメーション移行
 void Player::ChangeAttackAnimation(Phoenix::s32 layerIndex)
 {
 	Phoenix::s32 index = attackState;
@@ -1055,6 +1065,7 @@ void Player::ChangeAttackAnimation(Phoenix::s32 layerIndex)
 	}
 }
 
+// 攻撃判定
 void Player::AttackJudgment()
 {
 	if (isAttack)
@@ -1135,6 +1146,7 @@ void Player::AttackJudgment()
 	}
 }
 
+// ジャスト回避判定
 bool Player::OnJustDedge()
 {
 	// 回避中の場合
@@ -1150,6 +1162,7 @@ bool Player::OnJustDedge()
 	return false;
 }
 
+// ダメージ更新
 bool Player::Damage(int damage, Phoenix::u32 damagePower)
 {
 	// 回避中又は無敵中の場合
@@ -1168,6 +1181,7 @@ bool Player::Damage(int damage, Phoenix::u32 damagePower)
 	return false;
 }
 
+// 蓄積ダメージ
 bool Player::AccumulationDamege()
 {
 	if (animationState == AnimationState::Damage)
@@ -1214,6 +1228,7 @@ bool Player::AccumulationDamege()
 	return false;
 }
 
+// GUI
 void Player::GUI()
 {
 	static Phoenix::s32 animClip = 0;
@@ -1246,6 +1261,135 @@ void Player::GUI()
 		}
 		ImGui::TreePop();
 	}
+}
+
+// ターゲット方向に回転
+void Player::Rotation(Phoenix::Math::Vector3 targetPos)
+{
+	Phoenix::Math::Vector3 dir = targetPos - pos;
+	dir = Phoenix::Math::Vector3Normalize(dir);
+	dir.y = 0.0f;
+
+	//Phoenix::Math::Quaternion rotate = boss->GetRotate();
+	Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+	Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
+	Phoenix::Math::Vector3 up = Phoenix::Math::Vector3(m._21, m._22, m._23);
+	Phoenix::Math::Vector3 right = Phoenix::Math::Vector3(m._11, m._12, m._13);
+	forward.y = 0.0f;
+
+	Phoenix::f32 angle;
+	angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
+
+	// 回転
+	if (1e-8f < fabs(angle))
+	{
+		Phoenix::f32 angleR;
+		angleR = acosf(Phoenix::Math::Vector3Dot(dir, right));
+		angleR -= (90.0f * 0.01745f);
+
+		if (0.0f < angleR) angle *= -1;
+
+		Phoenix::Math::Quaternion q;
+		q = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
+		//rotate *= q;
+
+		Phoenix::Math::Quaternion rotateT = rotate;
+		rotateT *= q;
+		//rotate = Phoenix::Math::QuaternionSlerp(rotate, rotateT, 0.17f);
+		rotate = rotateT;
+	}
+}
+
+// エネミーの索敵範囲内での行動
+void Player::InEnemyTerritory(bool inTerritory)
+{
+	if (this->inTerritory != inTerritory && animationState != AnimationState::Attack)
+	{
+		ChangeAnimationState(AnimationState::Idle, 0.0f);
+
+		Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
+		float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+
+		if (len <= 0)
+		{
+			dir.x = 0;
+			dir.z = 0;
+		}
+
+		float mag = 1 / len;
+
+		dir.x *= mag;
+		dir.z *= mag;
+
+		Phoenix::f32 angleY = atan2f(dir.x, dir.z);
+
+		newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
+	}
+	this->inTerritory = inTerritory;
+	SetBattleMode(inTerritory);
+}
+
+// アニメーション変更
+void Player::ChangeAnimationState(AnimationState state, Phoenix::f32 moveSpeed)
+{
+	isChangeAnimation = true;
+	animationState = state;
+
+	speed = moveSpeed;
+};
+
+// 攻撃アニメーション変更
+void Player::ChangeAttackAnimationState(Phoenix::s32 state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed)
+{
+	isAttack = true;
+
+	attackState = state;
+	currentAttackAnimIndex = attackAnimIndex;
+	animationSpeed = speed;
+};
+
+// ジャスト回避変更
+void Player::ChangeJustDedge()
+{
+	ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
+
+	Phoenix::s32 x = rand() % 2;
+	if (x)
+	{
+		dedgeLayerIndex = stateIndexList.at(StateType::RightDedge);
+	}
+	else
+	{
+		dedgeLayerIndex = stateIndexList.at(StateType::LeftDedge);
+	}
+
+	isJustDedge = false;
+	justDedgeTimeCnt = 0.0f;
+}
+
+// 入力判定
+bool Player::CheckHitKey(AttackKey key)
+{
+	switch (key)
+	{
+	case AttackKey::WeakAttack:
+		if ((xInput[0].bXt || GetAsyncKeyState('J') & 1))
+		{
+			return true;
+		}
+		break;
+
+	case AttackKey::StrongAttack:
+		if ((xInput[0].bYt || GetAsyncKeyState('K') & 1))
+		{
+			return true;
+		}
+		break;
+
+	default: break;
+	}
+
+	return false;
 }
 
 template<class Archive>

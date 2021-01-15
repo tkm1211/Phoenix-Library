@@ -1,12 +1,14 @@
 #pragma once
 
 
+// エネミー全体の状態
 enum class EnemyMode
 {
 	Ordinary, // 通常
 	Battle,   // バトル
 };
 
+// 戦闘エネミーの状態
 enum class BattleEnemyState
 {
 	NoneState,   // なし
@@ -21,6 +23,7 @@ enum class BattleEnemyState
 	Death,       // 死亡
 };
 
+// エネミー（雑魚敵）の攻撃状態
 enum class EnemyAttackState
 {
 	NoneState,
@@ -31,6 +34,7 @@ enum class EnemyAttackState
 	StrongLeft,
 };
 
+// エネミー（ボス）の攻撃状態
 enum class BossAttackState
 {
 	NoneState,

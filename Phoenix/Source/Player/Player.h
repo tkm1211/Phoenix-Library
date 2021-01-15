@@ -14,6 +14,7 @@
 class Player
 {
 public:
+	// アニメーションステート
 	enum class AnimationState
 	{
 		Idle,
@@ -28,12 +29,14 @@ public:
 		Death,
 	};
 
+	// アニメーションレイヤー
 	enum class LayerType
 	{
 		Base,
 		LowerBody,
 	};
 
+	// ステート種類
 	enum class StateType
 	{
 		Idle,
@@ -47,6 +50,7 @@ public:
 		Death,
 	};
 
+	// 攻撃入力キー
 	enum class AttackKey
 	{
 		WeakAttack,
@@ -55,6 +59,7 @@ public:
 	};
 
 public:
+	// 攻撃データ
 	struct AttackData
 	{
 		Phoenix::s32 animState = 0; // アニメーションステート
@@ -82,6 +87,7 @@ public:
 		void serialize(Archive& archive, Phoenix::u32 version);
 	};
 
+	// 攻撃データ集
 	struct AttackDatas
 	{
 		AttackKey receptionKey = AttackKey::WeakAttack; // 入力キー
@@ -100,6 +106,7 @@ public:
 		void serialize(Archive& archive, Phoenix::u32 version);
 	};
 
+	// 攻撃データ集リスト
 	struct AttackDataList
 	{
 		std::vector<AttackDatas> attackDatas;
@@ -146,40 +153,79 @@ private:
 	static constexpr Phoenix::s32 AccumulationTime = 60;
 
 private:
+	// モデル
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
+
+	// UI
 	std::shared_ptr<PlayerUI> ui;
 
+	// ワールド行列
 	Phoenix::Math::Matrix worldMatrix;
+
+	// 座標
 	Phoenix::Math::Vector3 pos;
+
+	// 回転
 	Phoenix::Math::Quaternion rotate;
+
+	// スケール
 	Phoenix::Math::Vector3 scale;
+
+	// 半径
 	Phoenix::f32 radius = 0.0f;
+
+	// 移動速度
 	Phoenix::f32 speed = 0.0f;
 
+	// 新たな回転
 	Phoenix::Math::Quaternion newRotate;
+
+	// Y軸回転
 	Phoenix::f32 rotateY = 0.0f;
 
+	// アニメーションステート
 	AnimationState animationState;
+
+	// 攻撃ステート
 	Phoenix::s32 attackState = 0;
+
+	// 攻撃コンボステート
 	Phoenix::s32 attackComboState = 0;
+
+	// 現在の攻撃アニメーション番号
 	Phoenix::s32 currentAttackAnimIndex = -1;
+
+	// 攻撃データリスト
 	AttackDataList attackDatasList;
 
-	bool isChangeAnimation;
-	bool isAttack;
+	// アニメーションの切り替え
+	bool isChangeAnimation = false;
+
+	// 攻撃中
+	bool isAttack = false;
+
+	// 存在中
 	bool alive = false;
+
+	// 死亡中
 	bool death = false;
+
+	// 攻撃入力判定用カウント
 	Phoenix::f32 attackReceptionTimeCnt;
+
+	// ジャスト回避時間カウント
 	Phoenix::f32 justDedgeTimeCnt;
+
+	// アニメーション速度
 	Phoenix::f32 animationSpeed;
 
+	// 当たり判定データ
 	std::vector<Phoenix::FrameWork::CollisionData> collisionDatas;
 
 	// HP
 	Phoenix::s32 life = 0;
 
 	// アタックが当たったか？
-	//bool isHit = false;
 	std::vector<bool> isHit;
 
 	// アタックの判定中か？
@@ -244,197 +290,168 @@ private:
 	Phoenix::f32 invincibleTimeCnt = 0.0f;
 
 public:
-	Player() :
-		worldMatrix(Phoenix::Math::MatrixIdentity()), 
-		speed(0.0f),
-		animationState(AnimationState::Idle),
-		attackState(0),
-		isChangeAnimation(false), 
-		isAttack(false),
-		attackReceptionTimeCnt(0.0f),
-		animationSpeed(0.0f),
-		radius(0.0f)
-	{}
-	~Player() { /*Finalize();*/ }
+	Player() {}
+	~Player() {}
 
 public:
+	// 生成
 	static std::unique_ptr<Player> Create();
+
+	// コンストラクタ
 	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
+
+	// 初期化
 	void Initialize();
+
+	// 終了化
 	void Finalize();
+
+	// 更新
 	void Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::f32 elapsedTime, bool attackLoad = true);
+
+	// トランスフォーム更新
 	void UpdateTrasform();
+
+	// UI更新
 	void UpdateUI();
+
+	// 操作更新
 	void Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime, bool control);
+
+	// アニメーション移行
 	void ChangeAnimation();
+
+	// 攻撃アニメーション移行
 	void ChangeAttackAnimation(Phoenix::s32 layerIndex);
+
+	// 攻撃判定
 	void AttackJudgment();
+
+	// GUI
 	void GUI();
+
+	// ジャスト回避判定
 	bool OnJustDedge();
+
+	// ダメージ更新
 	bool Damage(int damage, Phoenix::u32 damagePower);
+
+	// 蓄積ダメージ
 	bool AccumulationDamege();
-	void Rotation(Phoenix::Math::Vector3 targetPos)
-	{
-		Phoenix::Math::Vector3 dir = targetPos - pos;
-		dir = Phoenix::Math::Vector3Normalize(dir);
-		dir.y = 0.0f;
 
-		//Phoenix::Math::Quaternion rotate = boss->GetRotate();
-		Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
-		Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
-		Phoenix::Math::Vector3 up = Phoenix::Math::Vector3(m._21, m._22, m._23);
-		Phoenix::Math::Vector3 right = Phoenix::Math::Vector3(m._11, m._12, m._13);
-		forward.y = 0.0f;
+	// ターゲット方向に回転
+	void Rotation(Phoenix::Math::Vector3 targetPos);
 
-		Phoenix::f32 angle;
-		angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
-
-		// 回転
-		if (1e-8f < fabs(angle))
-		{
-			Phoenix::f32 angleR;
-			angleR = acosf(Phoenix::Math::Vector3Dot(dir, right));
-			angleR -= (90.0f * 0.01745f);
-
-			if (0.0f < angleR) angle *= -1;
-
-			Phoenix::Math::Quaternion q;
-			q = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
-			//rotate *= q;
-
-			Phoenix::Math::Quaternion rotateT = rotate;
-			rotateT *= q;
-			//rotate = Phoenix::Math::QuaternionSlerp(rotate, rotateT, 0.17f);
-			rotate = rotateT;
-		}
-	}
-	void InEnemyTerritory(bool inTerritory)
-	{
-		if (this->inTerritory != inTerritory && animationState != AnimationState::Attack)
-		{
-			ChangeAnimationState(AnimationState::Idle, 0.0f);
-
-			Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
-			float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
-
-			if (len <= 0)
-			{
-				dir.x = 0;
-				dir.z = 0;
-			}
-
-			float mag = 1 / len;
-
-			dir.x *= mag;
-			dir.z *= mag;
-
-			Phoenix::f32 angleY = atan2f(dir.x, dir.z);
-
-			newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
-		}
-		this->inTerritory = inTerritory;
-		SetBattleMode(inTerritory);
-	}
+	// エネミーの索敵範囲内での行動
+	void InEnemyTerritory(bool inTerritory);
 
 	// アニメーション変更
-	void ChangeAnimationState(AnimationState state, Phoenix::f32 moveSpeed = 0.0f)
-	{
-		isChangeAnimation = true;
-		animationState = state;
-
-		speed = moveSpeed;
-	};
+	void ChangeAnimationState(AnimationState state, Phoenix::f32 moveSpeed = 0.0f);
 
 	// 攻撃アニメーション変更
-	void ChangeAttackAnimationState(Phoenix::s32 state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed)
-	{
-		isAttack = true;
-
-		attackState = state;
-		currentAttackAnimIndex = attackAnimIndex;
-		animationSpeed = speed;
-	};
+	void ChangeAttackAnimationState(Phoenix::s32 state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed);
 
 	// ジャスト回避変更
-	void ChangeJustDedge()
-	{
-		ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
-		
-		Phoenix::s32 x = rand() % 2;
-		if (x)
-		{
-			dedgeLayerIndex = stateIndexList.at(StateType::RightDedge);
-		}
-		else
-		{
-			dedgeLayerIndex = stateIndexList.at(StateType::LeftDedge);
-		}
+	void ChangeJustDedge();
 
-		isJustDedge = false;
-		justDedgeTimeCnt = 0.0f;
-	}
+	// 入力判定
+	bool CheckHitKey(AttackKey key);
 
-	bool CheckHitKey(AttackKey key)
-	{
-		switch (key)
-		{
-		case AttackKey::WeakAttack:
-			if ((xInput[0].bXt || GetAsyncKeyState('J') & 1))
-			{
-				return true;
-			}
-			break;
-
-		case AttackKey::StrongAttack:
-			if ((xInput[0].bYt || GetAsyncKeyState('K') & 1))
-			{
-				return true;
-			}
-			break;
-
-		default: break;
-		}
-
-		return false;
-	}
-
-	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
-	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
-	Phoenix::Math::Vector3 GetPosition() { return pos; }
-	//Phoenix::Math::Vector3 GetRotate() { return rotate; }
-	Phoenix::Math::Quaternion GetRotate() { return rotate; }
-	Phoenix::f32 GetRadius() { return radius; }
-	Phoenix::s32 GetHP() { return life; }
-	Phoenix::u32 GetAttackPower() { return attackPower; }
-	Phoenix::s32 GetScore() { return behaviorScore; }
-	Phoenix::s32 GetAttackDamage() { return attackDamage; }
-	AnimationState GetAnimationState() { return animationState; }
-	AttackDataList& GetAttackDatasList() { return attackDatasList; }
-	bool GetDodging() { return (animationState == AnimationState::Dedge); }
-	const std::vector<Phoenix::FrameWork::CollisionData> GetCollisionDatas() { return collisionDatas; }
-	//bool IsAttackJudgment() { return isAttackJudgment; }
-	std::vector<bool> IsAttackJudgment() { return isAttackJudgment; }
-	bool Invincible() { return invincible; }
-	Phoenix::s32 GetAttackCollisionIndex() { return attackCollisionIndex; }
-	std::shared_ptr<PlayerUI> GetUI() { return ui; }
-	bool IsAttack() { return isAttack; }
-	bool IsDamage() { return animationState == AnimationState::Damage; }
-	bool IsJustDedge() { return isJustDedge; }
-	bool IsInvincible() { return isInvincible; }
-
-	bool GetAlive() { return alive; }
-	bool GetDeath() { return death; }
-
-	Phoenix::s32 GetAttackState() { return attackState; }
-
-	bool OnEnemyTerritory() { return inTerritory; }
-
+public:
+	// 座標を設定
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
+
+	// 攻撃がヒット
 	void SetIsHit(Phoenix::s32 index) { isHit.at(index) = true; }
+
+	// ジャスト回避を設定
 	void SetIsJustDedge(bool isJustDedge) { this->isJustDedge = isJustDedge; }
 
+	// ロックオンを設定
 	void SetBattleMode(bool isBattleMode) { this->isBattleMode = isBattleMode; }
+
+	// ロックオンするターゲット座標を設定
 	void SetTargetPos(Phoenix::Math::Vector3 targetPos) { this->targetPos = targetPos; }
+
+	// 攻撃データリストを設定
 	void SetAttackDatasList(AttackDataList data) { attackDatasList = data; }
+
+	// サウンドシステムを設定
 	void SetSoundSystem(std::shared_ptr<SoundSystem<SoundType>> soundSystem) { this->soundSystem = soundSystem; }
+
+public:
+	// モデル取得
+	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }
+
+	// ワールド行列取得
+	Phoenix::Math::Matrix GetWorldMatrix() { return worldMatrix; }
+
+	// 座標取得
+	Phoenix::Math::Vector3 GetPosition() { return pos; }
+
+	// 回転取得
+	Phoenix::Math::Quaternion GetRotate() { return rotate; }
+
+	// 半径取得
+	Phoenix::f32 GetRadius() { return radius; }
+
+	// HP取得
+	Phoenix::s32 GetHP() { return life; }
+
+	// 攻撃種類取得
+	Phoenix::u32 GetAttackPower() { return attackPower; }
+
+	// 行動スコア取得
+	Phoenix::s32 GetScore() { return behaviorScore; }
+
+	// 攻撃力取得
+	Phoenix::s32 GetAttackDamage() { return attackDamage; }
+
+	// 攻撃ステート取得
+	Phoenix::s32 GetAttackState() { return attackState; }
+
+	// 攻撃当たり判定の番号取得
+	Phoenix::s32 GetAttackCollisionIndex() { return attackCollisionIndex; }
+
+	// アニメーションステート取得
+	AnimationState GetAnimationState() { return animationState; }
+
+	// 攻撃データリスト取得
+	AttackDataList& GetAttackDatasList() { return attackDatasList; }
+
+	// UI取得
+	std::shared_ptr<PlayerUI> GetUI() { return ui; }
+
+	// 当たり判定データ取得
+	const std::vector<Phoenix::FrameWork::CollisionData> GetCollisionDatas() { return collisionDatas; }
+
+	// 攻撃当たり判定をヒット済みか取得
+	const std::vector<bool> IsAttackJudgment() { return isAttackJudgment; }
+	
+	// 無敵中
+	bool Invincible() { return invincible; }
+
+	// 攻撃中
+	bool IsAttack() { return isAttack; }
+
+	// ダメージ中
+	bool IsDamage() { return animationState == AnimationState::Damage; }
+
+	// ジャスト回避中
+	bool IsJustDedge() { return isJustDedge; }
+
+	// 無敵中
+	bool IsInvincible() { return isInvincible; }
+	
+	// エネミーの索敵範囲内にいるか判定
+	bool OnEnemyTerritory() { return inTerritory; }
+
+	// 存在中
+	bool GetAlive() { return alive; }
+
+	// 死亡中
+	bool GetDeath() { return death; }
+
+	// 回避中
+	bool GetDodging() { return (animationState == AnimationState::Dedge); }
 };
