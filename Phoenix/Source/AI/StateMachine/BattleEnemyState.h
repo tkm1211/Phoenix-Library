@@ -150,7 +150,7 @@ namespace BattleEnemy
 		{
 			if (!owner->GetModel()->IsPlaying() || index == 0)
 			{
-				if (attackList.size() <= index)
+				if (attackList.size() <= index || !owner->InDistanceHitByAttack())
 				{
 					return BattleEnemyState::Idle;
 				}
@@ -192,7 +192,7 @@ namespace BattleEnemy
 	class Dedge : public State<BattleEnemyState>
 	{
 	private:
-		static constexpr Phoenix::f32 Speed = 0.05f;
+		static constexpr Phoenix::f32 Speed = 0.35f;
 
 	private:
 		std::shared_ptr<Enemy> owner;

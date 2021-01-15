@@ -15,6 +15,16 @@ void EnemyManager::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	enemies.resize(EnemyRange);
 	originEnemies.resize(EnemyRange);
+	enemiesPos.resize(EnemyRange);
+	enemiesState.resize(EnemyRange);
+	enemiesType.resize(EnemyRange);
+
+	for (Phoenix::s32 i = 0; i < EnemyRange; ++i)
+	{
+		enemiesPos.at(i) = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		enemiesState.at(i) = -1;
+		enemiesType.at(i) = -1;
+	}
 
 	for (auto& enemy : originEnemies)
 	{
@@ -35,6 +45,12 @@ void EnemyManager::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 void EnemyManager::Initialize()
 {
 	//enemies.clear();
+
+	for (Phoenix::s32 i = 0; i < EnemyRange; ++i)
+	{
+		enemiesPos.at(i) = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+		enemiesState.at(i) = -1;
+	}
 }
 
 // 終了化
@@ -53,10 +69,17 @@ void EnemyManager::Finalize()
 // 更新
 void EnemyManager::Update(bool onControl, Phoenix::f32 elapsedTime)
 {
+	Phoenix::s32 cnt = 0;
 	for (auto enemy : enemies)
 	{
 		if (!enemy) continue;
 		enemy->Update(onControl, elapsedTime);
+
+		enemiesPos.at(cnt) = enemy->GetPosition();
+		enemiesState.at(cnt) = static_cast<Phoenix::s32>(enemy->GetBattleState());
+		enemiesType.at(cnt) = static_cast<Phoenix::s32>(enemy->GetTypeTag());
+
+		++cnt;
 	}
 }
 
@@ -221,4 +244,22 @@ Phoenix::s32 EnemyManager::GetBattleEnemyCount()
 std::shared_ptr<EnemiesUI> EnemyManager::GetEnemiesUI()
 {
 	return enemiesUI;
+}
+
+// エネミー達の座標を取得
+std::vector<Phoenix::Math::Vector3>& EnemyManager::GetEnemiesPos()
+{
+	return enemiesPos;
+}
+
+// エネミー達の状態を取得
+std::vector<Phoenix::s32>& EnemyManager::GetEnemiesState()
+{
+	return enemiesState;
+}
+
+// エネミー達の種類を取得
+std::vector<Phoenix::s32>& EnemyManager::GetEnemiesType()
+{
+	return enemiesType;
 }

@@ -659,6 +659,9 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 			{
 				ChangeAnimation(index, nextIndex);
 
+				isInvincible = isJustDedge;
+				isJustDedge = false;
+
 				Phoenix::s32 animIndex = attackDatasList.attackDatas.at(0).datas.at(0).animIndex;
 				if (0 <= animIndex && animIndex <= 7 || 12 <= animIndex && animIndex <= 15)
 				{
@@ -725,42 +728,6 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 	// 攻撃ステートへ
 	if ((key != AttackKey::None) && 0 < attackDatasList.attackDatas.size() && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run) || (animationState == AnimationState::Dedge && isJustDedge)))
 	{
-		/*if (attackState == -1)
-		{
-			// 弱攻撃からスタートするため
-			if (attackDatasList.attackDatas.at(0).receptionKey == key && 0 < attackDatasList.attackDatas.at(0).datas.size())
-			{
-				attackComboState = 0;
-				attackReceptionTimeCnt = 0.0f < attackDatasList.attackDatas.at(0).datas.at(0).playBeginTime ? attackDatasList.attackDatas.at(0).datas.at(0).playBeginTime : 0.0f;
-
-				ChangeAnimationState(AnimationState::Attack, 0.0f);
-				ChangeAttackAnimationState(attackDatasList.attackDatas.at(0).datas.at(0).animState, attackDatasList.attackDatas.at(0).datas.at(0).animIndex, attackDatasList.attackDatas.at(0).datas.at(0).playSpeed);
-
-				speed = Attack01MoveSpeed;
-
-				isInvincible = isJustDedge;
-				isJustDedge = false;
-
-				if (sX != 0.0f || sY != 0.0f)
-				{
-					UpdateRotateY(sX, sY, camera.GetRotateY());
-					RotatePlayer(rotateY, isBattleMode);
-				}
-
-				RotatePlayerToAttack();
-
-				Phoenix::s32 animIndex = attackDatasList.attackDatas.at(0).datas.at(0).animIndex;
-				if (0 <= animIndex && animIndex <= 7 || 12 <= animIndex && animIndex <= 15)
-				{
-					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Punch_Swing);
-				}
-				else if (8 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 19)
-				{
-					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Kick_Swing);
-				}
-			}
-		}
-		else */
 		if (0 < attackDatasList.attackDatas.at(attackState).datas.size())
 		{
 			Phoenix::s32 index = attackState;

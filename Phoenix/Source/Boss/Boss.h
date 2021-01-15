@@ -164,14 +164,17 @@ public:
 	// GUI
 	void GUI(Phoenix::s32 index) override;
 
-	// アニメーションを移行
-	//void ChangeAnimation() override;
-
 	// 攻撃ステートを移行
 	void ChangeAttackAnimation() override;
 
 	// 攻撃判定
 	void AttackJudgment() override;
+
+	// プレイヤーに攻撃が当たる距離に入っているか？
+	bool InDistanceHitByAttack() override;
+
+	// ダメージ
+	bool Damage(int damage) override;
 
 public:
 	// 攻撃ステートを変更

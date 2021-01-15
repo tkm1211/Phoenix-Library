@@ -7,6 +7,7 @@
 
 
 enum class MetaType;
+class MetaData;
 class MetaAI
 {
 private:
@@ -45,6 +46,24 @@ public:
 	/// <param name="type"> : 動かしたいメタAIのタイプ </param>
 	/// <param name="score"> : プレイヤー行動の合計スコア </param>
 	void Sensor(Phoenix::s32 type, Phoenix::s32 score);
+
+	/// <summary>
+	/// ゲームからメタAIを起動する関数
+	/// </summary>
+	/// <typeparam name="T"> : AIの型 </typeparam>
+	/// <typeparam name="U"> : メタデータの型 </typeparam>
+	/// <param name="type"> : 動かしたいメタAIのタイプ </param>
+	/// <param name="metaData"> : ゲームからメタAIで必要なデータ </param>
+	template<class T, class U>
+	void Sensor(Phoenix::s32 type, U metaData)
+	{
+		std::shared_ptr<T> ai = std::dynamic_pointer_cast<T>(systems[type]);
+		if (ai)
+		{
+			this->type = type;
+			ai->Sensor(metaData);
+		}
+	}
 
 public:
 	/// <summary>

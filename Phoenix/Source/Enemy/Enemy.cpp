@@ -741,15 +741,15 @@ void Enemy::SetState(BattleEnemyState state, bool forcedChange)
 // 攻撃権を発行
 bool Enemy::SetAttackRight(bool stackAttackRight)
 {
-	if (battleAI->GetCurrentStateName() == BattleEnemyState::Idle)
+	//if (battleAI->GetCurrentStateName() == BattleEnemyState::Idle)
 	{
 		battleAI->GoToState(BattleEnemyState::Attack, true);
 		return true;
 	}
-	else if (stackAttackRight)
+	/*else if (stackAttackRight)
 	{
 		this->stackAttackRight = stackAttackRight;
-	}
+	}*/
 
 	return false;
 }
@@ -811,9 +811,6 @@ void Enemy::ChangeAnimation()
 		model->SimultaneousPlayBlendTreeAniamation(lowerBodyLayerIndex, 0, 1, 0.2f);
 		model->SetLoopAnimation(true);
 		model->SetBlendLoopAnimation(true);
-
-		/*model->PlayBlendTreeAnimation(lowerBodyLayerIndex, 0, 1, 0.2f);
-		model->SetLoopAnimation(true);*/
 		break;
 
 	case BattleEnemyState::Run:
@@ -909,9 +906,9 @@ void Enemy::ChangeAttackAnimation()
 }
 
 // ダメージ
-void Enemy::Damage(int damage)
+bool Enemy::Damage(int damage)
 {
-	if (battleAI->GetCurrentStateName() == BattleEnemyState::Dedge) return;
+	if (battleAI->GetCurrentStateName() == BattleEnemyState::Dedge) return false;
 
 	life -= damage;
 	if (damage <= 10)
@@ -947,6 +944,8 @@ void Enemy::Damage(int damage)
 		SetState(BattleEnemyState::Death, true);
 		ChangeAnimation();
 	}
+
+	return true;
 }
 
 // 有効フラグ取得

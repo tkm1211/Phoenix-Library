@@ -29,6 +29,10 @@ private:
 	std::shared_ptr<Player> player;
 	std::shared_ptr<EnemiesUI> enemiesUI;
 
+	std::vector<Phoenix::Math::Vector3> enemiesPos;
+	std::vector<Phoenix::s32> enemiesState;
+	std::vector<Phoenix::s32> enemiesType;
+
 	Phoenix::s32 useOriginCnt = 0;
 
 public:
@@ -97,4 +101,13 @@ public:
 
 	// エネミーUIを取得
 	std::shared_ptr<EnemiesUI> GetEnemiesUI();
+
+	// エネミー達の座標を取得
+	std::vector<Phoenix::Math::Vector3>& GetEnemiesPos();
+
+	// エネミー達の状態を取得
+	std::vector<Phoenix::s32>& GetEnemiesState();
+
+	// エネミー達の種類を取得
+	std::vector<Phoenix::s32>& GetEnemiesType();
 };

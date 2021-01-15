@@ -420,9 +420,12 @@ public:
 	bool IsAttack() { return isAttack; }
 	bool IsDamage() { return animationState == AnimationState::Damage; }
 	bool IsJustDedge() { return isJustDedge; }
+	bool IsInvincible() { return isInvincible; }
 
 	bool GetAlive() { return alive; }
 	bool GetDeath() { return death; }
+
+	Phoenix::s32 GetAttackState() { return attackState; }
 
 	bool OnEnemyTerritory() { return inTerritory; }
 

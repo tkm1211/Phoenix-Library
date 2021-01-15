@@ -14,6 +14,7 @@
 #include "../AI/MetaAI/MetaType.h"
 #include "Phoenix/OS/StartUp.h"
 #include "../Easing/Easing.h"
+#include "../AI/MetaAI/BattleEnemySystem.h"
 
 
 void SceneGame::Construct(SceneSystem* sceneSystem)
@@ -422,6 +423,24 @@ void SceneGame::RoundInitialize()
 				transform.SetScale({ 1.0f,1.0f,1.0f });
 				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
 				enemyManager->SetBattleEnemy(0);
+
+				/*transform.SetTranslate({ 0,0,-5 });
+				transform.SetRotate({ 0,0,0,1 });
+				transform.SetScale({ 1.0f,1.0f,1.0f });
+				enemyManager->AddEnemy(Enemy::TypeTag::Large, transform);
+				enemyManager->SetBattleEnemy(0);
+
+				transform.SetTranslate({ 5,0,-5 });
+				transform.SetRotate({ 0,0,0,1 });
+				transform.SetScale({ 1.0f,1.0f,1.0f });
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
+				enemyManager->SetBattleEnemy(1);
+
+				transform.SetTranslate({ -5,0,-5 });
+				transform.SetRotate({ 0,0,0,1 });
+				transform.SetScale({ 1.0f,1.0f,1.0f });
+				enemyManager->AddEnemy(Enemy::TypeTag::Small, transform);
+				enemyManager->SetBattleEnemy(2);*/
 				break;
 			case 1:
 				transform.SetTranslate({ 0,0,-5 });
@@ -836,7 +855,7 @@ void SceneGame::UpdateCamera(Phoenix::f32 elapsedTime)
 				cameraLen = Phoenix::Math::f32Lerp(cameraLen, len + 6.0f + adjustLen, 0.05f * elapsedTime);
 
 				enemyToPlayerVec = Phoenix::Math::Vector3Normalize(enemyToPlayerVec);
-				camera->ControllerCamera02(!onFade && !roundSwitch, playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, elapsedTime, 0.05f, (player->GetAnimationState() == Player::AnimationState::Idle), forward);
+				camera->ControllerCamera02(!onFade && !roundSwitch, playerPos + enemyToPlayerVec * (len * 0.5f), Phoenix::Math::Vector3(0.0f, 1.25f, 0.0f), cameraLen, elapsedTime, 0.05f, true, forward);
 				lerp = 0.01f;
 			}
 		}
@@ -1388,13 +1407,15 @@ void SceneGame::PushingOutEnemies()
 				}
 				else
 				{
+					Phoenix::f32 radius = (enemy01Radius + enemy02Radius) * 0.5f;
+
 					// enemy01
 					{
 						dir = enemy01Pos - centerOfGravity;
 						dir = Phoenix::Math::Vector3Normalize(dir);
 						dir.y = 0.0f;
 
-						pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (enemy01Radius);
+						pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (radius);
 						enemies.at(i)->SetTranslate(pos);
 						enemies.at(i)->UpdateTransform();
 					}
@@ -1405,7 +1426,7 @@ void SceneGame::PushingOutEnemies()
 						dir = Phoenix::Math::Vector3Normalize(dir);
 						dir.y = 0.0f;
 
-						pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (enemy02Radius);
+						pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (radius);
 						enemies.at(j)->SetTranslate(pos);
 						enemies.at(j)->UpdateTransform();
 					}
@@ -1444,7 +1465,7 @@ void SceneGame::PushingOutPlayerAndEnemies()
 			pos = Phoenix::Math::Vector3(enemyPos.x, playerPos.y, enemyPos.z) + dir * (player->GetRadius() + enemy->GetRadius());
 			player->SetPosition(pos);
 			player->UpdateTrasform();
-#elif 1
+#elif 0
 			Phoenix::Math::Vector3 pos;
 			Phoenix::Math::Vector3 dir = enemyPos - playerPos;
 			dir = Phoenix::Math::Vector3Normalize(dir);
@@ -1459,13 +1480,15 @@ void SceneGame::PushingOutPlayerAndEnemies()
 			Phoenix::Math::Vector3 pos;
 			Phoenix::Math::Vector3 dir;
 
+			Phoenix::f32 radius = (playerRadius + enemyRadius) * 0.5f;
+
 			// player
 			{
 				dir = playerPos - centerOfGravity;
 				dir = Phoenix::Math::Vector3Normalize(dir);
 				dir.y = 0.0f;
 
-				pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (playerRadius);
+				pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (radius);
 				player->SetPosition(pos);
 				player->UpdateTrasform();
 			}
@@ -1476,9 +1499,9 @@ void SceneGame::PushingOutPlayerAndEnemies()
 				dir = Phoenix::Math::Vector3Normalize(dir);
 				dir.y = 0.0f;
 
-				pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (enemyRadius);
+				pos = Phoenix::Math::Vector3(centerOfGravity.x, centerOfGravity.y, centerOfGravity.z) + dir * (radius);
 				enemy->SetTranslate(pos);
-				enemy->UpdateTrasform();
+				enemy->UpdateTransform();
 			}
 #endif
 		}
@@ -1589,7 +1612,7 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 				normal = Phoenix::Math::Vector3Normalize(playerPos - enemyPos); // playerDatas->at(player->GetAttackCollisionIndex()).pos
 
 				player->SetIsHit(index);
-				enemy->Damage(player->GetAttackDamage());
+				bool damage = enemy->Damage(player->GetAttackDamage());
 				if (enemy->GetLife() <= 0)
 				{
 					isKO = true;
@@ -1646,6 +1669,7 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 				}
 
 				// Burst Particle.
+				if (damage)
 				{
 					playerHitParticle->Burst(150);
 					playerHitParticle->SetParticleLife(1.5f);
@@ -1669,12 +1693,16 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 					//dusterParticle[0]->SetParticleRotate(0.025f);
 					//dusterParticle[1]->SetParticleRotate(-0.015f);
 					//dusterParticle[2]->SetParticleRotate(0.005f);
+				}
 
+				// Set Particle Pos
+				{
 					particlePos = (enemyPos + playerDatas.at(player->GetAttackCollisionIndex()).pos) * 0.5f;
 					particlePos.y = playerDatas.at(player->GetAttackCollisionIndex()).pos.y;
 				}
 
 				// Set Point Light
+				//if (damage)
 				{
 					Phoenix::FrameWork::PointLightState* point = static_cast<Phoenix::FrameWork::PBRShader*>(pbrShader)->GetPointLight();
 					point->position = Phoenix::Math::Vector4(particlePos, 0.0f);
@@ -1694,6 +1722,7 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 				}
 
 				// Set Camera Shake
+				//if (damage)
 				{
 					if (!isCameraShake)
 					{
@@ -1907,7 +1936,18 @@ void SceneGame::NoticeMetaAI()
 		oldPlayerBehaviorScore = playerBehaviorScore;
 	}
 #else
-	metaAI->Sensor(static_cast<Phoenix::s32>(MetaType::Battle), playerBehaviorScore);
+	Meta::MetaData data;
+	data.playerPos = player->GetPosition();
+	data.playerState = static_cast<Phoenix::s32>(player->GetAnimationState());
+	data.playerAttackState = player->GetAttackState();
+	data.enemiesPos = enemyManager->GetEnemiesPos();
+	data.enemiesState = enemyManager->GetEnemiesState();
+	data.enemiesType = enemyManager->GetEnemiesType();
+	data.playerIsInvincible = player->IsInvincible();
+
+	//metaAI->Sensor(static_cast<Phoenix::s32>(MetaType::Battle), playerBehaviorScore);
+	//metaAI->Sensor<Meta::BattleEnemySystem>(static_cast<Phoenix::s32>(MetaType::Battle), player->GetPosition(), static_cast<Phoenix::s32>(player->GetAnimationState()), player->GetAttackState(), enemyManager->GetEnemiesPos(), enemyManager->GetEnemiesState(), enemyManager->GetEnemiesType());
+	metaAI->Sensor<Meta::BattleEnemySystem, Meta::MetaData>(static_cast<Phoenix::s32>(MetaType::Battle), data);
 
 	// ‰ß‹Ž‚ÌƒXƒRƒA•Û‘¶
 	oldPlayerBehaviorScore = playerBehaviorScore;

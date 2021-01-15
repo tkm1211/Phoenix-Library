@@ -541,7 +541,7 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		collisionDatas.resize(3);
 
 		collisionDatas.at(0).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
-		collisionDatas.at(0).radius = 1.0f;
+		collisionDatas.at(0).radius = 0.5f;
 		collisionDatas.at(0).boneIndex = model->GetBoneIndex("Mutant:Hips");
 
 		collisionDatas.at(1).pos = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
@@ -591,7 +591,7 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			{
 				AttackDatas<BossAttackState> datas;
 
-				datas.AddData(SetAttackData(BossAttackState::RightHook, 7, 1.0f, -1.0f, -1.0f, 2, 75.0f, 85.0f));
+				datas.AddData(SetAttackData(BossAttackState::RightHook, 7, 1.0f, -1.0f, 150.0f, 2, 75.0f, 85.0f));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -600,7 +600,7 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			{
 				AttackDatas<BossAttackState> datas;
 
-				datas.AddData(SetAttackData(BossAttackState::LeftHook, 8, 1.5f, -1.0f, 96.0f, 1, 55.0f, 70.0f));
+				datas.AddData(SetAttackData(BossAttackState::LeftHook, 8, 1.0f, -1.0f, 96.0f, 1, 55.0f, 70.0f));
 
 				attackDatasList.emplace_back(datas);
 			}
@@ -830,12 +830,6 @@ void Boss::GUI(Phoenix::s32 index)
 
 }
 
-// アニメーションを移行
-//void Boss::ChangeAnimation()
-//{
-//
-//}
-
 // 攻撃ステートを移行
 void Boss::ChangeAttackAnimation()
 {
@@ -986,4 +980,67 @@ void Boss::AttackJudgment()
 	{
 		isAttackJudgment = false;
 	}
+}
+
+// ダメージ
+bool Boss::Damage(int damage)
+{
+	if (battleAI->GetCurrentStateName() == BattleEnemyState::Dedge) return false;
+
+	bool downDamage = false;
+
+	if (damage <= 10)
+	{
+		life -= damage;
+
+		SetMoveInput(0.0f, 0.0f);
+		SetMoveSpeed(0.0f);
+
+		//battleAI->GoToState(BattleEnemyState::DamageSmall, true);
+
+		//changeAnimation = true;
+		//changeState = BattleEnemyState::DamageSmall;
+
+		downDamage = true;
+	}
+	else if (damage <= 20)
+	{
+		life -= damage;
+
+		SetMoveInput(0.0f, 0.0f);
+		SetMoveSpeed(0.0f);
+
+		battleAI->GoToState(BattleEnemyState::DamageBig, true);
+
+		changeAnimation = true;
+		changeState = BattleEnemyState::DamageBig;
+
+		downDamage = true;
+	}
+
+	// ライフが０ならマネージャーの生存エネミーカウントを下げる
+	if (life <= 0 && alive)
+	{
+		alive = false;
+		if (std::shared_ptr<EnemyManager> manager = owner.lock())
+		{
+			manager->SubAliveEnemyCount(1);
+		}
+
+		SetState(BattleEnemyState::Death, true);
+		ChangeAnimation();
+	}
+
+	return downDamage;
+}
+
+// プレイヤーに攻撃が当たる距離に入っているか？
+bool Boss::InDistanceHitByAttack()
+{
+	if (distanceToPlayer <= 2.5f)
+	{
+		return true;
+	}
+
+	return false;
 }

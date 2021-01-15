@@ -88,7 +88,7 @@ namespace BattleEnemy
 			return BattleEnemyState::Run;
 		}
 
-		owner->SetMoveInput(0.0f, -1.0f);
+		owner->SetMoveInput(moveX, -1.0f);
 		owner->SetMoveSpeed(Speed);
 		return BattleEnemyState::NoneState;
 	}

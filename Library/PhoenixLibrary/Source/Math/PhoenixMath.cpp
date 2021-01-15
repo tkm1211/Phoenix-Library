@@ -849,13 +849,15 @@ namespace Phoenix
 		{
 			Quaternion rq;
 
-			DirectX::XMVECTOR vq1 = DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(q1.x, q1.y, q1.z, q1.w));
-			DirectX::XMVECTOR vq2 = DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(q2.x, q2.y, q2.z, q2.w));
+			DirectX::XMFLOAT4 v1 = DirectX::XMFLOAT4(q1.x, q1.y, q1.z, q1.w);
+			DirectX::XMFLOAT4 v2 = DirectX::XMFLOAT4(q2.x, q2.y, q2.z, q2.w);
+			DirectX::XMVECTOR vq1 = DirectX::XMLoadFloat4(&v1);
+			DirectX::XMVECTOR vq2 = DirectX::XMLoadFloat4(&v2);
 			DirectX::XMVECTOR rvq = DirectX::XMQuaternionMultiply(vq1, vq2);
 
 			DirectX::XMFLOAT4 fq;
 			DirectX::XMStoreFloat4(&fq, rvq);
-
+			
 			rq.x = fq.x;
 			rq.y = fq.y;
 			rq.z = fq.z;
@@ -868,7 +870,8 @@ namespace Phoenix
 		{
 			Quaternion rq;
 
-			DirectX::XMVECTOR vq = DirectX::XMQuaternionRotationAxis(DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(axis.x, axis.y, axis.z, 1.0f)), angle);
+			DirectX::XMFLOAT4 v = DirectX::XMFLOAT4(axis.x, axis.y, axis.z, 1.0f);
+			DirectX::XMVECTOR vq = DirectX::XMQuaternionRotationAxis(DirectX::XMLoadFloat4(&v), angle);
 
 			DirectX::XMFLOAT4 fq;
 			DirectX::XMStoreFloat4(&fq, vq);
@@ -900,10 +903,12 @@ namespace Phoenix
 		{
 			Quaternion qT;
 
-			DirectX::XMVECTOR qV;
-			DirectX::XMVECTOR q1T = DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(q1.x, q1.y, q1.z, q1.w));
-			DirectX::XMVECTOR q2T = DirectX::XMLoadFloat4(&DirectX::XMFLOAT4(q2.x, q2.y, q2.z, q2.w));
+			DirectX::XMFLOAT4 v1 = DirectX::XMFLOAT4(q1.x, q1.y, q1.z, q1.w);
+			DirectX::XMFLOAT4 v2 = DirectX::XMFLOAT4(q2.x, q2.y, q2.z, q2.w);
+			DirectX::XMVECTOR q1T = DirectX::XMLoadFloat4(&v1);
+			DirectX::XMVECTOR q2T = DirectX::XMLoadFloat4(&v2);
 
+			DirectX::XMVECTOR qV;
 			qV = DirectX::XMQuaternionSlerp(q1T, q2T, t);
 			DirectX::XMFLOAT4 qF;
 			DirectX::XMStoreFloat4(&qF, qV);
@@ -912,6 +917,14 @@ namespace Phoenix
 			qT.y = qF.y;
 			qT.z = qF.z;
 			qT.w = qF.w;
+
+			/*f32 epsilon = 1.0f;
+			f32 dot = QuaternionDot(q1, q2);
+			if (dot < 0.0f) epsilon = -1.0f;
+			qT.x = (1.0f - t) * q1.x + epsilon * t * q2.x;
+			qT.y = (1.0f - t) * q1.y + epsilon * t * q2.y;
+			qT.z = (1.0f - t) * q1.z + epsilon * t * q2.z;
+			qT.w = (1.0f - t) * q1.w + epsilon * t * q2.w;*/
 
 			/*f32 epsilon = 1.0f;
 			f32 dot = QuaternionDot(q1, q2);

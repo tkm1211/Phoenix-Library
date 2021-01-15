@@ -699,14 +699,14 @@ namespace Phoenix
 						angle *= -1;
 					}
 
-					if (0.0f <= fabs(angle) && fabs(angle) < 45.0f)
+					if (0.0f <= fabs(angle) && fabs(angle) < 35.0f)
 					{
 						hit = true;
 
 						Phoenix::f32 originAngle = rotateY;
 						Phoenix::f32 newAngle = originAngle + (angle * 0.01745f);
 
-						if (!oldHit && 35.0f <= fabs(angle) && fabs(angle) < 45.0f)
+						if (!oldHit && 25.0f <= fabs(angle) && fabs(angle) < 35.0f)
 						{
 							adjustAngle = rotateY;
 						}

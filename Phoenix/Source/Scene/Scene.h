@@ -395,7 +395,7 @@ private:
 	bool playRoundNumMoveSE = false;
 	bool playFightSE = false;
 	Phoenix::s32 roundCnt = 0;
-	Phoenix::s32 roundMax = 5;
+	Phoenix::s32 roundMax = 3;
 	Phoenix::f32 roundTimeCnt = 0.0f;
 	Phoenix::f32 roundTimeMax = 0.0f;
 	Phoenix::s32 roundLogoState = 0;

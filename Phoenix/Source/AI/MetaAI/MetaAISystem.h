@@ -21,7 +21,6 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	/// <param name="score"> : プレイヤー行動の合計スコア </param>
 	/// <param name="elapsedTime"> : 経過時間 </param>
-	virtual void Update(Phoenix::s32 score, Phoenix::f32 elapsedTime) = 0;
+	virtual void Update(Phoenix::f32 elapsedTime) = 0;
 };

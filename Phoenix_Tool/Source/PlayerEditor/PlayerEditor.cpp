@@ -218,7 +218,7 @@ void PlayerEditor::GUI()
 
 				if (ImGui::Button(u8"UŒ‚’Ç‰Á") && !saveCheck)
 				{
-					AddAttackData(list.attackDatas.size());
+					AddAttackData(static_cast<Phoenix::s32>(list.attackDatas.size()));
 				}
 				if (ImGui::Button(u8"‘I‘ğ’†‚ÌUŒ‚íœ") && currentAttackNum <= 0)
 				{

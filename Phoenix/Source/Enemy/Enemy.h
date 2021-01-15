@@ -226,6 +226,15 @@ public:
 	// 新たな回転値の更新
 	virtual void UpdateNewRotate();
 
+	// プレイヤーの戦闘エリアに侵入したか
+	virtual bool InBattleTerritory();
+
+	// プレイヤーに攻撃が当たる距離に入っているか？
+	virtual bool InDistanceHitByAttack();
+
+	// ダメージ
+	virtual bool Damage(int damage);
+
 public:
 	// 有効フラグ設定
 	void SetEnable(bool enable);
@@ -272,9 +281,6 @@ public:
 	// 移動方向の指定
 	void SetMoveInput(Phoenix::f32 moveX, Phoenix::f32 moveY);
 
-	// ダメージ
-	void Damage(int damage);
-
 public:
 	// 有効フラグ取得
 	bool GetEnable();
@@ -302,12 +308,6 @@ public:
 
 	// バトルモードのステート取得
 	BattleEnemyState GetBattleState();
-
-	// プレイヤーの戦闘エリアに侵入したか
-	bool InBattleTerritory();
-
-	// プレイヤーに攻撃が当たる距離に入っているか？
-	bool InDistanceHitByAttack();
 
 	// モデルを取得
 	Phoenix::FrameWork::ModelObject* GetModel() { return model.get(); }

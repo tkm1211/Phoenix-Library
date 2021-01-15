@@ -28,7 +28,10 @@ void SceneTutorial::Construct(SceneSystem* sceneSystem)
 
 		Phoenix::Graphics::DeviceDX11* device = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
 		primitive = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 1);
-		boxPrimitive = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 0, false, &ConvertToFloat3FromVector3(stageScale));
+
+		DirectX::XMFLOAT3 f;
+		f = ConvertToFloat3FromVector3(stageScale);
+		boxPrimitive = std::make_shared<GeometricPrimitive>(device->GetD3DDevice(), 0, false, &f);
 	}
 
 	// 共通データのアドレス取得
