@@ -87,17 +87,11 @@
     <ClCompile Include="Source\Scene\SceneGameOver.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\SceneLabo.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene\SceneTutorial.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\UI\TargetMarkUI.cpp">
       <Filter>Source\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene\SceneEvent.cpp">
-      <Filter>Source\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Mannequin\Mannequin.cpp">
       <Filter>Source\Mannequin</Filter>
@@ -138,6 +132,9 @@
     <ClCompile Include="Source\UI\EnemyUI.cpp">
       <Filter>Source\UI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\UI\TutorialUI.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -174,9 +171,6 @@
       <Filter>Source\UI</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\FadeSystem.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene\SceneLabo.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\UI\TargetMarkUI.h">
@@ -235,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="Source\Collision\Collision.h">
       <Filter>Source\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\TutorialUI.h">
+      <Filter>Source\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

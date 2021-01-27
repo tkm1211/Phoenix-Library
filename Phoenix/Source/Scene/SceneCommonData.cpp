@@ -19,8 +19,8 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	enemyManager->Construct(graphicsDevice);
 	enemyManager->SetPlayer(player);
 
-	mannequin = Mannequin::Create();
-	mannequin->Construct(graphicsDevice);
+	//mannequin = Mannequin::Create();
+	//mannequin->Construct(graphicsDevice);
 
 	std::shared_ptr<Meta::BattleEnemySystem> battleEnemySystem = Meta::BattleEnemySystem::Create();
 	battleEnemySystem->Construct();
@@ -31,11 +31,13 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	metaAI->Construct();
 
 	targetMarkUI = TargetMarkUI::Create();
+	tutorialUI = TutorialUI::Create();
 
 	uiSystem = UISystem::Create();
 	{
 		uiSystem->AddUI(player->GetUI());
 		uiSystem->AddUI(enemyManager->GetEnemiesUI());
+		uiSystem->AddUI(tutorialUI);
 	}
 	uiSystem->Initialize(graphicsDevice);
 

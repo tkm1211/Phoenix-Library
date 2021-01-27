@@ -29,16 +29,16 @@ void SceneSystem::Initialize(Phoenix::OS::IDisplay* display, Phoenix::Graphics::
 	fadeSystem = FadeSystem::Create();
 	fadeSystem->Initialize(graphicsDevice);
 
-	labo = SceneLabo::Create();
+	/*labo = SceneLabo::Create();
 	labo->Construct(this);
-	onLabo = false;
+	onLabo = false;*/
 
 	AddScene<SceneTitle>();
 	AddScene<SceneTutorial>();
 	AddScene<SceneGame>();
 	AddScene<SceneGameClear>();
 	AddScene<SceneGameOver>();
-	AddScene<SceneEvent>();
+	//AddScene<SceneEvent>();
 	ChangeScene(SceneType::Title, false, false);
 
 	for (Phoenix::u32 i = 0; i < scenes.size(); ++i)
@@ -51,7 +51,7 @@ void SceneSystem::Update(Phoenix::f32 elapsedTime)
 {
 	// ƒ‰ƒ{
 	{
-		if (labo->Finish())
+		/*if (labo->Finish())
 		{
 			onLabo = false;
 			labo->Initialize();
@@ -61,10 +61,10 @@ void SceneSystem::Update(Phoenix::f32 elapsedTime)
 		{
 			labo->Update(elapsedTime);
 			return;
-		}
+		}*/
 
 #if	defined(PHOENIX_TARGET_DEBUG)
-		if (GetKeyState(VK_CONTROL) < 0)
+		/*if (GetKeyState(VK_CONTROL) < 0)
 		{
 			if (GetKeyState('L') < 0)
 			{
@@ -80,7 +80,7 @@ void SceneSystem::Update(Phoenix::f32 elapsedTime)
 			{
 				keyCnt = 0;
 			}
-		}
+		}*/
 #endif
 	}
 
@@ -101,11 +101,11 @@ void SceneSystem::Update(Phoenix::f32 elapsedTime)
 
 void SceneSystem::GUI()
 {
-	if (onLabo)
+	/*if (onLabo)
 	{
 		labo->GUI();
 		return;
-	}
+	}*/
 
 	currentScene->GUI();
 }
@@ -140,11 +140,11 @@ void SceneSystem::ReSetStackScene()
 
 void SceneSystem::Draw(Phoenix::f32 elapsedTime)
 {
-	if (onLabo)
+	/*if (onLabo)
 	{
 		labo->Draw(elapsedTime);
 		return;
-	}
+	}*/
 
 	if (stackScene)
 	{

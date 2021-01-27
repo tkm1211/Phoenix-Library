@@ -67,7 +67,7 @@ namespace Phoenix
 			DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 			swapChainDesc.BufferDesc.Width = width;
 			swapChainDesc.BufferDesc.Height = height;
-			swapChainDesc.BufferDesc.RefreshRate.Numerator = 0; // 0 is a variable Frame, 60 is a fixed Frame
+			swapChainDesc.BufferDesc.RefreshRate.Numerator = 60; // 0 is a variable Frame, 60 is a fixed Frame
 			swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 			swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			//swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;

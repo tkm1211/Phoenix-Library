@@ -37,7 +37,6 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Main.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Object\Object.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Quad\Quad.h" />
-    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Script\Lua.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\BasicSkinShader.h" />
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Shader\PBRShader.h" />
@@ -75,7 +74,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Quad\Quad.cpp" />
-    <ClCompile Include="..\..\..\Source\FrameWork\Script\Lua.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\BasicSkinShader.cpp" />
     <ClCompile Include="..\..\..\Source\FrameWork\Shader\PBRShader.cpp" />
@@ -172,7 +170,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;../../../../ExternalLibrary/Lua53_Lib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -181,8 +179,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>liblua53.a;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\ExternalLibrary\Lua53_Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -195,7 +194,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;../../../../ExternalLibrary/Lua53_Lib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -206,8 +205,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>liblua53.a;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\ExternalLibrary\Lua53_Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -217,7 +217,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;../../../../ExternalLibrary/Lua53_Lib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -226,8 +226,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>liblua53.a;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\ExternalLibrary\Lua53_Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -240,7 +241,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;../../../../ExternalLibrary/Lua53_Lib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../Source/FrameWork;../../../../ExternalLibrary/FBX SDK/2019.0/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -251,8 +252,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>liblua53.a;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\ExternalLibrary\Lua53_Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

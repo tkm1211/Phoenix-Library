@@ -8,6 +8,7 @@
 #include "../AI/MetaAI/MetaAI.h"
 #include "../UI/UISystem.h"
 #include "../UI/TargetMarkUI.h"
+#include "../UI/TutorialUI.h"
 #include "../Sound/SoundSystem.h"
 #include "Phoenix/Types.h"
 #include "Phoenix/Graphics/GraphicsDevice.h"
@@ -76,6 +77,7 @@ public:
 
 	// Tutorial
 	std::shared_ptr<Phoenix::Graphics::ITexture> operatorUI;
+	std::shared_ptr<TutorialUI> tutorialUI;
 	/*std::shared_ptr<Phoenix::Graphics::ITexture> avoidUI;
 	std::shared_ptr<Phoenix::Graphics::ITexture> attackUI;
 	std::shared_ptr<Phoenix::Graphics::ITexture> runUI;

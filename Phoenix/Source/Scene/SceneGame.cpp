@@ -49,6 +49,7 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		targetMark = commonData->targetMark.get();
 		targetMarkUI = commonData->targetMarkUI.get();
 		soundSystem = commonData->soundSystem.get();
+		tutorialUI = commonData->tutorialUI;
 	}
 
 	// フレームバッファ
@@ -573,7 +574,7 @@ void SceneGame::Update(Phoenix::f32 elapsedTime)
 
 	// UI更新
 	{
-		UpdateUI();
+		UpdateUI(elapsedTime);
 	}
 
 	// 平行光更新
@@ -979,6 +980,7 @@ void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 
 			case 4: // finish
 				roundSwitch = false;
+				if (roundCnt == 0) tutorialUI->ToDraw(true);
 				break;
 
 			default: break;
@@ -1013,7 +1015,7 @@ void SceneGame::UpdateRound(Phoenix::f32 elapsedTime)
 	UpdateDirectionLight(elapsedTime);
 	UpdateParticle(elapsedTime);
 	UpdateCamera(elapsedTime);
-	UpdateUI();
+	UpdateUI(elapsedTime);
 }
 
 void SceneGame::UpdateKO(Phoenix::f32& elapsedTime)
@@ -1222,7 +1224,7 @@ void SceneGame::UpdateCameraShake(Phoenix::f32 elapsedTime)
 	}
 }
 
-void SceneGame::UpdateUI()
+void SceneGame::UpdateUI(Phoenix::f32 elapsedTime)
 {
 	player->UpdateUI();
 	enemyManager->UpdateUI(nearEnemyIndex);
@@ -1254,6 +1256,19 @@ void SceneGame::UpdateUI()
 
 		Phoenix::Math::Vector3 screenPos = WorldToScreen(pos);
 		enemy->UpdateUI(Phoenix::Math::Vector2(screenPos.x, screenPos.y));
+	}
+
+	// チュートリアルUI
+	{
+		if (player->IsAttack())
+		{
+			if (player->GetAttackPower() == 0) tutorialUI->ClearWeakAttack();
+			else if (player->GetAttackPower() == 1) tutorialUI->ClearStrongAttack();
+		}
+		else if (player->GetDodging()) tutorialUI->ClearDedge();
+		else if (player->GetLockOn()) tutorialUI->ClearLockOn();
+
+		tutorialUI->Update(elapsedTime);
 	}
 }
 
@@ -1616,6 +1631,8 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 				if (enemy->GetLife() <= 0)
 				{
 					isKO = true;
+					if (roundCnt == 0) tutorialUI->ToDraw(false);
+
 					slowMagnification = 0.01f;
 					nextScreenColor = Phoenix::Math::Color(0.4f, 0.4f, 1.0f, 1.0f);
 

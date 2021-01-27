@@ -252,14 +252,14 @@ void SceneTitle::GUI()
 #if	defined(PHOENIX_TARGET_DEBUG)
 	ImGui::Begin("Title");
 	{
-		if (ImGui::Button("Chage Scene Game"))
+		/*if (ImGui::Button("Chage Scene Game"))
 		{
 			sceneSystem->ChangeScene(SceneType::Game, false, true);
 		}
 		if (ImGui::Button("Chage Scene Event"))
 		{
 			sceneSystem->ChangeScene(SceneType::Event, false, true);
-		}
+		}*/
 		/*if (ImGui::Button("Open Player Editor"))
 		{
 			Phoenix::OS::StartUp(L"..\\Tool\\PlayerEditor\\Phoenix_Tool.exe");

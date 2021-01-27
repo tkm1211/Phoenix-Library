@@ -34,9 +34,9 @@ private:
 	std::shared_ptr<FadeSystem> fadeSystem;
 
 	// Labo
-	std::unique_ptr<SceneLabo> labo;
-	bool onLabo;
-	Phoenix::s32 keyCnt = 0;
+	//std::unique_ptr<SceneLabo> labo;
+	//bool onLabo;
+	//Phoenix::s32 keyCnt = 0;
 
 public:
 	SceneSystem() {}

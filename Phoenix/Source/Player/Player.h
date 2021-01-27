@@ -454,4 +454,7 @@ public:
 
 	// ‰ñ”ğ’†
 	bool GetDodging() { return (animationState == AnimationState::Dedge); }
+
+	// \‚¦’†
+	bool GetLockOn() { return isBattleMode; }
 };

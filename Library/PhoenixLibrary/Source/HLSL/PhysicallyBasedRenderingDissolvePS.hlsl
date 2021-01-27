@@ -171,12 +171,13 @@ bool testLightInRange(const in float lightDistance, const in float cutoffDistanc
 
 float punctualLightIntensityToIrradianceFactor(const in float lightDistance, const in float cutoffDistance, const in float decayExponent)
 {
+    float val = 1.0f;
     if (decayExponent > 0.0f)
     {
-        return pow(saturate(-lightDistance / cutoffDistance + 1.0f), decayExponent);
+        val = pow(saturate(-lightDistance / cutoffDistance + 1.0f), decayExponent);
     }
 
-    return 1.0f;
+    return val;
 }
 
 void getDirectionalDirectLightIrradiance(const in DirectionalLight directionalLight, const in GeometricContext geometry, out IncidentLight directLight)

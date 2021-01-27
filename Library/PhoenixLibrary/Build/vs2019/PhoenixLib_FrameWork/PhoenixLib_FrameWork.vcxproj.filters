@@ -153,9 +153,6 @@
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Effect\EffectSystem.h">
       <Filter>Include\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Script\Lua.h">
-      <Filter>Include\Script</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Phoenix\FrameWork\Audio\Audio.h">
       <Filter>Include\Audio</Filter>
     </ClInclude>
@@ -244,9 +241,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\ComputeShader\GPUParticle.cpp">
       <Filter>Source\ComputeShader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\FrameWork\Script\Lua.cpp">
-      <Filter>Source\Script</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\FrameWork\Audio\Audio.cpp">
       <Filter>Source\Audio</Filter>

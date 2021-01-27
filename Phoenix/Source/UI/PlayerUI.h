@@ -3,7 +3,7 @@
 #include <memory>
 #include "UI.h"
 #include "Phoenix/Graphics/Texture.h"
-#include "Phoenix/Math//Vector.h"
+#include "Phoenix/Math/Vector.h"
 
 
 class PlayerUI : public UI

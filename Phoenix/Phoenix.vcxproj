@@ -112,7 +112,7 @@
       <MinimalRebuild />
       <PrecompiledHeader />
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;$(SolutionDir)Library\ExternalLibrary\Effekseer\include\Effekseer;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -139,12 +139,13 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -161,14 +162,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;$(SolutionDir)Library\ExternalLibrary\Effekseer\include\Effekseer;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\PhoenixLibrary\Include;$(SolutionDir)Library\ExternalLibrary\FBX SDK\2019.0\include;$(SolutionDir)Library\ExternalLibrary\ImGui\Include;$(SolutionDir)Library\ExternalLibrary\cereal\include;%(AdditionalIncludeDirectories);$(SolutionDir)Library\ExternalLibrary\Lua53_Lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;winmm.lib;$(SolutionDir)Library\ExternalLibrary\Effekseer\lib\Effekseerd.lib;$(SolutionDir)Library\ExternalLibrary\Effekseer\lib\EffekseerRendererDX11d.lib;$(SolutionDir)Library\ExternalLibrary\Effekseer\lib\EffekseerSoundXAudio2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -177,7 +178,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -189,15 +189,12 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Library\ExternalLibrary\ImGuizmo\Build\vs2015\ImGuizmo.vcxproj">
-      <Project>{b82174a5-023a-4f2e-93ea-835f06209aa4}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Library\ExternalLibrary\ImGui\Build\vs2015\ImGui.vcxproj">
       <Project>{c9e300fd-5b6a-4ad1-9c55-76086593172f}</Project>
     </ProjectReference>
@@ -240,12 +237,10 @@
     <ClCompile Include="Source\Player\Player.cpp" />
     <ClCompile Include="Source\Primitive\GeometricPrimitive.cpp" />
     <ClCompile Include="Source\Scene\FadeSystem.cpp" />
-    <ClCompile Include="Source\Scene\SceneEvent.cpp" />
     <ClCompile Include="Source\Scene\SceneGameClear.cpp" />
     <ClCompile Include="Source\Scene\SceneCommonData.cpp" />
     <ClCompile Include="Source\Scene\SceneGame.cpp" />
     <ClCompile Include="Source\Scene\SceneGameOver.cpp" />
-    <ClCompile Include="Source\Scene\SceneLabo.cpp" />
     <ClCompile Include="Source\Scene\SceneSystem.cpp" />
     <ClCompile Include="Source\Scene\SceneTitle.cpp" />
     <ClCompile Include="Source\Scene\SceneTutorial.cpp" />
@@ -254,6 +249,7 @@
     <ClCompile Include="Source\UI\EnemyUI.cpp" />
     <ClCompile Include="Source\UI\PlayerUI.cpp" />
     <ClCompile Include="Source\UI\TargetMarkUI.cpp" />
+    <ClCompile Include="Source\UI\TutorialUI.cpp" />
     <ClCompile Include="Source\UI\UISystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -279,7 +275,6 @@
     <ClInclude Include="Source\Scene\FadeSystem.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Scene\SceneCommonData.h" />
-    <ClInclude Include="Source\Scene\SceneLabo.h" />
     <ClInclude Include="Source\Scene\SceneSystem.h" />
     <ClInclude Include="Source\Sound\SoundSystem.h" />
     <ClInclude Include="Source\UI\BossUI.h" />
@@ -287,6 +282,7 @@
     <ClInclude Include="Source\UI\EnemyUI.h" />
     <ClInclude Include="Source\UI\PlayerUI.h" />
     <ClInclude Include="Source\UI\TargetMarkUI.h" />
+    <ClInclude Include="Source\UI\TutorialUI.h" />
     <ClInclude Include="Source\UI\UI.h" />
     <ClInclude Include="Source\UI\UISystem.h" />
   </ItemGroup>
