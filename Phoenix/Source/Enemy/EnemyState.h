@@ -19,6 +19,8 @@ enum class BattleEnemyState
 	Dedge,       // 回避
 	DamageSmall, // 小ダメージ
 	DamageBig,   // 大ダメージ
+	KnockBack,   // のけぞり
+	GettingUp,   // 立ち上がり
 	Guard,       // ガード
 	Death,       // 死亡
 };

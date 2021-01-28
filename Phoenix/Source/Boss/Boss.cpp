@@ -482,6 +482,9 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Boss02\\Damage\\Head_Hit.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Boss02\\Damage\\Head_Hit_Big.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Boss02\\Damage\\Flying_Back_Death.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Boss02\\Idle\\Getting_Up.fbx", -1);
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Boss02\\Death\\Mutant_Dying.fbx", -1);
 
@@ -519,8 +522,10 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 				AddState(StateType::Run, 5, layerNum);
 				AddState(StateType::DamageSmall, 7, layerNum);
 				AddState(StateType::DamageBig, 8, layerNum);
+				AddState(StateType::KnockBack, 9, layerNum);
+				AddState(StateType::GettingUp, 10, layerNum);
 				AddState(StateType::Dedge, 6, layerNum);
-				AddState(StateType::Death, 9, layerNum);
+				AddState(StateType::Death, 11, layerNum);
 			}
 
 			// 下半身レイヤーにブレンドツリー追加
@@ -639,22 +644,24 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		// バトルモードAI
 		battleAI = BattleEnemyAI::Create();
 		{
-			std::shared_ptr<Boss> owner = downcasted_shared_from_this<Boss>();
+			std::weak_ptr<Boss> owner = downcasted_shared_from_this<Boss>();
 			attackState = BattleEnemy::Attack<BossAttackState, Boss>::Create(owner);
 
 			battleAI->SetOwner(owner);
 			battleAI->SetUp();
-
+			
 			battleAI->AddState(BattleEnemy::Idle::Create());
 			battleAI->AddState(BattleEnemy::Walk::Create(owner));
 			battleAI->AddState(BattleBoss::Run::Create(owner));
 			battleAI->AddState(BattleEnemy::Dedge::Create(owner));
 			battleAI->AddState(BattleEnemy::DamageSmall::Create(owner));
 			battleAI->AddState(BattleEnemy::DamageBig::Create(owner));
+			battleAI->AddState(BattleEnemy::KnockBack::Create(owner));
+			battleAI->AddState(BattleEnemy::GettingUp::Create(owner));
 			battleAI->AddState(BattleEnemy::Guard::Create());
 			battleAI->AddState(BattleEnemy::Death::Create());
 			battleAI->AddState(attackState);
-
+			
 			attackState->AddAttack(BossAttackState::RightHook);
 			attackState->AddAttack(BossAttackState::LeftHook);
 			attackState->AddAttack(BossAttackState::LeftTurn);

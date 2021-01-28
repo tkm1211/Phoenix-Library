@@ -43,7 +43,7 @@ namespace BattleEnemy
 
 #pragma region Walk
 	// 生成
-	std::shared_ptr<Walk> Walk::Create(std::shared_ptr<Enemy> owner)
+	std::shared_ptr<Walk> Walk::Create(std::weak_ptr<Enemy> owner)
 	{
 		return std::make_shared<Walk>(owner);
 	}
@@ -74,29 +74,35 @@ namespace BattleEnemy
 	// 更新
 	BattleEnemyState Walk::Update(Phoenix::f32 elapsedTime)
 	{
-		if (owner->InDistanceHitByAttack())
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
 		{
-			owner->SetMoveInput(0.0f, 0.0f);
-			owner->SetMoveSpeed(0.0f);
-			//return BattleEnemyState::Attack;
-			return BattleEnemyState::Idle;
-		}
-		else if (!owner->InBattleTerritory())
-		{
-			owner->SetMoveInput(0.0f, 0.0f);
-			owner->SetMoveSpeed(0.0f);
-			return BattleEnemyState::Run;
+			if (obj->InDistanceHitByAttack())
+			{
+				obj->SetMoveInput(0.0f, 0.0f);
+				obj->SetMoveSpeed(0.0f);
+				//return BattleEnemyState::Attack;
+				return BattleEnemyState::Idle;
+			}
+			else if (!obj->InBattleTerritory())
+			{
+				obj->SetMoveInput(0.0f, 0.0f);
+				obj->SetMoveSpeed(0.0f);
+				return BattleEnemyState::Run;
+			}
+
+			obj->SetMoveInput(moveX, -1.0f);
+			obj->SetMoveSpeed(Speed);
 		}
 
-		owner->SetMoveInput(moveX, -1.0f);
-		owner->SetMoveSpeed(Speed);
 		return BattleEnemyState::NoneState;
 	}
 #pragma endregion
 
 #pragma region Run
 	// 生成
-	std::shared_ptr<Run> Run::Create(std::shared_ptr<Enemy> owner)
+	std::shared_ptr<Run> Run::Create(std::weak_ptr<Enemy> owner)
 	{
 		return std::make_shared<Run>(owner);
 	}
@@ -116,15 +122,21 @@ namespace BattleEnemy
 	// 更新
 	BattleEnemyState Run::Update(Phoenix::f32 elapsedTime)
 	{
-		if (owner->InBattleTerritory())
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
 		{
-			owner->SetMoveInput(0.0f, 0.0f);
-			owner->SetMoveSpeed(0.0f);
-			return BattleEnemyState::Idle;
+			if (obj->InBattleTerritory())
+			{
+				obj->SetMoveInput(0.0f, 0.0f);
+				obj->SetMoveSpeed(0.0f);
+				return BattleEnemyState::Idle;
+			}
+
+			obj->SetMoveInput(0.0f, -1.0f);
+			obj->SetMoveSpeed(Speed);
 		}
 
-		owner->SetMoveInput(0.0f, -1.0f);
-		owner->SetMoveSpeed(Speed);
 		return BattleEnemyState::NoneState;
 	}
 #pragma endregion
@@ -135,7 +147,7 @@ namespace BattleEnemy
 
 #pragma region Dedge
 		// 生成
-	std::shared_ptr<Dedge> Dedge::Create(std::shared_ptr<Enemy> owner)
+	std::shared_ptr<Dedge> Dedge::Create(std::weak_ptr<Enemy> owner)
 	{
 		return std::make_shared<Dedge>(owner);
 	}
@@ -143,7 +155,12 @@ namespace BattleEnemy
 	// 状態に入ったときに呼ばれる関数
 	void Dedge::SetUp()
 	{
-		owner->SetMoveSpeed(Speed);
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
+		{
+			obj->SetMoveSpeed(Speed);
+		}
 	}
 
 	// 次の状態に移る前に呼ばれる関数
@@ -155,25 +172,30 @@ namespace BattleEnemy
 	// 更新
 	BattleEnemyState Dedge::Update(Phoenix::f32 elapsedTime)
 	{
-		if (!owner->GetModel()->IsPlaying())
-		{
-			owner->SetMoveInput(0.0f, 0.0f);
-			owner->SetMoveSpeed(0.0f);
+		std::shared_ptr<Enemy> obj = owner.lock();
 
-			return BattleEnemyState::Idle;
-		}
+		if (obj)
+		{
+			if (!obj->GetModel()->IsPlaying())
+			{
+				obj->SetMoveInput(0.0f, 0.0f);
+				obj->SetMoveSpeed(0.0f);
+
+				return BattleEnemyState::Idle;
+			}
 
 #if 0
-		Phoenix::s32 input = rand() % 2;
-		if (input) owner->SetMoveInput(1.0f, 0.0f);
-		else if (!input) owner->SetMoveInput(-1.0f, 0.0f);
+			Phoenix::s32 input = rand() % 2;
+			if (input) obj->SetMoveInput(1.0f, 0.0f);
+			else if (!input) obj->SetMoveInput(-1.0f, 0.0f);
 #else
-		owner->SetMoveInput(0.0f, 1.0f);
+			obj->SetMoveInput(0.0f, 1.0f);
 #endif
 
-		Phoenix::f32 speed = owner->GetMoveSpeed();
-		speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
-		owner->SetMoveSpeed(speed);
+			Phoenix::f32 speed = obj->GetMoveSpeed();
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
+			obj->SetMoveSpeed(speed);
+		}
 
 		return BattleEnemyState::NoneState;
 	}
@@ -181,7 +203,7 @@ namespace BattleEnemy
 
 #pragma region DamageSmall
 	// 生成
-	std::shared_ptr<DamageSmall> DamageSmall::Create(std::shared_ptr<Enemy> owner)
+	std::shared_ptr<DamageSmall> DamageSmall::Create(std::weak_ptr<Enemy> owner)
 	{
 		return std::make_shared<DamageSmall>(owner);
 	}
@@ -190,7 +212,12 @@ namespace BattleEnemy
 	void DamageSmall::SetUp()
 	{
 		canChangeState = false;
-		owner->SetMoveSpeed(Speed);
+
+		std::shared_ptr<Enemy> obj = owner.lock();
+		if (obj)
+		{
+			obj->SetMoveSpeed(Speed);
+		}
 	}
 
 	// 次の状態に移る前に呼ばれる関数
@@ -202,16 +229,21 @@ namespace BattleEnemy
 	// 更新
 	BattleEnemyState DamageSmall::Update(Phoenix::f32 elapsedTime)
 	{
-		if (!owner->GetModel()->IsPlaying())
-		{
-			canChangeState = true;
-			return BattleEnemyState::Idle;
-		}
+		std::shared_ptr<Enemy> obj = owner.lock();
 
-		Phoenix::f32 speed = owner->GetMoveSpeed();
-		speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
-		owner->SetMoveSpeed(speed);
-		owner->SetMoveInput(0.0f, 1.0f);
+		if (obj)
+		{
+			if (!obj->GetModel()->IsPlaying())
+			{
+				canChangeState = true;
+				return BattleEnemyState::Idle;
+			}
+
+			Phoenix::f32 speed = obj->GetMoveSpeed();
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
+			obj->SetMoveSpeed(speed);
+			obj->SetMoveInput(0.0f, 1.0f);
+		}
 
 		return BattleEnemyState::NoneState;
 	}
@@ -219,7 +251,7 @@ namespace BattleEnemy
 
 #pragma region DamageBig
 	// 生成
-	std::shared_ptr<DamageBig> DamageBig::Create(std::shared_ptr<Enemy> owner)
+	std::shared_ptr<DamageBig> DamageBig::Create(std::weak_ptr<Enemy> owner)
 	{
 		return std::make_shared<DamageBig>(owner);
 	}
@@ -228,7 +260,13 @@ namespace BattleEnemy
 	void DamageBig::SetUp()
 	{
 		canChangeState = false;
-		owner->SetMoveSpeed(Speed);
+
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
+		{
+			obj->SetMoveSpeed(Speed);
+		}
 	}
 
 	// 次の状態に移る前に呼ばれる関数
@@ -240,16 +278,107 @@ namespace BattleEnemy
 	// 更新
 	BattleEnemyState DamageBig::Update(Phoenix::f32 elapsedTime)
 	{
-		if (!owner->GetModel()->IsPlaying())
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
 		{
-			canChangeState = true;
-			return BattleEnemyState::Idle;
+			if (!obj->GetModel()->IsPlaying())
+			{
+				canChangeState = true;
+				return BattleEnemyState::Idle;
+			}
+
+			Phoenix::f32 speed = obj->GetMoveSpeed();
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
+			obj->SetMoveSpeed(speed);
+			obj->SetMoveInput(0.0f, 1.0f);
 		}
 
-		Phoenix::f32 speed = owner->GetMoveSpeed();
-		speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
-		owner->SetMoveSpeed(speed);
-		owner->SetMoveInput(0.0f, 1.0f);
+		return BattleEnemyState::NoneState;
+	}
+#pragma endregion
+
+#pragma region KnockBack
+	// 生成
+	std::shared_ptr<KnockBack> KnockBack::Create(std::weak_ptr<Enemy> owner)
+	{
+		return std::make_shared<KnockBack>(owner);
+	}
+
+	// 状態に入ったときに呼ばれる関数
+	void KnockBack::SetUp()
+	{
+		canChangeState = false;
+
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
+		{
+			obj->SetMoveSpeed(Speed);
+		}
+	}
+
+	// 次の状態に移る前に呼ばれる関数
+	void KnockBack::CleanUp()
+	{
+
+	}
+
+	// 更新
+	BattleEnemyState KnockBack::Update(Phoenix::f32 elapsedTime)
+	{
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
+		{
+			if (!obj->GetModel()->IsPlaying())
+			{
+				canChangeState = true;
+				return BattleEnemyState::GettingUp;
+			}
+
+			Phoenix::f32 speed = obj->GetMoveSpeed();
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.2f * elapsedTime);
+			obj->SetMoveSpeed(speed);
+			obj->SetMoveInput(0.0f, 1.0f);
+		}
+
+		return BattleEnemyState::NoneState;
+	}
+#pragma endregion
+
+#pragma region GettingUp
+	// 生成
+	std::shared_ptr<GettingUp> GettingUp::Create(std::weak_ptr<Enemy> owner)
+	{
+		return std::make_shared<GettingUp>(owner);
+	}
+
+	// 状態に入ったときに呼ばれる関数
+	void GettingUp::SetUp()
+	{
+		canChangeState = false;
+	}
+
+	// 次の状態に移る前に呼ばれる関数
+	void GettingUp::CleanUp()
+	{
+
+	}
+
+	// 更新
+	BattleEnemyState GettingUp::Update(Phoenix::f32 elapsedTime)
+	{
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
+		{
+			if (!obj->GetModel()->IsPlaying())
+			{
+				canChangeState = true;
+				return BattleEnemyState::Idle;
+			}
+		}
 
 		return BattleEnemyState::NoneState;
 	}
@@ -312,7 +441,7 @@ namespace BattleBoss
 {
 #pragma region Walk
 	// 生成
-	std::shared_ptr<Walk> Walk::Create(std::shared_ptr<Enemy> owner)
+	std::shared_ptr<Walk> Walk::Create(std::weak_ptr<Enemy> owner)
 	{
 		return std::make_shared<Walk>(owner);
 	}
@@ -343,29 +472,35 @@ namespace BattleBoss
 	// 更新
 	BattleEnemyState Walk::Update(Phoenix::f32 elapsedTime)
 	{
-		if (owner->InDistanceHitByAttack())
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
 		{
-			owner->SetMoveInput(0.0f, 0.0f);
-			owner->SetMoveSpeed(0.0f);
-			//return BattleEnemyState::Attack;
-			return BattleEnemyState::Idle;
-		}
-		else if (!owner->InBattleTerritory())
-		{
-			owner->SetMoveInput(0.0f, 0.0f);
-			owner->SetMoveSpeed(0.0f);
-			return BattleEnemyState::Run;
+			if (obj->InDistanceHitByAttack())
+			{
+				obj->SetMoveInput(0.0f, 0.0f);
+				obj->SetMoveSpeed(0.0f);
+				//return BattleEnemyState::Attack;
+				return BattleEnemyState::Idle;
+			}
+			else if (!obj->InBattleTerritory())
+			{
+				obj->SetMoveInput(0.0f, 0.0f);
+				obj->SetMoveSpeed(0.0f);
+				return BattleEnemyState::Run;
+			}
+
+			obj->SetMoveInput(0.0f, -1.0f);
+			obj->SetMoveSpeed(Speed);
 		}
 
-		owner->SetMoveInput(0.0f, -1.0f);
-		owner->SetMoveSpeed(Speed);
 		return BattleEnemyState::NoneState;
 	}
 #pragma endregion
 
 #pragma region Run
 	// 生成
-	std::shared_ptr<Run> Run::Create(std::shared_ptr<Enemy> owner)
+	std::shared_ptr<Run> Run::Create(std::weak_ptr<Enemy> owner)
 	{
 		return std::make_shared<Run>(owner);
 	}
@@ -385,15 +520,21 @@ namespace BattleBoss
 	// 更新
 	BattleEnemyState Run::Update(Phoenix::f32 elapsedTime)
 	{
-		if (owner->InDistanceHitByAttack())
+		std::shared_ptr<Enemy> obj = owner.lock();
+
+		if (obj)
 		{
-			owner->SetMoveInput(0.0f, 0.0f);
-			owner->SetMoveSpeed(0.0f);
-			return BattleEnemyState::Idle;
+			if (obj->InDistanceHitByAttack())
+			{
+				obj->SetMoveInput(0.0f, 0.0f);
+				obj->SetMoveSpeed(0.0f);
+				return BattleEnemyState::Idle;
+			}
+
+			obj->SetMoveInput(0.0f, -1.0f);
+			obj->SetMoveSpeed(Speed);
 		}
 
-		owner->SetMoveInput(0.0f, -1.0f);
-		owner->SetMoveSpeed(Speed);
 		return BattleEnemyState::NoneState;
 	}
 #pragma endregion

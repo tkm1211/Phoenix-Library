@@ -35,6 +35,9 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit.fbx", -1);
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Head_Hit_Big.fbx", -1);
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Damage\\Flying_Back_Death.fbx", -1);
+
+		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Idle\\Getting_Up.fbx", -1);
 
 		model->LoadAnimation("..\\Data\\Assets\\Model\\Enemy\\Enemy\\Death\\Dying_Backwards.fbx", -1);
 
@@ -72,8 +75,10 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 				AddState(StateType::Run, 5, layerNum);
 				AddState(StateType::DamageSmall, 7, layerNum);
 				AddState(StateType::DamageBig, 8, layerNum);
+				AddState(StateType::KnockBack, 9, layerNum);
+				AddState(StateType::GettingUp, 10, layerNum);
 				AddState(StateType::Dedge, 6, layerNum);
-				AddState(StateType::Death, 9, layerNum);
+				AddState(StateType::Death, 11, layerNum);
 			}
 
 			// 下半身レイヤーにブレンドツリー追加
@@ -200,7 +205,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		// バトルモードAI
 		battleAI = BattleEnemyAI::Create();
 		{
-			std::shared_ptr<Enemy> owner = shared_from_this();
+			std::weak_ptr<Enemy> owner = shared_from_this();
 			attackState = BattleEnemy::Attack<EnemyAttackState, Enemy>::Create(owner);
 
 			battleAI->SetOwner(owner);
@@ -212,6 +217,8 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			battleAI->AddState(BattleEnemy::Dedge::Create(owner));
 			battleAI->AddState(BattleEnemy::DamageSmall::Create(owner));
 			battleAI->AddState(BattleEnemy::DamageBig::Create(owner));
+			battleAI->AddState(BattleEnemy::KnockBack::Create(owner));
+			battleAI->AddState(BattleEnemy::GettingUp::Create(owner));
 			battleAI->AddState(BattleEnemy::Guard::Create());
 			battleAI->AddState(BattleEnemy::Death::Create());
 			battleAI->AddState(attackState);
@@ -802,7 +809,7 @@ void Enemy::ChangeAnimation()
 	switch (changeState)
 	{
 	case BattleEnemyState::Idle:
-		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Idle), 1, 0.5f);
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::Idle), 1, 0.75f);
 		model->SetLoopAnimation(true);
 		break;
 
@@ -835,6 +842,20 @@ void Enemy::ChangeAnimation()
 	case BattleEnemyState::DamageBig:
 		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::DamageBig), 1, 0.2f);
 		model->SetLoopAnimation(false);
+		break;
+
+	case BattleEnemyState::KnockBack:
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::KnockBack), 0, 0.2f);
+		model->SetLoopAnimation(false);
+		model->SetBeginTime(20.0f / 60.0f);
+		model->SetCurrentTime(20.0f / 60.0f);
+		break;
+
+	case BattleEnemyState::GettingUp:
+		model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::GettingUp), 1, 7.5f);
+		model->SetLoopAnimation(false);
+		model->SetEndTime(350.0f / 60.0f);
+		model->SetSpeed(2.0f);
 		break;
 
 	case BattleEnemyState::Guard:
@@ -926,10 +947,10 @@ bool Enemy::Damage(int damage)
 		SetMoveInput(0.0f, 0.0f);
 		SetMoveSpeed(0.0f);
 
-		battleAI->GoToState(BattleEnemyState::DamageBig, true);
+		battleAI->GoToState(BattleEnemyState::KnockBack, true);
 
 		changeAnimation = true;
-		changeState = BattleEnemyState::DamageBig;
+		changeState = BattleEnemyState::KnockBack;
 	}
 
 	// ライフが０ならマネージャーの生存エネミーカウントを下げる

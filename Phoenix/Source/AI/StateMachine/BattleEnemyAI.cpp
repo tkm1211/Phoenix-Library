@@ -30,15 +30,19 @@ BattleEnemyState BattleEnemyAI::Update(Phoenix::f32 elapsedTime)
 	BattleEnemyState nextState = currentState->Update(elapsedTime);
 	if (nextState != BattleEnemyState::NoneState)
 	{
-		owner->SetState(nextState);
-		return nextState;
+		std::shared_ptr<Enemy> obj = owner.lock();
+		if (obj)
+		{
+			obj->SetState(nextState);
+			return nextState;
+		}
 	}
 
 	return BattleEnemyState::NoneState;
 }
 
 // エネミー設定
-void BattleEnemyAI::SetOwner(std::shared_ptr<Enemy> owner)
+void BattleEnemyAI::SetOwner(std::weak_ptr<Enemy> owner)
 {
 	this->owner = owner;
 }

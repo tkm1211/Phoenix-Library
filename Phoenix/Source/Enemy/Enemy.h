@@ -39,6 +39,8 @@ public:
 		Run,
 		DamageSmall,
 		DamageBig,
+		KnockBack,
+		GettingUp,
 		Dedge,
 		Death,
 	};

@@ -46,16 +46,16 @@ namespace BattleEnemy
 		static constexpr Phoenix::f32 Speed = 0.045f;
 
 	private:
-		std::shared_ptr<Enemy> owner;
+		std::weak_ptr<Enemy> owner;
 		Phoenix::f32 moveX = 0.0f;
 
 	public:
-		Walk(std::shared_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Walk), owner(owner) {}
+		Walk(std::weak_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Walk), owner(owner) {}
 		~Walk() {}
 
 	public:
 		// 生成
-		static std::shared_ptr<Walk> Create(std::shared_ptr<Enemy> owner);
+		static std::shared_ptr<Walk> Create(std::weak_ptr<Enemy> owner);
 
 		// 状態に入ったときに呼ばれる関数
 		void SetUp() override;
@@ -79,15 +79,15 @@ namespace BattleEnemy
 		static constexpr Phoenix::f32 Speed = 0.1f;
 
 	private:
-		std::shared_ptr<Enemy> owner;
+		std::weak_ptr<Enemy> owner;
 
 	public:
-		Run(std::shared_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Run), owner(owner) {}
+		Run(std::weak_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Run), owner(owner) {}
 		~Run() {}
 
 	public:
 		// 生成
-		static std::shared_ptr<Run> Create(std::shared_ptr<Enemy> owner);
+		static std::shared_ptr<Run> Create(std::weak_ptr<Enemy> owner);
 
 		// 状態に入ったときに呼ばれる関数
 		void SetUp() override;
@@ -112,19 +112,19 @@ namespace BattleEnemy
 		static constexpr Phoenix::f32 Speed = 0.1f;
 
 	private:
-		std::shared_ptr<U> owner;
+		std::weak_ptr<U> owner;
 
 		Phoenix::s32 index = 0;
 		T currentAttack = T();
 		std::vector<T> attackList;
 
 	public:
-		Attack(std::shared_ptr<U> owner) : State<BattleEnemyState>(BattleEnemyState::Attack), owner(owner) {}
+		Attack(std::weak_ptr<U> owner) : State<BattleEnemyState>(BattleEnemyState::Attack), owner(owner) {}
 		~Attack() {}
 
 	public:
 		// 生成
-		static std::shared_ptr<Attack<T, U>> Create(std::shared_ptr<U> owner)
+		static std::shared_ptr<Attack<T, U>> Create(std::weak_ptr<U> owner)
 		{
 			return std::make_shared<Attack<T, U>>(owner);
 		}
@@ -148,25 +148,29 @@ namespace BattleEnemy
 		/// <returns> 次の移行するステートID </returns>
 		BattleEnemyState Update(Phoenix::f32 elapsedTime) override
 		{
-			if (!owner->GetModel()->IsPlaying() || index == 0)
+			std::shared_ptr<U> obj = owner.lock();
+			if (obj)
 			{
-				if (attackList.size() <= index || !owner->InDistanceHitByAttack())
+				if (!obj->GetModel()->IsPlaying() || index == 0)
 				{
-					return BattleEnemyState::Idle;
+					if (attackList.size() <= index || !obj->InDistanceHitByAttack())
+					{
+						return BattleEnemyState::Idle;
+					}
+
+					currentAttack = attackList.at(index);
+					++index;
+
+					obj->SetAttackState(currentAttack);
+					obj->UpdateNewRotate();
+					obj->SetMoveSpeed(Speed);
 				}
 
-				currentAttack = attackList.at(index);
-				++index;
-
-				owner->SetAttackState(currentAttack);
-				owner->UpdateNewRotate();
-				owner->SetMoveSpeed(Speed);
+				Phoenix::f32 speed = obj->GetMoveSpeed();
+				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
+				obj->SetMoveSpeed(speed);
+				obj->SetMoveInput(0.0f, -1.0f);
 			}
-
-			Phoenix::f32 speed = owner->GetMoveSpeed();
-			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
-			owner->SetMoveSpeed(speed);
-			owner->SetMoveInput(0.0f, -1.0f);
 
 			return BattleEnemyState::NoneState;
 		}
@@ -195,15 +199,15 @@ namespace BattleEnemy
 		static constexpr Phoenix::f32 Speed = 0.35f;
 
 	private:
-		std::shared_ptr<Enemy> owner;
+		std::weak_ptr<Enemy> owner;
 
 	public:
-		Dedge(std::shared_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Dedge), owner(owner) {}
+		Dedge(std::weak_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Dedge), owner(owner) {}
 		~Dedge() {}
 
 	public:
 		// 生成
-		static std::shared_ptr<Dedge> Create(std::shared_ptr<Enemy> owner);
+		static std::shared_ptr<Dedge> Create(std::weak_ptr<Enemy> owner);
 
 		// 状態に入ったときに呼ばれる関数
 		void SetUp() override;
@@ -227,15 +231,15 @@ namespace BattleEnemy
 		static constexpr Phoenix::f32 Speed = 0.1f;
 
 	private:
-		std::shared_ptr<Enemy> owner;
+		std::weak_ptr<Enemy> owner;
 
 	public:
-		DamageSmall(std::shared_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::DamageSmall), owner(owner) {}
+		DamageSmall(std::weak_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::DamageSmall), owner(owner) {}
 		~DamageSmall() {}
 
 	public:
 		// 生成
-		static std::shared_ptr<DamageSmall> Create(std::shared_ptr<Enemy> owner);
+		static std::shared_ptr<DamageSmall> Create(std::weak_ptr<Enemy> owner);
 
 		// 状態に入ったときに呼ばれる関数
 		void SetUp() override;
@@ -259,15 +263,79 @@ namespace BattleEnemy
 		static constexpr Phoenix::f32 Speed = 0.1f;
 
 	private:
-		std::shared_ptr<Enemy> owner;
+		std::weak_ptr<Enemy> owner;
 
 	public:
-		DamageBig(std::shared_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::DamageBig), owner(owner) {}
+		DamageBig(std::weak_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::DamageBig), owner(owner) {}
 		~DamageBig() {}
 
 	public:
 		// 生成
-		static std::shared_ptr<DamageBig> Create(std::shared_ptr<Enemy> owner);
+		static std::shared_ptr<DamageBig> Create(std::weak_ptr<Enemy> owner);
+
+		// 状態に入ったときに呼ばれる関数
+		void SetUp() override;
+
+		// 次の状態に移る前に呼ばれる関数
+		void CleanUp() override;
+
+		/// <summary>
+		/// 更新
+		/// </summary>
+		/// <param name="elapsedTime"> 経過時間 </param>
+		/// <returns> 次の移行するステートID </returns>
+		BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
+	};
+#pragma endregion
+
+#pragma region KnockBack
+	class KnockBack : public State<BattleEnemyState>
+	{
+	private:
+		static constexpr Phoenix::f32 Speed = 0.75f;
+
+	private:
+		std::weak_ptr<Enemy> owner;
+
+	public:
+		KnockBack(std::weak_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::KnockBack), owner(owner) {}
+		~KnockBack() {}
+
+	public:
+		// 生成
+		static std::shared_ptr<KnockBack> Create(std::weak_ptr<Enemy> owner);
+
+		// 状態に入ったときに呼ばれる関数
+		void SetUp() override;
+
+		// 次の状態に移る前に呼ばれる関数
+		void CleanUp() override;
+
+		/// <summary>
+		/// 更新
+		/// </summary>
+		/// <param name="elapsedTime"> 経過時間 </param>
+		/// <returns> 次の移行するステートID </returns>
+		BattleEnemyState Update(Phoenix::f32 elapsedTime) override;
+	};
+#pragma endregion
+
+#pragma region GettingUp
+	class GettingUp : public State<BattleEnemyState>
+	{
+	private:
+		static constexpr Phoenix::f32 Speed = 0.1f;
+
+	private:
+		std::weak_ptr<Enemy> owner;
+
+	public:
+		GettingUp(std::weak_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::GettingUp), owner(owner) {}
+		~GettingUp() {}
+
+	public:
+		// 生成
+		static std::shared_ptr<GettingUp> Create(std::weak_ptr<Enemy> owner);
 
 		// 状態に入ったときに呼ばれる関数
 		void SetUp() override;
@@ -352,16 +420,16 @@ namespace BattleBoss
 		static constexpr Phoenix::f32 Speed = 0.045f;
 
 	private:
-		std::shared_ptr<Enemy> owner;
+		std::weak_ptr<Enemy> owner;
 		Phoenix::f32 moveX = 0.0f;
 
 	public:
-		Walk(std::shared_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Walk), owner(owner) {}
+		Walk(std::weak_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Walk), owner(owner) {}
 		~Walk() {}
 
 	public:
 		// 生成
-		static std::shared_ptr<Walk> Create(std::shared_ptr<Enemy> owner);
+		static std::shared_ptr<Walk> Create(std::weak_ptr<Enemy> owner);
 
 		// 状態に入ったときに呼ばれる関数
 		void SetUp() override;
@@ -385,15 +453,15 @@ namespace BattleBoss
 		static constexpr Phoenix::f32 Speed = 0.1f;
 
 	private:
-		std::shared_ptr<Enemy> owner;
+		std::weak_ptr<Enemy> owner;
 
 	public:
-		Run(std::shared_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Run), owner(owner) {}
+		Run(std::weak_ptr<Enemy> owner) : State<BattleEnemyState>(BattleEnemyState::Run), owner(owner) {}
 		~Run() {}
 
 	public:
 		// 生成
-		static std::shared_ptr<Run> Create(std::shared_ptr<Enemy> owner);
+		static std::shared_ptr<Run> Create(std::weak_ptr<Enemy> owner);
 
 		// 状態に入ったときに呼ばれる関数
 		void SetUp() override;

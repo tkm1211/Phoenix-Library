@@ -15,7 +15,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	// メモリーリーク場所発見用
-	//_CrtSetBreakAlloc( 151 );	// 引数は確保された順番
+	//_CrtSetBreakAlloc(196);	// 引数は確保された順番
 
 #endif
 	MSG msg;

@@ -28,7 +28,7 @@ void EnemyManager::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	for (auto& enemy : originEnemies)
 	{
-		enemy = std::make_shared<Enemy>();
+		enemy = Enemy::Create();
 		enemy->Construct(graphicsDevice);
 	}
 
@@ -56,7 +56,7 @@ void EnemyManager::Initialize()
 // I—¹‰»
 void EnemyManager::Finalize()
 {
-	for (auto& enemy : enemies)
+	for (auto& enemy : originEnemies)
 	{
 		if (!enemy) continue;
 
@@ -64,6 +64,10 @@ void EnemyManager::Finalize()
 		enemy.reset();
 	}
 	enemies.clear();
+	originEnemies.clear();
+
+	boss->Finalize();
+	boss.reset();
 }
 
 // XV
