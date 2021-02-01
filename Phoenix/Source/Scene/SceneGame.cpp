@@ -47,7 +47,6 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		pbrSkinShader = commonData->pbrSkinShader.get();
 		camera = commonData->camera.get();
 		targetMark = commonData->targetMark.get();
-		targetMarkUI = commonData->targetMarkUI.get();
 		soundSystem = commonData->soundSystem.get();
 		tutorialUI = commonData->tutorialUI;
 	}
@@ -276,6 +275,8 @@ void SceneGame::Initialize()
 		enemyManager->Initialize();
 		metaAI->Initialize();
 
+		tutorialUI->Initialize();
+
 		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
 		camera->SetRotateX(-0.225f);
 		camera->SetRotateY(0.0f);
@@ -359,7 +360,7 @@ void SceneGame::RoundInitialize()
 		enemyManager->Initialize();
 		metaAI->Initialize();
 
-		camera->SetEye(Phoenix::Math::Vector3(0.0f, 0.0f, 10.0f));
+		camera->SetFocus(player->GetPosition());
 		camera->SetRotateX(-0.225f);
 		camera->SetRotateY(0.0f);
 	}
@@ -2824,15 +2825,6 @@ void SceneGame::GUI()
 		if (ImGui::TreeNode("UI"))
 		{
 			ImGui::Checkbox("DrawUI", &isDrawUI);
-			if (ImGui::TreeNode("TargetMark"))
-			{
-				if (ImGui::Button("On"))
-				{
-					targetMarkUI->LockOnTarget();
-				}
-
-				ImGui::TreePop();
-			}
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Shadow"))
@@ -3067,7 +3059,7 @@ void SceneGame::GUI()
 	}
 	ImGui::End();
 #else
-	if (onPlayerEditor)
+	/*if (onPlayerEditor)
 	{
 		ImGui::Begin("Game", &onPlayerEditor);
 		{
@@ -3082,6 +3074,6 @@ void SceneGame::GUI()
 			ImGui::Checkbox("BossUpdate", &isBossUpdate);
 		}
 		ImGui::End();
-	}
+	}*/
 #endif
 }

@@ -43,8 +43,11 @@ public:
 	// 生成
 	static std::shared_ptr<TutorialUI> Create();
 
+	// コンストラクタ
+	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice) override;
+
 	// 初期化
-	void Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice) override;
+	void Initialize() override;
 
 	// 描画
 	void Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::FrameWork::Quad* quad) override;

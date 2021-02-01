@@ -8,14 +8,17 @@ std::shared_ptr<PlayerUI> PlayerUI::Create()
 	return std::make_shared<PlayerUI>();
 }
 
-void PlayerUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
+void PlayerUI::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	hp = Phoenix::Graphics::ITexture::Create();
 	hpBack = Phoenix::Graphics::ITexture::Create();
 
 	hp->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\HP\\Player\\PlayerHP.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 	hpBack->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\HP\\HPBack.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+}
 
+void PlayerUI::Initialize()
+{
 	pos = Phoenix::Math::Vector2(0.0f, 0.0f);
 	size = Phoenix::Math::Vector2(SizeWidth, SizeHeigth);
 	hpTexPos = Phoenix::Math::Vector2(TexWidth, TexHeigth);

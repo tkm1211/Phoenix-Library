@@ -10,14 +10,17 @@ std::shared_ptr<EnemiesUI> EnemiesUI::Create()
 	return std::make_shared<EnemiesUI>();
 }
 
-void EnemiesUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::s32 enemyRange)
+void EnemiesUI::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	hp = Phoenix::Graphics::ITexture::Create();
 	hpBack = Phoenix::Graphics::ITexture::Create();
 
 	hp->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\HP\\Boss\\BossHP.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 	hpBack->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\HP\\HPBack.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+}
 
+void EnemiesUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::s32 enemyRange)
+{
 	Phoenix::Graphics::IContext* context = graphicsDevice->GetContext();
 	Phoenix::Graphics::Viewport* v = new Phoenix::Graphics::Viewport();
 	context->GetViewports(1, &v);
@@ -47,7 +50,7 @@ void EnemiesUI::Update(Phoenix::s32 index, Phoenix::f32 hpPercent)
 void EnemiesUI::AddUI(Phoenix::s32 index, std::shared_ptr<EnemyUI> ui)
 {
 	uiList.at(index) = ui;
-	uiList.at(index)->Initialize(nullptr);
+	uiList.at(index)->Initialize();
 }
 
 void EnemiesUI::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::FrameWork::Quad* quad)

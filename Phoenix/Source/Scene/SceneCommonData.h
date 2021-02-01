@@ -7,7 +7,6 @@
 #include "../Mannequin/Mannequin.h"
 #include "../AI/MetaAI/MetaAI.h"
 #include "../UI/UISystem.h"
-#include "../UI/TargetMarkUI.h"
 #include "../UI/TutorialUI.h"
 #include "../Sound/SoundSystem.h"
 #include "Phoenix/Types.h"
@@ -29,7 +28,6 @@ public:
 	std::shared_ptr<EnemyManager> enemyManager;
 	std::shared_ptr<Mannequin> mannequin;
 	std::shared_ptr<MetaAI> metaAI;
-	std::shared_ptr<TargetMarkUI> targetMarkUI;
 	std::shared_ptr<UISystem> uiSystem;
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> stageModel;
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> bossStageModel;

@@ -35,7 +35,9 @@ public:
 public:
 	static std::shared_ptr<PlayerUI> Create();
 
-	void Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice) override;
+	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice) override;
+
+	void Initialize() override;
 	
 	void Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::FrameWork::Quad* quad) override;
 

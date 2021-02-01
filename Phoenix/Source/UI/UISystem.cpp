@@ -19,7 +19,8 @@ void UISystem::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	for (const auto& it : ui)
 	{
-		it->Initialize(graphicsDevice);
+		it->Construct(graphicsDevice);
+		it->Initialize();
 	}
 }
 

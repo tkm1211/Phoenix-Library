@@ -8,7 +8,7 @@ std::shared_ptr<BossUI> BossUI::Create()
 	return std::make_shared<BossUI>();
 }
 
-void BossUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
+void BossUI::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	hp = Phoenix::Graphics::ITexture::Create();
 	hpBack = Phoenix::Graphics::ITexture::Create();
@@ -26,6 +26,11 @@ void BossUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	pos = Phoenix::Math::Vector2(width - SizeWidth, height - SizeHeigth);
 	size = Phoenix::Math::Vector2(SizeWidth, SizeHeigth);
 	hpTexPos = Phoenix::Math::Vector2(TexWidth, TexHeigth);
+}
+
+void BossUI::Initialize()
+{
+	
 }
 
 void BossUI::Update(Phoenix::f32 hpPercent)

@@ -9,8 +9,8 @@ std::shared_ptr<TutorialUI> TutorialUI::Create()
     return std::make_shared<TutorialUI>();
 }
 
-// 初期化
-void TutorialUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
+// コンストラクタ
+void TutorialUI::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	attack = Phoenix::Graphics::ITexture::Create();
 	attackDetail = Phoenix::Graphics::ITexture::Create();
@@ -29,7 +29,11 @@ void TutorialUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	lockOn->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\LockOnUI.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 	lockOnDetail->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\Tutorial\\LockOnUI2.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+}
 
+// 初期化
+void TutorialUI::Initialize()
+{
 	state = 0;
 	waitCnt = 0.0f;
 

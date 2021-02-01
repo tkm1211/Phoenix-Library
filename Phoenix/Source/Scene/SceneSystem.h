@@ -12,7 +12,6 @@
 enum class SceneType
 {
 	Title,
-	Tutorial,
 	Game,
 	GameClear,
 	GameOver,

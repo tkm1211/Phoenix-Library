@@ -34,7 +34,6 @@ void SceneSystem::Initialize(Phoenix::OS::IDisplay* display, Phoenix::Graphics::
 	onLabo = false;*/
 
 	AddScene<SceneTitle>();
-	AddScene<SceneTutorial>();
 	AddScene<SceneGame>();
 	AddScene<SceneGameClear>();
 	AddScene<SceneGameOver>();

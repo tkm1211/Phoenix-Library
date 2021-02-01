@@ -8,7 +8,7 @@ std::shared_ptr<EnemyUI> EnemyUI::Create()
 	return std::make_shared<EnemyUI>();
 }
 
-void EnemyUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
+void EnemyUI::Initialize()
 {
 	size = Phoenix::Math::Vector2(SizeWidth, SizeHeigth);
 	hpTexPos = Phoenix::Math::Vector2(TexWidth, TexHeigth);

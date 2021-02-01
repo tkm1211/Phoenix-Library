@@ -26,7 +26,9 @@ public:
 public:
 	static std::shared_ptr<EnemiesUI> Create();
 
-	void Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice) override {}
+	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice) override;
+
+	void Initialize() override {}
 	void Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::s32 enemyRange);
 
 	void Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix::FrameWork::Quad* quad) override;

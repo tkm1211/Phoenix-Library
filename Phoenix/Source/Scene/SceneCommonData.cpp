@@ -30,7 +30,6 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	metaAI->AddSystem<Meta::BattleEnemySystem>(static_cast<Phoenix::s32>(MetaType::Battle), battleEnemySystem);
 	metaAI->Construct();
 
-	targetMarkUI = TargetMarkUI::Create();
 	tutorialUI = TutorialUI::Create();
 
 	uiSystem = UISystem::Create();
@@ -69,10 +68,7 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	camera = std::make_shared<Phoenix::Graphics::Camera>();
 
 	Phoenix::Graphics::DeviceDX11* deviceDX11 = static_cast<Phoenix::Graphics::DeviceDX11*>(graphicsDevice->GetDevice());
-
-	targetMark = Phoenix::Graphics::ITexture::Create();
-	targetMark->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\UI\\TargetMark\\target.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
-
+	
 	bgm = Phoenix::FrameWork::CXAudio2::Create();
 	bgm->Load(L"..\\Data\\Assets\\Audio\\BGM\\GameMain.wav", 1);
 
