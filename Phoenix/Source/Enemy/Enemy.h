@@ -18,6 +18,7 @@ class Enemy : public inheritable_enable_shared_from_this<Enemy>
 {
 public:
 	static constexpr Phoenix::s32 LifeRange = 150;
+	static constexpr Phoenix::s32 AccumulationMaxDamage = 80;
 
 public:
 	enum class TypeTag
@@ -129,6 +130,9 @@ protected:
 	Phoenix::f32 moveX = 0.0f;
 	Phoenix::f32 moveY = 0.0f;
 
+	// 蓄積ダメージ
+	Phoenix::s32 accumulationDamage = 0;
+
 	// フラグ
 	bool enable = false;
 	bool alive = false;
@@ -235,7 +239,10 @@ public:
 	virtual bool InDistanceHitByAttack();
 
 	// ダメージ
-	virtual bool Damage(int damage);
+	virtual bool Damage(Phoenix::s32 damage);
+
+	// 蓄積ダメージ
+	virtual bool AccumulationDamage(Phoenix::s32 damage);
 
 public:
 	// 有効フラグ設定

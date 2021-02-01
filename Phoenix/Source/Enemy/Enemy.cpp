@@ -927,11 +927,13 @@ void Enemy::ChangeAttackAnimation()
 }
 
 // ダメージ
-bool Enemy::Damage(int damage)
+bool Enemy::Damage(Phoenix::s32 damage)
 {
 	if (battleAI->GetCurrentStateName() == BattleEnemyState::Dedge) return false;
 
 	life -= damage;
+	accumulationDamage += damage;
+
 	if (damage <= 10)
 	{
 		SetMoveInput(0.0f, 0.0f);
@@ -944,13 +946,17 @@ bool Enemy::Damage(int damage)
 	}
 	else if (damage <= 20)
 	{
-		SetMoveInput(0.0f, 0.0f);
-		SetMoveSpeed(0.0f);
+		// 蓄積ダメージの確認
+		if (!AccumulationDamage(damage))
+		{
+			SetMoveInput(0.0f, 0.0f);
+			SetMoveSpeed(0.0f);
 
-		battleAI->GoToState(BattleEnemyState::KnockBack, true);
+			battleAI->GoToState(BattleEnemyState::DamageBig, true);
 
-		changeAnimation = true;
-		changeState = BattleEnemyState::KnockBack;
+			changeAnimation = true;
+			changeState = BattleEnemyState::DamageBig;
+		}
 	}
 
 	// ライフが０ならマネージャーの生存エネミーカウントを下げる
@@ -967,6 +973,27 @@ bool Enemy::Damage(int damage)
 	}
 
 	return true;
+}
+
+// 蓄積ダメージ
+bool Enemy::AccumulationDamage(Phoenix::s32 damage)
+{
+	if (AccumulationMaxDamage <= accumulationDamage)
+	{
+		accumulationDamage = 0;
+
+		SetMoveInput(0.0f, 0.0f);
+		SetMoveSpeed(0.0f);
+
+		battleAI->GoToState(BattleEnemyState::KnockBack, true);
+
+		changeAnimation = true;
+		changeState = BattleEnemyState::KnockBack;
+
+		return true;
+	}
+
+	return false;
 }
 
 // 有効フラグ取得

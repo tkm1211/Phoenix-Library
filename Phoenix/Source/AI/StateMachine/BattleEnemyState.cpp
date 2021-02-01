@@ -331,14 +331,20 @@ namespace BattleEnemy
 
 		if (obj)
 		{
+			Phoenix::f32 speed = obj->GetMoveSpeed();
+
 			if (!obj->GetModel()->IsPlaying())
 			{
+				if (0.0006f < speed)
+				{
+					canChangeState = true;
+					return BattleEnemyState::KnockBack;
+				}
 				canChangeState = true;
 				return BattleEnemyState::GettingUp;
 			}
 
-			Phoenix::f32 speed = obj->GetMoveSpeed();
-			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.2f * elapsedTime);
+			speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.05f * elapsedTime);
 			obj->SetMoveSpeed(speed);
 			obj->SetMoveInput(0.0f, 1.0f);
 		}

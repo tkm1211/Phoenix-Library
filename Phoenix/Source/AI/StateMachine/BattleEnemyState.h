@@ -292,7 +292,7 @@ namespace BattleEnemy
 	class KnockBack : public State<BattleEnemyState>
 	{
 	private:
-		static constexpr Phoenix::f32 Speed = 0.75f;
+		static constexpr Phoenix::f32 Speed = 0.5f;
 
 	private:
 		std::weak_ptr<Enemy> owner;
