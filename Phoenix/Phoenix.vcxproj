@@ -243,12 +243,10 @@
     <ClCompile Include="Source\Scene\SceneGameOver.cpp" />
     <ClCompile Include="Source\Scene\SceneSystem.cpp" />
     <ClCompile Include="Source\Scene\SceneTitle.cpp" />
-    <ClCompile Include="Source\Scene\SceneTutorial.cpp" />
     <ClCompile Include="Source\UI\BossUI.cpp" />
     <ClCompile Include="Source\UI\EnemiesUI.cpp" />
     <ClCompile Include="Source\UI\EnemyUI.cpp" />
     <ClCompile Include="Source\UI\PlayerUI.cpp" />
-    <ClCompile Include="Source\UI\TargetMarkUI.cpp" />
     <ClCompile Include="Source\UI\TutorialUI.cpp" />
     <ClCompile Include="Source\UI\UISystem.cpp" />
   </ItemGroup>
@@ -281,7 +279,6 @@
     <ClInclude Include="Source\UI\EnemiesUI.h" />
     <ClInclude Include="Source\UI\EnemyUI.h" />
     <ClInclude Include="Source\UI\PlayerUI.h" />
-    <ClInclude Include="Source\UI\TargetMarkUI.h" />
     <ClInclude Include="Source\UI\TutorialUI.h" />
     <ClInclude Include="Source\UI\UI.h" />
     <ClInclude Include="Source\UI\UISystem.h" />

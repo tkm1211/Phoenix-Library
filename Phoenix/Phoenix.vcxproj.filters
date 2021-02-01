@@ -87,12 +87,6 @@
     <ClCompile Include="Source\Scene\SceneGameOver.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\SceneTutorial.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UI\TargetMarkUI.cpp">
-      <Filter>Source\UI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Mannequin\Mannequin.cpp">
       <Filter>Source\Mannequin</Filter>
     </ClCompile>
@@ -172,9 +166,6 @@
     </ClInclude>
     <ClInclude Include="Source\Scene\FadeSystem.h">
       <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UI\TargetMarkUI.h">
-      <Filter>Source\UI</Filter>
     </ClInclude>
     <ClInclude Include="Source\Mannequin\Mannequin.h">
       <Filter>Source\Mannequin</Filter>
