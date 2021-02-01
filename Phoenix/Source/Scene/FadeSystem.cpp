@@ -12,11 +12,12 @@ bool FadeSystem::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 	working = false;
 	isTrun = false;
 	type = SceneType::Title;
-	dissolveThreshold = 1.0f;
+	//dissolveThreshold = 1.0f;
+	alpha = 0.0f;
 
 	quad = Phoenix::FrameWork::Quad::Create();
 	quad->Initialize(graphicsDevice);
-	quad->LoadDissolveTexture(graphicsDevice, "..\\Data\\Assets\\Texture\\Mask\\Dissolve\\dissolve_animation2.png");
+	//quad->LoadDissolveTexture(graphicsDevice, "..\\Data\\Assets\\Texture\\Mask\\Dissolve\\dissolve_animation2.png");
 
 	fade = Phoenix::Graphics::ITexture::Create();
 	bool check = fade->Initialize(graphicsDevice->GetDevice(), "..\\Data\\Assets\\Texture\\Fade\\Fade01.png", Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
@@ -34,7 +35,7 @@ void FadeSystem::Update(SceneSystem* sceneSystem, Phoenix::f32 elapsedTime)
 {
 	if (!working) return;
 
-	if (!isTrun)
+	/*if (!isTrun)
 	{
 		dissolveThreshold -= dissolveSpeed * elapsedTime;
 		if (dissolveThreshold <= 0.0f)
@@ -51,6 +52,26 @@ void FadeSystem::Update(SceneSystem* sceneSystem, Phoenix::f32 elapsedTime)
 			working = false;
 			isTrun = false;
 			dissolveThreshold = 0.0f;
+		}
+	}*/
+
+	if (!isTrun)
+	{
+		alpha += alphaSpeed * elapsedTime;
+		if (1.0f <= alpha)
+		{
+			sceneSystem->SetScene(type);
+			isTrun = true;
+		}
+	}
+	else
+	{
+		alpha -= alphaSpeed * elapsedTime;
+		if (alpha <= 0.0f)
+		{
+			working = false;
+			isTrun = false;
+			alpha = 0.0f;
 		}
 	}
 }
@@ -69,14 +90,15 @@ void FadeSystem::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 
 	Phoenix::FND::SafeDelete(v);
 
-	quad->SetDissolveThreshold(dissolveThreshold);
+	//quad->SetDissolveThreshold(dissolveThreshold);
 	//quad->Draw(graphicsDevice, fade.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f));
-	quad->Draw(graphicsDevice, fade.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, true, true, true, true, true, false, true, false);
+	quad->Draw(graphicsDevice, fade.get(), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(width, height), Phoenix::Math::Vector2(0.0f, 0.0f), Phoenix::Math::Vector2(1920.0f, 1080.0f), 0.0f, 1.0f, 1.0f, 1.0f, alpha/*, true, true, true, true, true, false, true, false*/);
 }
 
 void FadeSystem::OnFade(SceneType sceneType)
 {
 	working = true;
 	type = sceneType;
-	dissolveThreshold = 1.0f;
+	//dissolveThreshold = 1.0f;
+	alpha = 0.0f;
 }

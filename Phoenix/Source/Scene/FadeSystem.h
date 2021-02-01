@@ -6,13 +6,15 @@
 class FadeSystem
 {
 private:
-	const Phoenix::f32 dissolveSpeed = 0.01f;
+	//const Phoenix::f32 dissolveSpeed = 0.01f;
+	const Phoenix::f32 alphaSpeed = 0.01f;
 
 private:
 	bool working = false;
 	bool isTrun = false;
 	SceneType type = SceneType::Title;
-	Phoenix::f32 dissolveThreshold = 0.0f;
+	//Phoenix::f32 dissolveThreshold = 0.0f;
+	Phoenix::f32 alpha = 0.0f;
 
 	std::unique_ptr<Phoenix::FrameWork::Quad> quad;
 	std::unique_ptr<Phoenix::Graphics::ITexture> fade;
