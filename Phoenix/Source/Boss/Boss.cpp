@@ -194,7 +194,7 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		}
 
 		// バトルモードAI
-		battleAI = BattleEnemyAI::Create();
+		/*battleAI = BattleEnemyAI::Create();
 		{
 			std::weak_ptr<Boss> owner = downcasted_shared_from_this<Boss>();
 			attackState = BattleEnemy::Attack<BossAttackState, Boss>::Create(owner);
@@ -217,6 +217,24 @@ void Boss::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			attackState->AddAttack(BossAttackState::RightHook);
 			attackState->AddAttack(BossAttackState::LeftHook);
 			attackState->AddAttack(BossAttackState::LeftTurn);
+		}*/
+
+		// HTN用データ
+		{
+			htnDatas = std::make_shared<HTNDatas>();
+			htnDatas->Initialize();
+		}
+
+		// HTN用ワールドステート
+		{
+			worldState = std::make_shared<EnemyWorldState>();
+		}
+
+		// AIコントローラー
+		{
+			controller = EnemyAIController::Create();
+			controller->Construct(shared_from_this());
+			controller->SetWorldState(worldState);
 		}
 	}
 
@@ -238,7 +256,9 @@ void Boss::Initialize()
 
 	// AI
 	{
-		battleAI->GoToState(BattleEnemyState::Idle);
+		//battleAI->GoToState(BattleEnemyState::Idle);
+		htnDatas->Initialize();
+		controller->Initialize();
 	}
 
 	// パラメーター
@@ -273,8 +293,8 @@ void Boss::Initialize()
 // 終了化
 void Boss::Finalize()
 {
-	battleAI->CleanUp();
-	battleAI.reset();
+	//battleAI->CleanUp();
+	//battleAI.reset();
 
 	collisionDatas.clear();
 	transform.reset();
@@ -284,6 +304,11 @@ void Boss::Finalize()
 // 更新
 void Boss::Update(bool onControl, Phoenix::f32 elapsedTime)
 {
+	// HTN用データに経過時間を設定
+	{
+		htnDatas->SetElapsedTime(elapsedTime);
+	}
+
 	// ライフが０ならマネージャーの生存エネミーカウントを下げる
 	if (life <= 0 && alive)
 	{
@@ -293,7 +318,7 @@ void Boss::Update(bool onControl, Phoenix::f32 elapsedTime)
 			manager->SubAliveEnemyCount(1);
 		}
 
-		SetState(BattleEnemyState::Death, true);
+		SetAnimation(BattleEnemyState::Death);
 		ChangeAnimation();
 	}
 
@@ -477,7 +502,7 @@ void Boss::SetAttackState(BossAttackState state)
 // 攻撃判定
 void Boss::AttackJudgment()
 {
-	if (battleAI->GetCurrentStateName() == BattleEnemyState::Attack)
+	if (controller->GetState() == BattleEnemyState::Attack)
 	{
 		auto Judgment = [&](Phoenix::s32 index)
 		{
@@ -544,7 +569,7 @@ void Boss::AttackJudgment()
 // ダメージ
 bool Boss::Damage(Phoenix::s32 damage)
 {
-	if (battleAI->GetCurrentStateName() == BattleEnemyState::Dedge) return false;
+	if (controller->GetState() == BattleEnemyState::Dedge) return false;
 
 	bool downDamage = false;
 
@@ -569,7 +594,7 @@ bool Boss::Damage(Phoenix::s32 damage)
 			SetMoveInput(0.0f, 0.0f);
 			SetMoveSpeed(0.0f);
 
-			battleAI->GoToState(BattleEnemyState::DamageBig, true);
+			//battleAI->GoToState(BattleEnemyState::DamageBig, true);
 
 			changeAnimation = true;
 			changeState = BattleEnemyState::DamageBig;
@@ -587,7 +612,7 @@ bool Boss::Damage(Phoenix::s32 damage)
 			manager->SubAliveEnemyCount(1);
 		}
 
-		SetState(BattleEnemyState::Death, true);
+		SetAnimation(BattleEnemyState::Death);
 		ChangeAnimation();
 	}
 
@@ -605,11 +630,7 @@ bool Boss::AccumulationDamage(Phoenix::s32 damage)
 
 		SetMoveInput(0.0f, 0.0f);
 		SetMoveSpeed(0.0f);
-
-		battleAI->GoToState(BattleEnemyState::KnockBack, true);
-
-		changeAnimation = true;
-		changeState = BattleEnemyState::KnockBack;
+		SetState(BattleEnemyState::KnockBack, true);
 
 		return true;
 	}

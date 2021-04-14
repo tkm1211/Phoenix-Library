@@ -45,10 +45,11 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		standardShader = commonData->standardShader.get();
 		pbrShader = commonData->pbrShader.get();
 		pbrSkinShader = commonData->pbrSkinShader.get();
-		camera = commonData->camera.get();
 		targetMark = commonData->targetMark.get();
 		soundSystem = commonData->soundSystem.get();
 		tutorialUI = commonData->tutorialUI;
+
+		camera = commonData->camera;
 	}
 
 	// フレームバッファ
@@ -239,6 +240,9 @@ void SceneGame::Construct(SceneSystem* sceneSystem)
 		dissolveEmissiveWidth = 0.01f;
 		isTurn = false;
 	}
+
+	htn = HTN<Name, State>::Create();
+	htn->Construct();
 }
 
 void SceneGame::Initialize()
@@ -270,7 +274,7 @@ void SceneGame::Initialize()
 	// 共通データの初期化
 	{
 		player->Initialize();
-		//boss->Initialize();
+		player->SetPlayerCamera(camera);
 
 		enemyManager->Initialize();
 		metaAI->Initialize();
@@ -626,6 +630,7 @@ void SceneGame::SearchNearEnemy(Phoenix::Math::Vector3& nearEnemyPos, Phoenix::M
 	inTerritory = false;
 
 	nearEnemyIndex = -1;
+	bossIndex = -1;
 	nearIndex = -1;
 	drawEnemyUIIndex = -1;
 
@@ -660,6 +665,11 @@ void SceneGame::SearchNearEnemy(Phoenix::Math::Vector3& nearEnemyPos, Phoenix::M
 				inTerritory = true;
 				centerOfGravity += enemyPos;
 				++enemyCount;
+			}
+
+			if (enemy->GetTypeTag() == Enemy::TypeTag::Large)
+			{
+				bossIndex = count;
 			}
 		}
 
@@ -875,12 +885,10 @@ void SceneGame::UpdateSlow(Phoenix::f32& elapsedTime)
 {
 	if (isSlow)
 	{
-		if (75.0f <= slowTimeCnt || !player->IsJustDedge())
+		if (75.0f <= slowTimeCnt || !player->GetDodging())
 		{
 			isSlow = false;
 			slowTimeCnt = 0.0f;
-
-			player->SetIsJustDedge(false);
 
 			screenColor = Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -1203,8 +1211,9 @@ void SceneGame::UpdateCameraShake(Phoenix::f32 elapsedTime)
 		//shake = right * (shakeWidth * (1.0f - len));
 		//shake.y = shakeHeight * len;
 
-		shake = right * (cosf(450.0f * len * 0.01745f) * (shakeWidth * (1.0f - len)));
-		shake.y = cosf(450.0f * len * 0.01745f) * (shakeHeight * (1.0f - len));
+		/*right **/
+		shake = shakeVec * cosf(450.0f * len * 0.01745f) * (shakePower * (1.0f - len));
+		//shake.y = shakeHeight * cosf(450.0f * len * 0.01745f) * (shakePower * (1.0f - len));
 
 		camera->SetCameraShake(shake);
 
@@ -1227,8 +1236,8 @@ void SceneGame::UpdateCameraShake(Phoenix::f32 elapsedTime)
 
 void SceneGame::UpdateUI(Phoenix::f32 elapsedTime)
 {
-	player->UpdateUI();
-	enemyManager->UpdateUI(nearEnemyIndex);
+	player->UpdateUI(elapsedTime);
+	enemyManager->UpdateUI(bossIndex, elapsedTime);
 
 	for (const auto& enemy : enemyManager->GetEnemies())
 	{
@@ -1246,7 +1255,7 @@ void SceneGame::UpdateUI(Phoenix::f32 elapsedTime)
 		{
 			if ((90.0f * 0.01745f) <= angle)
 			{
-				enemy->UpdateUI(Phoenix::Math::Vector2(-1920.0f, -1080.0f)); // 画面にエネミーが映っていないときにUIが表示されるため外に描画して隠している。
+				enemy->UpdateUI(Phoenix::Math::Vector2(-1920.0f, -1080.0f), elapsedTime); // 画面にエネミーが映っていないときにUIが表示されるため外に描画して隠している。
 				continue;
 			}
 		}
@@ -1256,7 +1265,7 @@ void SceneGame::UpdateUI(Phoenix::f32 elapsedTime)
 		if (enemy->GetTypeTag() == Enemy::TypeTag::Large) pos.y += (2.15f * 1.25f);
 
 		Phoenix::Math::Vector3 screenPos = WorldToScreen(pos);
-		enemy->UpdateUI(Phoenix::Math::Vector2(screenPos.x, screenPos.y));
+		enemy->UpdateUI(Phoenix::Math::Vector2(screenPos.x, screenPos.y), elapsedTime);
 	}
 
 	// チュートリアルUI
@@ -1549,9 +1558,12 @@ void SceneGame::PushingOutEnemiesAndStage()
 		Phoenix::Math::Vector3 enemyPos = enemy->GetPosition();
 		Phoenix::f32 bossDis = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(enemyPos.x, enemyPos.z));
 		Phoenix::Math::Vector2 enemyNormal = Phoenix::Math::Vector2Normalize(Phoenix::Math::Vector2(enemyPos.x, enemyPos.z));
+
+		enemy->SetHitWall(false);
 		if (stageRadius <= bossDis)
 		{
 			enemy->SetTranslate(Phoenix::Math::Vector3(enemyNormal.x * stageRadius, enemyPos.y, enemyNormal.y * stageRadius));
+			enemy->SetHitWall(true);
 
 			if (SphereVsSphere(Phoenix::Math::Vector3(playerPos.x, playerPos.y + 0.5f, playerPos.z), Phoenix::Math::Vector3(enemyPos.x, enemyPos.y + 0.5f, enemyPos.z), player->GetRadius(), enemy->GetRadius()))
 			{
@@ -1750,8 +1762,18 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 							cameraShakeCnt = 0.0f;
 
-							shakeWidth = 0.0f;
-							shakeHeight = 0.05f;
+							Phoenix::Math::Vector3 enemyPos = enemy->GetPosition();
+							Phoenix::Math::Vector3 playerPos = player->GetPosition();
+							//enemyPos = WorldToScreen(enemyPos);
+							//playerPos = WorldToScreen(playerPos);
+
+							shakeVec = Phoenix::Math::Vector3Normalize(enemyPos - playerPos);
+
+							//Phoenix::Math::Vector3 screen = Phoenix::Math::Vector3Normalize(enemyPos - playerPos);
+							
+							shakePower = 0.05f;
+							//shakeWidth = screen.x;
+							//shakeHeight = screen.y;
 
 							cameraShakeMaxCnt = 7.0f;
 
@@ -1763,8 +1785,18 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 							shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 							cameraShakeCnt = 0.0f;
 
-							shakeWidth = 0.0f;
-							shakeHeight = 0.25f;
+							Phoenix::Math::Vector3 enemyPos = enemy->GetPosition();
+							Phoenix::Math::Vector3 playerPos = player->GetPosition();
+							//enemyPos = WorldToScreen(enemyPos);
+							//playerPos = WorldToScreen(playerPos);
+
+							shakeVec = Phoenix::Math::Vector3Normalize(enemyPos - playerPos);
+
+							//Phoenix::Math::Vector3 screen = Phoenix::Math::Vector3Normalize(enemyPos - playerPos);
+
+							shakePower = 0.75f;
+							//shakeWidth = screen.x;
+							//shakeHeight = screen.y;
 
 							cameraShakeMaxCnt = 10.0f;
 
@@ -1775,7 +1807,7 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 			}
 		}
 
-		if (enemy->IsAttackJudgment() && !player->Invincible() && !isHitStop && !player->IsJustDedge())
+		if (enemy->IsAttackJudgment() && !player->IsInvincible() && !isHitStop && !player->IsJustDedge())
 		{
 			const std::vector<Phoenix::FrameWork::CollisionData> playerDatas = player->GetCollisionDatas();
 			const std::vector<Phoenix::FrameWork::CollisionData>* enemyDatas = enemy->GetCollisionDatas();
@@ -1793,7 +1825,7 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 				if (player->OnJustDedge())
 				{
 					isSlow = true;
-					player->SetIsJustDedge(true);
+					player->SetIsInvincible(true);
 					motionBlur->velocityConstants.exposureTime = 50000.0f;
 					targetEnemyIndex = index;
 					slowMagnification = 0.15f;
@@ -1882,8 +1914,18 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 									shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 									cameraShakeCnt = 0;
 
-									shakeWidth = 0.0f;
-									shakeHeight = 0.075f;
+									Phoenix::Math::Vector3 enemyPos = enemy->GetPosition();
+									Phoenix::Math::Vector3 playerPos = player->GetPosition();
+									//enemyPos = WorldToScreen(enemyPos);
+									//playerPos = WorldToScreen(playerPos);
+
+									shakeVec = Phoenix::Math::Vector3Normalize(enemyPos - playerPos);
+
+									//Phoenix::Math::Vector3 screen = Phoenix::Math::Vector3Normalize(enemyPos - playerPos);
+
+									shakePower = 0.075f;
+									//shakeWidth = screen.x;
+									//shakeHeight = screen.y;
 
 									cameraShakeMaxCnt = 7;
 
@@ -1895,8 +1937,18 @@ void SceneGame::JudgeHitPlayerAndEnemies()
 									shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
 									cameraShakeCnt = 0;
 
-									shakeWidth = 0.0f;
-									shakeHeight = 0.35f;
+									Phoenix::Math::Vector3 enemyPos = enemy->GetPosition();
+									Phoenix::Math::Vector3 playerPos = player->GetPosition();
+									//enemyPos = WorldToScreen(enemyPos);
+									//playerPos = WorldToScreen(playerPos);
+
+									shakeVec = Phoenix::Math::Vector3Normalize(enemyPos - playerPos);
+
+									//Phoenix::Math::Vector3 screen = Phoenix::Math::Vector3Normalize(enemyPos - playerPos);
+
+									shakePower = 0.35f;
+									//shakeWidth = screen.x;
+									//shakeHeight = screen.y;
 
 									cameraShakeMaxCnt = 10;
 
@@ -1955,6 +2007,7 @@ void SceneGame::NoticeMetaAI()
 	}
 #else
 	Meta::MetaData data;
+	data.playerScore = playerBehaviorScore;
 	data.playerPos = player->GetPosition();
 	data.playerState = static_cast<Phoenix::s32>(player->GetAnimationState());
 	data.playerAttackState = player->GetAttackState();

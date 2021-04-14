@@ -20,6 +20,8 @@ public:
 	static constexpr Phoenix::f32 TexWidth = 640.0f;
 	static constexpr Phoenix::f32 TexHeigth = 64.0f;
 
+	static constexpr Phoenix::f32 startTimeMax = 100.0f;
+
 private:
 	Phoenix::Math::Vector2 size = Phoenix::Math::Vector2(0.0f, 0.0f);
 	Phoenix::Math::Vector2 hpTexPos = Phoenix::Math::Vector2(0.0f, 0.0f);
@@ -27,6 +29,15 @@ private:
 	Phoenix::Math::Vector2 pos = Phoenix::Math::Vector2(0.0f, 0.0f);
 
 	bool exit = false;
+
+	Phoenix::Math::Vector2 damageSize = Phoenix::Math::Vector2(0.0f, 0.0f);
+	Phoenix::Math::Vector2 damageTexPos = Phoenix::Math::Vector2(0.0f, 0.0f);
+
+	Phoenix::f32 hpPercent = 0.0f;
+	Phoenix::f32 damagePercent = 0.0f;
+	Phoenix::f32 startTime = 0.0f;
+
+	bool downDamageGage = false;
 
 public:
 	EnemyUI() {}
@@ -46,13 +57,19 @@ public:
 	/// HP更新
 	/// </summary>
 	/// <param name="hpPercent">0 ~ 100 %</param>
-	void Update(Phoenix::f32 hpPercent);
+	void Update(Phoenix::f32 hpPercent, Phoenix::f32 elapsedTime);
 
 	// サイズ取得
 	Phoenix::Math::Vector2 GetSize();
 
 	// 切り取り位置を取得
 	Phoenix::Math::Vector2 GetHPTexPos();
+
+	// ダメージ用サイズ取得
+	Phoenix::Math::Vector2 GetDamageSize();
+
+	// ダメージ用切り取り位置を取得
+	Phoenix::Math::Vector2 GetDamageTexPos();
 
 	// キャラ頭上に表示
 	bool GetExit();

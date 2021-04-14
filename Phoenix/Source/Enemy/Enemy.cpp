@@ -203,7 +203,7 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		}
 
 		// バトルモードAI
-		battleAI = BattleEnemyAI::Create();
+		/*battleAI = BattleEnemyAI::Create();
 		{
 			std::weak_ptr<Enemy> owner = shared_from_this();
 			attackState = BattleEnemy::Attack<EnemyAttackState, Enemy>::Create(owner);
@@ -226,6 +226,24 @@ void Enemy::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 			attackState->AddAttack(EnemyAttackState::WeakRight);
 			attackState->AddAttack(EnemyAttackState::WeakLeft);
 			attackState->AddAttack(EnemyAttackState::StrongRight);
+		}*/
+
+		// HTN用データ
+		{
+			htnDatas = std::make_shared<HTNDatas>();
+			htnDatas->Initialize();
+		}
+
+		// HTN用ワールドステート
+		{
+			worldState = std::make_shared<EnemyWorldState>();
+		}
+
+		// AIコントローラー
+		{
+			controller = EnemyAIController::Create();
+			controller->Construct(shared_from_this());
+			controller->SetWorldState(worldState);
 		}
 	}
 
@@ -247,7 +265,9 @@ void Enemy::Initialize()
 
 	// AI
 	{
-		battleAI->GoToState(BattleEnemyState::Idle);
+		//battleAI->GoToState(BattleEnemyState::Idle);
+		htnDatas->Initialize();
+		controller->Initialize();
 	}
 
 	// パラメーター
@@ -282,8 +302,8 @@ void Enemy::Initialize()
 // 終了化
 void Enemy::Finalize()
 {
-	battleAI->CleanUp();
-	battleAI.reset();
+	//battleAI->CleanUp();
+	//battleAI.reset();
 
 	collisionDatas.clear();
 	transform.reset();
@@ -293,6 +313,11 @@ void Enemy::Finalize()
 // 更新
 void Enemy::Update(bool onControl, Phoenix::f32 elapsedTime)
 {
+	// HTN用データに経過時間を設定
+	{
+		htnDatas->SetElapsedTime(elapsedTime);
+	}
+
 	// ライフが０ならマネージャーの生存エネミーカウントを下げる
 	if (life <= 0 && alive)
 	{
@@ -302,7 +327,7 @@ void Enemy::Update(bool onControl, Phoenix::f32 elapsedTime)
 			manager->SubAliveEnemyCount(1);
 		}
 
-		SetState(BattleEnemyState::Death, true);
+		SetAnimation(BattleEnemyState::Death);
 		ChangeAnimation();
 	}
 
@@ -440,7 +465,8 @@ void Enemy::UpdateTranslate(Phoenix::f32 elapsedTime)
 // 回転更新
 void Enemy::UpdateRotate(Phoenix::f32 elapsedTime)
 {
-	if (battleAI->GetCurrentStateName() == BattleEnemyState::Idle || battleAI->GetCurrentStateName() == BattleEnemyState::Walk || battleAI->GetCurrentStateName() == BattleEnemyState::Run)
+	BattleEnemyState currentState = controller->GetState();
+	if (currentState == BattleEnemyState::Idle || currentState == BattleEnemyState::Walk || currentState == BattleEnemyState::Run)
 	{
 		UpdateNewRotate();
 	}
@@ -454,7 +480,7 @@ void Enemy::UpdateRotate(Phoenix::f32 elapsedTime)
 // アニメーション更新
 void Enemy::UpdateAnimation(Phoenix::f32 elapsedTime)
 {
-	if (battleAI->GetCurrentStateName() == BattleEnemyState::Walk)
+	if (controller->GetState() == BattleEnemyState::Walk)
 	{
 		model->SetBlendRate(Phoenix::Math::Vector3(-moveX, -moveY, 0.0f));
 	}
@@ -466,51 +492,7 @@ void Enemy::UpdateAnimation(Phoenix::f32 elapsedTime)
 // AI更新
 void Enemy::UpdateAI(Phoenix::f32 elapsedTime)
 {
-	BattleEnemyState nextBattleState = BattleEnemyState::NoneState;
-
-	switch (currentMode)
-	{
-	case EnemyMode::Ordinary:
-		break;
-
-	case EnemyMode::Battle:
-		nextBattleState = battleAI->Update(elapsedTime);
-		/*if (nextBattleState == BattleEnemyState::Idle && stackAttackRight)
-		{
-			stackAttackRight = false;
-			if (battleAI->GetCurrentStateName() == BattleEnemyState::Attack)
-			{
-				battleAI->GoToState(BattleEnemyState::Idle);
-			}
-			else
-			{
-				battleAI->GoToState(BattleEnemyState::Attack);
-			}
-			SetMoveInput(0.0f, 0.0f);
-			SetMoveSpeed(0.0f);
-		}
-		else if (nextBattleState == BattleEnemyState::Attack)
-		{
-			battleAI->GoToState(BattleEnemyState::Attack);
-			SetMoveInput(0.0f, 0.0f);
-			SetMoveSpeed(0.0f);
-		}
-		else */
-
-		if (nextBattleState != BattleEnemyState::NoneState)
-		{
-			if (battleAI->GetCurrentStateName() != nextBattleState)
-			{
-				SetState(nextBattleState);
-			}
-			SetMoveInput(0.0f, 0.0f);
-			SetMoveSpeed(0.0f);
-		}
-
-		break;
-
-	default: break;
-	}
+	controller->Update(elapsedTime);
 }
 
 // 当たり判定更新
@@ -529,12 +511,12 @@ void Enemy::UpdateCollision()
 }
 
 // UI更新
-void Enemy::UpdateUI(Phoenix::Math::Vector2 pos)
+void Enemy::UpdateUI(Phoenix::Math::Vector2 pos, Phoenix::f32 elapsedTime)
 {
 	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
 	hp = hp <= 0 ? 0 : hp;
 
-	ui->Update((hp / lifeMax) * 100.0f);
+	ui->Update((hp / lifeMax) * 100.0f, elapsedTime);
 	ui->SetExit(alive);
 	ui->SetPos(pos);
 }
@@ -542,7 +524,7 @@ void Enemy::UpdateUI(Phoenix::Math::Vector2 pos)
 // 攻撃判定
 void Enemy::AttackJudgment()
 {
-	if (battleAI->GetCurrentStateName() == BattleEnemyState::Attack)
+	if (controller->GetState() == BattleEnemyState::Attack)
 	{
 		auto Judgment = [&](Phoenix::s32 index)
 		{
@@ -730,33 +712,35 @@ void Enemy::SetOwner(std::shared_ptr<EnemyManager> owner)
 // ステートを変更
 void Enemy::SetState(BattleEnemyState state, bool forcedChange)
 {
-	/*if (battleAI->GetCurrentStateName() == BattleEnemyState::DamageSmall || battleAI->GetCurrentStateName() == BattleEnemyState::DamageBig)
-	{
-		Phoenix::s32 temp = 0;
-		temp++;
-	}*/
+	changeState = state;
+	controller->SetNextState(state);
+}
 
-	Phoenix::s32 check = battleAI->GoToState(state, forcedChange);
-
-	if (check != -1)
+// アニメーションを変更
+void Enemy::SetAnimation(BattleEnemyState state)
+{
+	if (controller->GetState() == BattleEnemyState::KnockBack && state != BattleEnemyState::KnockBack)
 	{
-		changeAnimation = true;
-		changeState = state;
+		state = state;
 	}
+
+	changeAnimation = true;
+	changeState = state;
 }
 
 // 攻撃権を発行
 bool Enemy::SetAttackRight(bool stackAttackRight)
 {
-	//if (battleAI->GetCurrentStateName() == BattleEnemyState::Idle)
+	if (controller->GetState() == BattleEnemyState::Idle)
 	{
-		battleAI->GoToState(BattleEnemyState::Attack, true);
+		SetState(BattleEnemyState::Attack, true);
+		this->stackAttackRight = true;
 		return true;
 	}
-	/*else if (stackAttackRight)
+	else if (stackAttackRight)
 	{
 		this->stackAttackRight = stackAttackRight;
-	}*/
+	}
 
 	return false;
 }
@@ -796,6 +780,12 @@ void Enemy::SetMoveInput(Phoenix::f32 moveX, Phoenix::f32 moveY)
 {
 	this->moveX = moveX;
 	this->moveY = moveY;
+}
+
+// ステージ端にいるか設定
+void Enemy::SetHitWall(bool hitWall)
+{
+	this->hitWall = hitWall;
 }
 
 // アニメーションを移行
@@ -929,7 +919,7 @@ void Enemy::ChangeAttackAnimation()
 // ダメージ
 bool Enemy::Damage(Phoenix::s32 damage)
 {
-	if (battleAI->GetCurrentStateName() == BattleEnemyState::Dedge) return false;
+	if (controller->GetState() == BattleEnemyState::Dedge) return false;
 
 	life -= damage;
 	accumulationDamage += damage;
@@ -938,11 +928,7 @@ bool Enemy::Damage(Phoenix::s32 damage)
 	{
 		SetMoveInput(0.0f, 0.0f);
 		SetMoveSpeed(0.0f);
-
-		battleAI->GoToState(BattleEnemyState::DamageSmall, true);
-
-		changeAnimation = true;
-		changeState = BattleEnemyState::DamageSmall;
+		SetState(BattleEnemyState::DamageSmall, true);
 	}
 	else if (damage <= 20)
 	{
@@ -951,11 +937,7 @@ bool Enemy::Damage(Phoenix::s32 damage)
 		{
 			SetMoveInput(0.0f, 0.0f);
 			SetMoveSpeed(0.0f);
-
-			battleAI->GoToState(BattleEnemyState::DamageBig, true);
-
-			changeAnimation = true;
-			changeState = BattleEnemyState::DamageBig;
+			SetState(BattleEnemyState::DamageBig, true);
 		}
 	}
 
@@ -968,7 +950,7 @@ bool Enemy::Damage(Phoenix::s32 damage)
 			manager->SubAliveEnemyCount(1);
 		}
 
-		SetState(BattleEnemyState::Death, true);
+		SetAnimation(BattleEnemyState::Death);
 		ChangeAnimation();
 	}
 
@@ -984,11 +966,7 @@ bool Enemy::AccumulationDamage(Phoenix::s32 damage)
 
 		SetMoveInput(0.0f, 0.0f);
 		SetMoveSpeed(0.0f);
-
-		battleAI->GoToState(BattleEnemyState::KnockBack, true);
-
-		changeAnimation = true;
-		changeState = BattleEnemyState::KnockBack;
+		SetState(BattleEnemyState::KnockBack, true);
 
 		return true;
 	}
@@ -1020,6 +998,12 @@ bool Enemy::GetInBattle()
 	return inBattle;
 }
 
+// ステージ端にいるか取得
+bool Enemy::GetHitWall()
+{
+	return hitWall;
+}
+
 // トランスフォームの取得
 Phoenix::FrameWork::Transform Enemy::GetTransform()
 {
@@ -1029,7 +1013,7 @@ Phoenix::FrameWork::Transform Enemy::GetTransform()
 // バトルモードのステート取得
 BattleEnemyState Enemy::GetBattleState()
 {
-	return battleAI->GetCurrentStateName();
+	return controller->GetState();
 }
 
 // プレイヤーの戦闘エリアに侵入したか

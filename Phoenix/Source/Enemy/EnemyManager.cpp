@@ -88,11 +88,11 @@ void EnemyManager::Update(bool onControl, Phoenix::f32 elapsedTime)
 }
 
 // UIçXêV
-void EnemyManager::UpdateUI(Phoenix::s32 index)
+void EnemyManager::UpdateUI(Phoenix::s32 index, Phoenix::f32 elapsedTime)
 {
 	if (index <= -1 || enemies.size() <= index)
 	{
-		enemiesUI->Update(index, 0.0f);
+		enemiesUI->Update(index, 0.0f, elapsedTime);
 		return;
 	}
 
@@ -101,7 +101,7 @@ void EnemyManager::UpdateUI(Phoenix::s32 index)
 	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
 	hp = hp <= 0 ? 0 : hp;
 
-	enemiesUI->Update(index, (hp / enemies.at(index)->GetLifeMax()) * 100.0f);
+	enemiesUI->Update(index, (hp / enemies.at(index)->GetLifeMax()) * 100.0f, elapsedTime);
 }
 
 // ï`âÊ

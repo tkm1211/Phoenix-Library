@@ -2677,7 +2677,16 @@ namespace Phoenix
 			// Ä¶’†
 			bool IsPlaying()
 			{
-				return currentAnimationLayer->currentState->animation->player->IsPlaying();
+				if (currentAnimationLayer->currentState)
+				{
+					return currentAnimationLayer->currentState->animation->player->IsPlaying();
+				}
+				else if (currentAnimationLayer->currentBlendTree)
+				{
+					return currentAnimationLayer->currentBlendTree->states.at(0).animation->player->IsPlaying();
+				}
+
+				return false;
 			}
 		
 			// ƒ‹[ƒvÄ¶‚©

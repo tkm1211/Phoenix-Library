@@ -13,9 +13,11 @@ std::shared_ptr<EnemiesUI> EnemiesUI::Create()
 void EnemiesUI::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 {
 	hp = Phoenix::Graphics::ITexture::Create();
+	damage = Phoenix::Graphics::ITexture::Create();
 	hpBack = Phoenix::Graphics::ITexture::Create();
 
 	hp->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\HP\\Boss\\BossHP.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
+	damage->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\HP\\DamageHP.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 	hpBack->Initialize(graphicsDevice->GetDevice(), Phoenix::OS::Path::Combine(Phoenix::OS::Path::GetCurrentDirectory(), "..\\Data\\Assets\\Texture\\UI\\HP\\HPBack.png"), Phoenix::Graphics::MaterialType::Diffuse, Phoenix::Math::Color(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
@@ -34,7 +36,7 @@ void EnemiesUI::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, P
 	currentIndex = -1;
 }
 
-void EnemiesUI::Update(Phoenix::s32 index, Phoenix::f32 hpPercent)
+void EnemiesUI::Update(Phoenix::s32 index, Phoenix::f32 hpPercent, Phoenix::f32 elapsedTime)
 {
 	if (index <= -1 || uiList.size() <= index)
 	{
@@ -42,7 +44,7 @@ void EnemiesUI::Update(Phoenix::s32 index, Phoenix::f32 hpPercent)
 		return;
 	}
 
-	uiList.at(index)->Update(hpPercent);
+	uiList.at(index)->Update(hpPercent, elapsedTime);
 	currentIndex = index;
 }
 
@@ -68,10 +70,15 @@ void EnemiesUI::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix
 
 			Phoenix::Math::Vector2 size = ui->GetSize() / 5.0f;
 			Phoenix::Math::Vector2 hpTexPos = ui->GetHPTexPos();
+
+			Phoenix::Math::Vector2 damgeSize = ui->GetDamageSize() / 5.0f;
+			Phoenix::Math::Vector2 damageTexPos = ui->GetDamageTexPos();
+
 			Phoenix::Math::Vector2 pos = ui->GetPos();
 			pos.x -= (EnemyUI::SizeWidth / 5.0f) / 2.0f;
 
 			quad->Draw(graphicsDevice, hpBack.get(), pos.x, pos.y, EnemyUI::SizeWidth / 5.0f, EnemyUI::SizeHeigth / 5.0f);
+			quad->Draw(graphicsDevice, damage.get(), pos, damgeSize, Phoenix::Math::Vector2(0.0f, 0.0f), damageTexPos);
 			quad->Draw(graphicsDevice, hp.get(), pos, size, Phoenix::Math::Vector2(0.0f, 0.0f), hpTexPos);
 		}
 
@@ -80,7 +87,11 @@ void EnemiesUI::Draw(Phoenix::Graphics::IGraphicsDevice* graphicsDevice, Phoenix
 		Phoenix::Math::Vector2 size = uiList.at(currentIndex)->GetSize();
 		Phoenix::Math::Vector2 hpTexPos = uiList.at(currentIndex)->GetHPTexPos();
 
+		Phoenix::Math::Vector2 damgeSize = uiList.at(currentIndex)->GetDamageSize();
+		Phoenix::Math::Vector2 damageTexPos = uiList.at(currentIndex)->GetDamageTexPos();
+
 		quad->Draw(graphicsDevice, hpBack.get(), pos.x, pos.y, EnemyUI::SizeWidth, EnemyUI::SizeHeigth);
+		quad->Draw(graphicsDevice, damage.get(), pos, damgeSize, Phoenix::Math::Vector2(0.0f, 0.0f), damageTexPos);
 		quad->Draw(graphicsDevice, hp.get(), pos, size, Phoenix::Math::Vector2(0.0f, 0.0f), hpTexPos);
 	}
 	context->SetBlend(contextDX11->GetBlendState(Phoenix::Graphics::BlendState::AlphaBlend), 0, 0xFFFFFFFF);

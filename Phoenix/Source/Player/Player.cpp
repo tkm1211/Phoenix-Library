@@ -1,4 +1,6 @@
 #include "Player.h"
+#include "PlayerState.h"
+#include "PlayerController.h"
 #include <fstream>
 #include <cereal/cereal.hpp>
 #include <cereal/archives/binary.hpp>
@@ -20,9 +22,9 @@ CEREAL_CLASS_VERSION(Player::AttackData, 1)
 
 
 // 生成
-std::unique_ptr<Player> Player::Create()
+std::shared_ptr<Player> Player::Create()
 {
-	return std::make_unique<Player>();
+	return std::make_shared<Player>();
 }
 
 // コンストラクタ
@@ -154,6 +156,12 @@ void Player::Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice)
 		}
 	}
 
+	// コントローラー生成
+	{
+		controller = PlayerController::Create();
+		controller->Construct(shared_from_this());
+	}
+
 	// コリジョン初期化
 	{
 		collisionDatas.resize(5);
@@ -232,6 +240,11 @@ void Player::Initialize()
 		model->SetLoopAnimation(true);
 	}
 
+	// コントローラー生成
+	{
+		controller->Initialize();
+	}
+
 	// トランスフォームの初期化
 	{
 		worldMatrix = Phoenix::Math::MatrixIdentity();
@@ -244,7 +257,6 @@ void Player::Initialize()
 	// パラメーターの初期化
 	{
 		life = MaxLife;
-		invincible = false;
 		alive = true;
 		death = false;
 		attackCollisionIndex = -1;
@@ -254,11 +266,12 @@ void Player::Initialize()
 		newRotate = rotate;
 		rotateY = 180.0f * 0.01745f;
 		inTerritory = false;
-		isBattleMode = false;
+		lockOn = false;
 		receptionStack = false;
 		stackKey = AttackKey::None;
 		behaviorScore = 0;
 		attackDamage = 0;
+		onControl = false;
 
 		for (auto judge : isAttackJudgment)
 		{
@@ -293,6 +306,135 @@ void Player::Finalize()
 
 // 更新
 void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::f32 elapsedTime, bool attackLoad)
+{
+	// 攻撃データの読み込み
+	{
+		LoadAttackData(attackLoad);
+	}
+
+	// 死亡アニメーション終了時に存在を消す
+	{
+		if (UpdateDeath(elapsedTime)) return;
+	}
+
+	// スコア計算
+	{
+		ScoreCalculation(elapsedTime);
+	}
+
+	// コントローラー操作(位置更新)
+	{
+		Control(camera, elapsedTime, onControl);
+	}
+
+	// アニメーション変更
+	{
+		ChangeAnimation();
+	}
+
+	// アニメーション更新
+	{
+		UpdateAnimation(elapsedTime);
+	}
+
+	// ワールド行列を作成
+	{
+		UpdateTrasform();
+	}
+
+	// コリジョン更新
+	{
+		UpdateCollision();
+	}
+
+	// アタック判定中
+	{
+		AttackJudgment();
+	}
+
+	// 蓄積ダメージの確認
+	{
+		AccumulationDamege();
+	}
+}
+
+// トランスフォーム更新
+void Player::UpdateTrasform()
+{
+	Phoenix::Math::Vector3 scale = this->scale;
+	Phoenix::Math::Quaternion rotate = this->rotate;
+	Phoenix::Math::Vector3 translate = pos;
+
+	Phoenix::Math::Matrix S, R, T;
+	S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
+	R = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+	T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
+
+	worldMatrix = S * R * T;
+}
+
+// UI更新
+void Player::UpdateUI(Phoenix::f32 elapsedTime)
+{
+	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
+	hp = hp <= 0 ? 0 : hp;
+
+	ui->Update((hp / MaxLife) * 100.0f, elapsedTime);
+}
+
+// アニメーション更新
+void Player::UpdateAnimation(Phoenix::f32 elapsedTime)
+{
+	model->UpdateTransform(elapsedTime / 60.0f);
+}
+
+// コリジョン更新
+void Player::UpdateCollision()
+{
+	Phoenix::Math::Matrix systemUnitTransform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+	systemUnitTransform._11 = systemUnitTransform._22 = systemUnitTransform._33 = 0.01f;
+
+	auto nodes = model->GetNodes();
+	for (auto& data : collisionDatas)
+	{
+		Phoenix::Math::Matrix bone = nodes->at(data.boneIndex).worldTransform;
+		bone *= systemUnitTransform * worldMatrix;
+		data.pos = Phoenix::Math::Vector3(bone._41, bone._42, bone._43);
+	}
+}
+
+// 死亡処理の更新
+bool Player::UpdateDeath(Phoenix::f32 elapsedTime)
+{
+	if (!alive)
+	{
+		if (!model->IsPlaying())
+		{
+			death = true;
+		}
+		else
+		{
+			model->UpdateTransform(elapsedTime / 60.0f);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+// 行動スコアの計算
+void Player::ScoreCalculation(Phoenix::f32 elapsedTime)
+{
+	Phoenix::f32 score = static_cast<Phoenix::f32>(behaviorScore);
+	{
+		score = Phoenix::Math::f32Lerp(score, 0.0f, 0.05f * elapsedTime);
+	}
+	behaviorScore = static_cast<Phoenix::s32>(score);
+}
+
+// 攻撃データを読み込み
+void Player::LoadAttackData(bool attackLoad)
 {
 	if (attackLoad)
 	{
@@ -340,562 +482,30 @@ void Player::Update(Phoenix::Graphics::Camera& camera, bool onControl, Phoenix::
 			}
 		}
 	}
-
-	// ライフが０ならマネージャーの生存エネミーカウントを下げる
-	if (life <= 0 && alive)
-	{
-		alive = false;
-		ChangeAnimationState(AnimationState::Death);
-		ChangeAnimation();
-	}
-
-	// 死亡アニメーション終了時に存在を消す
-	if (!alive)
-	{
-		if (!model->IsPlaying())
-		{
-			death = true;
-		}
-		else
-		{
-			model->UpdateTransform(elapsedTime / 60.0f);
-		}
-
-		return;
-	}
-
-	// スコア計算
-	{
-		Phoenix::f32 score = static_cast<Phoenix::f32>(behaviorScore);
-		{
-			score = Phoenix::Math::f32Lerp(score, 0.0f, 0.05f * elapsedTime);
-		}
-		behaviorScore = static_cast<Phoenix::s32>(score);
-	}
-
-	// 蓄積ダメージの確認
-	bool isAccumulationDamege = false;
-	{
-		isAccumulationDamege = AccumulationDamege();
-	}
-
-	// コントローラー操作(位置更新)
-	{
-		if (!isAccumulationDamege) Control(camera, elapsedTime, onControl);
-	}
-
-	// アニメーション変更
-	{
-		ChangeAnimation();
-	}
-
-	// アニメーション更新
-	{
-		if (isBattleMode)
-		{
-			model->SetBlendRate(Phoenix::Math::Vector3(-blendRate.x, blendRate.y, 0.0f));
-		}
-		else
-		{
-			model->SetBlendRate(blendRate.z);
-		}
-
-		model->UpdateTransform(elapsedTime / 60.0f);
-	}
-
-	// ワールド行列を作成
-	{
-		UpdateTrasform();
-	}
-
-	// コリジョン更新
-	{
-		Phoenix::Math::Matrix systemUnitTransform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-		systemUnitTransform._11 = systemUnitTransform._22 = systemUnitTransform._33 = 0.01f;
-
-		auto nodes = model->GetNodes();
-		for (auto& data : collisionDatas)
-		{
-			Phoenix::Math::Matrix bone = nodes->at(data.boneIndex).worldTransform;
-			bone *= systemUnitTransform * worldMatrix;
-			data.pos = Phoenix::Math::Vector3(bone._41, bone._42, bone._43);
-		}
-	}
-
-	// アタック判定中
-	{
-		AttackJudgment();
-	}
-}
-
-// トランスフォーム更新
-void Player::UpdateTrasform()
-{
-	Phoenix::Math::Vector3 scale = this->scale;
-	Phoenix::Math::Quaternion rotate = this->rotate;
-	Phoenix::Math::Vector3 translate = pos;
-
-	Phoenix::Math::Matrix S, R, T;
-	S = Phoenix::Math::MatrixScaling(scale.x, scale.y, scale.z);
-	R = Phoenix::Math::MatrixRotationQuaternion(&rotate);
-	T = Phoenix::Math::MatrixTranslation(translate.x, translate.y, translate.z);
-
-	worldMatrix = S * R * T;
-}
-
-// UI更新
-void Player::UpdateUI()
-{
-	Phoenix::f32 hp = static_cast<Phoenix::f32>(life);
-	hp = hp <= 0 ? 0 : hp;
-
-	ui->Update((hp / MaxLife) * 100.0f);
 }
 
 // 操作更新
 void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime, bool control) // TODO : re -> player control
 {
-	Phoenix::f32 sX = 0.0f;
-	Phoenix::f32 sY = 0.0f;
-
-	sX = xInput[0].sX / 1000.0f;
-	sY = xInput[0].sY / 1000.0f;
-
-	sY = GetKeyState('W') < 0 ? -1.0f : sY;
-	sY = GetKeyState('S') < 0 ? 1.0f : sY;
-	sX = GetKeyState('A') < 0 ? -1.0f : sX;
-	sX = GetKeyState('D') < 0 ? 1.0f : sX;
-
-	// プレイヤーの最終方向を決定する角度を計算
-	auto UpdateRotateY = [&](Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::f32 cameraRotateY)
+	// 操作可否
 	{
-		float len = sqrtf(sX * sX + sY * sY);
-
-		if (len <= 0)
-		{
-			sX = 0;
-			sY = 0;
-		}
-
-		float mag = 1 / len;
-
-		sX *= mag;
-		sY *= mag;
-
-		rotateY = cameraRotateY + atan2f(sX, sY);
-	};
-
-	// プレイヤー回転
-	auto RotatePlayer = [&](Phoenix::f32 angle, bool isBattleMode)
-	{
-		if (isBattleMode)
-		{
-			Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
-			float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
-
-			if (len <= 0)
-			{
-				dir.x = 0;
-				dir.z = 0;
-			}
-
-			float mag = 1 / len;
-
-			dir.x *= mag;
-			dir.z *= mag;
-
-			Phoenix::f32 angleY = atan2f(dir.x, dir.z);
-
-			newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
-		}
-		else
-		{
-			newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
-		}
-	};
-
-	auto RotatePlayerToAttack = [&]()
-	{
-		Phoenix::Math::Vector3 dir = targetPos - pos;
-		Phoenix::f32 len = Phoenix::Math::Vector3Length(dir);
-
-		if (1.2f <= len)
-		{
-			return;
-		}
-
-		dir = Phoenix::Math::Vector3Normalize(dir);
-		dir.y = 0.0f;
-
-		Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
-		Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
-		forward.y = 0.0f;
-
-		Phoenix::f32 angle;
-		angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
-
-		if (1e-8f < fabs(angle))
-		{
-			angle /= 0.01745f;
-
-			if (angle <= 45.0f)
-			{
-				float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
-
-				if (len <= 0)
-				{
-					dir.x = 0;
-					dir.z = 0;
-				}
-
-				float mag = 1 / len;
-
-				dir.x *= mag;
-				dir.z *= mag;
-
-				Phoenix::f32 angleY = atan2f(dir.x, dir.z);
-
-				newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
-			}
-		}
-	};
-
-	auto ChangeAnimation = [&](Phoenix::u32 index, Phoenix::u32 nextIndex)
-	{
-		if (attackDatasList.attackDatas.at(index).datas.size() - 1 <= attackComboState)
-		{
-			attackComboState = 0;
-		}
-
-		if (attackComboState == 0)
-		{
-			attackReceptionTimeCnt = attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playBeginTime != -1 ? attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playBeginTime : 0.0f;
-
-			receptionStack = false;
-			stackKey = AttackKey::None;
-
-			ChangeAnimationState(AnimationState::Attack, 0.0f);
-			ChangeAttackAnimationState(attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).animState, attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).animIndex, attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playSpeed);
-
-			speed = Attack01MoveSpeed;
-
-			if (sX != 0.0f || sY != 0.0f)
-			{
-				UpdateRotateY(sX, sY, camera.GetRotateY());
-				RotatePlayer(rotateY, isBattleMode);
-			}
-
-			RotatePlayerToAttack();
-		}
-	};
-
-	auto JudgeDedgeIndex = [&]()
-	{
-		if (sX != 0.0f || sY != 0.0f)
-		{
-			UpdateRotateY(sX, sY, camera.GetRotateY());
-			RotatePlayer(rotateY, true);
-
-			if (fabsf(sX) <= fabsf(sY))
-			{
-				if (sY < 0.0f)
-				{
-					dedgeLayerIndex = stateIndexList.at(StateType::ForwardDedge);
-				}
-				if (sY > 0.0f)
-				{
-					dedgeLayerIndex = stateIndexList.at(StateType::BackDedge);
-				}
-			}
-			else if (fabsf(sY) <= fabsf(sX))
-			{
-				if (sX < 0.0f)
-				{
-					dedgeLayerIndex = stateIndexList.at(StateType::RightDedge);
-				}
-				if (sX > 0.0f)
-				{
-					dedgeLayerIndex = stateIndexList.at(StateType::LeftDedge);
-				}
-			}
-		}
-		else
-		{
-			Phoenix::Math::Vector3 dir = targetPos - GetPosition();
-			dir = Phoenix::Math::Vector3Normalize(dir);
-			dir.y = 0.0f;
-
-			Phoenix::f32 fictitiousCameraRotateY = atan2f(-dir.x, -dir.z);
-
-			UpdateRotateY(0.0f, 1.0f, fictitiousCameraRotateY);
-			RotatePlayer(rotateY, true);
-			dedgeLayerIndex = stateIndexList.at(StateType::BackDedge);
-		}
-	};
-
-	auto JudgeInput01 = [&](Phoenix::s32 index, Phoenix::s32 nextIndex)
-	{
-		if (!attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionStack)
-		{
-			if (attackDatasList.attackDatas.at(nextIndex).receptionKey == stackKey)
-			{
-				ChangeAnimation(index, nextIndex);
-
-				Phoenix::s32 animIndex = attackDatasList.attackDatas.at(0).datas.at(0).animIndex;
-				if (0 <= animIndex && animIndex <= 7 || 12 <= animIndex && animIndex <= 15)
-				{
-					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Punch_Swing);
-				}
-				else if (8 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 19)
-				{
-					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Kick_Swing);
-				}
-			}
-		}
-	};
-
-	auto JudgeInput02 = [&](Phoenix::s32 index, Phoenix::s32 nextIndex, AttackKey key)
-	{
-		if (attackDatasList.attackDatas.at(nextIndex).receptionKey == key)
-		{
-			if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionStack)
-			{
-				receptionStack = true;
-				stackKey = key;
-			}
-			else
-			{
-				ChangeAnimation(index, nextIndex);
-
-				isInvincible = isJustDedge;
-				isJustDedge = false;
-
-				Phoenix::s32 animIndex = attackDatasList.attackDatas.at(0).datas.at(0).animIndex;
-				if (0 <= animIndex && animIndex <= 7 || 12 <= animIndex && animIndex <= 15)
-				{
-					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Punch_Swing);
-				}
-				else if (8 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 19)
-				{
-					if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Kick_Swing);
-				}
-			}
-		}
-	};
-
-	// ダメージ中に回避に遷移
-	if (animationState == AnimationState::Damage && model->IsPlaying())
-	{
-		// 回避ステートへ
-		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && model->GetLastTime() <= (15.0f / 60.0f) && control)
-		{
-			ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
-			JudgeDedgeIndex();
-		}
-		else
-		{
-			return;
-		}
+		onControl = control;
 	}
 
-	// ロックオン
-	if ((xInput[0].bRBs || GetKeyState('L') < 0) && control)
+	// コントローラー更新
 	{
-		InEnemyTerritory(true);
-	}
-	else
-	{
-		InEnemyTerritory(false);
+		controller->Update(elapsedTime);
 	}
 
-	// ブレンドレート計算
+	if (isAttack)
 	{
-		if (isBattleMode)
-		{
-			blendRate.x = Phoenix::Math::f32Lerp(blendRate.x, sX, 0.15f * elapsedTime);
-			blendRate.y = Phoenix::Math::f32Lerp(blendRate.y, sY, 0.15f * elapsedTime);
-		}
-
-		blendRate.z = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(sX, sY));
-		blendRate.z = 1.0f <= blendRate.z ? 1.0f : blendRate.z;
-	}
-
-	// 攻撃キーの入力確認
-	AttackKey key = AttackKey::None;
-	{
-		if ((xInput[0].bXt || GetAsyncKeyState('J') & 1) && control)
-		{
-			key = AttackKey::WeakAttack;
-		}
-		if ((xInput[0].bYt || GetAsyncKeyState('K') & 1) && control)
-		{
-			key = AttackKey::StrongAttack;
-		}
-	}
-
-	// 攻撃ステートへ
-	if ((key != AttackKey::None) && 0 < attackDatasList.attackDatas.size() && ((animationState == AnimationState::Attack) || (animationState == AnimationState::Idle) || (animationState == AnimationState::Walk) || (animationState == AnimationState::Run) || (animationState == AnimationState::Dedge && isJustDedge)))
-	{
-		if (0 < attackDatasList.attackDatas.at(attackState).datas.size())
-		{
-			Phoenix::s32 index = attackState;
-			Phoenix::s32 wearNextIndex = attackDatasList.attackDatas.at(index).datas.at(attackComboState).weakDerivedAttackState;
-			Phoenix::s32 strongNextIndex = attackDatasList.attackDatas.at(index).datas.at(attackComboState).strongDerivedAttackState;
-			Phoenix::s32 endIndex = static_cast<Phoenix::s32>(attackDatasList.attackDatas.size());
-
-			// 次の攻撃が発動するボタンの受付
-			if (receptionStack)
-			{
-				if (wearNextIndex < endIndex && 0 <= wearNextIndex)
-				{
-					JudgeInput01(index, wearNextIndex);
-				}
-				if (strongNextIndex < endIndex && 0 <= strongNextIndex)
-				{
-					JudgeInput01(index, strongNextIndex);
-				}
-			}
-			else if ((index == 0 && animationState != AnimationState::Attack) || attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionEndTime)
-			{
-				if (wearNextIndex < endIndex && 0 <= wearNextIndex)
-				{
-					JudgeInput02(index, wearNextIndex, key);
-				}
-				if (strongNextIndex < endIndex && 0 <= strongNextIndex)
-				{
-					JudgeInput02(index, strongNextIndex, key);
-				}
-			}
-		}
-	}
-	else if ((animationState == AnimationState::Attack) && !model->IsPlaying())
-	{
-		Phoenix::s32 index = attackState;
-
-		if (0 <= attackComboState && attackComboState < attackDatasList.attackDatas.at(index).datas.size() - 1)
-		{
-			++attackComboState;
-
-			ChangeAnimationState(AnimationState::Attack, 0.0f);
-			ChangeAttackAnimationState(attackDatasList.attackDatas.at(index).datas.at(attackComboState).animState, attackDatasList.attackDatas.at(index).datas.at(attackComboState).animIndex, attackDatasList.attackDatas.at(index).datas.at(attackComboState).playSpeed);
-		}
-		else
-		{
-			ChangeAnimationState(AnimationState::Idle, 0.0f);
-			ChangeAttackAnimationState(0, 0, 0.0f);
-
-			isAttack = false;
-			attackReceptionTimeCnt = 0.0f;
-			attackComboState = 0;
-
-			receptionStack = false;
-			stackKey = AttackKey::None;
-		}
-	}
-
-	if (isChangeAnimation && isAttack)
-	{
-		if (key == AttackKey::WeakAttack)
-		{
-			behaviorScore += WeakAttackScore;
-		}
-		else if (key == AttackKey::StrongAttack)
-		{
-			behaviorScore += StrongAttackScore;
-		}
-	}
-
-	// 攻撃ステート以外
-	if (!isAttack)
-	{
-		// 回避ステート
-		{
-			// 回避ステートへ
-			if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge && control)
-			{
-				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
-				JudgeDedgeIndex();
-
-				isJustDedge = false;
-				justDedgeTimeCnt = 0.0f;
-			}
-			// 回避ステート中
-			else if (animationState == AnimationState::Dedge)
-			{
-				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.025f * elapsedTime);
-				justDedgeTimeCnt += 1.0f * elapsedTime;
-
-				// 待機ステートへ
-				if (!model->IsPlaying())
-				{
-					ChangeAnimationState(AnimationState::Idle, 0.0f);
-				}
-			}
-		}
-
-		// 回避ステート以外
-		if (animationState != AnimationState::Roll && animationState != AnimationState::Dedge)
-		{
-			// 移動ステート
-			if ((sX != 0.0f || sY != 0.0f) && control)
-			{
-				UpdateRotateY(sX, sY, camera.GetRotateY());
-				RotatePlayer(rotateY, isBattleMode);
-
-				if (isBattleMode)
-				{
-					if (animationState != AnimationState::Walk)
-					{
-						ChangeAnimationState(AnimationState::Walk, BattleWalkSpeed);
-					}
-				}
-				else
-				{
-					if ((!xInput[0].bRBs && !(GetKeyState(VK_SHIFT) < 0)) && animationState != AnimationState::Walk)
-					{
-						ChangeAnimationState(AnimationState::Walk, WalkSpeed);
-					}
-				}
-			}
-			// 待機ステートへ
-			else if (animationState != AnimationState::Idle)
-			{
-				ChangeAnimationState(AnimationState::Idle, 0.0f);
-			}
-		}
-	}
-	// 攻撃中
-	else
-	{
-		// 回避ステートへ
-		if ((xInput[0].bAt || GetAsyncKeyState(VK_SPACE) & 1) && animationState != AnimationState::Dedge && control)
-		{
-			Phoenix::s32 index = attackState;
-
-			// 次の攻撃が発動するボタンの受付
-			if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionEndTime)
-			{
-				ChangeAnimationState(AnimationState::Dedge, DedgeSpeed);
-				ChangeAttackAnimationState(0, 0, 0.0f);
-
-				isAttack = false;
-				attackReceptionTimeCnt = 0.0f;
-				attackComboState = 0;
-
-				isJustDedge = false;
-				justDedgeTimeCnt = 0.0f;
-
-				JudgeDedgeIndex();
-			}
-		}
-
 		// アタックアニメーションスピード計測
 		attackReceptionTimeCnt += animationSpeed * elapsedTime / 60.0f; // animationSpeed / 60.0f
 	}
 
-	if (isInvincible)
+	if (isInvincible && !GetDodging())
 	{
-		if (100.0f <= invincibleTimeCnt)
+		if (20.0f <= invincibleTimeCnt)
 		{
 			isInvincible = false;
 			invincibleTimeCnt = 0.0f;
@@ -903,46 +513,6 @@ void Player::Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime
 		else
 		{
 			invincibleTimeCnt += 1.0f * elapsedTime;
-		}
-	}
-
-	// 座標更新
-	if (!isChangeAnimation)
-	{
-		rotate = Phoenix::Math::QuaternionSlerp(rotate, newRotate, 0.17f * elapsedTime);
-		{
-			if (animationState == AnimationState::Walk/* && !isBattleMode*/)
-			{
-				if (isBattleMode)
-				{
-					pos.x += sinf(rotateY) * ((speed + (BattleSlowRunSpeed * blendRate.z) * elapsedTime));
-					pos.z += cosf(rotateY) * ((speed + (BattleSlowRunSpeed * blendRate.z) * elapsedTime));
-				}
-				else
-				{
-					pos.x += sinf(rotateY) * ((speed + (SlowRunSpeed * blendRate.z)) * elapsedTime);
-					pos.z += cosf(rotateY) * ((speed + (SlowRunSpeed * blendRate.z)) * elapsedTime);
-				}
-			}
-			else if (animationState != AnimationState::Attack)
-			{
-				pos.x += sinf(rotateY) * (speed * elapsedTime);
-				pos.z += cosf(rotateY) * (speed * elapsedTime);
-			}
-		}
-
-		if (animationState == AnimationState::Attack)
-		{
-			if (isAttack && 0.0f < speed)
-			{
-				Phoenix::Math::Matrix matrix = Phoenix::Math::MatrixRotationQuaternion(&rotate);
-				Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(matrix._31, matrix._32, matrix._33);
-
-				pos.x += forward.x * (speed * elapsedTime);
-				pos.z += forward.z * (speed * elapsedTime);
-
-				speed = Phoenix::Math::f32Lerp(speed, 0.0f, 0.25f * elapsedTime);
-			}
 		}
 	}
 }
@@ -970,7 +540,7 @@ void Player::ChangeAnimation()
 	switch (animationState)
 	{
 	case AnimationState::Idle:
-		if (isBattleMode)
+		if (lockOn)
 		{
 			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::BattleIdle), 1, 0.2f);
 			model->SetLoopAnimation(true);
@@ -983,7 +553,7 @@ void Player::ChangeAnimation()
 		break;
 
 	case AnimationState::Walk:
-		if (isBattleMode)
+		if (lockOn)
 		{
 			model->PlayAnimation(baseLayerIndex, stateIndexList.at(StateType::BattleIdle), 1, 0.2f);
 			model->SimultaneousPlayBlendTreeAniamation(lowerBodyLayerIndex, 0, 1, 0.2f);
@@ -1184,45 +754,11 @@ bool Player::Damage(int damage, Phoenix::u32 damagePower)
 // 蓄積ダメージ
 bool Player::AccumulationDamege()
 {
-	if (animationState == AnimationState::Damage)
-	{
-		if (!model->IsPlaying())
-		{
-			if (animationState != AnimationState::Idle)
-			{
-				attackReceptionTimeCnt = 0;
-				isAttack = false;
-				isChangeAnimation = true;
-				speed = 0.0f;
-				animationState = AnimationState::Idle;
-				attackState = 0;
-				attackComboState = 0;
-			}
-		}
-	}
-
 	if (accumulationDamege == 0) return false;
 
 	if (AccumulationMaxDamege <= accumulationDamege)
 	{
-		isChangeAnimation = true;
-		isAttack = false;
-		speed = 0.0f;
-		animationState = AnimationState::Damage;
-
-		attackState = 0;
-		attackComboState = 0;
-		attackReceptionTimeCnt = 0;
-
 		accumulationDamege = 0;
-		accumulationTimeCnt = 0;
-
-		return true;
-	}
-	else if (AccumulationTime <= accumulationTimeCnt++)
-	{
-		accumulationDamege = 0;
-		accumulationTimeCnt = 0;
 	}
 
 	return false;
@@ -1240,7 +776,7 @@ void Player::GUI()
 			ImGui::Text("HP : %d", life);
 			ImGui::Text("BehaviorScore : %d", behaviorScore);
 			ImGui::Text("attackState : %d", attackState);
-			ImGui::Checkbox("BattleMode", &isBattleMode);
+			ImGui::Checkbox("BattleMode", &lockOn);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Transform"))
@@ -1300,12 +836,12 @@ void Player::Rotation(Phoenix::Math::Vector3 targetPos)
 	}
 }
 
-// エネミーの索敵範囲内での行動
-void Player::InEnemyTerritory(bool inTerritory)
+// 構える状態を変更
+void Player::ChangeLockOn(bool lockOn, AnimationState state, Phoenix::f32 moveSpeed)
 {
-	if (this->inTerritory != inTerritory && animationState != AnimationState::Attack)
+	if (this->lockOn != lockOn && animationState != AnimationState::Attack)
 	{
-		ChangeAnimationState(AnimationState::Idle, 0.0f);
+		ChangeAnimationState(state, moveSpeed);
 
 		Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
 		float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
@@ -1325,8 +861,7 @@ void Player::InEnemyTerritory(bool inTerritory)
 
 		newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
 	}
-	this->inTerritory = inTerritory;
-	SetBattleMode(inTerritory);
+	this->lockOn = lockOn;
 }
 
 // アニメーション変更
@@ -1339,13 +874,14 @@ void Player::ChangeAnimationState(AnimationState state, Phoenix::f32 moveSpeed)
 };
 
 // 攻撃アニメーション変更
-void Player::ChangeAttackAnimationState(Phoenix::s32 state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed)
+void Player::ChangeAttackAnimationState(Phoenix::s32 state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed, bool isAttack, bool comboInit)
 {
-	isAttack = true;
+	this->isAttack = isAttack;
 
 	attackState = state;
 	currentAttackAnimIndex = attackAnimIndex;
 	animationSpeed = speed;
+	attackComboState = comboInit ? 0 : attackComboState;
 };
 
 // ジャスト回避変更
@@ -1390,6 +926,279 @@ bool Player::CheckHitKey(AttackKey key)
 	}
 
 	return false;
+}
+
+// プレイヤーの回転を更新
+void Player::UpdateRotate(Phoenix::f32 sX, Phoenix::f32 sY)
+{
+	if (sX != 0.0f || sY != 0.0f)
+	{
+		UpdateRotateY(sX, sY, camera->GetRotateY());
+		RotatePlayer(rotateY, lockOn);
+	}
+}
+
+// プレイヤーの最終方向を決定する角度を計算
+void Player::UpdateRotateY(Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::f32 cameraRotateY)
+{
+	float len = sqrtf(sX * sX + sY * sY);
+
+	if (len <= 0)
+	{
+		sX = 0;
+		sY = 0;
+	}
+
+	float mag = 1 / len;
+
+	sX *= mag;
+	sY *= mag;
+
+	rotateY = cameraRotateY + atan2f(sX, sY);
+};
+
+// プレイヤー回転
+void Player::RotatePlayer(Phoenix::f32 angle, bool isBattleMode)
+{
+	if (isBattleMode)
+	{
+		Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
+		float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+
+		if (len <= 0)
+		{
+			dir.x = 0;
+			dir.z = 0;
+		}
+
+		float mag = 1 / len;
+
+		dir.x *= mag;
+		dir.z *= mag;
+
+		Phoenix::f32 angleY = atan2f(dir.x, dir.z);
+
+		newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
+	}
+	else
+	{
+		newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angle);
+	}
+};
+
+// 回避の判定
+bool Player::JudgeDedge()
+{
+	Phoenix::s32 index = attackState;
+
+	// 次の攻撃が発動するボタンの受付
+	if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionBeginTime <= attackReceptionTimeCnt && attackReceptionTimeCnt < attackDatasList.attackDatas.at(index).datas.at(attackComboState).dedgeReceptionEndTime)
+	{
+		isAttack = false;
+		attackReceptionTimeCnt = 0.0f;
+		attackComboState = 0;
+
+		isJustDedge = false;
+		justDedgeTimeCnt = 0.0f;
+
+		return true;
+	}
+
+	return false;
+}
+
+// 回避番号の判定
+void Player::JudgeDedgeIndex(Phoenix::f32 sX, Phoenix::f32 sY)
+{
+	if (sX != 0.0f || sY != 0.0f)
+	{
+		UpdateRotateY(sX, sY, camera->GetRotateY());
+		RotatePlayer(rotateY, true);
+
+		if (fabsf(sX) <= fabsf(sY))
+		{
+			if (sY < 0.0f)
+			{
+				dedgeLayerIndex = stateIndexList.at(StateType::ForwardDedge);
+			}
+			if (sY > 0.0f)
+			{
+				dedgeLayerIndex = stateIndexList.at(StateType::BackDedge);
+			}
+		}
+		else if (fabsf(sY) <= fabsf(sX))
+		{
+			if (sX < 0.0f)
+			{
+				dedgeLayerIndex = stateIndexList.at(StateType::RightDedge);
+			}
+			if (sX > 0.0f)
+			{
+				dedgeLayerIndex = stateIndexList.at(StateType::LeftDedge);
+			}
+		}
+	}
+	else
+	{
+		Phoenix::Math::Vector3 dir = targetPos - GetPosition();
+		dir = Phoenix::Math::Vector3Normalize(dir);
+		dir.y = 0.0f;
+
+		Phoenix::f32 fictitiousCameraRotateY = atan2f(-dir.x, -dir.z);
+
+		UpdateRotateY(0.0f, 1.0f, fictitiousCameraRotateY);
+		RotatePlayer(rotateY, true);
+		dedgeLayerIndex = stateIndexList.at(StateType::BackDedge);
+	}
+};
+
+// 攻撃専用の回転
+void Player::RotatePlayerToAttack()
+{
+	Phoenix::Math::Vector3 dir = targetPos - pos;
+	Phoenix::f32 len = Phoenix::Math::Vector3Length(dir);
+
+	if (1.2f <= len)
+	{
+		return;
+	}
+
+	dir = Phoenix::Math::Vector3Normalize(dir);
+	dir.y = 0.0f;
+
+	Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
+	Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
+	forward.y = 0.0f;
+
+	Phoenix::f32 angle;
+	angle = acosf(Phoenix::Math::Vector3Dot(dir, forward));
+
+	if (1e-8f < fabs(angle))
+	{
+		angle /= 0.01745f;
+
+		if (angle <= 45.0f)
+		{
+			float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+
+			if (len <= 0)
+			{
+				dir.x = 0;
+				dir.z = 0;
+			}
+
+			float mag = 1 / len;
+
+			dir.x *= mag;
+			dir.z *= mag;
+
+			Phoenix::f32 angleY = atan2f(dir.x, dir.z);
+
+			newRotate = Phoenix::Math::QuaternionRotationAxis(Phoenix::Math::Vector3(0.0f, 1.0f, 0.0f), angleY);
+		}
+	}
+};
+
+// 攻撃アニメーションの変更
+void Player::ChangeAttackAnimation(Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::u32 index, Phoenix::u32 nextIndex)
+{
+	if (attackDatasList.attackDatas.at(index).datas.size() - 1 <= attackComboState)
+	{
+		attackComboState = 0;
+	}
+
+	if (attackComboState == 0)
+	{
+		attackReceptionTimeCnt = attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playBeginTime != -1 ? attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playBeginTime : 0.0f;
+
+		receptionStack = false;
+		stackKey = AttackKey::None;
+
+		ChangeAnimationState(AnimationState::Attack, 0.0f);
+		ChangeAttackAnimationState(attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).animState, attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).animIndex, attackDatasList.attackDatas.at(nextIndex).datas.at(attackComboState).playSpeed);
+
+		speed = Attack01MoveSpeed;
+
+		if (sX != 0.0f || sY != 0.0f)
+		{
+			UpdateRotateY(sX, sY, camera->GetRotateY());
+			RotatePlayer(rotateY, lockOn);
+		}
+
+		RotatePlayerToAttack();
+	}
+};
+
+// 攻撃入力の判定
+void Player::JudgeAttackInput(Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::s32 index, Phoenix::s32 nextIndex, AttackKey key)
+{
+	if (attackDatasList.attackDatas.at(nextIndex).receptionKey == key)
+	{
+		if (attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionStack)
+		{
+			receptionStack = true;
+			stackKey = key;
+		}
+		else
+		{
+			ChangeAttackAnimation(sX, sY, index, nextIndex);
+
+			Phoenix::s32 animIndex = attackDatasList.attackDatas.at(0).datas.at(0).animIndex;
+			if (0 <= animIndex && animIndex <= 7 || 12 <= animIndex && animIndex <= 15)
+			{
+				if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Punch_Swing);
+			}
+			else if (8 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 19)
+			{
+				if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Kick_Swing);
+			}
+		}
+	}
+};
+
+// 攻撃スタック入力の判定
+void Player::JudgeAttackStackInput(Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::s32 index, Phoenix::s32 nextIndex)
+{
+	if (!attackDatasList.attackDatas.at(index).datas.at(attackComboState).receptionStack)
+	{
+		if (attackDatasList.attackDatas.at(nextIndex).receptionKey == stackKey)
+		{
+			ChangeAttackAnimation(sX, sY, index, nextIndex);
+
+			Phoenix::s32 animIndex = attackDatasList.attackDatas.at(0).datas.at(0).animIndex;
+			if (0 <= animIndex && animIndex <= 7 || 12 <= animIndex && animIndex <= 15)
+			{
+				if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Punch_Swing);
+			}
+			else if (8 <= animIndex && animIndex <= 11 || 16 <= animIndex && animIndex <= 19)
+			{
+				if (soundSystem) soundSystem->Play(SoundType::SE_Player_Attack_Kick_Swing);
+			}
+		}
+	}
+};
+
+// 攻撃コンボが継続判定
+void Player::JudgeAttackCombo()
+{
+	Phoenix::s32 index = attackState;
+
+	if (0 <= attackComboState && attackComboState < attackDatasList.attackDatas.at(index).datas.size() - 1)
+	{
+		++attackComboState;
+
+		ChangeAnimationState(AnimationState::Attack, 0.0f);
+		ChangeAttackAnimationState(attackDatasList.attackDatas.at(index).datas.at(attackComboState).animState, attackDatasList.attackDatas.at(index).datas.at(attackComboState).animIndex, attackDatasList.attackDatas.at(index).datas.at(attackComboState).playSpeed);
+	}
+	else
+	{
+		isAttack = false;
+		attackReceptionTimeCnt = 0.0f;
+		attackComboState = 0;
+
+		receptionStack = false;
+		stackKey = AttackKey::None;
+	}
 }
 
 template<class Archive>

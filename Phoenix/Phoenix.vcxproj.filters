@@ -46,6 +46,9 @@
     <Filter Include="Source\Collision">
       <UniqueIdentifier>{70ad8f72-02ae-4527-9072-8db26ca3a2b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\AI\HTN">
+      <UniqueIdentifier>{14d2f1e2-d883-4206-b43a-38a81520451b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -128,6 +131,21 @@
     </ClCompile>
     <ClCompile Include="Source\UI\TutorialUI.cpp">
       <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Player\PlayerState.cpp">
+      <Filter>Source\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Player\PlayerInput.cpp">
+      <Filter>Source\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Player\PlayerController.cpp">
+      <Filter>Source\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Enemy\EnemyAIController.cpp">
+      <Filter>Source\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Enemy\EnemyTask.cpp">
+      <Filter>Source\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,6 +241,33 @@
     </ClInclude>
     <ClInclude Include="Source\UI\TutorialUI.h">
       <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player\PlayerState.h">
+      <Filter>Source\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player\PlayerInput.h">
+      <Filter>Source\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player\PlayerController.h">
+      <Filter>Source\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\HTN\HTN.h">
+      <Filter>Source\AI\HTN</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\HTN\HTNDomain.h">
+      <Filter>Source\AI\HTN</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\HTN\HTNPlanner.h">
+      <Filter>Source\AI\HTN</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Enemy\EnemyAIController.h">
+      <Filter>Source\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Enemy\EnemyTask.h">
+      <Filter>Source\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\MetaAI\MetaData.h">
+      <Filter>Source\AI\MetaAI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

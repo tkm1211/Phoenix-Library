@@ -14,7 +14,7 @@ public:
 
 private:
 	// 攻撃ステート
-	std::shared_ptr<BattleEnemy::Attack<BossAttackState, Boss>> attackState;
+	//std::shared_ptr<BattleEnemy::Attack<BossAttackState, Boss>> attackState;
 	BossAttackState changeAttackState = BossAttackState::NoneState;
 	BossAttackState currentAttackState = BossAttackState::NoneState;
 
@@ -65,4 +65,7 @@ public:
 public:
 	// 攻撃ステートを変更
 	void SetAttackState(BossAttackState state);
+
+	// 攻撃データリストを取得
+	std::vector<AttackDatas<BossAttackState>> GetAtackDatasList() { return attackDatasList; }
 };

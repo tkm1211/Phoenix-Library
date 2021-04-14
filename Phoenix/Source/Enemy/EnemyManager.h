@@ -59,7 +59,7 @@ public:
 	void Update(bool onControl, Phoenix::f32 elapsedTime);
 
 	// UIçXêV
-	void UpdateUI(Phoenix::s32 index);
+	void UpdateUI(Phoenix::s32 index, Phoenix::f32 elapsedTime);
 
 	// ï`âÊ
 	void Draw();

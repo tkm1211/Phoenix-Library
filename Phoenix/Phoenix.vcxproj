@@ -231,10 +231,15 @@
     <ClCompile Include="Source\AI\StateMachine\BattleEnemyState.cpp" />
     <ClCompile Include="Source\Boss\Boss.cpp" />
     <ClCompile Include="Source\Enemy\Enemy.cpp" />
+    <ClCompile Include="Source\Enemy\EnemyAIController.cpp" />
     <ClCompile Include="Source\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="Source\Enemy\EnemyTask.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Mannequin\Mannequin.cpp" />
     <ClCompile Include="Source\Player\Player.cpp" />
+    <ClCompile Include="Source\Player\PlayerController.cpp" />
+    <ClCompile Include="Source\Player\PlayerInput.cpp" />
+    <ClCompile Include="Source\Player\PlayerState.cpp" />
     <ClCompile Include="Source\Primitive\GeometricPrimitive.cpp" />
     <ClCompile Include="Source\Scene\FadeSystem.cpp" />
     <ClCompile Include="Source\Scene\SceneGameClear.cpp" />
@@ -252,11 +257,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="Source\AI\HTN\HTN.h" />
+    <ClInclude Include="Source\AI\HTN\HTNDomain.h" />
+    <ClInclude Include="Source\AI\HTN\HTNPlanner.h" />
     <ClInclude Include="Source\AI\MetaAI\BattleEnemyController.h" />
     <ClInclude Include="Source\AI\MetaAI\BattleEnemySystem.h" />
     <ClInclude Include="Source\AI\MetaAI\DynamicDifficultyAdjuster.h" />
     <ClInclude Include="Source\AI\MetaAI\MetaAI.h" />
     <ClInclude Include="Source\AI\MetaAI\MetaAISystem.h" />
+    <ClInclude Include="Source\AI\MetaAI\MetaData.h" />
     <ClInclude Include="Source\AI\MetaAI\MetaType.h" />
     <ClInclude Include="Source\AI\MetaAI\PlayerSkillAnalyzer.h" />
     <ClInclude Include="Source\AI\StateMachine\BattleEnemyAI.h" />
@@ -264,11 +273,16 @@
     <ClInclude Include="Source\Boss\Boss.h" />
     <ClInclude Include="Source\Collision\Collision.h" />
     <ClInclude Include="Source\Enemy\Enemy.h" />
+    <ClInclude Include="Source\Enemy\EnemyAIController.h" />
     <ClInclude Include="Source\Enemy\EnemyState.h" />
     <ClInclude Include="Source\Enemy\EnemyManager.h" />
+    <ClInclude Include="Source\Enemy\EnemyTask.h" />
     <ClInclude Include="Source\Main.h" />
     <ClInclude Include="Source\Mannequin\Mannequin.h" />
     <ClInclude Include="Source\Player\Player.h" />
+    <ClInclude Include="Source\Player\PlayerController.h" />
+    <ClInclude Include="Source\Player\PlayerInput.h" />
+    <ClInclude Include="Source\Player\PlayerState.h" />
     <ClInclude Include="Source\Primitive\GeometricPrimitive.h" />
     <ClInclude Include="Source\Scene\FadeSystem.h" />
     <ClInclude Include="Source\Scene\Scene.h" />

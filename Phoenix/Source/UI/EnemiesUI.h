@@ -13,6 +13,7 @@ private:
 	std::vector<std::shared_ptr<EnemyUI>> uiList;
 
 	std::shared_ptr<Phoenix::Graphics::ITexture> hp;
+	std::shared_ptr<Phoenix::Graphics::ITexture> damage;
 	std::shared_ptr<Phoenix::Graphics::ITexture> hpBack;
 
 	Phoenix::Math::Vector2 pos = Phoenix::Math::Vector2(0.0f, 0.0f);
@@ -39,7 +40,8 @@ public:
 	/// </summary>
 	/// <param name="index"> エネミー要素数 </param>
 	/// <param name="hpPercent"> 0 ~ 100 % </param>
-	void Update(Phoenix::s32 index, Phoenix::f32 hpPercent);
+	/// <param name="elapsedTime">経過時間</param>
+	void Update(Phoenix::s32 index, Phoenix::f32 hpPercent, Phoenix::f32 elapsedTime);
 	
 	/// <summary>
 	/// UIを追加

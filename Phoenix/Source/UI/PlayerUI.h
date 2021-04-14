@@ -20,13 +20,25 @@ private:
 	static constexpr Phoenix::f32 TexWidth = 640.0f;
 	static constexpr Phoenix::f32 TexHeigth = 64.0f;
 
+	static constexpr Phoenix::f32 startTimeMax = 100.0f;
+
 private:
 	std::shared_ptr<Phoenix::Graphics::ITexture> hp;
+	std::shared_ptr<Phoenix::Graphics::ITexture> damage;
 	std::shared_ptr<Phoenix::Graphics::ITexture> hpBack;
 
 	Phoenix::Math::Vector2 pos = Phoenix::Math::Vector2(0.0f, 0.0f);
 	Phoenix::Math::Vector2 size = Phoenix::Math::Vector2(0.0f, 0.0f);
 	Phoenix::Math::Vector2 hpTexPos = Phoenix::Math::Vector2(0.0f, 0.0f);
+
+	Phoenix::Math::Vector2 damageSize = Phoenix::Math::Vector2(0.0f, 0.0f);
+	Phoenix::Math::Vector2 damageTexPos = Phoenix::Math::Vector2(0.0f, 0.0f);
+
+	Phoenix::f32 hpPercent = 0.0f;
+	Phoenix::f32 damagePercent = 0.0f;
+	Phoenix::f32 startTime = 0.0f;
+
+	bool downDamageGage = false;
 
 public:
 	PlayerUI() {}
@@ -46,5 +58,6 @@ public:
 	/// HPçXêV
 	/// </summary>
 	/// <param name="hpPercent">0 ~ 100 %</param>
-	void Update(Phoenix::f32 hpPercent);
+	/// <param name="elapsedTime">åoâﬂéûä‘</param>
+	void Update(Phoenix::f32 hpPercent, Phoenix::f32 elapsedTime);
 };

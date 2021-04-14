@@ -738,7 +738,7 @@ namespace Phoenix
 			_right = Math::Vector3Cross(front, _up);
 			_up = Math::Vector3Cross(_right, front);
 
-			SetLookAt(_pos, _target, _up);
+			SetLookAt(_pos + shake, _target, _up);
 		}
 
 		void Camera::LockOnCamera(const Math::Vector3& center, const Math::Vector3& target, const Math::Vector3& centerAdjust, const Math::Vector3& targetAdjust, bool isLerp)

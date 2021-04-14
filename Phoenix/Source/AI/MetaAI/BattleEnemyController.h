@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "DynamicDifficultyAdjuster.h"
+#include "MetaData.h"
 
 
 class EnemyManager;
@@ -35,8 +36,9 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="battleEnemyState"> : 分析したプレイヤーレベルから最適なエネミー行動 </param>
+	/// <param name="metaData"> : メタデータ </param>
 	/// <param name="elapsedTime"> : 経過時間 </param>
-	void Update(BattleEnemyState battleEnemyState, Phoenix::f32 elapsedTime);
+	void Update(BattleEnemyState battleEnemyState, Meta::MetaData metaData, Phoenix::f32 elapsedTime);
 
 	// エネミーマネージャー設定
 	void SetEnemyManager(std::shared_ptr<EnemyManager> enemyManager);

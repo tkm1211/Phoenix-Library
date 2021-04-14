@@ -1,6 +1,7 @@
 #include "BattleEnemyController.h"
 #include "../../Enemy/EnemyManager.h"
 #include "../../Enemy/Enemy.h"
+#include "../../Player/Player.h"
 
 
 // 生成
@@ -30,7 +31,7 @@ void BattleEnemyController::Finalize()
 }
 
 // 更新
-void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f32 elapsedTime)
+void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Meta::MetaData metaData, Phoenix::f32 elapsedTime)
 {
 	if (enemyManager->GetAliveEnemyCount() <= 0) return;
 	if (enemyManager->GetBattleEnemyCount() <= 0) return;
@@ -103,7 +104,7 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 			if (enemy->GetBattleState() == BattleEnemyState::DamageSmall) continue;
 			if (enemy->GetBattleState() == BattleEnemyState::DamageBig) continue;
 
-			if (enemy->GetBattleState() == BattleEnemyState::Idle)
+			/*if (enemy->GetBattleState() == BattleEnemyState::Idle)
 			{
 				if (!enemy->InDistanceHitByAttack())
 				{
@@ -119,12 +120,13 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 					}
 				}
 			}
-			else if (enemy->GetBattleState() == BattleEnemyState::Attack)
+			else */
+			if (enemy->GetBattleState() == BattleEnemyState::Attack)
 			{
 				attackRight = false;
 			}
 
-			if (!enemy->InBattleTerritory()) continue;
+			//if (!enemy->InBattleTerritory()) continue;
 
 			if (enemy->GetBattleState() == BattleEnemyState::Idle || enemy->GetBattleState() == BattleEnemyState::Walk || enemy->GetBattleState() == BattleEnemyState::Run)
 			{
@@ -139,7 +141,7 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 			{
 				Phoenix::s32 r = rand() % static_cast<Phoenix::s32>(indices.size());
 
-				if (enemies.at(indices.at(r))->InBattleTerritory())
+				//if (enemies.at(indices.at(r))->InBattleTerritory())
 				{
 					notAttack = enemyManager->SetAttackRight(indices.at(r), (enemyManager->GetAliveEnemyCount() == 1));
 					notAttackTimeMax = static_cast<Phoenix::f32>(10 + rand() % 90);
@@ -201,6 +203,22 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Phoenix::f
 		break;
 
 	default: break;
+	}
+
+	// HTN用ワールドステート更新
+	for (const auto& enemy : enemyManager->GetEnemies())
+	{
+		if (!enemy) continue;
+
+		std::shared_ptr<EnemyWorldState> worldState = enemy->GetWorldState();
+		{
+			worldState->enemyState = enemy->GetBattleState();
+			worldState->playing = enemy->GetModel()->IsPlaying();
+			worldState->inTerritory = enemy->InBattleTerritory();
+			worldState->inDistanceHit = enemy->InDistanceHitByAttack();
+			worldState->hasAttackRight = enemy->GetAttackRight();
+			worldState->playerAttacking = (metaData.playerState == static_cast<Phoenix::s32>(Player::AnimationState::Attack));
+		}
 	}
 }
 

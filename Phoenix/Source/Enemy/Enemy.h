@@ -7,6 +7,8 @@
 #include "Phoenix/FrameWork/Component/Transform.h"
 #include "Phoenix/FrameWork/SharedFromThis/SharedFromThis.h"
 #include "EnemyState.h"
+#include "EnemyTask.h"
+#include "EnemyAIController.h"
 #include "../AI/StateMachine/BattleEnemyAI.h"
 #include "../AI/StateMachine/BattleEnemyState.h"
 #include "../UI/EnemyUI.h"
@@ -19,6 +21,14 @@ class Enemy : public inheritable_enable_shared_from_this<Enemy>
 public:
 	static constexpr Phoenix::s32 LifeRange = 150;
 	static constexpr Phoenix::s32 AccumulationMaxDamage = 80;
+
+	static constexpr Phoenix::f32 IdleMaxCount = 100.0f;
+	static constexpr Phoenix::f32 WalkSpeed = 0.045f;
+	static constexpr Phoenix::f32 RunSpeed = 0.1f;
+	static constexpr Phoenix::f32 DedgeSpeed = 0.35f;
+	static constexpr Phoenix::f32 DamageSpeed = 0.1f;
+	static constexpr Phoenix::f32 KnockBackSpeed = 0.5f;
+	static constexpr Phoenix::f32 AttackSpeed = 0.1f;
 
 public:
 	enum class TypeTag
@@ -72,6 +82,32 @@ public:
 		}
 	};
 
+	struct HTNDatas
+	{
+		// 待機時間
+		Phoenix::f32 idleCount = 0.0f;
+
+		// 左右に歩く方向
+		Phoenix::f32 moveX = 0.0f;
+
+		// 攻撃ステート番号
+		Phoenix::s32 attackIndex = 0;
+
+		// 経過時間
+		Phoenix::f32 elapsedTime = 0.0f;
+
+		void Initialize()
+		{
+			idleCount = 0.0f;
+			elapsedTime = 0.0f;
+		}
+
+		void SetElapsedTime(Phoenix::f32 elapsedTime)
+		{
+			this->elapsedTime = elapsedTime;
+		}
+	};
+
 protected:
 	// モデル
 	std::shared_ptr<Phoenix::FrameWork::ModelObject> model;
@@ -88,7 +124,8 @@ protected:
 	// AI
 	EnemyMode currentMode = EnemyMode::Ordinary;
 	//std::shared_ptr<OrdinaryAIEnemyAI> ordinaryAI;
-	std::shared_ptr<BattleEnemyAI> battleAI;
+	//std::shared_ptr<BattleEnemyAI> battleAI;
+	std::shared_ptr<EnemyAIController> controller;
 
 	// マネージャー
 	std::weak_ptr<EnemyManager> owner;
@@ -158,9 +195,18 @@ protected:
 	// レイヤー内のステート番号
 	std::map<StateType, Phoenix::s32> stateIndexList;
 
+	// HTN用変数
+	std::shared_ptr<HTNDatas> htnDatas;
+
+	// HTN用ワールドステート
+	std::shared_ptr<EnemyWorldState> worldState;
+
+	// ステージ端にいるか
+	bool hitWall = false;
+
 private:
 	// 攻撃ステート
-	std::shared_ptr<BattleEnemy::Attack<EnemyAttackState, Enemy>> attackState;
+	//std::shared_ptr<BattleEnemy::Attack<EnemyAttackState, Enemy>> attackState;
 	EnemyAttackState changeAttackState = EnemyAttackState::NoneState;
 	EnemyAttackState currentAttackState = EnemyAttackState::NoneState;
 
@@ -206,7 +252,7 @@ public:
 	virtual void UpdateCollision();
 
 	// UI更新
-	virtual void UpdateUI(Phoenix::Math::Vector2 pos);
+	virtual void UpdateUI(Phoenix::Math::Vector2 pos, Phoenix::f32 elapsedTime);
 
 	// 描画
 	virtual void Draw();
@@ -275,6 +321,9 @@ public:
 	// ステートを変更
 	void SetState(BattleEnemyState state, bool forcedChange = false);
 
+	// アニメーションを変更
+	void SetAnimation(BattleEnemyState state);
+
 	// 攻撃権を発行
 	bool SetAttackRight(bool stackAttackRight);
 
@@ -290,6 +339,9 @@ public:
 	// 移動方向の指定
 	void SetMoveInput(Phoenix::f32 moveX, Phoenix::f32 moveY);
 
+	// ステージ端にいるか設定
+	void SetHitWall(bool hitWall);
+
 public:
 	// 有効フラグ取得
 	bool GetEnable();
@@ -302,6 +354,9 @@ public:
 
 	// 戦闘中フラグ取得
 	bool GetInBattle();
+
+	// ステージ端にいるか取得
+	bool GetHitWall();
 
 	// トランスフォームの取得
 	Phoenix::FrameWork::Transform GetTransform();
@@ -352,5 +407,20 @@ public:
 	TypeTag GetTypeTag() { return typeTag; }
 
 	// 攻撃中の判定
-	bool UnderAttack() { return battleAI->GetCurrentStateName() == BattleEnemyState::Attack; }
+	bool UnderAttack() { return /*battleAI->GetCurrentStateName() == BattleEnemyState::Attack*/false; }
+
+	// 攻撃権を取得
+	bool GetAttackRight() { return stackAttackRight; }
+
+	// アニメーション変更中
+	bool GetChangeAnimation() { return changeAnimation; }
+
+	// 攻撃データリストを取得
+	std::vector<AttackDatas<EnemyAttackState>> GetAtackDatasList() { return attackDatasList; }
+
+	// HTN用データを取得
+	std::shared_ptr<HTNDatas> GetHTNDatas() { return htnDatas; }
+
+	// HTN用ワールドステートを取得
+	std::shared_ptr<EnemyWorldState> GetWorldState() { return worldState; }
 };

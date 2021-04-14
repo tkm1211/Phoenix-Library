@@ -6,6 +6,7 @@
 #include "../Enemy/EnemyManager.h"
 #include "../Mannequin/Mannequin.h"
 #include "../AI/MetaAI/MetaAI.h"
+#include "../AI/HTN/HTN.h"
 #include "../UI/UISystem.h"
 #include "../UI/TutorialUI.h"
 #include "../Primitive/GeometricPrimitive.h"
@@ -132,9 +133,11 @@ private:
 	Phoenix::FrameWork::IShader* pbrShader = nullptr;
 	Phoenix::FrameWork::IShader* pbrSkinShader = nullptr;
 	Phoenix::FrameWork::IShader* currentShader = nullptr;
-	Phoenix::Graphics::Camera* camera = nullptr;
 	Phoenix::Graphics::ITexture* targetMark = nullptr;
 	std::shared_ptr<TutorialUI> tutorialUI;
+
+	// プレイヤーカメラ
+	std::shared_ptr<Phoenix::Graphics::Camera> camera;
 
 	// フレームバッファ
 	std::unique_ptr<Phoenix::FrameWork::FrameBuffer> frameBuffer[6];
@@ -184,6 +187,8 @@ private:
 	// カメラシェイク
 	bool isCameraShake = false;
 	Phoenix::Math::Vector3 shake = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	Phoenix::Math::Vector3 shakeVec = Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f);
+	Phoenix::f32 shakePower = 0.0f;
 	Phoenix::f32 shakeWidth = 0.0f;
 	Phoenix::f32 shakeHeight = 0.0f;
 	Phoenix::f32 cameraShakeCnt = 0;
@@ -250,6 +255,7 @@ private:
 
 	// エネミーデータ
 	Phoenix::s32 nearEnemyIndex = -1;
+	Phoenix::s32 bossIndex = -1;
 	Phoenix::s32 nearIndex = -1;
 	Phoenix::s32 drawEnemyUIIndex = -1;
 
@@ -259,6 +265,19 @@ private:
 
 	// 操作可
 	bool onControl = false;
+
+	enum class Name
+	{
+		None
+	};
+
+	struct State
+	{
+		bool alive;
+	};
+
+	std::shared_ptr<HTN<Name, State>> htn;
+
 
 private: // Debug
 	std::shared_ptr<GeometricPrimitive> primitive;

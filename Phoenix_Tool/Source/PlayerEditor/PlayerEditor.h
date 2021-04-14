@@ -14,7 +14,7 @@ class PlayerEditor : public IEditor
 {
 private:
 	std::shared_ptr<Phoenix::Graphics::IGraphicsDevice> graphicsDevice;
-	std::unique_ptr<Player> player;
+	std::shared_ptr<Player> player;
 	std::unique_ptr<Phoenix::Graphics::Camera> camera;
 	std::shared_ptr<Phoenix::FrameWork::IShader> basicSkinShader;
 	std::shared_ptr<Phoenix::FrameWork::IShader> pbrShader;

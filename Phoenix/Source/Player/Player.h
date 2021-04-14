@@ -6,12 +6,14 @@
 #include "Phoenix/Graphics/Camera.h"
 #include "Phoenix/FrameWork/Object/Object.h"
 #include "Phoenix/FrameWork/Input/InputDevice.h"
+#include "Phoenix/FrameWork/StateMachine/StateMachine.h"
 #include "../UI/PlayerUI.h"
 #include "../Sound/SoundSystem.h"
 #include "../Collision/Collision.h"
 
 
-class Player
+class PlayerController;
+class Player : public std::enable_shared_from_this<Player>
 {
 public:
 	// アニメーションステート
@@ -19,13 +21,9 @@ public:
 	{
 		Idle,
 		Walk,
-		Run,
-		SlowRun,
-		Roll,
 		Attack,
 		Damage,
 		Dedge,
-		Guard,
 		Death,
 	};
 
@@ -123,7 +121,7 @@ public:
 		static bool Deserialize(AttackDataList& data, const char* filename);
 	};
 
-private:
+public:
 	static constexpr Phoenix::f32 WalkSpeed = 0.021f;
 	static constexpr Phoenix::f32 BattleWalkSpeed = 0.0105f;
 	static constexpr Phoenix::f32 RunSpeed = 0.18f;
@@ -155,6 +153,9 @@ private:
 private:
 	// モデル
 	std::unique_ptr<Phoenix::FrameWork::ModelObject> model;
+
+	// プレイヤーカメラ
+	std::shared_ptr<Phoenix::Graphics::Camera> camera;
 
 	// UI
 	std::shared_ptr<PlayerUI> ui;
@@ -234,9 +235,6 @@ private:
 	// アタックダメージ数
 	Phoenix::s32 attackDamage = 0;
 
-	// 回避の無敵中か？
-	bool invincible = false;
-
 	// コリジョンデータの要素数
 	Phoenix::s32 attackCollisionIndex = 0;
 
@@ -256,8 +254,8 @@ private:
 	// エネミーテリトリーフラグ
 	bool inTerritory = false;
 
-	// バトルモード
-	bool isBattleMode = false;
+	// 構え状態
+	bool lockOn = false;
 	Phoenix::u32 dedgeLayerIndex = 0;
 	Phoenix::Math::Vector3 targetPos = { 0.0f, 0.0f, 0.0f };
 
@@ -289,13 +287,19 @@ private:
 	bool isInvincible = false;
 	Phoenix::f32 invincibleTimeCnt = 0.0f;
 
+	// コントローラー
+	std::shared_ptr<PlayerController> controller;
+
+	// 操作可否
+	bool onControl = false;
+
 public:
 	Player() {}
 	~Player() {}
 
 public:
 	// 生成
-	static std::unique_ptr<Player> Create();
+	static std::shared_ptr<Player> Create();
 
 	// コンストラクタ
 	void Construct(Phoenix::Graphics::IGraphicsDevice* graphicsDevice);
@@ -313,7 +317,22 @@ public:
 	void UpdateTrasform();
 
 	// UI更新
-	void UpdateUI();
+	void UpdateUI(Phoenix::f32 elapsedTime);
+
+	// アニメーション更新
+	void UpdateAnimation(Phoenix::f32 elapsedTime);
+
+	// コリジョン更新
+	void UpdateCollision();
+
+	// 死亡処理の更新
+	bool UpdateDeath(Phoenix::f32 elapsedTime);
+
+	// 行動スコアの計算
+	void ScoreCalculation(Phoenix::f32 elapsedTime);
+
+	// 攻撃データを読み込み
+	void LoadAttackData(bool attackLoad);
 
 	// 操作更新
 	void Control(Phoenix::Graphics::Camera& camera, Phoenix::f32 elapsedTime, bool control);
@@ -342,14 +361,14 @@ public:
 	// ターゲット方向に回転
 	void Rotation(Phoenix::Math::Vector3 targetPos);
 
-	// エネミーの索敵範囲内での行動
-	void InEnemyTerritory(bool inTerritory);
+	// 構える状態を変更
+	void ChangeLockOn(bool inTerritory, AnimationState state, Phoenix::f32 moveSpeed = 0.0f);
 
 	// アニメーション変更
 	void ChangeAnimationState(AnimationState state, Phoenix::f32 moveSpeed = 0.0f);
 
 	// 攻撃アニメーション変更
-	void ChangeAttackAnimationState(Phoenix::s32 state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed);
+	void ChangeAttackAnimationState(Phoenix::s32 state, Phoenix::s32 attackAnimIndex, Phoenix::f32 speed, bool isAttack = true, bool comboInit = false);
 
 	// ジャスト回避変更
 	void ChangeJustDedge();
@@ -357,27 +376,69 @@ public:
 	// 入力判定
 	bool CheckHitKey(AttackKey key);
 
+	// プレイヤーの回転を更新
+	void UpdateRotate(Phoenix::f32 sX, Phoenix::f32 sY);
+
+	// プレイヤーの最終方向を決定する角度を計算
+	void UpdateRotateY(Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::f32 cameraRotateY);
+
+	// プレイヤー回転
+	void RotatePlayer(Phoenix::f32 angle, bool isBattleMode);
+
+	// 回避の判定
+	bool JudgeDedge();
+
+	// 回避番号の判定
+	void JudgeDedgeIndex(Phoenix::f32 sX, Phoenix::f32 sY);
+
+	// 攻撃専用の回転
+	void RotatePlayerToAttack();
+
+	// 攻撃アニメーションの変更
+	void ChangeAttackAnimation(Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::u32 index, Phoenix::u32 nextIndex);
+
+	// 攻撃入力の判定
+	void JudgeAttackInput(Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::s32 index, Phoenix::s32 nextIndex, AttackKey key);
+
+	// 攻撃スタック入力の判定
+	void JudgeAttackStackInput(Phoenix::f32 sX, Phoenix::f32 sY, Phoenix::s32 index, Phoenix::s32 nextIndex);
+
+	// 攻撃コンボが継続判定
+	void JudgeAttackCombo();
+
 public:
 	// 座標を設定
 	void SetPosition(Phoenix::Math::Vector3 pos) { this->pos = pos; }
 
+	// 回転を設定
+	void SetRotate(Phoenix::Math::Quaternion rotate) { this->rotate = rotate; }
+
+	// 移動速度を設定
+	void SetSpeed(Phoenix::f32 speed) { this->speed = speed; }
+
 	// 攻撃がヒット
 	void SetIsHit(Phoenix::s32 index) { isHit.at(index) = true; }
 
-	// ジャスト回避を設定
-	void SetIsJustDedge(bool isJustDedge) { this->isJustDedge = isJustDedge; }
+	// 存在フラグを設定
+	void SetAlive(bool alive) { this->alive = alive; }
 
-	// ロックオンを設定
-	void SetBattleMode(bool isBattleMode) { this->isBattleMode = isBattleMode; }
+	// 構え状態を設定
+	void SetLockOn(bool lockOn) { this->lockOn = lockOn; }
 
-	// ロックオンするターゲット座標を設定
+	// 構え状態中のロックオンするターゲット座標を設定
 	void SetTargetPos(Phoenix::Math::Vector3 targetPos) { this->targetPos = targetPos; }
 
 	// 攻撃データリストを設定
 	void SetAttackDatasList(AttackDataList data) { attackDatasList = data; }
 
+	// プレイヤーカメラを設定
+	void SetPlayerCamera(std::shared_ptr<Phoenix::Graphics::Camera> camera) { this->camera = camera; }
+
 	// サウンドシステムを設定
 	void SetSoundSystem(std::shared_ptr<SoundSystem<SoundType>> soundSystem) { this->soundSystem = soundSystem; }
+
+	// ジャスト回避時の無敵を設定
+	void SetIsInvincible(bool isInvincible) { this->isInvincible = isInvincible; }
 
 public:
 	// モデル取得
@@ -392,8 +453,17 @@ public:
 	// 回転取得
 	Phoenix::Math::Quaternion GetRotate() { return rotate; }
 
+	// 新たな回転取得
+	Phoenix::Math::Quaternion GetNewRotate() { return newRotate; }
+
+	// Y軸回転取得
+	Phoenix::f32 GetRotateY() { return rotateY; }
+
 	// 半径取得
 	Phoenix::f32 GetRadius() { return radius; }
+
+	// 移動速度取得
+	Phoenix::f32 GetSpeed() { return speed; }
 
 	// HP取得
 	Phoenix::s32 GetHP() { return life; }
@@ -410,8 +480,17 @@ public:
 	// 攻撃ステート取得
 	Phoenix::s32 GetAttackState() { return attackState; }
 
+	// 攻撃コンボステート取得
+	Phoenix::s32 GetAttackComboState() { return attackComboState; }
+
 	// 攻撃当たり判定の番号取得
 	Phoenix::s32 GetAttackCollisionIndex() { return attackCollisionIndex; }
+
+	// 攻撃入力受付時間の取得
+	Phoenix::f32 GetAttackReceptionTimeCnt() { return attackReceptionTimeCnt; }
+
+	// 蓄積ダメージ取得
+	Phoenix::s32 GetAccumulationDamege() { return accumulationDamege; }
 
 	// アニメーションステート取得
 	AnimationState GetAnimationState() { return animationState; }
@@ -427,9 +506,6 @@ public:
 
 	// 攻撃当たり判定をヒット済みか取得
 	const std::vector<bool> IsAttackJudgment() { return isAttackJudgment; }
-	
-	// 無敵中
-	bool Invincible() { return invincible; }
 
 	// 攻撃中
 	bool IsAttack() { return isAttack; }
@@ -442,9 +518,18 @@ public:
 
 	// 無敵中
 	bool IsInvincible() { return isInvincible; }
+
+	// アニメーションの切り替え
+	bool IsChangeAnimation() { return isChangeAnimation; }
 	
 	// エネミーの索敵範囲内にいるか判定
 	bool OnEnemyTerritory() { return inTerritory; }
+
+	// 操作可否
+	bool OnControl() { return onControl; }
+
+	// 入力スタック取得
+	bool GetReceptionStack() { return receptionStack; }
 
 	// 存在中
 	bool GetAlive() { return alive; }
@@ -456,5 +541,5 @@ public:
 	bool GetDodging() { return (animationState == AnimationState::Dedge); }
 
 	// 構え中
-	bool GetLockOn() { return isBattleMode; }
+	bool GetLockOn() { return lockOn; }
 };
