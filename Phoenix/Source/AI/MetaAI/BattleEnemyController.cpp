@@ -104,29 +104,10 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Meta::Meta
 			if (enemy->GetBattleState() == BattleEnemyState::DamageSmall) continue;
 			if (enemy->GetBattleState() == BattleEnemyState::DamageBig) continue;
 
-			/*if (enemy->GetBattleState() == BattleEnemyState::Idle)
-			{
-				if (!enemy->InDistanceHitByAttack())
-				{
-					if (enemy->InBattleTerritory())
-					{
-						enemy->SetState(BattleEnemyState::Walk);
-						continue;
-					}
-					else
-					{
-						enemy->SetState(BattleEnemyState::Run);
-						continue;
-					}
-				}
-			}
-			else */
 			if (enemy->GetBattleState() == BattleEnemyState::Attack)
 			{
 				attackRight = false;
 			}
-
-			//if (!enemy->InBattleTerritory()) continue;
 
 			if (enemy->GetBattleState() == BattleEnemyState::Idle || enemy->GetBattleState() == BattleEnemyState::Walk || enemy->GetBattleState() == BattleEnemyState::Run)
 			{
@@ -140,12 +121,34 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Meta::Meta
 			if (!notAttack && 0 < indices.size())
 			{
 				Phoenix::s32 r = rand() % static_cast<Phoenix::s32>(indices.size());
-
-				//if (enemies.at(indices.at(r))->InBattleTerritory())
 				{
 					notAttack = enemyManager->SetAttackRight(indices.at(r), (enemyManager->GetAliveEnemyCount() == 1));
 					notAttackTimeMax = static_cast<Phoenix::f32>(10 + rand() % 90);
 					notAttackTimeMax += static_cast<Phoenix::f32>(10 + rand() % 10);
+				}
+
+				// 攻撃権が発行されなかったエネミーは走りに移行
+				for (int i = 0; i < indices.size(); ++i)
+				{
+					if (i == r && notAttack) continue;
+
+					const auto& enemy = enemies.at(indices.at(i));
+
+					if (!enemy) continue;
+					if (!enemy->GetAlive()) continue;
+					if (!enemy->GetInBattle()) continue;
+
+					if (enemy->GetBattleState() == BattleEnemyState::Idle)
+					{
+						if (enemy->InBattleTerritory() && (enemy->GetTypeTag() == Enemy::TypeTag::Small))
+						{
+							enemy->SetState(BattleEnemyState::Walk);
+						}
+						else
+						{
+							enemy->SetState(BattleEnemyState::Run);
+						}
+					}
 				}
 			}
 			else if (notAttack)
@@ -203,6 +206,21 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Meta::Meta
 		break;
 
 	default: break;
+	}
+
+	// 走っているエネミーを分けてプレイヤーを囲む
+	for (const auto& enemy : enemies)
+	{
+		if (!enemy) continue;
+
+		if (enemy->GetBattleState() == BattleEnemyState::Run)
+		{
+			// エネミーとプレイヤーの直線距離を計測
+
+			// 最短のエネミーはそのまま追尾、その他はプレイヤーの進行方向と平行線上にゴールを変更
+
+			// 
+		}
 	}
 
 	// HTN用ワールドステート更新

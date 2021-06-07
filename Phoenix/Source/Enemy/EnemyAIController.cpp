@@ -196,9 +196,6 @@ void EnemyAIController::ChangeState(Phoenix::f32 elapsedTime)
 			aiData->elapsedTime = elapsedTime;
 		}
 
-		// ステートマシン再開始
-		//status->Start(BattleEnemyState::Idle, owner.lock(), aiData);
-
 		// 次のフレームでステート遷移しないために初期化
 		nextState = BattleEnemyState::NoneState;
 	}

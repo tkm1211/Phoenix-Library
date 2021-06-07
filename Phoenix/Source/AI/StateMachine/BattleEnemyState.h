@@ -430,6 +430,9 @@ namespace BattleEnemy
 		// 経過時間
 		Phoenix::f32 elapsedTime = 0.0f;
 
+		// ステート実行時間
+		Phoenix::f32 runTime = 0.0f;
+
 		// 初期化
 		void Initialize()
 		{
@@ -439,6 +442,7 @@ namespace BattleEnemy
 			planIndex = -1;
 			attackIndex = -1;
 			elapsedTime = 0.0f;
+			runTime = 0.0f;
 		}
 
 		// 次のプランに遷移
@@ -446,6 +450,44 @@ namespace BattleEnemy
 		{
 			changeState = true;
 			nextState = plan.at(++planIndex);
+		}
+		void ChangeNextState(BattleEnemyState state)
+		{
+			changeState = true;
+			nextState = state;
+		}
+
+		// プラン内に指定ステートが存在確認
+		bool HitStateInPlan(BattleEnemyState state)
+		{
+			for (const auto p : plan)
+			{
+				if (p == state) return true;
+			}
+
+			return false;
+		}
+
+		// プランを戻し、指定ステートから再スタート
+		void UndoPlan(BattleEnemyState state)
+		{
+			Phoenix::sizeT tempIndex = planIndex;
+			for (const auto p : plan)
+			{
+				--tempIndex;
+				
+				if (p == state)
+				{
+					ChangeNextState(state);
+					planIndex = tempIndex;
+					break;
+				}
+			}
+		}
+
+		void UpdateRunTime()
+		{
+			runTime += 1.0f * elapsedTime;
 		}
 	};
 

@@ -478,6 +478,7 @@ namespace BattleEnemy
 		{
 			owner->SetAnimation(BattleEnemyState::Walk);
 			aiData->changeState = false;
+			aiData->runTime = 0.0f;
 		}
 
 		void Update(std::shared_ptr<Enemy> owner, std::shared_ptr<BattleEnemy::AIData> aiData)
@@ -487,8 +488,26 @@ namespace BattleEnemy
 				aiData->ChangeNextState();
 			}
 
+			//if (!owner->InBattleTerritory())
+			//{
+			//	// 走りステートがプラン内に存在するか？
+			//	if (aiData->HitStateInPlan(BattleEnemyState::Run))
+			//	{
+			//		// 走りステートまで戻す
+			//		aiData->UndoPlan(BattleEnemyState::Run);
+			//	}
+			//}
+
+			// プラン再構築するため待機状態に移行
+			if (aiData->runTime <= 50.0f) // TODO : update border.
+			{
+				aiData->ChangeNextState(BattleEnemyState::Idle);
+			}
+
 			owner->SetMoveInput(0.0f, -1.0f);
 			owner->SetMoveSpeed(Enemy::WalkSpeed);
+
+			aiData->UpdateRunTime();
 		}
 
 		void Exit(std::shared_ptr<Enemy> owner, std::shared_ptr<BattleEnemy::AIData> aiData)
