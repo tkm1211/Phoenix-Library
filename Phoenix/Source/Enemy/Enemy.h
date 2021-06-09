@@ -130,9 +130,6 @@ protected:
 	// マネージャー
 	std::weak_ptr<EnemyManager> owner;
 
-	// プレイヤー
-	std::shared_ptr<Player> player;
-
 	// アニメーション
 	bool changeAnimation = false;
 	bool changeAttackAnimation = false;
@@ -189,6 +186,9 @@ protected:
 	// 攻撃権
 	bool stackAttackRight = false;
 
+	// 走り方向転換
+	bool changeOfCourse = false;
+
 	// レイヤー番号
 	std::map<LayerType, Phoenix::s32> layerIndexList;
 
@@ -203,6 +203,14 @@ protected:
 
 	// ステージ端にいるか
 	bool hitWall = false;
+
+	// プレイヤーパラメーター
+	Phoenix::Math::Vector3 playerPos;
+	Phoenix::Math::Quaternion playerRotate;
+
+	// 遠回り
+	bool detour = false;
+	Phoenix::Math::Vector3 targetPos;
 
 private:
 	// 攻撃ステート
@@ -330,8 +338,8 @@ public:
 	// 攻撃ステートを変更
 	void SetAttackState(EnemyAttackState state);
 
-	// プレイヤーを設定
-	void SetPlayer(std::shared_ptr<Player> player);
+	// プレイヤーパラメーターを設定
+	void SetPlayerParameter(Phoenix::Math::Vector3 pos, Phoenix::Math::Quaternion rotate);
 
 	// 移動スピード設定
 	void SetMoveSpeed(Phoenix::f32 speed);
@@ -341,6 +349,15 @@ public:
 
 	// ステージ端にいるか設定
 	void SetHitWall(bool hitWall);
+
+	// 方向転換の設定
+	void SetChangeOfCourse(bool changeOfCourse);
+
+	// 遠回りの設定
+	void SetDetour(bool detour);
+
+	// 目的地の設定
+	void SetTargetPos(Phoenix::Math::Vector3 targetPos);
 
 public:
 	// 有効フラグ取得
@@ -357,6 +374,12 @@ public:
 
 	// ステージ端にいるか取得
 	bool GetHitWall();
+
+	// 方向転換の取得
+	bool GetChangeOfCourse();
+
+	// 遠回りの取得
+	bool GetDetour();
 
 	// トランスフォームの取得
 	Phoenix::FrameWork::Transform GetTransform();

@@ -138,7 +138,6 @@ void EnemyManager::AddEnemy(Enemy::TypeTag tag, Phoenix::FrameWork::Transform tr
 		enemies.at(i)->SetDeath(false);
 		enemies.at(i)->SetTransform(transform);
 		enemies.at(i)->SetOwner(shared_from_this());
-		enemies.at(i)->SetPlayer(player);
 
 		enemiesUI->AddUI(i, enemies.at(i)->GetUI());
 
@@ -194,10 +193,15 @@ void EnemyManager::SetBattleEnemy(Phoenix::s32 enemyIndex)
 	enemies.at(enemyIndex)->SetInBattle(true);
 }
 
-// プレイヤーを設定
-void EnemyManager::SetPlayer(std::shared_ptr<Player> player)
+// プレイヤーパラメーターを設定
+void EnemyManager::SetPlayerParameter(Phoenix::Math::Vector3 pos, Phoenix::Math::Quaternion rotate)
 {
-	this->player = player;
+	for (auto enemy : enemies)
+	{
+		if (!enemy) continue;
+
+		enemy->SetPlayerParameter(pos, rotate);
+	}
 }
 
 // GUI

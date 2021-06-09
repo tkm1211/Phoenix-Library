@@ -26,7 +26,6 @@ private:
 	Phoenix::s32 aliveEnemyCount = 0;
 	Phoenix::s32 battleEnemyCount = 0;
 
-	std::shared_ptr<Player> player;
 	std::shared_ptr<EnemiesUI> enemiesUI;
 
 	std::vector<Phoenix::Math::Vector3> enemiesPos;
@@ -83,8 +82,8 @@ public:
 	// 指定のエネミーをバトルモードに変更
 	void SetBattleEnemy(Phoenix::s32 enemyIndex);
 
-	// プレイヤーを設定
-	void SetPlayer(std::shared_ptr<Player> player);
+	// プレイヤーパラメーターを設定
+	void SetPlayerParameter(Phoenix::Math::Vector3 pos, Phoenix::Math::Quaternion rotate);
 
 public:
 	// エネミー達を取得

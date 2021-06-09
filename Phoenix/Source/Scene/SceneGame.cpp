@@ -277,6 +277,7 @@ void SceneGame::Initialize()
 		player->SetPlayerCamera(camera);
 
 		enemyManager->Initialize();
+		enemyManager->SetPlayerParameter(player->GetPosition(), player->GetRotate());
 		metaAI->Initialize();
 
 		tutorialUI->Initialize();
@@ -762,6 +763,7 @@ void SceneGame::UpdateEnemyManager(Phoenix::f32 elapsedTime)
 {
 	if (isUpdate && isBossUpdate && !isHitStop)
 	{
+		enemyManager->SetPlayerParameter(player->GetPosition(), player->GetRotate());
 		enemyManager->Update(onControl && !roundSwitch, elapsedTime);
 	}
 
@@ -1542,7 +1544,6 @@ void SceneGame::PushingOutPlayerAndStage()
 	if (stageRadius <= playerDis)
 	{
 		player->SetPosition(Phoenix::Math::Vector3(playerNormal.x * stageRadius, playerPos.y, playerNormal.y * stageRadius));
-
 	}
 }
 
@@ -2015,6 +2016,8 @@ void SceneGame::NoticeMetaAI()
 	data.enemiesState = enemyManager->GetEnemiesState();
 	data.enemiesType = enemyManager->GetEnemiesType();
 	data.playerIsInvincible = player->IsInvincible();
+	data.nearIndex = nearIndex;
+	data.stageRadius = stageRadius;
 
 	//metaAI->Sensor(static_cast<Phoenix::s32>(MetaType::Battle), playerBehaviorScore);
 	//metaAI->Sensor<Meta::BattleEnemySystem>(static_cast<Phoenix::s32>(MetaType::Battle), player->GetPosition(), static_cast<Phoenix::s32>(player->GetAnimationState()), player->GetAttackState(), enemyManager->GetEnemiesPos(), enemyManager->GetEnemiesState(), enemyManager->GetEnemiesType());
