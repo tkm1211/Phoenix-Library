@@ -208,19 +208,35 @@ void BattleEnemyController::Update(BattleEnemyState battleEnemyState, Meta::Meta
 	default: break;
 	}
 
-	// 走っているエネミーを分けてプレイヤーを囲む
+	// 走っているエネミーを分けてプレイヤーを囲む (最短のエネミーはそのまま追尾、その他はプレイヤーの進行方向と平行線上にゴールを変更)
+	Phoenix::s32 cnt = 0;
+	Phoenix::s32 enemyNum = enemyManager->GetAliveEnemyCount() - 1;
 	for (const auto& enemy : enemies)
 	{
 		if (!enemy) continue;
+		if (cnt == metaData.nearIndex) continue;
 
-		if (enemy->GetBattleState() == BattleEnemyState::Run)
+		if (enemy->GetBattleState() == BattleEnemyState::Run && enemy->GetChangeOfCourse())
 		{
-			// エネミーとプレイヤーの直線距離を計測
+			enemy->SetDetour(true);
 
-			// 最短のエネミーはそのまま追尾、その他はプレイヤーの進行方向と平行線上にゴールを変更
+			Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(Phoenix::Math::Vector3(0.0f, 0.0f, 0.0f) - enemy->GetPosition());
+			Phoenix::Math::Vector3 target = ((enemyNum * 0.5f) < cnt) ? (dir * metaData.stageRadius) : (dir * (metaData.stageRadius * 2.0f));
 
-			// 
+			Phoenix::f32 targetDis = Phoenix::Math::Vector2Length(Phoenix::Math::Vector2(target.x, target.z));
+			Phoenix::Math::Vector2 targetNormal = Phoenix::Math::Vector2Normalize(Phoenix::Math::Vector2(target.x, target.z));
+
+			if (metaData.stageRadius <= targetDis)
+			{
+				target = Phoenix::Math::Vector3(targetNormal.x * metaData.stageRadius, targetNormal.y, targetNormal.y * metaData.stageRadius);
+			}
+
+			enemy->SetTargetPos(target);
+
+			enemy->SetChangeOfCourse(false);
 		}
+
+		++cnt;
 	}
 
 	// HTN用ワールドステート更新

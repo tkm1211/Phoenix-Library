@@ -17,7 +17,6 @@ void SceneCommonData::Initialize(Phoenix::Graphics::IGraphicsDevice* graphicsDev
 	
 	enemyManager = EnemyManager::Create();
 	enemyManager->Construct(graphicsDevice);
-	enemyManager->SetPlayer(player);
 
 	//mannequin = Mannequin::Create();
 	//mannequin->Construct(graphicsDevice);

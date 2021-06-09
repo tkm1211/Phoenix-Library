@@ -278,6 +278,8 @@ void Enemy::Initialize()
 		alive = false;
 		death = false;
 		inBattle = false;
+		changeOfCourse = false;
+		detour = false;
 
 		newRotate = Phoenix::Math::Quaternion::Zero;
 
@@ -355,12 +357,27 @@ void Enemy::Update(bool onControl, Phoenix::f32 elapsedTime)
 		}
 		model->UpdateTransform(elapsedTime / 60.0f);
 
+		DistanceMeasurement();
 		UpdateRotate(elapsedTime);
 		UpdateTranslate(elapsedTime);
 		UpdateTransform();
 		UpdateCollision();
 
 		return;
+	}
+
+	// 遠回り
+	{
+		if (detour)
+		{
+			Phoenix::f32 dis = Phoenix::Math::Vector3Length(targetPos - transform->GetTranslate());
+
+			if (dis <= 1.5f)
+			{
+				targetPos = playerPos;
+				detour = false;
+			}
+		}
 	}
 
 	// AI更新
@@ -427,7 +444,7 @@ void Enemy::UpdateTranslate(Phoenix::f32 elapsedTime)
 	{
 		Phoenix::f32 cameraY = 0.0f;
 		{
-			Phoenix::Math::Vector3 dir = transform->GetTranslate() - player->GetPosition();
+			Phoenix::Math::Vector3 dir = transform->GetTranslate() - targetPos;
 			dir.y = 0.0f;
 			dir = Phoenix::Math::Vector3Normalize(dir);
 
@@ -591,17 +608,17 @@ void Enemy::AttackJudgment()
 // プレイヤーとの距離計測
 void Enemy::DistanceMeasurement()
 {
-	distanceToPlayer = Phoenix::Math::Vector3Length(player->GetPosition() - transform->GetTranslate());
+	distanceToPlayer = Phoenix::Math::Vector3Length(playerPos - transform->GetTranslate());
 }
 
 // プレイヤーの攻撃視野にいるか判定
 bool Enemy::JudgePlayerAttackRange()
 {
-	Phoenix::Math::Vector3 dir = GetPosition() - player->GetPosition();
+	Phoenix::Math::Vector3 dir = GetPosition() - playerPos;
 	dir = Phoenix::Math::Vector3Normalize(dir);
 	dir.y = 0.0f;
 
-	Phoenix::Math::Quaternion rotate = player->GetRotate();
+	Phoenix::Math::Quaternion rotate = playerRotate;
 	Phoenix::Math::Matrix m = Phoenix::Math::MatrixRotationQuaternion(&rotate);
 	Phoenix::Math::Vector3 forward = Phoenix::Math::Vector3(m._31, m._32, m._33);
 	forward.y = 0.0f;
@@ -625,7 +642,7 @@ bool Enemy::JudgePlayerAttackRange()
 // 新たな回転値の更新
 void Enemy::UpdateNewRotate()
 {
-	Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(player->GetPosition() - GetPosition());
+	Phoenix::Math::Vector3 dir = Phoenix::Math::Vector3Normalize(targetPos - GetPosition());
 	float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
 
 	if (len <= 0)
@@ -654,6 +671,7 @@ void Enemy::GUI(Phoenix::s32 index)
 	if (ImGui::TreeNode(name.c_str()))
 	{
 		transform->GUI();
+		ImGui::DragFloat3("targetPos", &targetPos.x);
 		ImGui::TreePop();
 	}
 }
@@ -762,11 +780,11 @@ void Enemy::SetAttackState(EnemyAttackState state)
 	attackReceptionTimeCnt = 0.0f;
 }
 
-// プレイヤーを設定
-void Enemy::SetPlayer(std::shared_ptr<Player> player)
+// プレイヤーパラメーターを設定
+void Enemy::SetPlayerParameter(Phoenix::Math::Vector3 pos, Phoenix::Math::Quaternion rotate)
 {
-	this->player = player;
-	DistanceMeasurement();
+	playerPos = pos;
+	playerRotate = rotate;
 }
 
 // 移動スピード設定
@@ -786,6 +804,24 @@ void Enemy::SetMoveInput(Phoenix::f32 moveX, Phoenix::f32 moveY)
 void Enemy::SetHitWall(bool hitWall)
 {
 	this->hitWall = hitWall;
+}
+
+// 方向転換の設定
+void Enemy::SetChangeOfCourse(bool changeOfCourse)
+{
+	this->changeOfCourse = changeOfCourse;
+}
+
+// 遠回りの設定
+void Enemy::SetDetour(bool detour)
+{
+	this->detour = detour;
+}
+
+// 目的地の設定
+void Enemy::SetTargetPos(Phoenix::Math::Vector3 targetPos)
+{
+	this->targetPos = targetPos;
 }
 
 // アニメーションを移行
@@ -1002,6 +1038,18 @@ bool Enemy::GetInBattle()
 bool Enemy::GetHitWall()
 {
 	return hitWall;
+}
+
+// 方向転換の取得
+bool Enemy::GetChangeOfCourse()
+{
+	return changeAnimation;
+}
+
+// 遠回りの取得
+bool Enemy::GetDetour()
+{
+	return detour;
 }
 
 // トランスフォームの取得
