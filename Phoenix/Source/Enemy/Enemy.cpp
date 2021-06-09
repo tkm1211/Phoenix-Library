@@ -374,9 +374,12 @@ void Enemy::Update(bool onControl, Phoenix::f32 elapsedTime)
 
 			if (dis <= 1.5f)
 			{
-				targetPos = playerPos;
 				detour = false;
 			}
+		}
+		else
+		{
+			targetPos = playerPos;
 		}
 	}
 
@@ -1043,7 +1046,7 @@ bool Enemy::GetHitWall()
 // •ûŒü“]Š·‚ÌŽæ“¾
 bool Enemy::GetChangeOfCourse()
 {
-	return changeAnimation;
+	return changeOfCourse;
 }
 
 // ‰“‰ñ‚è‚ÌŽæ“¾

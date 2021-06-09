@@ -117,9 +117,6 @@
     <ClCompile Include="Source\AI\MetaAI\BattleEnemySystem.cpp">
       <Filter>Source\AI\MetaAI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AI\StateMachine\BattleEnemyState.cpp">
-      <Filter>Source\AI\StateMachine</Filter>
-    </ClCompile>
     <ClCompile Include="Source\AI\StateMachine\BattleEnemyAI.cpp">
       <Filter>Source\AI\StateMachine</Filter>
     </ClCompile>
@@ -146,6 +143,9 @@
     </ClCompile>
     <ClCompile Include="Source\Enemy\EnemyTask.cpp">
       <Filter>Source\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AI\StateMachine\BattleEnemyState.cpp">
+      <Filter>Source\AI\StateMachine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -218,9 +218,6 @@
     <ClInclude Include="Source\Enemy\EnemyState.h">
       <Filter>Source\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Source\AI\StateMachine\BattleEnemyState.h">
-      <Filter>Source\AI\StateMachine</Filter>
-    </ClInclude>
     <ClInclude Include="Source\AI\StateMachine\BattleEnemyAI.h">
       <Filter>Source\AI\StateMachine</Filter>
     </ClInclude>
@@ -268,6 +265,12 @@
     </ClInclude>
     <ClInclude Include="Source\AI\MetaAI\MetaData.h">
       <Filter>Source\AI\MetaAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\StateMachine\StateMachine.h">
+      <Filter>Source\AI\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\StateMachine\BattleEnemyState.h">
+      <Filter>Source\AI\StateMachine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

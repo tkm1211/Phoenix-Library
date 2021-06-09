@@ -489,11 +489,7 @@ namespace BattleEnemy
 			}
 
 			// プラン再構築するため待機状態に移行
-<<<<<<< HEAD
 			if (50.0f <= aiData->runTime && !owner->InBattleTerritory()) // TODO : update border.
-=======
-			if (50.0f <= aiData->runTime)
->>>>>>> ec2b560dce9afb291baf9a44ef4a339d63504c68
 			{
 				aiData->ChangeNextState(BattleEnemyState::Idle);
 			}
@@ -531,9 +527,9 @@ namespace BattleEnemy
 				aiData->ChangeNextState();
 			}
 
-			if (50.0f <= aiData->runTime)
+			if (50.0f <= aiData->runTime && !owner->GetDetour())
 			{
-				//owner->SetChangeOfCourse(true);
+				owner->SetChangeOfCourse(true);
 			}
 			
 			owner->SetMoveInput(0.0f, -1.0f);
