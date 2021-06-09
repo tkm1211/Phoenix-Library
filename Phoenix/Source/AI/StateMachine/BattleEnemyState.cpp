@@ -499,7 +499,7 @@ namespace BattleEnemy
 			//}
 
 			// プラン再構築するため待機状態に移行
-			if (aiData->runTime <= 50.0f) // TODO : update border.
+			if (50.0f <= aiData->runTime && !owner->InBattleTerritory()) // TODO : update border.
 			{
 				aiData->ChangeNextState(BattleEnemyState::Idle);
 			}
